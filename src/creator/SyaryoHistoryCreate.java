@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import json.JsonToSyaryoTemplate;
 import json.SyaryoObjToJson;
-import obj.SyaryoObject;
 import obj.SyaryoTemplate;
 
 /**
