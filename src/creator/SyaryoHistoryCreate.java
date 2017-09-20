@@ -19,7 +19,6 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
-import json.JsonToSyaryoObj;
 import json.JsonToSyaryoTemplate;
 import json.SyaryoObjToJson;
 import obj.SyaryoObject;
@@ -62,7 +61,7 @@ public class SyaryoHistoryCreate extends HiveDB {
         syaryoMap = syaryoHistory.addSyaryoKeireki(con, pw, syaryoMap, noneTypeSearch);
 
         //車両マスタ
-        //syaryoHistoryMap = syaryoHistory.addSyaryoCategory(syaryoMap, noneTypeSearch);
+        syaryoMap = syaryoHistory.addSyaryoCategory(con, pw, syaryoMap, noneTypeSearch);
         
         //保存
         pw.close();
@@ -248,43 +247,42 @@ public class SyaryoHistoryCreate extends HiveDB {
         }
     }
     
-    public Map<String, Map<String, SyaryoObject>> addSyaryoCategory(Map<String, SyaryoObject> syaryoMap, Map<String, String> noneType) {
-        Connection con = getConnection(); //HiveDB
-        
-        Map<String, Map<String, SyaryoObject>> syaryoHistoryMap = new HashMap<>();
-        
+    public Map<String, SyaryoTemplate> addSyaryoCategory(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap, Map<String, SyaryoTemplate> noneType) {
+
         try {
             Statement stmt = con.createStatement();
 
             //Syaryo
-            String sql = String.format("select %s,%s,%s, %s, %s, %s, %s, %s, %s from %s",
+            String sql = String.format("select %s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s from %s",
                     Syaryo._Syaryo.KISY, Syaryo._Syaryo.TYP, Syaryo._Syaryo.KIBAN, //Unique ID
+					Syaryo._Syaryo.KSYCD,				
                     Syaryo._Syaryo.SEHN_BNR_CD_B,   //製品分類コード B
                     Syaryo._Syaryo.NU_KBN,          //NU区分
                     Syaryo._Syaryo.NNY_YMD,         //納入年月日
                     Syaryo._Syaryo.HY_KKYKCD,       //保有顧客
                     Syaryo._Syaryo.SYRK_KBN,        //車歴
                     Syaryo._Syaryo.SYRK_YMD,        //車歴変更日付
+					Syaryo._Syaryo.KOMTRX_SOTY_KBN,
+					Syaryo._Syaryo.LAST_UPD_DAYT,
                     TABLE.SYARYO
             );
             System.out.println("Running: " + sql);
             
-            //NotExist
-            Map<String, SyaryoObject> eMap = new HashMap<>();
-            Map<String, SyaryoObject> neMap = new HashMap<>();
+			ResultSet res = stmt.executeQuery(sql);
             
-            ResultSet res = stmt.executeQuery(sql);
-            int notExistsCnt = 0;
-            int n = 0;
+			Map<String, SyaryoTemplate> map = new TreeMap<>();
+			
+	int n = 0;
             while (res.next()) {
                 n++;
+				
                 //Name
                 String kisy     = res.getString(Syaryo._Syaryo.KISY.get());
                 String type     = res.getString(Syaryo._Syaryo.TYP.get());
                 String kiban    = res.getString(Syaryo._Syaryo.KIBAN.get());
-                
-                //車両チェック
-                SyaryoObject syaryo = null;
+               
+				//車両
+                SyaryoTemplate syaryo = null;
                 if(type.equals(""))
                     syaryo = syaryoMap.get(noneType.get(kisy+"-"+kiban));
                 else
@@ -293,26 +291,46 @@ public class SyaryoHistoryCreate extends HiveDB {
                 //車両マスタ
                 String category = res.getString(Syaryo._Syaryo.SEHN_BNR_CD_B.get());
                 String nu       = res.getString(Syaryo._Syaryo.NU_KBN.get());
-                String nounyu   = res.getString(Syaryo._Syaryo.NNY_YMD.get());
-                String customer = res.getString(Syaryo._Syaryo.HY_KKYKCD.get());
-                String syareki  = res.getString(Syaryo._Syaryo.SYRK_KBN.get());
-                String syareki_date = res.getString(Syaryo._Syaryo.SYRK_YMD.get());
                 
+				//Code
+                String syareki  = res.getString(Syaryo._Syaryo.SYRK_KBN.get());
+					String komtrax = res.getString(Syaryo._Syaryo.KOMTRX_SOTY_KBN.get());
+				
+				//Customer
+				String cid = res.getString(Syaryo._Syaryo.HY_KKYKCD.get());
+				
+				//Date
+				String nounyu   = res.getString(Syaryo._Syaryo.NNY_YMD.get());
+				String syareki_date = res.getString(Syaryo._Syaryo.SYRK_YMD.get());
+				String last_date = res.getString(Syaryo._Syaryo.LAST_UPD_DAYT.get());
+                
+				//DB
+				String db = "syaryo";
+				String company = res.getString(Syaryo._Syaryo.KSYCD.get());
+			
+				 //車両チェック
+		String name = kisy+"-"+type+"-"+kiban;
                 if(syaryo == null){
-                    notExistsCnt++;
-                    neMap.put(kisy+"-"+type+"-"+kiban, new SyaryoObject(kisy, type, kiban, category, "N", "N"));
+                    errpw.println(n+","+name+","+last_date+","+db+","+company+","+cid+","+komtrax+","+syareki_date+","+syareki);
                     continue;
                 }
                 
-                syaryo.category = category;
-                
-                if(nu.equals("U")){
-                    syaryo.addUsed(nounyu, "-1");
-                    syaryo.addOwner(customer, "-1", nounyu);
+                //Spec
+				syaryo.addSpec(komtrax, category);
+		//NU
+                if(nu.equals("N")){	
+				syaryo.addNew(db, company, nounyu, "-1", "-1", "-1");
+				syaryo.addOwner(db, company, nounyu, "-1", cid, "?");
+                }else if(nu.equals("U")){
+                    syaryo.addUsed(db, company, nounyu, "-1", "-1", "-1");
+                    syaryo.addOwner(db, company, nounyu, "-1", cid, "?");
                 }
                 
-                syaryo.addHistory(syareki, syareki_date);
-                eMap.put(syaryo.getName(), syaryo);
+				//History
+                syaryo.addHistory(syareki_date, db, company, syareki);
+				
+				//AddSyaryo
+				map.put(syaryo.getName(), syaryo);
                 
                 if (n % 10000 == 0) {
                     System.out.println("Syaryo Processed : " + n);
@@ -320,14 +338,8 @@ public class SyaryoHistoryCreate extends HiveDB {
             }
 
             System.out.println("Total Processed Syaryo = " + n);
-            System.out.println("Total Exists Syaryo = " + eMap.size());
-            System.out.println("Total Not Exists Syaryo = " + neMap.size());
             
-            //SetMap
-            syaryoHistoryMap.put("exist", eMap);
-            syaryoHistoryMap.put("notexist", neMap);
-            
-            return syaryoHistoryMap;
+            return map;
         } catch (SQLException sqlex) {
             sqlex.printStackTrace();
             return null;
