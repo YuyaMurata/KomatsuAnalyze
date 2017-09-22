@@ -7,8 +7,8 @@ package split;
 
 import db.HiveDB;
 import static db.HiveDB.getConnection;
-import field.EQP;
-import field.Syaryo;
+import db.field.EQP;
+import db.field.Syaryo;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;

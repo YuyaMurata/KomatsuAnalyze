@@ -1,0 +1,131 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package creator.source;
+
+import db.HiveDB;
+import db.field.EQP;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Map;
+import java.util.TreeMap;
+import obj.SyaryoTemplate;
+
+/**
+ *
+ * @author ZZ17390
+ */
+public class EQPSyaryoData {
+    //EQP_SYARYO DATA
+    public Map<String, SyaryoTemplate> addEQPSyaryo(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap, Map<String, SyaryoTemplate> noneType) {
+        Map<String, SyaryoTemplate> map = new TreeMap<>();
+        
+        try {
+            Statement stmt = con.createStatement();
+
+            //EQP_Syaryo
+            String sql = String.format("select %s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s from %s",
+                    EQP.Syaryo.KISY, EQP.Syaryo.TYP, EQP.Syaryo.KIBAN, //Unique ID
+                    EQP.Syaryo.MNF_DATE, //生産日
+                    EQP.Syaryo.PLANT, //生産工場(catalog)
+                    EQP.Syaryo.SHIP_DATE, //出荷日
+                    EQP.Syaryo.DELI_CTG, //中古納入区分
+                    EQP.Syaryo.LTST_DELI_DATE, //最新納入日
+                    EQP.Syaryo.SCRAP_DATE, //廃車日
+                    EQP.Syaryo.CUST_CD, //顧客コード
+                    EQP.Syaryo.CUST_NM, //顧客名
+                    EQP.Syaryo.DB, //代理店
+                    EQP.Syaryo.LTST_SMR_DATE, //最新SMR日付
+                    EQP.Syaryo.LTST_SMR, //SMR
+                    HiveDB.TABLE.EQP_SYARYO
+            );
+            System.out.println("Running: " + sql);
+
+            ResultSet res = stmt.executeQuery(sql);
+            
+            int n = 0;
+            while (res.next()) {
+                n++;
+                //Name
+                String kisy = res.getString(EQP.Syaryo.KISY.get());
+                String type = res.getString(EQP.Syaryo.TYP.get());
+                String kiban = res.getString(EQP.Syaryo.KIBAN.get());
+                
+                //車両
+                SyaryoTemplate syaryo = null;
+                if (type.equals("")) {
+                    syaryo = syaryoMap.get(noneType.get(kisy + "-" + kiban));
+                } else {
+                    syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
+                }
+
+                //Date
+                String mnf_date = res.getString(EQP.Syaryo.MNF_DATE.get());
+                String ship_date = res.getString(EQP.Syaryo.SHIP_DATE.get());
+                String used_date = res.getString(EQP.Syaryo.LTST_DELI_DATE.get());
+                String scrap_date = res.getString(EQP.Syaryo.SCRAP_DATE.get());
+                String smr_date = res.getString(EQP.Syaryo.LTST_SMR_DATE.get());
+                if(!smr_date.equals("")) smr_date = smr_date.substring(0, 8);
+
+                //Plant
+                String plant = res.getString(EQP.Syaryo.PLANT.get());
+
+                //Used
+                String used_flg = res.getString(EQP.Syaryo.DELI_CTG.get());
+
+                //Customer
+                String cid = res.getString(EQP.Syaryo.CUST_CD.get());
+                String cname = res.getString(EQP.Syaryo.CUST_NM.get());
+
+                //DB
+                String db = "eqp_syaryo";
+                String company = res.getString(EQP.Syaryo.DB.get());
+                if (company.length() > 1) {
+                    company = company.substring(0, 2);
+                } else {
+                    company = "??";
+                }
+
+                //SMR
+                String smr = res.getString(EQP.Syaryo.LTST_SMR.get());
+                
+                //車両チェック
+                String name = kisy + "-" + type + "-" + kiban;
+                if (syaryo == null) {
+                    errpw.println(n + "," + name + "," + smr_date + "," + db + "," + company + "," + cid + "," + cname + "," + plant
+                                    + "," + mnf_date + "," + ship_date + "," + scrap_date + "," + used_flg + "," + used_date + "," + smr);
+                    continue;
+                }
+
+                //Syaryo Template
+                syaryo.addBorn(mnf_date, plant);
+                syaryo.addDeploy(ship_date);
+                syaryo.addDead(db, company, scrap_date);
+                if (used_flg.equals("1")) {
+                    syaryo.addUsed(db, company, used_date, "-1", "-1", "-1");
+                    syaryo.addOwner(db, company, used_date, "-1", cid, cname);
+                }
+                syaryo.addSMR(db, company, smr_date, smr);
+                syaryo.addLast(db, company, smr_date);
+                
+                map.put(syaryo.getName(), syaryo);
+
+                if (n % 10000 == 0) {
+                    System.out.println("Syaryo Processed : " + n);
+                }
+            }
+
+            System.out.println("Total Created SyaryoTemplate = " + map.size());
+
+            return map;
+        } catch (SQLException sqlex) {
+            sqlex.printStackTrace();
+            return null;
+        }
+    }
+}

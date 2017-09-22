@@ -5,7 +5,16 @@
  */
 package db;
 
-import field.*;
+import db.field.Fields;
+import db.field.Order;
+import db.field.Work;
+import db.field.Customer;
+import db.field.EQP;
+import db.field.Gaichu;
+import db.field.Sell;
+import db.field.Komtrax;
+import db.field.Syaryo;
+import db.field.Service;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
