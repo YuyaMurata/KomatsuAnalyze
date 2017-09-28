@@ -74,11 +74,9 @@ public class ServiceData {
 
                 //車両
                 SyaryoTemplate syaryo = null;
-                if (type.equals("")) {
+                syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
+                if((syaryo == null) && (noneType.get(kisy + "-" + kiban) != null))
                     syaryo = syaryoMap.get(noneType.get(kisy + "-" + kiban));
-                } else {
-                    syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
-                }
 
                 //Service
                 String id = res.getString(Service._Service.SVCKR_KNRNO.get());   //作番
@@ -138,8 +136,6 @@ public class ServiceData {
                                     + "," + smr + "," + text + "," + comment);
                     continue;
                 }
-
-                syaryo.addLast(db, company, last_date);
                 
                 //Order
                 if (flg.equals("1")) {

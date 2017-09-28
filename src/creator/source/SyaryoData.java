@@ -64,11 +64,9 @@ public class SyaryoData {
 
                 //車両
                 SyaryoTemplate syaryo = null;
-                if (type.equals("")) {
+                syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
+                if((syaryo == null) && (noneType.get(kisy + "-" + kiban) != null))
                     syaryo = syaryoMap.get(noneType.get(kisy + "-" + kiban));
-                } else {
-                    syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
-                }
 
                 //車両マスタ
                 String category = res.getString(Syaryo._Syaryo.SEHN_BNR_CD_B.get());

@@ -58,11 +58,9 @@ public class EQPSyaryoData {
                 
                 //車両
                 SyaryoTemplate syaryo = null;
-                if (type.equals("")) {
+                syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
+                if((syaryo == null) && (noneType.get(kisy + "-" + kiban) != null))
                     syaryo = syaryoMap.get(noneType.get(kisy + "-" + kiban));
-                } else {
-                    syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
-                }
 
                 //Date
                 String mnf_date = res.getString(EQP.Syaryo.MNF_DATE.get());

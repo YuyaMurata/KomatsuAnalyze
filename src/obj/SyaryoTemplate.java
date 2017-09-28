@@ -107,7 +107,7 @@ public class SyaryoTemplate {
     }
 
     public void addLast(String db, String company, String date) {
-        date = date.replace("-", "").substring(0,8);
+        if(date.contains("-")) date = date.replace("-", "").substring(0,8);
         if(errorCheck(date)) return ;
         
         String str = "";
@@ -241,7 +241,46 @@ public class SyaryoTemplate {
         str += db+","+company+","+date+","+country;
         map.put("国", str);
     }
-
+    
+    //Komtrax
+     //GPS
+    public void addGPS(String db, String company, String date, String latitude, String longitude){
+        String check_date = date.replace("/", "").substring(0,8);
+        if(errorCheck(check_date)) return ;
+        
+        date = date.substring(0, 10)+" "+date.substring(11, date.length());
+        
+        String str = "";
+        if(map.get("GPS") == null)
+            str = "DB, 会社コード, 日付, 緯度, 経度 \n ";
+        else
+            str = map.get("GPS")+" \n ";
+        
+        str += db+","+company+","+date+","+latitude+","+longitude;
+        map.put("GPS", str);
+    }
+    
+     //SMR
+    public void addKMSMR(String db, String company, String date, String smr){
+        String check_date = date.replace("/", "").substring(0,8);
+        if(errorCheck(check_date)) return ;
+        
+        date = date.substring(0, 10)+" "+date.substring(11, date.length());
+        
+        String str = "";
+        if(map.get("KMSMR") == null)
+            str = "DB, 会社コード, 日付, SMR \n ";
+        else
+            str = map.get("KMSMR")+" \n ";
+        
+        str += db+","+company+","+date+","+smr;
+        map.put("KMSMR", str);
+    }
+    
+    public String get(String id){
+        return map.get(id);
+    }
+    
     public String getName() {
         return name;
     }

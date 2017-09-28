@@ -403,4 +403,85 @@ public class Sell {
             return this.text;
         }
     }
+
+    //Sell_Used
+    public enum Used implements Fields {
+        URI_STAFF("URI_STAFF"),
+        KNR_JUN_KBN("KNR_JUN_KBN"),
+        HANBAI_SYU("HANBAI_SYU"),
+        DEN_HAK_DAY("DEN_HAK_DAY"),
+        HAN_CRE_DAY("HAN_CRE_DAY"),
+        CO_KT_DAY("CO_KT_DAY"),
+        URI_DAY("URI_DAY"),
+        KISY("KISY"),
+        TYPE("TYPE"),
+        S_TYPE("S_TYPE"),
+        KIBAN("KIBAN"),
+        DAISU("DAISU"),
+        HT_ATT_KBN("HT_ATT_KBN"),
+        CO_CODE("CO_CODE"),
+        CO_CUST("CO_CUST"),
+        NO_CUST("NO_CUST"),
+        CO_KKU("CO_KKU"),
+        SZ("SZ"),
+        ST_ANS_DAY("ST_ANS_DAY"),
+        ST_KKU("ST_KKU"),
+        PO_SUM("PO_SUM"),
+        USH_SUM("USH_SUM"),
+        POS_HI_SUM("POS_HI_SUM"),
+        PO_ID("PO_ID"),
+        URI_TR_UN_SUM("URI_TR_UN_SUM"),
+        URI_SH_SUM("URI_SH_SUM"),
+        PRO_GK("PRO_GK"),
+        SH_COM("SH_COM"),
+        NO_UN("NO_UN"),
+        NO_SHIK("NO_SHIK"),
+        SHIP_SUM("SHIP_SUM"),
+        SHIP_UN_SUM("SHIP_UN_SUM"),
+        HAN_CH_SUM("HAN_CH_SUM"),
+        SH_KRI("SH_KRI"),
+        SP_UNS_SUM("SP_UNS_SUM"),
+        CNT_HR_SUM("CNT_HR_SUM"),
+        ARRI("ARRI"),
+        ARRI_RA("ARRI_RA"),
+        NK_YT_DAY("NK_YT_DAY"),
+        NY_KBN("NY_KBN"),
+        NNSK("NNSK"),
+        PO_HR_MTR("PO_HR_MTR"),
+        PO_MEMO("PO_MEMO"),
+        URI_CTRY("URI_CTRY"),
+        URI_AREA("URI_AREA"),
+        URI_USR_KBN("URI_USR_KBN"),
+        NO_CTRY("NO_CTRY"),
+        NO_AREA("NO_AREA"),
+        NO_USR_KBN("NO_USR_KBN"),
+        MAKER("MAKER"),
+        PRODUCT("PRODUCT"),
+        PRODUCT_KBN("PRODUCT_KBN"),
+        CLASS("CLASS"),
+        SIZE("SIZE"),
+        HK_PLACE("HK_PLACE"),
+        ZK_KIKN("ZK_KIKN"),
+        PO_STAFF("PO_STAFF"),
+        PO_TO("PO_TO"),
+        PO_USR_KBN("PO_USR_KBN"),
+        PO_SUM_DAY("PO_SUM_DAY"),
+        GV_HANBAI("GV_HANBAI"),
+        PROJECT("PROJECT"),
+        PRODUCT_CTRY("PRODUCT_CTRY"),
+        PO_TR_ST("PO_TR_ST"),
+        URI_TR_ST("URI_TR_ST"),
+        J_ID("J_ID"),
+        ID_NO("ID_NO");
+
+        private final String text;
+
+        private Used(final String text) {
+            this.text = text;
+        }
+
+        public String get() {
+            return this.text;
+        }
+    }
 }

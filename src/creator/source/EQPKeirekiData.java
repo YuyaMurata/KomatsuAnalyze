@@ -53,7 +53,13 @@ public class EQPKeirekiData {
                 String kisy = res.getString(EQP.Keireki.KISY.get());
                 String type = res.getString(EQP.Keireki.TYP.get());
                 String kiban = res.getString(EQP.Keireki.KIBAN.get());
-
+                
+                //車両
+                SyaryoTemplate syaryo = null;
+                syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
+                if((syaryo == null) && (noneType.get(kisy + "-" + kiban) != null))
+                    syaryo = syaryoMap.get(noneType.get(kisy + "-" + kiban));
+                
                 //Date
                 String date = res.getString(EQP.Keireki.HIS_DATE.get());
 
@@ -81,12 +87,6 @@ public class EQPKeirekiData {
 
                 //車両チェック
                 String name = kisy + "-" + type + "-" + kiban;
-                SyaryoTemplate syaryo = null;
-                if (type.equals("")) {
-                    syaryo = syaryoMap.get(noneType.get(kisy + "-" + kiban));
-                } else {
-                    syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
-                }
                 if (syaryo == null) {
                     errpw.println(n + "," + name + "," + date + "," + db + "," + company + "," + cid + "," + cname + "," + country + "," + id + "," + smr);
                     continue;

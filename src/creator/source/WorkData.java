@@ -32,8 +32,8 @@ public class WorkData {
             Statement stmt = con.createStatement();
 
             //Syaryo
-            String sql = String.format("select w.%s,w.%s,o.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, o.%s, o.%s, w.%s from %s w join %s o on (w.%s=o.%s and w.%s=o.%s)",
-                    Work.Info.KISY, Work.Info.TYP, Order._Order.KIBAN, //Unique ID
+            String sql = String.format("select o.%s,o.%s,o.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, o.%s, o.%s, w.%s from %s w join %s o on (w.%s=o.%s and w.%s=o.%s)",
+                    Order._Order.KISY, Order._Order.TYP, Order._Order.KIBAN, //Unique ID
                     Work.Info.KSYCD, //会社コード
                     Work.Info.SBN, //作番
                     Work.Info.SGYO_MSINO, //作業明細番号
@@ -72,11 +72,9 @@ public class WorkData {
 
                 //車両
                 SyaryoTemplate syaryo = null;
-                if (type.equals("")) {
+                syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
+                if((syaryo == null) && (noneType.get(kisy + "-" + kiban) != null))
                     syaryo = syaryoMap.get(noneType.get(kisy + "-" + kiban));
-                } else {
-                    syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
-                }
 
                 //Work
                 String sbn = res.getString(Work.Info.SBN.get()); //作番

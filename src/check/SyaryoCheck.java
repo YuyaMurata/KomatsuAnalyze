@@ -5,9 +5,20 @@
  */
 package check;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.stream.Collectors;
 import json.JsonToSyaryoObj;
+import json.JsonToSyaryoTemplate;
 import obj.SyaryoObject;
+import obj.SyaryoTemplate;
+import org.apache.hadoop.metrics2.sink.FileSink;
 
 /**
  *
@@ -15,34 +26,36 @@ import obj.SyaryoObject;
  */
 public class SyaryoCheck {
     private static final String filename = "syaryo_history_template.json";
+    private static final String path = "車両テンプレート";
     
     public static void main(String[] args) {
-        JsonToSyaryoObj obj = new JsonToSyaryoObj();
-        Map<String, SyaryoObject> syaryoMap = obj.reader(filename);
+        JsonToSyaryoTemplate obj = new JsonToSyaryoTemplate();
+        Map<String, SyaryoTemplate> syaryoMap = obj.reader(path+"\\"+filename);
+        
+        extractRule(syaryoMap);
         
         //Check 1:
-        MNF_SHIP_DateCheck(syaryoMap);
+        //randomSampling(10, syaryoMap);
     }
     
-    private static void MNF_SHIP_DateCheck(Map<String, SyaryoObject> syaryoMap){
-        int i = 0;
-        int j = 0;
-        for(SyaryoObject syaryo : syaryoMap.values()){
-            if(syaryo.getBorn().equals("") || syaryo.getDeploy().equals("")){
-                System.out.println(syaryo.getName()+": MNF_Date = "+syaryo.getBorn());
-                System.out.println(syaryo.getName()+": SHIP_Date = "+syaryo.getDeploy());
-                i++;
-            }
-            
-            if(syaryo.getDeploy().compareTo(syaryo.getBorn()) < 0){
-                System.out.println(syaryo.getName()+
-                        ": MNF_Date("+syaryo.getBorn()+
-                        ") > SHIP_Date("+syaryo.getDeploy()+")");
-                j++;
-            }
-        }
+    public static void extractRule(Map<String, SyaryoTemplate> map){
+        //check
+        String fname = path+"\\"+"syaryo_history_template_service2.json";
+        JsonToSyaryoTemplate obj = new JsonToSyaryoTemplate();
+        Map<String, SyaryoTemplate> syaryoMap = obj.reader(fname);
         
-        System.out.println("日付がどちらか空 : "+i);
-        System.out.println("生産、出荷が逆? : " +j);
+        System.out.println(syaryoMap.values().stream().max(Comparator.comparing(v -> v.get("最終更新日").split("\\n").length)).get().getName());
+    }
+    
+    public static void randomSampling(int size, Map<String, SyaryoTemplate> map){
+        Random rand = new Random();
+        List<String> sampling = rand.ints(0, map.size())
+                                    .distinct()
+                                    .limit(size)
+                                    .mapToObj(new ArrayList<String>(map.keySet())::get)
+                                    .collect(Collectors.toList());
+        
+        //File[] flist = (new File(path)).listFiles();
+        System.out.println("sampling:"+sampling);
     }
 }

@@ -6,10 +6,7 @@
 package creator.source;
 
 import db.HiveDB;
-import db.field.Order;
 import db.field.Sell;
-import db.field.Syaryo;
-import db.field.Work;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -66,10 +63,9 @@ public class SellsData {
 
                 //車両
                 SyaryoTemplate syaryo = null;
-                if (type.equals("")) {
+                syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
+                if ((syaryo == null) && (noneType.get(kisy + "-" + kiban) != null)) {
                     syaryo = syaryoMap.get(noneType.get(kisy + "-" + kiban));
-                } else {
-                    syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
                 }
 
                 //Sell
@@ -77,12 +73,12 @@ public class SellsData {
                 String price1 = res.getString(Sell._Sell.HM_URI_KN.get());   //表面価
                 String price2 = res.getString(Sell._Sell.RL_URI_KN.get());   //実質価
                 String price3 = res.getString(Sell._Sell.STD_SY_KKU.get());  //標準価
-                
+
                 //Customer
                 String cid = res.getString(Sell._Sell.NNSCD.get());   //納入先コード
                 String cname = res.getString(Sell._Sell.NNSK_NM_1.get());   //納入先名
-                String gyosyu = "?-"+res.getString(Sell._Sell.NOU_GYSCD.get());   //納入先業種
-               
+                String gyosyu = "?-" + res.getString(Sell._Sell.NOU_GYSCD.get());   //納入先業種
+
                 //Date
                 String date = res.getString(Sell._Sell.NOU_YTI_DAY.get()); //納入年月
                 String last_date = res.getString(Sell._Sell.LAST_UPD_DAYT.get());
@@ -90,12 +86,12 @@ public class SellsData {
                 //DB
                 String db = "sell";
                 String company = res.getString(Sell._Sell.KSYCD.get());   //会社コード
-                
+
                 //車両チェック
                 String name = kisy + "-" + type + "-" + kiban;
                 if (syaryo == null) {
-                    errpw.println(n + "," + name + "," + last_date + "," + db + "," + company + "," + gyosyu + "," + cid + "," + cname 
-                                    + "," + date + "," + nu_kbn + "," + price1 + "," + price2 + "," + price3);
+                    errpw.println(n + "," + name + "," + last_date + "," + db + "," + company + "," + gyosyu + "," + cid + "," + cname
+                            + "," + date + "," + nu_kbn + "," + price1 + "," + price2 + "," + price3);
                     continue;
                 }
 
@@ -103,15 +99,125 @@ public class SellsData {
                 syaryo.addLast(db, company, last_date);
 
                 //Sell
-                if(nu_kbn.equals("N")){
+                if (nu_kbn.equals("N")) {
                     syaryo.addNew(db, company, date, price3, price1, price2);
                     syaryo.addOwner(db, company, date, gyosyu, cid, cname);
-                }else if(nu_kbn.equals("U")){
+                } else if (nu_kbn.equals("U")) {
                     syaryo.addUsed(db, company, date, price3, price1, price2);
                     syaryo.addOwner(db, company, date, gyosyu, cid, cname);
-                }else
+                } else {
                     continue;
+                }
+
+                //AddSyaryo
+                map.put(syaryo.getName(), syaryo);
+
+                if (n % 10000 == 0) {
+                    System.out.println("Syaryo Processed : " + n);
+                }
+            }
+
+            System.out.println("Total Processed Syaryo = " + n);
+            System.out.println("Total Update Syaryo = " + map.size());
+
+            return map;
+        } catch (SQLException sqlex) {
+            sqlex.printStackTrace();
+            return null;
+        }
+    }
+
+    //SELL_USED DATA
+    public Map<String, SyaryoTemplate> addUsed(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap, Map<String, SyaryoTemplate> noneType) {
+        Map map = new TreeMap();
+
+        try {
+            Statement stmt = con.createStatement();
+
+            //Syaryo
+            String sql = String.format("select %s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s from %s where %s and %s and %s and %s",
+                    Sell.Used.KISY, Sell.Used.TYPE, Sell.Used.KIBAN, //Unique ID
+                    Sell.Used.URI_DAY, //売上日
+                    Sell.Used.CO_CODE, //受注コード
+                    Sell.Used.CO_CUST, //受注先名
+                    Sell.Used.NO_CUST, //納入先名
+                    Sell.Used.ST_KKU, //査定価格
+                    Sell.Used.CO_KKU, //受注価格
+                    Sell.Used.HAN_CH_SUM, //販直費
+                    Sell.Used.ST_ANS_DAY, //査定回答日
+                    Sell.Used.DEN_HAK_DAY, //伝票発行日
+                    Sell.Used.PO_HR_MTR, //SMR
+                    Sell.Used.PO_TO, //仕入先
+                    Sell.Used.PO_SUM_DAY, //仕入計上日
+                    Sell.Used.NO_CTRY, //納品先国名
+                    HiveDB.TABLE.SELL_USED
+            );
+            System.out.println("Running: " + sql);
+
+            ResultSet res = stmt.executeQuery(sql);
+
+            int n = 0;
+            while (res.next()) {
+                n++;
+
+                //Name
+                String kisy = res.getString(Sell.Used.KISY.get());
+                String type = res.getString(Sell.Used.TYPE.get());
+                String kiban = res.getString(Sell.Used.KIBAN.get());
+
+                //車両
+                SyaryoTemplate syaryo = null;
+                syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
+                if ((syaryo == null) && (noneType.get(kisy + "-" + kiban) != null)) {
+                    syaryo = syaryoMap.get(noneType.get(kisy + "-" + kiban));
+                }
+                //Sell
+                String satei_price = res.getString(Sell.Used.ST_KKU.get()); //査定価格
+                String price = res.getString(Sell.Used.CO_KKU.get()); //受注価格
+                String cost = res.getString(Sell.Used.HAN_CH_SUM.get()); //販直費
                 
+                //Customer
+                String jid = res.getString(Sell.Used.CO_CODE.get()); //受注コード
+                String jname = res.getString(Sell.Used.CO_CUST.get()); //受注先名
+                String nctry_name = res.getString(Sell.Used.NO_CTRY.get()); //納品先国名
+                String nname = res.getString(Sell.Used.NO_CUST.get()); //納入先名
+                String sname = res.getString(Sell.Used.PO_TO.get()); //仕入先名
+                
+                //Date
+                String reg_date = res.getString(Sell.Used.DEN_HAK_DAY.get()); //伝票発行日
+                String date = res.getString(Sell.Used.URI_DAY.get()); //売上日
+                String satei_date = res.getString(Sell.Used.ST_ANS_DAY.get()); //査定回答日
+                String shire_date = res.getString(Sell.Used.PO_SUM_DAY.get()); //仕入計上日
+                
+                //SMR
+                String smr = res.getString(Sell.Used.PO_HR_MTR.get()); //SMR
+
+                //DB
+                String db = "sell_used";
+                String company = "?";   //会社コード
+
+                //車両チェック
+                String name = kisy + "-" + type + "-" + kiban;
+                if (syaryo == null) {
+                    errpw.println(n + "," + name + "," + reg_date + "," + db + "," + company + "," + "?-?-"+ nctry_name + "," + "-1" + "," + nname
+                            + "," + jid + "," + jname + "," + shire_date + "," + sname + "," + satei_date + "," + satei_price + "," + date + "," + price + "," + cost
+                             + "," + smr);
+                    continue;
+                }
+                
+                //Used
+                syaryo.addUsed(db, company, date, price, satei_price, (Integer.valueOf(price) - Integer.valueOf(cost)));
+                
+                //Customer
+                syaryo.addOwner(db, company, date, "?-?"+nctry_name, "-1", nname);
+                syaryo.addOwner(db, company, shire_date, "?-?", "-1", sname);
+                
+                //SMR
+                syaryo.addSMR(db, company, shire_date, smr);
+                
+                //Last
+                syaryo.addLast(db, company, reg_date);
+
                 //AddSyaryo
                 map.put(syaryo.getName(), syaryo);
 
