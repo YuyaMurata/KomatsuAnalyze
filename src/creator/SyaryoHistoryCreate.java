@@ -102,9 +102,9 @@ public class SyaryoHistoryCreate extends HiveDB {
         pw.close();*/
         
         //中古売上
-        PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_sellused_error.csv")))));
+        PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_sell_used_error.csv")))));
         syaryoMap = new SellsData().addUsed(con, pw, syaryoTemplate, noneTypeSearch);
-        json.write(FILENAME.replace(".json", "_sellused.json"), syaryoMap);
+        json.write(FILENAME.replace(".json", "_sell_used.json"), syaryoMap);
         pw.close();
         
         //Komtrax

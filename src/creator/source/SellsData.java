@@ -126,7 +126,7 @@ public class SellsData {
             return null;
         }
     }
-
+    
     //SELL_USED DATA
     public Map<String, SyaryoTemplate> addUsed(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap, Map<String, SyaryoTemplate> noneType) {
         Map map = new TreeMap();
@@ -135,7 +135,7 @@ public class SellsData {
             Statement stmt = con.createStatement();
 
             //Syaryo
-            String sql = String.format("select %s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s from %s where %s and %s and %s and %s",
+            String sql = String.format("select %s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s from %s",
                     Sell.Used.KISY, Sell.Used.TYPE, Sell.Used.KIBAN, //Unique ID
                     Sell.Used.URI_DAY, //売上日
                     Sell.Used.CO_CODE, //受注コード
@@ -171,10 +171,17 @@ public class SellsData {
                 if ((syaryo == null) && (noneType.get(kisy + "-" + kiban) != null)) {
                     syaryo = syaryoMap.get(noneType.get(kisy + "-" + kiban));
                 }
+                
                 //Sell
                 String satei_price = res.getString(Sell.Used.ST_KKU.get()); //査定価格
                 String price = res.getString(Sell.Used.CO_KKU.get()); //受注価格
                 String cost = res.getString(Sell.Used.HAN_CH_SUM.get()); //販直費
+                if(satei_price.contains("_"))
+                    satei_price = satei_price.replace("_", "");
+                if(price.contains("_"))
+                    price = price.replace("_", "");
+                if(cost.contains("_"))
+                    cost = cost.replace("_", "");
                 
                 //Customer
                 String jid = res.getString(Sell.Used.CO_CODE.get()); //受注コード
@@ -184,10 +191,15 @@ public class SellsData {
                 String sname = res.getString(Sell.Used.PO_TO.get()); //仕入先名
                 
                 //Date
-                String reg_date = res.getString(Sell.Used.DEN_HAK_DAY.get()); //伝票発行日
-                String date = res.getString(Sell.Used.URI_DAY.get()); //売上日
-                String satei_date = res.getString(Sell.Used.ST_ANS_DAY.get()); //査定回答日
+                String reg_date = res.getString(Sell.Used.DEN_HAK_DAY.get()).replace("/", ""); //伝票発行日
+                String date = res.getString(Sell.Used.URI_DAY.get()).replace("/", ""); //売上日
+                String satei_date = res.getString(Sell.Used.ST_ANS_DAY.get()).replace("/", ""); //査定回答日
                 String shire_date = res.getString(Sell.Used.PO_SUM_DAY.get()); //仕入計上日
+                try{ //そのうち修正
+                    shire_date = shire_date.replace("/", "");
+                }catch(Exception e){
+                    shire_date = "-1";
+                }
                 
                 //SMR
                 String smr = res.getString(Sell.Used.PO_HR_MTR.get()); //SMR
@@ -206,7 +218,7 @@ public class SellsData {
                 }
                 
                 //Used
-                syaryo.addUsed(db, company, date, price, satei_price, (Integer.valueOf(price) - Integer.valueOf(cost)));
+                syaryo.addUsed(db, company, date, price, satei_price, String.valueOf(Integer.valueOf(price) - Integer.valueOf(cost)));
                 
                 //Customer
                 syaryo.addOwner(db, company, date, "?-?"+nctry_name, "-1", nname);
