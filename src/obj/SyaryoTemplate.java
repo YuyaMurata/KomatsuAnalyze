@@ -277,6 +277,57 @@ public class SyaryoTemplate {
         map.put("KMSMR", str);
     }
     
+    //ENGINE
+    public void addKMEngine(String db, String company, String date, String engine){
+        String check_date = date.replace("/", "").substring(0,8);
+        if(errorCheck(check_date)) return ;
+        
+        date = date.substring(0, 10)+" "+date.substring(11, date.length());
+        
+        String str = "";
+        if(map.get("KMENGINE") == null)
+            str = "DB, 会社コード, 日付, エンジンスロットル \n ";
+        else
+            str = map.get("KMENGINE")+" \n ";
+        
+        str += db+","+company+","+date+","+engine;
+        map.put("KMENGINE", str);
+    }
+    
+    //ERROR
+    public void addKMError(String db, String company, String date, String error_code, String error_cnt){
+        String check_date = date.replace("/", "").substring(0,8);
+        if(errorCheck(check_date)) return ;
+        
+        date = date.substring(0, 10)+" "+date.substring(11, date.length());
+        
+        String str = "";
+        if(map.get("KMERROR") == null)
+            str = "DB, 会社コード, 日付, エラーコード, カウント \n ";
+        else
+            str = map.get("KMERROR")+" \n ";
+        
+        str += db+","+company+","+date+","+error_code+","+error_cnt;
+        map.put("KMERROR", str);
+    }
+    
+    //CAUTION
+    public void addKMCaution(String db, String company, String date, String caution_unit, String caution_map, String caution_cnt){
+        String check_date = date.replace("/", "").substring(0,8);
+        if(errorCheck(check_date)) return ;
+        
+        date = date.substring(0, 10)+" "+date.substring(11, date.length());
+        
+        String str = "";
+        if(map.get("KMCAUTION") == null)
+            str = "DB, 会社コード, 日付, エラーコード, カウント \n ";
+        else
+            str = map.get("KMCAUTION")+" \n ";
+        
+        str += db+","+company+","+date+","+caution_unit+","+caution_map+","+caution_cnt;
+        map.put("KMCAUTION", str);
+    }
+    
     public String get(String id){
         return map.get(id);
     }

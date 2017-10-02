@@ -7,6 +7,7 @@ package obj;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -16,239 +17,256 @@ import java.util.TreeMap;
  */
 public class SyaryoObject {
 
-	public String name;
-	public String category;
-	public int komtrax = 0;
-	public Map<String, Object> map = new LinkedHashMap();
+    public String name;
+    public Map<String, Object> map = new LinkedHashMap();
 
-	public SyaryoObject(String kisy, String type, String kiban, String category, String kmt, String kmtp) {
-		this.name = kisy + "-" + type + "-" + kiban;
+    public SyaryoObject(String name) {
+        this.name = name;
+    }
 
-		if (kmtp.equals("Y")) {
-			komtrax = 2;
-		} else if (kmt.equals("Y")) {
-			komtrax = 1;
-		} else if (kmtp.equals("N") && kmt.equals("N")) {
-			komtrax = -1;
-		}
+    public void addBorn(String date) {
+        map.put("生産", date);
+    }
 
-		this.category = category;
-	}
+    public void addDeploy(String date) {
+        map.put("出荷", date);
+    }
 
-	public void addBorn(String date) {
-		map.put("生産", date);
-	}
+    public void addDead(String date) {
+        map.put("廃車", date);
+    }
 
-	public void addDeploy(String date) {
-		map.put("出荷", date);
-	}
+    public void addNew(String date, String cid, List price, String source) {
+        TreeMap newmap = new TreeMap();
+        map.put("新車", newmap.put(date, new Object[]{cid, price, source}));
+    }
 
-	public void addNew(String date) {
-		map.put("新車", date);
-	}
+    public void addSpec(String category, String komtrax, String source) {
+        map.put("仕様", new Object[]{category, komtrax, source});
+    }
 
-	public void addPrice(String price) {
-		map.put("価格", price);
-	}
+    public void addUsed(String date, String cid, List price, String source) {
+        TreeMap usedmap = (TreeMap) map.get("中古");
+        if (usedmap == null) {
+            usedmap = new TreeMap();
+        }
+        map.put("中古", usedmap.put(date_no("中古", date), new Object[]{cid, price, source}));
+    }
+    
+    public void addCountry(String date, String country) {
+        TreeMap contmap = (TreeMap) map.get("国");
+        if (contmap == null) {
+            contmap = new TreeMap();
+        }
+        map.put("国", contmap.put(date_no("国", date), country));
+    }
 
-	public void addUsed(String date, String price) {
-		Map usedMap = (Map) map.get("中古");
-		if (usedMap == null) {
-			usedMap = new TreeMap();
-		}
-		usedMap.put(date, price);
-		map.put("中古", usedMap);
-	}
+    public void addLast(String date, String source) {
+        TreeMap lastmap = (TreeMap) map.get("最終更新日");
+        if (lastmap == null) {
+            lastmap = new TreeMap();
+        }
+        map.put("最終更新日", lastmap.put(date_no("最終更新日", date), source));
+    }
 
-	public void addDead(String date) {
-		map.put("廃車", date);
-	}
+    public void addOwner(String date, String gyosyu, String id, String name, String source) {
+        TreeMap ownmap = (TreeMap) map.get("顧客");
+        if (ownmap == null) {
+            ownmap = new TreeMap();
+        }
+        map.put("顧客", ownmap.put(date_no("顧客", date), new String[]{gyosyu, id, name, source}));
+    }
 
-	public void addLast(String date) {
-		map.put("最終更新日", date.substring(0, 8));
-	}
+    public void addSMR(String date, String smr, String source) {
+        TreeMap smrmap = (TreeMap) map.get("SMR");
+        if (smrmap == null) {
+            smrmap = new TreeMap();
+        }
+        map.put("SMR", smrmap.put(date_no("SMR", date), new String[]{smr, source}));
+    }
 
-	public void addOwner(String id, String name, String date) {
-		Map ownerMap = (Map) map.get("顧客");
-		if (ownerMap == null) {
-			ownerMap = new TreeMap();
-		}
+    public void addHistory(String date, String id, List list,String source) {
+        TreeMap histmap = (TreeMap) map.get("経歴");
+        if (histmap == null) {
+            histmap = new TreeMap();
+        }
+        map.put("経歴", histmap.put(date_no("経歴", date), new Object[]{id, list, source}));
+    }
 
-		Map idname = (Map) ownerMap.get(date);
-		if (idname == null) {
-			idname = new HashMap();
-		}
-		idname.put(id.replace(".", "_"), name);
-		ownerMap.put(date, idname);
-		map.put("顧客", ownerMap);
-	}
+    public void addService(String date, String id, List list, String source) {
+        TreeMap histmap = (TreeMap) map.get("サービス");
+        if (histmap == null) {
+            histmap = new TreeMap();
+        }
+        map.put("サービス", histmap.put(date_no("サービス", date), new Object[]{id, list, source}));
+    }
 
-	public void addMirage(String date, String distance) {
-		Map mirageMap = (Map) map.get("走行距離");
-		if (mirageMap == null) {
-			mirageMap = new TreeMap();
-		}
-		if (distance.equals("")) {
-			distance = "0";
-		}
-		if (date.length() > 8) {
-			date = date.substring(0, 8);
-		}
-		mirageMap.put(date, distance);
-		map.put("走行距離", mirageMap);
-	}
+    public void addWork(String date, String id, List list, String source) {
+        TreeMap histmap = (TreeMap) map.get("作業");
+        if (histmap == null) {
+            histmap = new TreeMap();
+        }
+        map.put("作業", histmap.put(date_no("作業", date), new Object[]{id, list, source}));
+    }
 
-	public void addSMR(String date, String smr) {
-		Map smrMap = (Map) map.get("SMR");
-		if (smrMap == null) {
-			smrMap = new TreeMap();
-		}
-		if (smr.equals("")) {
-			smr = "0";
-		}
-		if (date.length() > 8) {
-			date = date.substring(0, 8);
-		}
-		smrMap.put(date, smr);
-		map.put("SMR", smrMap);
-	}
+    public void addParts(String date, String id, List list, String source) {
+        TreeMap histmap = (TreeMap) map.get("部品");
+        if (histmap == null) {
+            histmap = new TreeMap();
+        }
+        map.put("部品", histmap.put(date_no("部品", date), new Object[]{id, list, source}));
+    }
 
-	public void addHistory(String id, String date) {
-		Map historyMap = (Map) map.get("経歴");
-		if (historyMap == null) {
-			historyMap = new TreeMap();
-		} else {
-			int i = 1;
-			String tmp = date;
-			while (historyMap.get(tmp) != null) {
-				tmp = date;
-				tmp = tmp + "-" + i;
-				i++;
-			}
-			date = tmp;
+    public void addGPS(String date, String id, String source) {
+        TreeMap histmap = (TreeMap) map.get("GPS");
+        if (histmap == null) {
+            histmap = new TreeMap();
+        }
+        map.put("GPS", histmap.put(date_no("GPS", date), new String[]{id, source}));
+    }
+    
+    public void addError(String date, String id, List list, String source) {
+        TreeMap histmap = (TreeMap) map.get("エラー");
+        if (histmap == null) {
+            histmap = new TreeMap();
+        }
+        map.put("エラー", histmap.put(date_no("エラー", date), new Object[]{id, list, source}));
+    }
+    
+    public void addCaution(String date, String id, List list, String source) {
+        TreeMap histmap = (TreeMap) map.get("警告");
+        if (histmap == null) {
+            histmap = new TreeMap();
+        }
+        map.put("警告", histmap.put(date_no("警告", date), new Object[]{id, list, source}));
+    }
+    
+    public void addEngine(String date, String id, List list, String source) {
+        TreeMap histmap = (TreeMap) map.get("エンジン");
+        if (histmap == null) {
+            histmap = new TreeMap();
+        }
+        map.put("エンジン", histmap.put(date_no("エンジン", date), new Object[]{id, list, source}));
+    }
 
-			//System.out.println(id+" : "+date);
-		}
+    public String getName() {
+        return name;
+    }
 
-		historyMap.put(date, id);
+    public String getName2() {
+        return name.split("-")[0] + "-" + name.split("-")[2];
+    }
 
-		map.put("経歴", historyMap);
-	}
+    public String getType() {
+        return name.split("-")[1];
+    }
 
-	public void addCountry(String country, String date) {
-		Map countryMap = (Map) map.get("国");
-		if (countryMap == null) {
-			countryMap = new HashMap();
-		}
-		countryMap.put(date, country);
-		map.put("国", countryMap);
-	}
+    public String getBorn() {
+        return (String) map.get("生産");
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getDeploy() {
+        return (String) map.get("出荷");
+    }
 
-	public String getName2() {
-		return name.split("-")[0] + "-" + name.split("-")[2];
-	}
-        
-        public String getType() {
-		return name.split("-")[1];
-	}
+    public String getNew() {
+        return (String) map.get("新車");
+    }
 
-	public Integer getKomtrax() {
-		return komtrax;
-	}
+    public Map getUsed() {
+        return (Map) map.get("中古");
+    }
 
-	public String getBorn() {
-		return (String) map.get("生産");
-	}
-        
-        public String getDeploy() {
-		return (String) map.get("出荷");
-	}
+    public String getDead() {
+        return (String) map.get("廃車");
+    }
 
-	public String getNew() {
-		return (String) map.get("新車");
-	}
+    public String getLast() {
+        return (String) map.get("最終更新日");
+    }
 
-	public Map getUsed() {
-		return (Map) map.get("中古");
-	}
+    public Map getMirage() {
+        return (Map) map.get("走行距離");
+    }
 
-	public String getDead() {
-		return (String) map.get("廃車");
-	}
+    public Map getSMR() {
+        return (Map) map.get("SMR");
+    }
 
-	public String getLast() {
-		return (String) map.get("最終更新日");
-	}
+    public Map getOwner() {
+        return (Map) map.get("顧客");
+    }
 
-	public Map getMirage() {
-		return (Map) map.get("走行距離");
-	}
+    public Map getHistory() {
+        return (Map) map.get("経歴");
+    }
 
-	public Map getSMR() {
-		return (Map) map.get("SMR");
-	}
+    public String getPrice() {
+        return (String) map.get("価格");
+    }
 
-	public Map getOwner() {
-		return (Map) map.get("顧客");
-	}
+    public Map getCountry() {
+        return (Map) map.get("国");
+    }
 
-	public Map getHistory() {
-		return (Map) map.get("経歴");
-	}
-        
-        public String getPrice() {
-		return (String) map.get("価格");
-	}
-        
-	public Map getCountry() {
-		return (Map) map.get("国");
-	}
+    public String date_no(String key, String date) {
+        Map oldMap = (Map) map.get(key);
+        if (oldMap == null) {
+            return date;
+        } else {
+            if (oldMap.get(date) == null) {
+                return date;
+            } else {
+                int i = 1;
+                while (oldMap.get(date + "#" + i) != null) {
+                    i++;
+                }
+                return date + "#" + i;
+            }
+        }
+    }
 
-	public String dump() {
-		StringBuilder sb = new StringBuilder();
+    public String dump() {
+        StringBuilder sb = new StringBuilder();
 
-		sb.append("name:" + getName() + "\n");
-		sb.append("category:" + "" + "\n");
-		sb.append("komtrax:" + getKomtrax() + "\n");
+        sb.append("name:" + getName() + "\n");
+        sb.append("category:" + "" + "\n");
+        sb.append("komtrax:" + getKomtrax() + "\n");
 
-		sb.append("history:");
-		if (getBorn() != null) {
-			sb.append("\n\t" + "製造:" + getBorn());
-		}
+        sb.append("history:");
+        if (getBorn() != null) {
+            sb.append("\n\t" + "製造:" + getBorn());
+        }
 
-		if (getNew() != null) {
-			sb.append("\n\t" + "新車:" + getNew());
-		}
+        if (getNew() != null) {
+            sb.append("\n\t" + "新車:" + getNew());
+        }
 
-		if (getUsed() != null) {
-			sb.append("\n\t" + "中古:" + getUsed());
-		}
+        if (getUsed() != null) {
+            sb.append("\n\t" + "中古:" + getUsed());
+        }
 
-		if (getDead() != null) {
-			sb.append("\n\t" + "廃車:" + getDead());
-		}
+        if (getDead() != null) {
+            sb.append("\n\t" + "廃車:" + getDead());
+        }
 
-		if (getLast() != null) {
-			sb.append("\n\t" + "最終更新日:"+getLast());
-		}
+        if (getLast() != null) {
+            sb.append("\n\t" + "最終更新日:" + getLast());
+        }
 
-		//Owner
-		sb.append("\nQwner:\n");
-		sb.append("\t" + getOwner() + "\n");
-                
-                sb.append("History:\n");
-		if (getHistory() != null) {
-			sb.append(getHistory() + "\n");
-		}
+        //Owner
+        sb.append("\nQwner:\n");
+        sb.append("\t" + getOwner() + "\n");
 
-		if (getCountry() != null) {
-			sb.append(getCountry() + "\n");
-		}
+        sb.append("History:\n");
+        if (getHistory() != null) {
+            sb.append(getHistory() + "\n");
+        }
 
-		return sb.toString();
-	}
+        if (getCountry() != null) {
+            sb.append(getCountry() + "\n");
+        }
+
+        return sb.toString();
+    }
 }

@@ -7,11 +7,7 @@ package creator;
 
 import creator.source.*;
 import db.HiveDB;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
@@ -99,16 +95,16 @@ public class SyaryoHistoryCreate extends HiveDB {
         PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_sell_error.csv")))));
         syaryoMap = new SellsData().addSell(con, pw, syaryoTemplate, noneTypeSearch);
         json.write(FILENAME.replace(".json", "_sell.json"), syaryoMap);
-        pw.close();*/
+        pw.close();
         
         //中古売上
         PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_sell_used_error.csv")))));
         syaryoMap = new SellsData().addUsed(con, pw, syaryoTemplate, noneTypeSearch);
         json.write(FILENAME.replace(".json", "_sell_used.json"), syaryoMap);
-        pw.close();
+        pw.close();*/
         
         //Komtrax
-        //new KomtraxData().addKomtrax(FILENAME, con, syaryoTemplate, noneTypeSearch);
+        new KomtraxData().addKomtrax(FILENAME, con, syaryoTemplate, noneTypeSearch);
         
     }
 }
