@@ -62,4 +62,16 @@ public class CreateSyaryoTemplate {
             return null;
         }
     }
+    
+    //KOMPAS車両に絞込み
+    public Map<String, SyaryoTemplate> mergeTemplate(Map<String, SyaryoTemplate> eqp_syaryo, Map<String, SyaryoTemplate> kom_syaryo) {
+        TreeMap<String, SyaryoTemplate> syaryoMap = new TreeMap();
+        
+        for(String name : eqp_syaryo.keySet()){
+            if(kom_syaryo.get(name) != null)
+                syaryoMap.put(name, new SyaryoTemplate(name));
+        }
+        
+        return syaryoMap;
+    }
 }

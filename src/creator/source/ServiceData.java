@@ -25,7 +25,7 @@ import obj.SyaryoTemplate;
 public class ServiceData {
 
     //SERVICE DATA
-    public Map<String, SyaryoTemplate> addService(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap, Map<String, SyaryoTemplate> noneType) {
+    public Map<String, SyaryoTemplate> addService(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap, Map<String, SyaryoTemplate> noneType, String sp1, String sp2) {
         Map map = new TreeMap();
 
         try {
@@ -56,14 +56,15 @@ public class ServiceData {
                     Service._Service.SVC_MTR, //サービスメータ
                     Service._Service.LAST_UPD_DAYT,
                     HiveDB.TABLE.SERVICE,
-                    Service._Service.HASSEI_KBN + "=1",
-                    Service._Service.ODR_KBN + "!=2"
+                    Service._Service.HASSEI_KBN + sp1,
+                    Service._Service.ODR_KBN + sp2
             );
             System.out.println("Running: " + sql);
 
             ResultSet res = stmt.executeQuery(sql);
 
             int n = 0;
+            int m = 0;
             while (res.next()) {
                 n++;
 
@@ -73,11 +74,15 @@ public class ServiceData {
                 String kiban = res.getString(Syaryo._Syaryo.KIBAN.get());
 
                 //車両
-                SyaryoTemplate syaryo = null;
-                syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
-                if((syaryo == null) && (noneType.get(kisy + "-" + kiban) != null))
-                    syaryo = syaryoMap.get(noneType.get(kisy + "-" + kiban));
-
+                SyaryoTemplate syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
+                if(syaryo != null){
+                    syaryo = new SyaryoTemplate(syaryo.getName());
+                    if(map.get(syaryo.name) != null) syaryo = (SyaryoTemplate) map.get(syaryo.name);
+                }else if((noneType.get(kisy + "-" + kiban) != null)){
+                    syaryo = new SyaryoTemplate(syaryoMap.get(noneType.get(kisy + "-" + kiban)).getName());
+                    if(map.get(syaryo.name) != null) syaryo = (SyaryoTemplate) map.get(syaryo.name);
+                }
+                
                 //Service
                 String id = res.getString(Service._Service.SVCKR_KNRNO.get());   //作番
                 String text = res.getString(Service._Service.GAIYO.get());     //概要
@@ -137,18 +142,19 @@ public class ServiceData {
                     continue;
                 }
                 
+                m++;
+                
                 //Order
                 if (flg.equals("1")) {
                     //History
-                    syaryo.addHistory(date, db, company, id);
+                    syaryo.addHistory(db, company, date, id);
                     syaryo.addOrder(db, company, "-1", "-1", "-1", date, id, odr_kbn, "-1", "?", "?", "?", "?", cid, cname, "?", "-1", "-1", kosu, "-1", price1, price2, price3, text);
                 }
-
-                //Work
-                syaryo.addWork(db, company, date, id, sg_mid, sg_keitai_id, "?", sg_id, sg_name, "-1", suryo, price, "-1", "-1", "-1", "-1", "-1", kosu);
-
+                
                 //Parts
-                if (odr_kbn.equals("2")) {
+                if (odr_kbn.equals("1")) {
+                    syaryo.addWork(db, company, date, id, sg_mid, sg_keitai_id, "?", sg_id, sg_name, "-1", suryo, price, "-1", "-1", "-1", "-1", "-1", kosu);
+                }else if (odr_kbn.equals("2")) {
                     syaryo.addParts(db, company, date, id, sg_mid, parts_id, parts_name, suryo, "-1", price);
                 }
 
@@ -169,7 +175,7 @@ public class ServiceData {
                 }
             }
 
-            System.out.println("Total Processed Syaryo = " + n);
+            System.out.println("Total Processed Syaryo = "+  m + "/" + n);
             System.out.println("Total Update Syaryo = " + map.size());
 
             return map;

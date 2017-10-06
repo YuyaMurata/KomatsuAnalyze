@@ -29,9 +29,6 @@ public class JsonToSyaryoTemplate {
 
             Gson gson = new Gson();
             Map<String, SyaryoTemplate> syaryoMap = gson.fromJson(reader, type);
-            /*for(SyaryoObject obj : syaryoMap.values()){
-                System.out.println(obj.dump());
-            }*/
             
             return syaryoMap;
         }catch(IOException e){

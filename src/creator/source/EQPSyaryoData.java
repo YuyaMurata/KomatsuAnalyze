@@ -49,6 +49,7 @@ public class EQPSyaryoData {
             ResultSet res = stmt.executeQuery(sql);
             
             int n = 0;
+            int m = 0;
             while (res.next()) {
                 n++;
                 //Name
@@ -57,10 +58,14 @@ public class EQPSyaryoData {
                 String kiban = res.getString(EQP.Syaryo.KIBAN.get());
                 
                 //車両
-                SyaryoTemplate syaryo = null;
-                syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
-                if((syaryo == null) && (noneType.get(kisy + "-" + kiban) != null))
-                    syaryo = syaryoMap.get(noneType.get(kisy + "-" + kiban));
+                SyaryoTemplate syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
+                if(syaryo != null){
+                    syaryo = new SyaryoTemplate(syaryo.getName());
+                    if(map.get(syaryo.name) != null) syaryo = (SyaryoTemplate) map.get(syaryo.name);
+                }else if((noneType.get(kisy + "-" + kiban) != null)){
+                    syaryo = new SyaryoTemplate(syaryoMap.get(noneType.get(kisy + "-" + kiban)).getName());
+                    if(map.get(syaryo.name) != null) syaryo = (SyaryoTemplate) map.get(syaryo.name);
+                }
 
                 //Date
                 String mnf_date = res.getString(EQP.Syaryo.MNF_DATE.get());
@@ -99,6 +104,7 @@ public class EQPSyaryoData {
                                     + "," + mnf_date + "," + ship_date + "," + scrap_date + "," + used_flg + "," + used_date + "," + smr);
                     continue;
                 }
+                m++;
 
                 //Syaryo Template
                 syaryo.addBorn(mnf_date, plant);
@@ -118,6 +124,7 @@ public class EQPSyaryoData {
                 }
             }
 
+            System.out.println("Total Processed Syaryo = "+  m + "/" + n);
             System.out.println("Total Created SyaryoTemplate = " + map.size());
 
             return map;

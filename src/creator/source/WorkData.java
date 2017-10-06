@@ -62,6 +62,7 @@ public class WorkData {
             ResultSet res = stmt.executeQuery(sql);
 
             int n = 0;
+            int m = 0;
             while (res.next()) {
                 n++;
 
@@ -71,10 +72,14 @@ public class WorkData {
                 String kiban = res.getString(Syaryo._Syaryo.KIBAN.get());
 
                 //車両
-                SyaryoTemplate syaryo = null;
-                syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
-                if((syaryo == null) && (noneType.get(kisy + "-" + kiban) != null))
-                    syaryo = syaryoMap.get(noneType.get(kisy + "-" + kiban));
+                SyaryoTemplate syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
+                if(syaryo != null){
+                    syaryo = new SyaryoTemplate(syaryo.getName());
+                    if(map.get(syaryo.name) != null) syaryo = (SyaryoTemplate) map.get(syaryo.name);
+                }else if((noneType.get(kisy + "-" + kiban) != null)){
+                    syaryo = new SyaryoTemplate(syaryoMap.get(noneType.get(kisy + "-" + kiban)).getName());
+                    if(map.get(syaryo.name) != null) syaryo = (SyaryoTemplate) map.get(syaryo.name);
+                }
 
                 //Work
                 String sbn = res.getString(Work.Info.SBN.get()); //作番
@@ -114,6 +119,8 @@ public class WorkData {
                     continue;
                 }
                 
+                m++;
+                
                 //Last
                 syaryo.addLast(db, company, last_date);
                 
@@ -128,7 +135,7 @@ public class WorkData {
                 }
             }
 
-            System.out.println("Total Processed Syaryo = " + n);
+            System.out.println("Total Processed Syaryo = "+  m + "/" + n);
             System.out.println("Total Update Syaryo = " + map.size());
 
             return map;

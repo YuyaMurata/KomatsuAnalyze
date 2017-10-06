@@ -32,10 +32,20 @@ public class SyaryoCheck {
         JsonToSyaryoTemplate obj = new JsonToSyaryoTemplate();
         Map<String, SyaryoTemplate> syaryoMap = obj.reader(path+"\\"+filename);
         
-        extractRule(syaryoMap);
+        count("WA470");
+        
+        //extractRule(syaryoMap);
         
         //Check 1:
         //randomSampling(10, syaryoMap);
+    }
+    
+    public static void count(String rule){
+        String fname = path+"\\"+"syaryo_history_template.json";
+        JsonToSyaryoTemplate obj = new JsonToSyaryoTemplate();
+        Map<String, SyaryoTemplate> syaryoMap = obj.reader(fname);
+        long cnt = syaryoMap.keySet().stream().filter(s -> s.contains(rule)).count();
+        System.out.println(rule+"="+cnt);
     }
     
     public static void extractRule(Map<String, SyaryoTemplate> map){
