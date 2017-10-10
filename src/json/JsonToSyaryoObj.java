@@ -14,6 +14,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Map;
+import zip.UnzipFile;
 
 /**
  *
@@ -23,11 +24,26 @@ public class JsonToSyaryoObj {
     
     public Map<String, SyaryoObject> reader(String filename){
         try(JsonReader reader = new JsonReader(new BufferedReader(new FileReader(filename)))){
-            
             Type type = new TypeToken<Map<String, SyaryoObject>>(){}.getType();
 
             Gson gson = new Gson();
             Map<String, SyaryoObject> syaryoMap = gson.fromJson(reader, type);
+            /*for(SyaryoObject obj : syaryoMap.values()){
+                System.out.println(obj.dump());
+            }*/
+            
+            return syaryoMap;
+        }catch(IOException e){
+            return null;
+        }
+    }
+    
+    public Map<String, SyaryoObject> reader2(String filename){
+        try{
+            Type type = new TypeToken<Map<String, SyaryoObject>>(){}.getType();
+
+            Gson gson = new Gson();
+            Map<String, SyaryoObject> syaryoMap = gson.fromJson(new UnzipFile().unzip(filename), type);
             /*for(SyaryoObject obj : syaryoMap.values()){
                 System.out.println(obj.dump());
             }*/
