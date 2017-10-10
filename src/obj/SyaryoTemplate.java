@@ -28,7 +28,7 @@ public class SyaryoTemplate{
     private Boolean errorCheck(String date) {
         if (date.equals("")) {
             return true;
-        } else if (Integer.valueOf(date) <= 1950000) {
+        } else if (Integer.valueOf(date.replace(" ", "")) <= 1950000) {
             return true;
         }
         return false;

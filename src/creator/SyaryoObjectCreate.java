@@ -62,7 +62,7 @@ public class SyaryoObjectCreate {
                         continue;
                     }
 
-                    String[] arr = line[i].replace(" ", "").split(",");
+                    String[] arr = line[i].trim().split(",");
 
                     if (key.equals("国")) {
                         syaryoObj.add(key, arr[2], arr[3]);

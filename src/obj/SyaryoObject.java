@@ -223,8 +223,8 @@ public class SyaryoObject {
         return (String) map.get("廃車");
     }
 
-    public String getLast() {
-        return (String) map.get("最終更新日");
+    public Map getLast() {
+        return (Map) map.get("最終更新日");
     }
 
     public Map getSMR() {
