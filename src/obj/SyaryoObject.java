@@ -242,6 +242,14 @@ public class SyaryoObject {
     public Map getCountry() {
         return (Map) map.get("国");
     }
+    
+    public Map<String, List> getWork() {
+        return (Map) map.get("作業");
+    }
+    
+    public Map<String, List> getParts() {
+        return (Map) map.get("部品");
+    }
 
     public String date_no(String key, String date) {
         Map oldMap = (Map) map.get(key);
