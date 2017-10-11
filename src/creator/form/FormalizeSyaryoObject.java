@@ -5,7 +5,6 @@
  */
 package creator.form;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -20,186 +19,187 @@ import obj.SyaryoObject;
  */
 public class FormalizeSyaryoObject {
 
-    public Map<String, SyaryoObject> formalize(Map<String, SyaryoObject> syaryoMap) {
-        Map map = new TreeMap();
+	public Map<String, SyaryoObject> formalize(Map<String, SyaryoObject> syaryoMap) {
+		Map map = new TreeMap();
 
-        for (String name : syaryoMap.keySet()) {
-            //中古
-            //formUsed(syaryoMap.get(name).getUsed());
+		for (String name : syaryoMap.keySet()) {
+			//中古
+			formUsed(syaryoMap.get(name).getUsed());
 
-            //顧客
-            //formOwner(syaryoMap.get(name).getOwner());
-            //経歴
-            //formHistory(syaryoMap.get(name).getHistory());
-            //Last
-            //formLastUpdate(syaryoMap.get(name).getLast());
-            
-            //SMR
-            formSMR(syaryoMap.get(name).getSMR());
-            
-            //Country
-            formCountry(syaryoMap.get(name).getCountry());
-            
-            map.put(name, syaryoMap.get(name));
-        }
+			//顧客
+			formOwner(syaryoMap.get(name).getOwner());
+			//経歴
+			formHistory(syaryoMap.get(name).getHistory());
+			//Last
+			formLastUpdate(syaryoMap.get(name).getLast());
+			//SMR
+			formSMR(syaryoMap.get(name).getSMR());
 
-        return map;
-    }
+			//Country
+			formCountry(syaryoMap.get(name).getCountry());
+			
+			//
+			
+			map.put(name, syaryoMap.get(name));
+		}
 
-    private void formUsed(Map<String, List> used) {
-        Map update = new TreeMap();
+		return map;
+	}
 
-        if (used == null) {
-            return;
-        }
+	private void formUsed(Map<String, List> used) {
+		Map update = new TreeMap();
 
-        for (String date : used.keySet()) {
-            List obj = used.get(date);
+		if (used == null) {
+			return;
+		}
 
-            //System.out.println(date+":"+obj);
-            if (date.contains("#")) {
-                date = date.split("#")[0];
-            }
-            update.put(date, obj);
-        }
+		for (String date : used.keySet()) {
+			List obj = used.get(date);
 
-        used.clear();
-        used.putAll(update);
-    }
+			//System.out.println(date+":"+obj);
+			if (date.contains("#")) {
+				date = date.split("#")[0];
+			}
+			update.put(date, obj);
+		}
 
-    private void formOwner(Map<String, List> owner) {
-        Map update = new TreeMap();
-        Object[] temp = new Object[2];
+		used.clear();
+		used.putAll(update);
+	}
 
-        if (owner == null) {
-            return;
-        }
+	private void formOwner(Map<String, List> owner) {
+		Map update = new TreeMap();
+		Object[] temp = new Object[2];
 
-        for (String date : owner.keySet()) {
-            List obj = owner.get(date);
+		if (owner == null) {
+			return;
+		}
 
-            //System.out.println(date+":"+obj);
-            if (!obj.get(0).equals(temp[0]) && !((List) obj.get(1)).get(1).equals(temp[1])) {
-                if (!obj.get(0).toString().contains("##")) {
-                    if (date.contains("#")) {
-                        date = date.split("#")[0];
-                    }
-                    update.put(date, obj);
-                }
-                temp[0] = obj.get(0);
-                temp[1] = ((List) obj.get(1)).get(1);
-            }
-        }
+		for (String date : owner.keySet()) {
+			List obj = owner.get(date);
 
-        owner.clear();
-        owner.putAll(update);
-    }
+			//System.out.println(date+":"+obj);
+			if (!obj.get(0).equals(temp[0]) && !((List) obj.get(1)).get(1).equals(temp[1])) {
+				if (!obj.get(0).toString().contains("##")) {
+					if (date.contains("#")) {
+						date = date.split("#")[0];
+					}
+					update.put(date, obj);
+				}
+				temp[0] = obj.get(0);
+				temp[1] = ((List) obj.get(1)).get(1);
+			}
+		}
 
-    private void formHistory(Map<String, List> history) {
-        Map update = new TreeMap();
+		owner.clear();
+		owner.putAll(update);
+	}
 
-        if (history == null) {
-            return;
-        }
+	private void formHistory(Map<String, List> history) {
+		Map update = new TreeMap();
 
-        List dupList = history.entrySet().stream()
-                .map(entity -> entity.getValue().get(0)+entity.getValue().get(1).toString().split("_")[1])
-                .distinct()
-                .collect(Collectors.toList());
+		if (history == null) {
+			return;
+		}
 
-        for (String date : history.keySet()) {
-            if (history.get(date).get(1).toString().contains("service") || history.get(date).get(1).toString().contains("order")) {
-                if (dupList.contains(history.get(date).get(0)+history.get(date).get(1).toString().split("_")[1])) {
-                    update.put(date, history.get(date));
-                    dupList.remove(history.get(date).get(0));
-                }
-            } else {
-                update.put(date, history.get(date));
-            }
-        }
+		List dupList = history.entrySet().stream()
+				.map(entity -> entity.getValue().get(0) + entity.getValue().get(1).toString().split("_")[1])
+				.distinct()
+				.collect(Collectors.toList());
 
-        history.clear();
-        history.putAll(update);
-    }
+		for (String date : history.keySet()) {
+			if (history.get(date).get(1).toString().contains("service") || history.get(date).get(1).toString().contains("order")) {
+				if (dupList.contains(history.get(date).get(0) + history.get(date).get(1).toString().split("_")[1])) {
+					update.put(date, history.get(date));
+					dupList.remove(history.get(date).get(0));
+				}
+			} else {
+				update.put(date, history.get(date));
+			}
+		}
 
-    private void formLastUpdate(Map<String, String> last) {
-        Map<String, String> update = new TreeMap();
+		history.clear();
+		history.putAll(update);
+	}
 
-        if (last == null) {
-            return;
-        }
+	private void formLastUpdate(Map<String, String> last) {
+		Map<String, String> update = new TreeMap();
 
-        for (String date : last.keySet()) {
-            String key = date.split("#")[0] + "-" + last.get(date);
-            if (update.get(key) != null) {
-                update.put(key, String.valueOf(Integer.valueOf(update.get(key)) + 1));
-            } else {
-                update.put(key, "1");
-            }
-        }
+		if (last == null) {
+			return;
+		}
 
-        last.clear();
-        last.putAll(update);
-    }
+		for (String date : last.keySet()) {
+			String key = date.split("#")[0] + "-" + last.get(date);
+			if (update.get(key) != null) {
+				update.put(key, String.valueOf(Integer.valueOf(update.get(key)) + 1));
+			} else {
+				update.put(key, "1");
+			}
+		}
 
-    private void formSMR(Map<String, List> smr) {
-        Map update = new TreeMap();
-        Object temp = null;
+		last.clear();
+		last.putAll(update);
+	}
 
-        if (smr == null) {
-            return;
-        }
+	private void formSMR(Map<String, List> smr) {
+		Map update = new TreeMap();
+		Object temp = null;
 
-        for (String date : smr.keySet()) {
-            List obj = smr.get(date);
+		if (smr == null) {
+			return;
+		}
 
-            //System.out.println(date+":"+obj);
-            date = date.split("#")[0];
+		for (String date : smr.keySet()) {
+			List obj = smr.get(date);
 
-            if (!date.contains("/")) {
-                date = date.substring(0, 4) + "/" + date.substring(4, 6) + "/" + date.substring(6, 8) + " 0:00:00";
-            }
+			//System.out.println(date+":"+obj);
+			date = date.split("#")[0];
 
-            if (obj.get(0).toString().contains("?")) {
-                continue;
-                //obj.remove(0);
-                //obj.add(0, "-1");
-            }
+			if (!date.contains("/")) {
+				date = date.substring(0, 4) + "/" + date.substring(4, 6) + "/" + date.substring(6, 8) + " 0:00:00";
+			}
 
-            if (!obj.get(0).equals(temp)) {
-                update.put(date, obj);
-                temp = obj.get(0);
-            }
+			if (obj.get(0).toString().contains("?")) {
+				continue;
+				//obj.remove(0);
+				//obj.add(0, "-1");
+			}
 
-        }
+			if (!obj.get(0).equals(temp)) {
+				update.put(date, obj);
+				temp = obj.get(0);
+			}
 
-        smr.clear();
-        smr.putAll(update);
-    }
-    
-    private void formCountry(Map<String, String> country) {
-        Map update = new TreeMap();
-        Object temp = null;
+		}
 
-        if (country == null) {
-            return;
-        }
+		smr.clear();
+		smr.putAll(update);
+	}
 
-        for (String date : country.keySet()) {
-            if(!country.get(date).equals(temp)){
-                update.put(date, country.get(date));
-                temp = country.get(date);
-            }
-        }
+	private void formCountry(Map<String, String> country) {
+		Map update = new TreeMap();
+		Object temp = null;
 
-        country.clear();
-        country.putAll(update);
-    }
+		if (country == null) {
+			return;
+		}
 
-    public static void main(String[] args) {
-        Map map = new JsonToSyaryoObj().reader("syaryo_obj_WA470.json");
-        Map syaryoMap = new FormalizeSyaryoObject().formalize(map);
+		for (String date : country.keySet()) {
+			if (!country.get(date).equals(temp)) {
+				update.put(date, country.get(date));
+				temp = country.get(date);
+			}
+		}
 
-        new SyaryoObjToJson().write("syaryo_obj_WA470_form.json", syaryoMap);
-    }
+		country.clear();
+		country.putAll(update);
+	}
+
+	public static void main(String[] args) {
+		Map map = new JsonToSyaryoObj().reader("syaryo_obj_WA470.json");
+		Map syaryoMap = new FormalizeSyaryoObject().formalize(map);
+
+		new SyaryoObjToJson().write("syaryo_obj_WA470_form.json", syaryoMap);
+	}
 }
