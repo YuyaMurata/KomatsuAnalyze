@@ -14,7 +14,7 @@ import json.SyaryoObjToJson;
 import obj.SyaryoObject;
 
 /**
- *
+ * 車両オブジェクトから重複部分を排除して整形
  * @author ZZ17390
  */
 public class FormalizeSyaryoObject {

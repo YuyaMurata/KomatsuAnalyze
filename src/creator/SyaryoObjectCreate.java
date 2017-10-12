@@ -17,7 +17,7 @@ import obj.SyaryoObject;
 import obj.SyaryoTemplate;
 
 /**
- *
+ * 車両テンプレートから車両オブジェクトを作成
  * @author ZZ17390
  */
 public class SyaryoObjectCreate {

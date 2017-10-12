@@ -16,7 +16,7 @@ import json.SyaryoTemplateToJson;
 import obj.SyaryoTemplate;
 
 /**
- *
+ * DBから車両テンプレートを作成する
  * @author ZZ17390
  */
 public class SyaryoHistoryCreate extends HiveDB {

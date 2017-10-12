@@ -2,3 +2,6 @@
 /nbproject/old/
 /nbproject/車両テンプレート/
 /nbproject/check/
+
+*.json
+*.zip
