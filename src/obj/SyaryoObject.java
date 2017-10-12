@@ -5,6 +5,7 @@
  */
 package obj;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,42 +23,78 @@ public class SyaryoObject {
     public SyaryoObject(String name) {
         this.name = name;
     }
-    
-    //生産、出荷、廃車
-    public void add(String key, String s1){
-        map.put(key, s1);
-    }
-    
-    //国、更新日
-    public void add(String key, String s1, String s2){
-        if(key.equals("国")) addCountry(s1, s2);
-        else addLast(s1, s2);
-    }
-    
-    //仕様, SMR, GPS, エンジン
-    public void add(String key, String s1, String s2, String s3){
-        if(key.equals("経歴")) addHistory(s1, s2, s3);
-        else if(key.equals("仕様")) addSpec(s1, s2, s3);
-        else if(key.contains("SMR")) addSMR(s1, s2, s3);
-        else if(key.contains("GPS")) addGPS(s1, s2, s3);
-        else if(key.contains("ENGINE")) addEngine(s1, s2, s3);
-    }
-    
-    //エラー
-    public void add(String key, String s1, String s2, String s3, String s4){
-        if(key.contains("ERROR")) addError(s1, s2, s3, s4);
-    }
-    
-    //顧客
-    
-    //新・中古車、経歴、サービス、作業、部品、警告
-    public void add(String key, String s1, String s2, List l1, String s3){
-        if(key.equals("新車")) addNew(s1, s2, l1, s3);
-        else if(key.equals("中古")) addUsed(s1, s2, l1, s3);
-        else if(key.equals("受注")) addService(s1, s2, l1, s3);
-        else if(key.equals("作業")) addWork(s1, s2, l1, s3);
-        else if(key.equals("部品")) addParts(s1, s2, l1, s3);
-        else if(key.contains("CAUTION")) addCaution(s1, s2, l1, s3);
+
+    public void add(Map template) {
+        for (Object field : template.keySet()) {
+            if(template.get(field) == null) continue;
+            
+            String[] lines = template.get(field).toString().split("\n");
+            Boolean header_flg = true;
+            for (String line : lines) {
+                if(header_flg){
+                    header_flg = false;
+                    continue;
+                }
+                
+                String[] s = line.trim().split(",");
+                List list = new ArrayList();
+
+                if (field.equals("仕様")) {
+                    addSpec(s[0], s[1], "syaryo_?");
+                } else if (field.equals("生産")) {
+                    addBorn(s[0]);
+                } else if (field.equals("出荷")) {
+                    addDeploy(s[0]);
+                } else if (field.equals("廃車")) {
+                    addDead(s[0]);
+                } else if (field.equals("新車")) {
+                    for (int j = 4; j < s.length; j++) {
+                        list.add(s[j]);
+                    }
+                    addNew(s[2], s[3], list, (s[0] + "_" + s[1]));
+                } else if (field.equals("中古")) {
+                    for (int j = 4; j < s.length; j++) {
+                        list.add(s[j]);
+                    }
+                    addUsed(s[2], s[3], list, (s[0] + "_" + s[1]));
+                } else if (field.equals("顧客")) {
+                    list.add(s[3]);
+                    list.add(s[5]);
+                    addOwner(s[2], s[4], list, (s[0] + "_" + s[1]));
+                } else if (field.equals("国")) {
+                    addCountry(s[2], s[3]);
+                } else if (field.equals("経歴")) {
+                    addHistory(s[2], s[3], (s[0] + "_" + s[1]));
+                } else if (field.equals("受注")) {
+                    for (int j = 4; j < s.length; j++) {
+                        list.add(s[j]);
+                    }
+                    addOrder(s[2], s[3], list, (s[0] + "_" + s[1]));
+                } else if (field.equals("作業")) {
+                    for (int j = 4; j < s.length; j++) {
+                        list.add(s[j]);
+                    }
+                    addWork(s[2], s[3], list, (s[0] + "_" + s[1]));
+                } else if (field.equals("部品")) {
+                    for (int j = 4; j < s.length; j++) {
+                        list.add(s[j]);
+                    }
+                    addParts(s[2], s[3], list, (s[0] + "_" + s[1]));
+                } else if (field.toString().contains("CAUTION")) {
+                    addCaution(s[2], s[3], list, (s[0] + "_" + s[1]));
+                } else if (field.toString().contains("ERROR")) {
+                    addError(s[2], s[3], s[4], (s[0] + "_" + s[1]));
+                } else if (field.toString().contains("ENGINE")) {
+                    addEngine(s[2], s[3], (s[0] + "_" + s[1]));
+                } else if (field.toString().contains("SMR")) {
+                    addSMR(s[2], s[3], (s[0] + "_" + s[1]));
+                } else if (field.toString().contains("GPS")) {
+                    addGPS(s[2], (s[3] + "_" + s[4]), (s[0] + "_" + s[1]));
+                } else if (field.equals("最終更新日")) {
+                    addLast(s[2], (s[0] + "_" + s[1]));
+                }
+            }
+        }
     }
 
     public void addBorn(String date) {
@@ -90,7 +127,7 @@ public class SyaryoObject {
         usedmap.put(date_no("中古", date), new Object[]{cid, price, source});
         map.put("中古", usedmap);
     }
-    
+
     public void addCountry(String date, String country) {
         TreeMap contmap = (TreeMap) map.get("国");
         if (contmap == null) {
@@ -136,7 +173,7 @@ public class SyaryoObject {
         map.put("経歴", histmap);
     }
 
-    public void addService(String date, String id, List list, String source) {
+    public void addOrder(String date, String id, List list, String source) {
         TreeMap histmap = (TreeMap) map.get("受注");
         if (histmap == null) {
             histmap = new TreeMap();
@@ -171,7 +208,7 @@ public class SyaryoObject {
         histmap.put(date_no("GPS", date), new String[]{id, source});
         map.put("GPS", histmap);
     }
-    
+
     public void addError(String date, String id, String count, String source) {
         TreeMap histmap = (TreeMap) map.get("エラー");
         if (histmap == null) {
@@ -180,7 +217,7 @@ public class SyaryoObject {
         histmap.put(date_no("エラー", date), new String[]{id, count, source});
         map.put("エラー", histmap);
     }
-    
+
     public void addCaution(String date, String id, List list, String source) {
         TreeMap histmap = (TreeMap) map.get("警告");
         if (histmap == null) {
@@ -189,7 +226,7 @@ public class SyaryoObject {
         histmap.put(date_no("警告", date), new Object[]{id, list, source});
         map.put("警告", histmap);
     }
-    
+
     public void addEngine(String date, String id, String source) {
         TreeMap histmap = (TreeMap) map.get("エンジン");
         if (histmap == null) {
@@ -202,7 +239,7 @@ public class SyaryoObject {
     public String getName() {
         return name;
     }
-    
+
     public String getBorn() {
         return (String) map.get("生産");
     }
@@ -242,11 +279,11 @@ public class SyaryoObject {
     public Map getCountry() {
         return (Map) map.get("国");
     }
-    
+
     public Map<String, List> getWork() {
         return (Map) map.get("作業");
     }
-    
+
     public Map<String, List> getParts() {
         return (Map) map.get("部品");
     }

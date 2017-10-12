@@ -117,7 +117,7 @@ public class OrderData {
                 String sg_date = res.getString(Order._Order.SGYO_JISI_YTDAY.get());   //作業実施予定日
                 String sg_fin_date = res.getString(Order._Order.SGYO_KRDAY.get());    //作業完了日
                 if(!sg_fin_flg.equals("1"))
-                    sg_fin_date = "-1";
+                    sg_fin_date = "?";
                 String last_date = res.getString(Order._Order.LAST_UPD_DAYT.get()).replace("-", "").substring(0,8);  //最終更新日
                 
                 //Customer

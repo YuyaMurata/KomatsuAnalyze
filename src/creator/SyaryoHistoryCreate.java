@@ -29,6 +29,7 @@ public class SyaryoHistoryCreate extends HiveDB {
         //変数
         Map<String, SyaryoTemplate> syaryoTemplate;
         Map<String, SyaryoTemplate> syaryoMap;
+        PrintWriter pw;
 
         //DB接続
         Connection con = getConnection(); //HiveDB
@@ -46,7 +47,7 @@ public class SyaryoHistoryCreate extends HiveDB {
         Map noneTypeSearch = createNoneTypeSearch(syaryoTemplate);
         
         //車両マスタ
-        PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_syaryo_error.csv")))));
+        /*pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_syaryo_error.csv")))));
         syaryoMap = new SyaryoData().addSyaryoCategory(con, pw, syaryoTemplate, noneTypeSearch);
         json.write(FILENAME.replace(".json", "_syaryo.json"), syaryoMap);
         pw.close();
@@ -57,9 +58,10 @@ public class SyaryoHistoryCreate extends HiveDB {
         
         //型が無いときのインデックス つくり直し
         noneTypeSearch = createNoneTypeSearch(syaryoTemplate);
+        */
         
         //EQP車両
-        pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_eqpsyaryo_error.csv")))));
+        /*pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_eqpsyaryo_error.csv")))));
         syaryoMap = new EQPSyaryoData().addEQPSyaryo(con, pw, syaryoTemplate, noneTypeSearch);
         json.write(FILENAME.replace(".json", "_eqpsyaryo.json"), syaryoMap);
         pw.close();
@@ -69,7 +71,7 @@ public class SyaryoHistoryCreate extends HiveDB {
         syaryoMap = new EQPKeirekiData().addSyaryoKeireki(con, pw, syaryoTemplate, noneTypeSearch);
         json.write(FILENAME.replace(".json", "_eqpkeireki.json"), syaryoMap);
         pw.close();
-        
+        */
         //サービス経歴
         pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_service1_error.csv")))));
         syaryoMap = new ServiceData().addService(con, pw, syaryoTemplate, noneTypeSearch, "=1", "=1");
@@ -83,7 +85,7 @@ public class SyaryoHistoryCreate extends HiveDB {
         pw.close();
        
         //受注
-        pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_order_error.csv")))));
+        /*pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_order_error.csv")))));
         syaryoMap = new OrderData().addOrder(con, pw, syaryoTemplate, noneTypeSearch);
         json.write(FILENAME.replace(".json", "_order.json"), syaryoMap);
         pw.close();
@@ -114,6 +116,7 @@ public class SyaryoHistoryCreate extends HiveDB {
         
         //Komtrax
         new KomtraxData().addKomtrax(FILENAME, con, syaryoTemplate, noneTypeSearch);
+*/
     }
     
     public static Map createNoneTypeSearch(Map<String, SyaryoTemplate> syaryoTemplate){

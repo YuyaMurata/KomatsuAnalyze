@@ -40,7 +40,7 @@ public class FormalizeSyaryoObject {
 
             //2009年以降のサービス経歴を作業，部品から削除
             formWorkParts(syaryoMap.get(name).getWork(), syaryoMap.get(name).getParts());
-            
+
             map.put(name, syaryoMap.get(name));
         }
 
@@ -70,7 +70,7 @@ public class FormalizeSyaryoObject {
 
     private void formOwner(Map<String, List> owner) {
         Map update = new TreeMap();
-        Object[] temp = new Object[2];
+        Object[] temp = new Object[3];
 
         if (owner == null) {
             return;
@@ -89,6 +89,10 @@ public class FormalizeSyaryoObject {
                 }
                 temp[0] = obj.get(0);
                 temp[1] = ((List) obj.get(1)).get(1);
+                temp[2] = date;
+            } else{
+                if(!((List) obj.get(1)).get(0).equals("-1") && !((List) obj.get(1)).get(0).toString().contains("?"))
+                    update.put(temp[2].toString(), obj);
             }
         }
 
@@ -104,9 +108,9 @@ public class FormalizeSyaryoObject {
         }
 
         List dupList = history.entrySet().stream()
-            .map(entity -> entity.getValue().get(0) + entity.getValue().get(1).toString().split("_")[1])
-            .distinct()
-            .collect(Collectors.toList());
+                .map(entity -> entity.getValue().get(0) + entity.getValue().get(1).toString().split("_")[1])
+                .distinct()
+                .collect(Collectors.toList());
 
         for (String date : history.keySet()) {
             if (history.get(date).get(1).toString().contains("service") || history.get(date).get(1).toString().contains("order")) {
@@ -196,9 +200,39 @@ public class FormalizeSyaryoObject {
         country.clear();
         country.putAll(update);
     }
-    
-    private void formWorkParts(Map<String, List> work, Map<String, List> parts){
-        
+
+    private void formWorkParts(Map<String, List> work, Map<String, List> parts) {
+
+        //Work
+        if (work != null) {
+            Map update1 = new TreeMap();
+            for (String date : work.keySet()) {
+                if (Integer.valueOf(date.split("#")[0]) >= 20090101) {
+                    if (work.get(date).get(2).toString().contains("service")) {
+                        continue;
+                    }
+                }
+                update1.put(date, work.get(date));
+            }
+            work.clear();
+            work.putAll(update1);
+        }
+
+        if (parts != null) {
+            Map update2 = new TreeMap();
+
+            //Parts
+            for (String date : parts.keySet()) {
+                if (Integer.valueOf(date.split("#")[0]) >= 20090101) {
+                    if (parts.get(date).get(2).toString().contains("service")) {
+                        continue;
+                    }
+                }
+                update2.put(date, parts.get(date));
+            }
+            parts.clear();
+            parts.putAll(update2);
+        }
     }
 
     public static void main(String[] args) {
