@@ -7,8 +7,6 @@ package creator;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import json.JsonToSyaryoTemplate;
@@ -22,12 +20,9 @@ import obj.SyaryoTemplate;
  */
 public class SyaryoObjectCreate {
 
-    public static void main(String[] args) throws IOException {
-        String path = "車両テンプレート";
-        String kisy = "WA470";
+    public void create(String kisy) {
         String midtemp = "syaryo_mid_" + kisy + ".zip";
         String FILENAME = "syaryo_obj_" + kisy + ".json";
-        File[] flist = (new File(path)).listFiles();
 
         Map<String, SyaryoTemplate> syaryoTemplates = new JsonToSyaryoTemplate().reader2(midtemp);
         TreeMap<String, SyaryoObject> syaryoMap = new TreeMap();
@@ -62,5 +57,9 @@ public class SyaryoObjectCreate {
 
         SyaryoObjToJson json = new SyaryoObjToJson();
         json.write(FILENAME, syaryoMap);
+    }
+    
+    public static void main(String[] args) {
+        new SyaryoObjectCreate().create("PC200");
     }
 }

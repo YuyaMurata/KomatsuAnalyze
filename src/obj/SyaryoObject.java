@@ -6,10 +6,12 @@
 package obj;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -25,20 +27,24 @@ public class SyaryoObject {
     }
 
     public void add(Map template) {
+        int n=0;
         for (Object field : template.keySet()) {
-            if(template.get(field) == null) continue;
+            if (template.get(field) == null) {
+                continue;
+            }
             
             String[] lines = template.get(field).toString().split("\n");
             Boolean header_flg = true;
             for (String line : lines) {
-                if(header_flg){
+                if (header_flg) {
                     header_flg = false;
                     continue;
                 }
-                
+
                 String[] s = line.trim().split(",");
                 List list = new ArrayList();
-
+                
+                try{
                 if (field.equals("仕様")) {
                     addSpec(s[0], s[1], "syaryo_?");
                 } else if (field.equals("生産")) {
@@ -93,8 +99,11 @@ public class SyaryoObject {
                 } else if (field.equals("最終更新日")) {
                     addLast(s[2], (s[0] + "_" + s[1]));
                 }
+                }catch(ArrayIndexOutOfBoundsException e){n++;}
             }
         }
+        
+        System.out.println("欠損データ="+n);
     }
 
     public void addBorn(String date) {
@@ -111,12 +120,20 @@ public class SyaryoObject {
 
     public void addNew(String date, String cid, List price, String source) {
         TreeMap newmap = new TreeMap();
-        newmap.put(date, new Object[]{cid, price, source});
+        List<Object> list = new ArrayList<>();
+        list.add(cid);
+        list.addAll(price);
+        list.add(source);
+        newmap.put(date, list);
         map.put("新車", newmap);
     }
 
     public void addSpec(String category, String komtrax, String source) {
-        map.put("仕様", new Object[]{category, komtrax, source});
+        List<Object> list = new ArrayList<>();
+        list.add(category);
+        list.add(komtrax);
+        list.add(source);
+        map.put("仕様", list);
     }
 
     public void addUsed(String date, String cid, List price, String source) {
@@ -124,7 +141,11 @@ public class SyaryoObject {
         if (usedmap == null) {
             usedmap = new TreeMap();
         }
-        usedmap.put(date_no("中古", date), new Object[]{cid, price, source});
+        List<Object> list = new ArrayList<>();
+        list.add(cid);
+        list.addAll(price);
+        list.add(source);
+        usedmap.put(date_no("中古", date), list);
         map.put("中古", usedmap);
     }
 
@@ -133,7 +154,9 @@ public class SyaryoObject {
         if (contmap == null) {
             contmap = new TreeMap();
         }
-        contmap.put(date_no("国", date), country);
+        List<Object> list = new ArrayList<>();
+        list.add(country);
+        contmap.put(date_no("国", date), list);
         map.put("国", contmap);
     }
 
@@ -142,15 +165,21 @@ public class SyaryoObject {
         if (lastmap == null) {
             lastmap = new TreeMap();
         }
-        lastmap.put(date_no("最終更新日", date), source);
+        List<Object> list = new ArrayList<>();
+        list.add(source);
+        lastmap.put(date_no("最終更新日", date), list);
         map.put("最終更新日", lastmap);
     }
 
-    public void addOwner(String date, String id, List list, String source) {
+    public void addOwner(String date, String id, List customer, String source) {
         TreeMap ownmap = (TreeMap) map.get("顧客");
         if (ownmap == null) {
             ownmap = new TreeMap();
         }
+        List<Object> list = new ArrayList<>();
+        list.add(id);
+        list.addAll(customer);
+        list.add(source);
         ownmap.put(date_no("顧客", date), new Object[]{id, list, source});
         map.put("顧客", ownmap);
     }
@@ -160,7 +189,10 @@ public class SyaryoObject {
         if (smrmap == null) {
             smrmap = new TreeMap();
         }
-        smrmap.put(date_no("SMR", date), new String[]{smr, source});
+        List<Object> list = new ArrayList<>();
+        list.add(smr);
+        list.add(source);
+        smrmap.put(date_no("SMR", date), list);
         map.put("SMR", smrmap);
     }
 
@@ -169,34 +201,49 @@ public class SyaryoObject {
         if (histmap == null) {
             histmap = new TreeMap();
         }
-        histmap.put(date_no("経歴", date), new Object[]{id, source});
+        List<Object> list = new ArrayList<>();
+        list.add(id);
+        list.add(source);
+        histmap.put(date_no("経歴", date), list);
         map.put("経歴", histmap);
     }
 
-    public void addOrder(String date, String id, List list, String source) {
+    public void addOrder(String date, String id, List od, String source) {
         TreeMap histmap = (TreeMap) map.get("受注");
         if (histmap == null) {
             histmap = new TreeMap();
         }
-        histmap.put(date_no("受注", date), new Object[]{id, list, source});
+        List<Object> list = new ArrayList<>();
+        list.add(id);
+        list.addAll(od);
+        list.add(source);
+        histmap.put(date_no("受注", date), list);
         map.put("受注", histmap);
     }
 
-    public void addWork(String date, String id, List list, String source) {
+    public void addWork(String date, String id, List wr, String source) {
         TreeMap histmap = (TreeMap) map.get("作業");
         if (histmap == null) {
             histmap = new TreeMap();
         }
-        histmap.put(date_no("作業", date), new Object[]{id, list, source});
+        List<Object> list = new ArrayList<>();
+        list.add(id);
+        list.addAll(wr);
+        list.add(source);
+        histmap.put(date_no("作業", date), list);
         map.put("作業", histmap);
     }
 
-    public void addParts(String date, String id, List list, String source) {
+    public void addParts(String date, String id, List pa, String source) {
         TreeMap histmap = (TreeMap) map.get("部品");
         if (histmap == null) {
             histmap = new TreeMap();
         }
-        histmap.put(date_no("部品", date), new Object[]{id, list, source});
+        List<Object> list = new ArrayList<>();
+        list.add(id);
+        list.addAll(pa);
+        list.add(source);
+        histmap.put(date_no("部品", date), list);
         map.put("部品", histmap);
     }
 
@@ -205,7 +252,10 @@ public class SyaryoObject {
         if (histmap == null) {
             histmap = new TreeMap();
         }
-        histmap.put(date_no("GPS", date), new String[]{id, source});
+        List<Object> list = new ArrayList<>();
+        list.add(id);
+        list.add(source);
+        histmap.put(date_no("GPS", date), list);
         map.put("GPS", histmap);
     }
 
@@ -214,16 +264,24 @@ public class SyaryoObject {
         if (histmap == null) {
             histmap = new TreeMap();
         }
-        histmap.put(date_no("エラー", date), new String[]{id, count, source});
+        List<Object> list = new ArrayList<>();
+        list.add(id);
+        list.add(count);
+        list.add(source);
+        histmap.put(date_no("エラー", date), list);
         map.put("エラー", histmap);
     }
 
-    public void addCaution(String date, String id, List list, String source) {
+    public void addCaution(String date, String id, List cau, String source) {
         TreeMap histmap = (TreeMap) map.get("警告");
         if (histmap == null) {
             histmap = new TreeMap();
         }
-        histmap.put(date_no("警告", date), new Object[]{id, list, source});
+        List<Object> list = new ArrayList<>();
+        list.add(id);
+        list.addAll(cau);
+        list.add(source);
+        histmap.put(date_no("警告", date), list);
         map.put("警告", histmap);
     }
 
@@ -232,12 +290,23 @@ public class SyaryoObject {
         if (histmap == null) {
             histmap = new TreeMap();
         }
-        histmap.put(date_no("エンジン", date), new String[]{id, source});
+        List<Object> list = new ArrayList<>();
+        list.add(id);
+        list.add(source);
+        histmap.put(date_no("エンジン", date), list);
         map.put("エンジン", histmap);
     }
 
     public String getName() {
         return name;
+    }
+
+    public String getMachine() {
+        return name.split("-")[0];
+    }
+
+    public String getType() {
+        return name.split("-")[1];
     }
 
     public String getBorn() {
@@ -248,8 +317,8 @@ public class SyaryoObject {
         return (String) map.get("出荷");
     }
 
-    public String getNew() {
-        return (String) map.get("新車");
+    public Map<String, List> getNew() {
+        return (Map) map.get("新車");
     }
 
     public Map getUsed() {
@@ -268,8 +337,31 @@ public class SyaryoObject {
         return (Map) map.get("SMR");
     }
 
+    public Map<String, List> getOrder() {
+        return (Map) map.get("受注");
+    }
+
+    //行
+    public List<Object> getOrder(String date) {
+        if (date.length() >= 6) {
+            Map<String, List> order = getOrder();
+            return order.get(date);
+        }
+        else{
+            Map<String, List> order = getOrder();
+            int i = Integer.valueOf(date);
+            return order.values().stream().map(l -> l.get(i)).collect(Collectors.toList());
+        }
+    }
+
     public Map<String, List> getOwner() {
         return (Map) map.get("顧客");
+    }
+
+    public List getNewOwner() {
+        Map<String, List> owner = getOwner();
+        List first = owner.values().stream().findFirst().get();
+        return first;
     }
 
     public Map getHistory() {

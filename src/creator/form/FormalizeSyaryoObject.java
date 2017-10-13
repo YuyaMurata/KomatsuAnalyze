@@ -5,6 +5,7 @@
  */
 package creator.form;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -127,8 +128,8 @@ public class FormalizeSyaryoObject {
         history.putAll(update);
     }
 
-    private void formLastUpdate(Map<String, String> last) {
-        Map<String, String> update = new TreeMap();
+    private void formLastUpdate(Map<String, List> last) {
+        Map<String, List> update = new TreeMap();
 
         if (last == null) {
             return;
@@ -136,11 +137,13 @@ public class FormalizeSyaryoObject {
 
         for (String date : last.keySet()) {
             String key = date.split("#")[0] + "-" + last.get(date);
+            List list = new ArrayList();
             if (update.get(key) != null) {
-                update.put(key, String.valueOf(Integer.valueOf(update.get(key)) + 1));
+                list.add((int)update.get(key).get(0) + 1);
             } else {
-                update.put(key, "1");
+                list.add(1);
             }
+            update.put(key, list);
         }
 
         last.clear();
@@ -182,7 +185,7 @@ public class FormalizeSyaryoObject {
         smr.putAll(update);
     }
 
-    private void formCountry(Map<String, String> country) {
+    private void formCountry(Map<String, List> country) {
         Map update = new TreeMap();
         Object temp = null;
 

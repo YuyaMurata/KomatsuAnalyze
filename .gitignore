@@ -1,7 +1,13 @@
 /nbproject/private/
 /nbproject/old/
 /nbproject/車両テンプレート/
+/nbproject/車両テンプレートエラー/
+/nbproject/車両テンプレートエラー分離/
 /nbproject/check/
+/nbproject/中間データ/
+/nbproject/分析結果/
 
 *.json
 *.zip
+*.csv
+*.xlsx

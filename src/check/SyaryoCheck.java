@@ -5,20 +5,14 @@
  */
 package check;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
-import json.JsonToSyaryoObj;
 import json.JsonToSyaryoTemplate;
-import obj.SyaryoObject;
 import obj.SyaryoTemplate;
-import org.apache.hadoop.metrics2.sink.FileSink;
 
 /**
  *
