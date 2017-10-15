@@ -3,6 +3,8 @@ package google;
 import com.lynden.gmapsfx.GoogleMapView;
 import com.lynden.gmapsfx.MapComponentInitializedListener;
 import com.lynden.gmapsfx.javascript.object.GoogleMap;
+import com.lynden.gmapsfx.javascript.object.InfoWindow;
+import com.lynden.gmapsfx.javascript.object.InfoWindowOptions;
 import com.lynden.gmapsfx.javascript.object.LatLong;
 import com.lynden.gmapsfx.javascript.object.MapOptions;
 import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;//★
@@ -10,7 +12,6 @@ import com.lynden.gmapsfx.javascript.object.Marker;
 import com.lynden.gmapsfx.javascript.object.MarkerOptions;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Arrays;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.scene.Scene;
@@ -63,14 +64,19 @@ public class ViewGoogleMap extends Application implements MapComponentInitialize
         //Add a marker to the map
         MarkerOptions markerOptions = new MarkerOptions();
 
-        markerOptions.position(lat)
-            .visible(Boolean.TRUE)
-            .title("My Marker");
+        markerOptions.position(lat);
 
         Marker marker = new Marker(markerOptions);
 
         map.addMarker(marker);
+        
+        InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
+        infoWindowOptions.content("<h2>Fred Wilkie</h2>"
+                                + "Current Location: Safeway<br>"
+                                + "ETA: 45 minutes" );
 
+        InfoWindow fredWilkeInfoWindow = new InfoWindow(infoWindowOptions);
+        fredWilkeInfoWindow.open(map, marker);
     }
     
     public double compValue(String str){
