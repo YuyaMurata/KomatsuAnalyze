@@ -26,7 +26,7 @@ public class SyaryoCheck {
         JsonToSyaryoTemplate obj = new JsonToSyaryoTemplate();
         Map<String, SyaryoTemplate> syaryoMap = obj.reader(path+"\\"+filename);
         
-        count("WA470");
+        count("WA500");
         
         //extractRule(syaryoMap);
         

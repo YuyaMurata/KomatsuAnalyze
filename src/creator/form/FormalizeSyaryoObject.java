@@ -20,6 +20,14 @@ import obj.SyaryoObject;
  */
 public class FormalizeSyaryoObject {
 
+    public static void main(String[] args) {
+        String kisy = "PC200";
+        Map map = new JsonToSyaryoObj().reader("syaryo_obj_"+kisy+".json");
+        Map syaryoMap = new FormalizeSyaryoObject().formalize(map);
+
+        new SyaryoObjToJson().write("syaryo_obj_"+kisy+"_form.json", syaryoMap);
+    }
+    
     public Map<String, SyaryoObject> formalize(Map<String, SyaryoObject> syaryoMap) {
         Map map = new TreeMap();
 
@@ -29,10 +37,13 @@ public class FormalizeSyaryoObject {
 
             //顧客
             formOwner(syaryoMap.get(name).getOwner());
+            
             //経歴
             formHistory(syaryoMap.get(name).getHistory());
+            
             //Last
             formLastUpdate(syaryoMap.get(name).getLast());
+            
             //SMR
             formSMR(syaryoMap.get(name).getSMR());
 
@@ -173,6 +184,10 @@ public class FormalizeSyaryoObject {
                 //obj.remove(0);
                 //obj.add(0, "-1");
             }
+            
+            if(obj.get(1).toString().contains("komtrax")){
+                obj.set(0, Integer.valueOf(obj.get(0).toString()) / 60);
+            }
 
             if (!obj.get(0).equals(temp)) {
                 update.put(date, obj);
@@ -236,12 +251,5 @@ public class FormalizeSyaryoObject {
             parts.clear();
             parts.putAll(update2);
         }
-    }
-
-    public static void main(String[] args) {
-        Map map = new JsonToSyaryoObj().reader("syaryo_obj_WA470.json");
-        Map syaryoMap = new FormalizeSyaryoObject().formalize(map);
-
-        new SyaryoObjToJson().write("syaryo_obj_WA470_form.json", syaryoMap);
     }
 }

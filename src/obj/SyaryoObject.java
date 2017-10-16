@@ -333,7 +333,7 @@ public class SyaryoObject {
         return (Map) map.get("最終更新日");
     }
 
-    public Map getSMR() {
+    public Map<String, List> getSMR() {
         return (Map) map.get("SMR");
     }
 
@@ -364,11 +364,11 @@ public class SyaryoObject {
         return first;
     }
 
-    public Map getHistory() {
+    public Map<String, List> getHistory() {
         return (Map) map.get("経歴");
     }
 
-    public Map getCountry() {
+    public Map<String, List> getCountry() {
         return (Map) map.get("国");
     }
 
@@ -378,6 +378,10 @@ public class SyaryoObject {
 
     public Map<String, List> getParts() {
         return (Map) map.get("部品");
+    }
+    
+    public Boolean getKomtrax(){
+        return ((List)map.get("仕様")).get(0).toString().equals("1");
     }
 
     public String date_no(String key, String date) {

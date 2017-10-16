@@ -60,6 +60,15 @@ public class TimeAnalysis {
 
         return map;
     }
+    
+    private static Boolean errorCheck(String date) {
+        if (date.equals("")) {
+            return true;
+        } else if (Integer.valueOf(date.replace(" ", "")) <= 1950000) {
+            return true;
+        }
+        return false;
+    }
 
     public static void orderDate(String filename, Map<String, SyaryoObject> syaryoMap) {
         Map<String, Map<String, List>> allData = new HashMap<>();
@@ -82,7 +91,15 @@ public class TimeAnalysis {
                     System.out.println(s.getName());
                     n++;
                     continue;
+                }else{
+                    if(s.getNew().containsKey("19000101")){
+                        System.out.println(s.getName());
+                        n++;
+                        continue;
+                    }
+                        
                 }
+                    
                 for (String date : s.getOrder().keySet()) {
                     list1.add(s.getNew().keySet().stream().findFirst().get());
                     list2.add(date.split("#")[0]);
@@ -104,7 +121,7 @@ public class TimeAnalysis {
 
             PrintWriter pw;
             try {
-                pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(filename.split("_")[2] +"_t"+typ+ "_order_time.csv"))));
+                pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(filename.split("_")[2] + "_order_time_t"+typ+".csv"))));
                 for (Object key : map.keySet()) {
                     pw.println(key + "," + map.get(key));
                 }
@@ -115,7 +132,7 @@ public class TimeAnalysis {
     }
 
     public static void main(String[] args) {
-        String filename = "syaryo_obj_WA500_form.json";
+        String filename = "syaryo_obj_PC200_form.json";
         Map<String, SyaryoObject> syaryoMap = new JsonToSyaryoObj().reader(filename);
         orderDate(filename, syaryoMap);
     }
