@@ -6,7 +6,7 @@
 package obj;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,14 +25,14 @@ public class SyaryoObject {
     public SyaryoObject(String name) {
         this.name = name;
     }
-
+    
     public void add(Map template) {
-        int n=0;
+        int n = 0;
         for (Object field : template.keySet()) {
             if (template.get(field) == null) {
                 continue;
             }
-            
+
             String[] lines = template.get(field).toString().split("\n");
             Boolean header_flg = true;
             for (String line : lines) {
@@ -43,67 +43,72 @@ public class SyaryoObject {
 
                 String[] s = line.trim().split(",");
                 List list = new ArrayList();
-                
-                try{
-                if (field.equals("仕様")) {
-                    addSpec(s[0], s[1], "syaryo_?");
-                } else if (field.equals("生産")) {
-                    addBorn(s[0]);
-                } else if (field.equals("出荷")) {
-                    addDeploy(s[0]);
-                } else if (field.equals("廃車")) {
-                    addDead(s[0]);
-                } else if (field.equals("新車")) {
-                    for (int j = 4; j < s.length; j++) {
-                        list.add(s[j]);
+
+                try {
+                    if (field.equals("仕様")) {
+                        addSpec(s[0], s[1], "syaryo_?");
+                    } else if (field.equals("生産")) {
+                        addBorn(s[0]);
+                    } else if (field.equals("出荷")) {
+                        addDeploy(s[0]);
+                    } else if (field.equals("廃車")) {
+                        addDead(s[0]);
+                    } else if (field.equals("新車")) {
+                        for (int j = 4; j < s.length; j++) {
+                            list.add(s[j]);
+                        }
+                        addNew(s[2], s[3], list, (s[0] + "_" + s[1]));
+                    } else if (field.equals("中古")) {
+                        for (int j = 4; j < s.length; j++) {
+                            list.add(s[j]);
+                        }
+                        addUsed(s[2], s[3], list, (s[0] + "_" + s[1]));
+                    } else if (field.equals("顧客")) {
+                        list.add(s[3]);
+                        list.add(s[5]);
+                        addOwner(s[2], s[4], list, (s[0] + "_" + s[1]));
+                    } else if (field.equals("国")) {
+                        addCountry(s[2], s[3]);
+                    } else if (field.equals("経歴")) {
+                        addHistory(s[2], s[3], (s[0] + "_" + s[1]));
+                    } else if (field.equals("受注")) {
+                        for (int j = 4; j < s.length; j++) {
+                            list.add(s[j]);
+                        }
+                        addOrder(s[2], s[3], list, (s[0] + "_" + s[1]));
+                    } else if (field.equals("作業")) {
+                        for (int j = 4; j < s.length; j++) {
+                            list.add(s[j]);
+                        }
+                        addWork(s[2], s[3], list, (s[0] + "_" + s[1]));
+                    } else if (field.equals("部品")) {
+                        for (int j = 4; j < s.length; j++) {
+                            list.add(s[j]);
+                        }
+                        addParts(s[2], s[3], list, (s[0] + "_" + s[1]));
+                    } else if (field.toString().contains("CAUTION")) {
+                        addCaution(s[2], s[3], list, (s[0] + "_" + s[1]));
+                    } else if (field.toString().contains("ERROR")) {
+                        addError(s[2], s[3], s[4], (s[0] + "_" + s[1]));
+                    } else if (field.toString().contains("ENGINE")) {
+                        addEngine(s[2], s[3], (s[0] + "_" + s[1]));
+                    } else if (field.toString().contains("SMR")) {
+                        addSMR(s[2], s[3], (s[0] + "_" + s[1]));
+                    } else if (field.toString().contains("GPS")) {
+                        addGPS(s[2], (s[3] + "_" + s[4]), (s[0] + "_" + s[1]));
+                    } else if (field.equals("最終更新日")) {
+                        addLast(s[2], (s[0] + "_" + s[1]));
                     }
-                    addNew(s[2], s[3], list, (s[0] + "_" + s[1]));
-                } else if (field.equals("中古")) {
-                    for (int j = 4; j < s.length; j++) {
-                        list.add(s[j]);
-                    }
-                    addUsed(s[2], s[3], list, (s[0] + "_" + s[1]));
-                } else if (field.equals("顧客")) {
-                    list.add(s[3]);
-                    list.add(s[5]);
-                    addOwner(s[2], s[4], list, (s[0] + "_" + s[1]));
-                } else if (field.equals("国")) {
-                    addCountry(s[2], s[3]);
-                } else if (field.equals("経歴")) {
-                    addHistory(s[2], s[3], (s[0] + "_" + s[1]));
-                } else if (field.equals("受注")) {
-                    for (int j = 4; j < s.length; j++) {
-                        list.add(s[j]);
-                    }
-                    addOrder(s[2], s[3], list, (s[0] + "_" + s[1]));
-                } else if (field.equals("作業")) {
-                    for (int j = 4; j < s.length; j++) {
-                        list.add(s[j]);
-                    }
-                    addWork(s[2], s[3], list, (s[0] + "_" + s[1]));
-                } else if (field.equals("部品")) {
-                    for (int j = 4; j < s.length; j++) {
-                        list.add(s[j]);
-                    }
-                    addParts(s[2], s[3], list, (s[0] + "_" + s[1]));
-                } else if (field.toString().contains("CAUTION")) {
-                    addCaution(s[2], s[3], list, (s[0] + "_" + s[1]));
-                } else if (field.toString().contains("ERROR")) {
-                    addError(s[2], s[3], s[4], (s[0] + "_" + s[1]));
-                } else if (field.toString().contains("ENGINE")) {
-                    addEngine(s[2], s[3], (s[0] + "_" + s[1]));
-                } else if (field.toString().contains("SMR")) {
-                    addSMR(s[2], s[3], (s[0] + "_" + s[1]));
-                } else if (field.toString().contains("GPS")) {
-                    addGPS(s[2], (s[3] + "_" + s[4]), (s[0] + "_" + s[1]));
-                } else if (field.equals("最終更新日")) {
-                    addLast(s[2], (s[0] + "_" + s[1]));
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    System.out.println(field + ":" + Arrays.asList(s));
+                    n++;
                 }
-                }catch(ArrayIndexOutOfBoundsException e){n++;}
             }
         }
-        
-        System.out.println("欠損データ="+n);
+
+        if (n > 0) {
+            System.out.println("欠損データ=" + n);
+        }
     }
 
     public void addBorn(String date) {
@@ -346,8 +351,7 @@ public class SyaryoObject {
         if (date.length() >= 6) {
             Map<String, List> order = getOrder();
             return order.get(date);
-        }
-        else{
+        } else {
             Map<String, List> order = getOrder();
             int i = Integer.valueOf(date);
             return order.values().stream().map(l -> l.get(i)).collect(Collectors.toList());
@@ -379,9 +383,9 @@ public class SyaryoObject {
     public Map<String, List> getParts() {
         return (Map) map.get("部品");
     }
-    
-    public Boolean getKomtrax(){
-        return ((List)map.get("仕様")).get(0).toString().equals("1");
+
+    public Boolean getKomtrax() {
+        return ((List) map.get("仕様")).get(0).toString().equals("1");
     }
 
     public String date_no(String key, String date) {

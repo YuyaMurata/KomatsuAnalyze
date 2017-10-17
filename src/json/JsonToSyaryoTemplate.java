@@ -45,9 +45,7 @@ public class JsonToSyaryoTemplate {
 
 			Gson gson = new Gson();
 			Map<String, SyaryoTemplate> syaryoMap = gson.fromJson(new ZipFile().unzip(filename), type);
-			/*for(SyaryoObject obj : syaryoMap.values()){
-				 System.out.println(obj.dump());
-			}*/
+			syaryoMap.remove("_summary");
 
 			return syaryoMap;
 		} catch (IOException e) {
