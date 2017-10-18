@@ -12,3 +12,4 @@
 *.csv
 *.xlsx
 /build/
+/dist/

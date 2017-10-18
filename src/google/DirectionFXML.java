@@ -45,7 +45,7 @@ public class DirectionFXML implements Initializable, MapComponentInitializedList
     
     @FXML
     private void clearDirections(ActionEvent event) {
-        //directionsRenderer.clearDirections();
+        directionsRenderer.clearDirections();
     }
 
     @Override
