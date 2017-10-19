@@ -81,6 +81,7 @@ public abstract class HiveDB {
         SELL_SPEC("sell_spec", Sell.Spec.values()),
         SELL_TRADE("sell_trade", Sell.Trade.values()),
         SELL_USED("sell_used", Sell.Used.values()),
+        SELL_OLD("sell_old", Sell.Old.values()),
         GAICHU("gaichu", Gaichu._Gaichu.values()),
         GAICHU_WORK("gaichu_work", Gaichu.Work.values()),
         GAICHU_WORK_INFO("gaichu_work_info", Gaichu.Work_Info.values()),

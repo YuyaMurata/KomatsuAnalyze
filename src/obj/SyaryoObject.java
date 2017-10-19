@@ -341,6 +341,10 @@ public class SyaryoObject {
     public Map<String, List> getSMR() {
         return (Map) map.get("SMR");
     }
+    
+    public Map<String, List> getGPS() {
+        return (Map) map.get("GPS");
+    }
 
     public Map<String, List> getOrder() {
         return (Map) map.get("受注");

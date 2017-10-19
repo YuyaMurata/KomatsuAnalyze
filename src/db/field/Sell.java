@@ -484,4 +484,26 @@ public class Sell {
             return this.text;
         }
     }
+
+    //Sell_Old
+    public enum Old implements Fields {
+        KISY("KISY"),
+        TYP("TYP"),
+        SYHK("SYHK"),
+        KIBAN("KIBAN"),
+        URI_DAY("URI_DAY"),
+        URI_KNGK("URI_KNGK"),
+        KSYCD("KSYCD"),
+        KSYNM("KSYNM");
+
+        private final String text;
+
+        private Old(final String text) {
+            this.text = text;
+        }
+
+        public String get() {
+            return this.text;
+        }
+    }
 }

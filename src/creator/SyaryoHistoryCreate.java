@@ -71,7 +71,7 @@ public class SyaryoHistoryCreate extends HiveDB {
         syaryoMap = new EQPKeirekiData().addSyaryoKeireki(con, pw, syaryoTemplate, noneTypeSearch);
         json.write(FILENAME.replace(".json", "_eqpkeireki.json"), syaryoMap);
         pw.close();
-        */
+        
         //サービス経歴
         pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_service1_error.csv")))));
         syaryoMap = new ServiceData().addService(con, pw, syaryoTemplate, noneTypeSearch, "=1", "=1");
@@ -82,7 +82,7 @@ public class SyaryoHistoryCreate extends HiveDB {
         pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_service2_error.csv")))));
         syaryoMap = new ServiceData().addService(con, pw, syaryoTemplate, noneTypeSearch, "=1", "=2");
         json.write(FILENAME.replace(".json", "_service2.json"), syaryoMap);
-        pw.close();
+        pw.close();*/
        
         //受注
         /*pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_order_error.csv")))));
@@ -112,11 +112,17 @@ public class SyaryoHistoryCreate extends HiveDB {
         pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_sell_used_error.csv")))));
         syaryoMap = new SellsData().addUsed(con, pw, syaryoTemplate, noneTypeSearch);
         json.write(FILENAME.replace(".json", "_sell_used.json"), syaryoMap);
+        pw.close();*/
+        
+        //本体売上(OLD)
+        pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_sell_old_error.csv")))));
+        syaryoMap = new SellsData().addOld(con, pw, syaryoTemplate, noneTypeSearch);
+        json.write(FILENAME.replace(".json", "_sell_old.json"), syaryoMap);
         pw.close();
         
         //Komtrax
-        new KomtraxData().addKomtrax(FILENAME, con, syaryoTemplate, noneTypeSearch);
-*/
+        //new KomtraxData().addKomtrax(FILENAME, con, syaryoTemplate, noneTypeSearch);
+
     }
     
     public static Map createNoneTypeSearch(Map<String, SyaryoTemplate> syaryoTemplate){

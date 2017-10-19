@@ -8,6 +8,8 @@ import com.lynden.gmapsfx.javascript.object.GoogleMap;
 import com.lynden.gmapsfx.javascript.object.LatLong;
 import com.lynden.gmapsfx.javascript.object.MapOptions;
 import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
+import com.lynden.gmapsfx.javascript.object.Marker;
+import com.lynden.gmapsfx.javascript.object.MarkerOptions;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ResourceBundle;
@@ -43,11 +45,15 @@ public class LatLongFXMLController implements Initializable {
                 .mapType(MapTypeIdEnum.ROADMAP)
                 .zoom(9);
         map = googleMapView.createMap(mapOptions, false);
-
+        MarkerOptions mopt = new MarkerOptions();
         map.addMouseEventHandler(UIEventType.click, (GMapMouseEvent event) -> {
             LatLong latLong = event.getLatLong();
             latitudeLabel.setText(formatter.format(latLong.getLatitude()));
             longitudeLabel.setText(formatter.format(latLong.getLongitude()));
+            //mopt.position(latLong);
+            Marker marker = new Marker(mopt);
+            marker.setPosition(latLong);
+            map.addMarker(marker);
         });
 
     }

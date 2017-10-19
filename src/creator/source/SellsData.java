@@ -64,12 +64,16 @@ public class SellsData {
 
                 //車両
                 SyaryoTemplate syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
-                if(syaryo != null){
+                if (syaryo != null) {
                     syaryo = new SyaryoTemplate(syaryo.getName());
-                    if(map.get(syaryo.name) != null) syaryo = (SyaryoTemplate) map.get(syaryo.name);
-                }else if((noneType.get(kisy + "-" + kiban) != null)){
+                    if (map.get(syaryo.name) != null) {
+                        syaryo = (SyaryoTemplate) map.get(syaryo.name);
+                    }
+                } else if ((noneType.get(kisy + "-" + kiban) != null)) {
                     syaryo = new SyaryoTemplate(syaryoMap.get(noneType.get(kisy + "-" + kiban)).getName());
-                    if(map.get(syaryo.name) != null) syaryo = (SyaryoTemplate) map.get(syaryo.name);
+                    if (map.get(syaryo.name) != null) {
+                        syaryo = (SyaryoTemplate) map.get(syaryo.name);
+                    }
                 }
 
                 //Sell
@@ -98,7 +102,7 @@ public class SellsData {
                             + "," + date + "," + nu_kbn + "," + price1 + "," + price2 + "," + price3);
                     continue;
                 }
-                
+
                 m++;
 
                 //Last
@@ -123,7 +127,7 @@ public class SellsData {
                 }
             }
 
-            System.out.println("Total Processed Syaryo = "+  m + "/" + n);
+            System.out.println("Total Processed Syaryo = " + m + "/" + n);
             System.out.println("Total Update Syaryo = " + map.size());
 
             return map;
@@ -132,7 +136,98 @@ public class SellsData {
             return null;
         }
     }
-    
+
+    //SELL DATA
+    public Map<String, SyaryoTemplate> addOld(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap, Map<String, SyaryoTemplate> noneType) {
+        Map map = new TreeMap();
+
+        try {
+            Statement stmt = con.createStatement();
+
+            //Syaryo
+            String sql = String.format("select %s,%s,%s, %s, %s, %s from %s",
+                    Sell.Old.KISY, Sell.Old.TYP, Sell.Old.KIBAN, //Unique ID
+                    Sell.Old.KSYCD, //会社コード
+                    Sell.Old.URI_DAY, //売上年月
+                    Sell.Old.URI_KNGK, //実質価
+                    HiveDB.TABLE.SELL_OLD
+            );
+            System.out.println("Running: " + sql);
+
+            ResultSet res = stmt.executeQuery(sql);
+
+            int n = 0;
+            int m = 0;
+            while (res.next()) {
+                n++;
+
+                //Name
+                String kisy = res.getString(Sell.Old.KISY.get());
+                String type = res.getString(Sell.Old.TYP.get());
+                String kiban = res.getString(Sell.Old.KIBAN.get());
+
+                //車両
+                SyaryoTemplate syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
+                if (syaryo != null) {
+                    syaryo = new SyaryoTemplate(syaryo.getName());
+                    if (map.get(syaryo.name) != null) {
+                        syaryo = (SyaryoTemplate) map.get(syaryo.name);
+                    }
+                } else if ((noneType.get(kisy + "-" + kiban) != null)) {
+                    syaryo = new SyaryoTemplate(syaryoMap.get(noneType.get(kisy + "-" + kiban)).getName());
+                    if (map.get(syaryo.name) != null) {
+                        syaryo = (SyaryoTemplate) map.get(syaryo.name);
+                    }
+                }
+
+                //Sell
+                String price2 = res.getString(Sell.Old.URI_KNGK.get());   //実質価
+
+                //Date
+                String date = res.getString(Sell.Old.URI_DAY.get()); //売上年月
+
+                //DB
+                String db = "sell_old";
+                String company = res.getString(Sell.Old.KSYCD.get());   //会社コード
+                if(company != null)
+                    company = company.substring(0,2);
+                else
+                    company = "?";
+                
+                //車両チェック
+                String name = kisy + "-" + type + "-" + kiban;
+                if (syaryo == null) {
+                    errpw.println(n + "," + name + "," + date + "," + db + "," + company + ","
+                            + "," + date + "," + price2);
+                    continue;
+                }
+
+                m++;
+
+                //Last
+                syaryo.addLast(db, company, date);
+
+                //Sell
+                syaryo.addNew(db, company, date, "-1", "-1", price2);
+
+                //AddSyaryo
+                map.put(syaryo.getName(), syaryo);
+
+                if (n % 10000 == 0) {
+                    System.out.println("Syaryo Processed : " + n);
+                }
+            }
+
+            System.out.println("Total Processed Syaryo = " + m + "/" + n);
+            System.out.println("Total Update Syaryo = " + map.size());
+
+            return map;
+        } catch (SQLException sqlex) {
+            sqlex.printStackTrace();
+            return null;
+        }
+    }
+
     //SELL_USED DATA
     public Map<String, SyaryoTemplate> addUsed(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap, Map<String, SyaryoTemplate> noneType) {
         Map map = new TreeMap();
@@ -174,43 +269,50 @@ public class SellsData {
 
                 //車両
                 SyaryoTemplate syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
-                if(syaryo != null){
+                if (syaryo != null) {
                     syaryo = new SyaryoTemplate(syaryo.getName());
-                    if(map.get(syaryo.name) != null) syaryo = (SyaryoTemplate) map.get(syaryo.name);
-                }else if((noneType.get(kisy + "-" + kiban) != null)){
+                    if (map.get(syaryo.name) != null) {
+                        syaryo = (SyaryoTemplate) map.get(syaryo.name);
+                    }
+                } else if ((noneType.get(kisy + "-" + kiban) != null)) {
                     syaryo = new SyaryoTemplate(syaryoMap.get(noneType.get(kisy + "-" + kiban)).getName());
-                    if(map.get(syaryo.name) != null) syaryo = (SyaryoTemplate) map.get(syaryo.name);
+                    if (map.get(syaryo.name) != null) {
+                        syaryo = (SyaryoTemplate) map.get(syaryo.name);
+                    }
                 }
-                
+
                 //Sell
                 String satei_price = res.getString(Sell.Used.ST_KKU.get()); //査定価格
                 String price = res.getString(Sell.Used.CO_KKU.get()); //受注価格
                 String cost = res.getString(Sell.Used.HAN_CH_SUM.get()); //販直費
-                if(satei_price.contains("_"))
+                if (satei_price.contains("_")) {
                     satei_price = satei_price.replace("_", "");
-                if(price.contains("_"))
+                }
+                if (price.contains("_")) {
                     price = price.replace("_", "");
-                if(cost.contains("_"))
+                }
+                if (cost.contains("_")) {
                     cost = cost.replace("_", "");
-                
+                }
+
                 //Customer
                 String jid = res.getString(Sell.Used.CO_CODE.get()); //受注コード
                 String jname = res.getString(Sell.Used.CO_CUST.get()); //受注先名
                 String nctry_name = res.getString(Sell.Used.NO_CTRY.get()); //納品先国名
                 String nname = res.getString(Sell.Used.NO_CUST.get()); //納入先名
                 String sname = res.getString(Sell.Used.PO_TO.get()); //仕入先名
-                
+
                 //Date
                 String reg_date = res.getString(Sell.Used.DEN_HAK_DAY.get()).replace("/", ""); //伝票発行日
                 String date = res.getString(Sell.Used.URI_DAY.get()).replace("/", ""); //売上日
                 String satei_date = res.getString(Sell.Used.ST_ANS_DAY.get()).replace("/", ""); //査定回答日
                 String shire_date = res.getString(Sell.Used.PO_SUM_DAY.get()); //仕入計上日
-                try{ //そのうち修正
+                try { //そのうち修正
                     shire_date = shire_date.replace("/", "");
-                }catch(Exception e){
+                } catch (Exception e) {
                     shire_date = "-1";
                 }
-                
+
                 //SMR
                 String smr = res.getString(Sell.Used.PO_HR_MTR.get()); //SMR
 
@@ -221,24 +323,24 @@ public class SellsData {
                 //車両チェック
                 String name = kisy + "-" + type + "-" + kiban;
                 if (syaryo == null) {
-                    errpw.println(n + "," + name + "," + reg_date + "," + db + "," + company + "," + "?-?-"+ nctry_name + "," + "-1" + "," + nname
+                    errpw.println(n + "," + name + "," + reg_date + "," + db + "," + company + "," + "?-?-" + nctry_name + "," + "-1" + "," + nname
                             + "," + jid + "," + jname + "," + shire_date + "," + sname + "," + satei_date + "," + satei_price + "," + date + "," + price + "," + cost
-                             + "," + smr);
+                            + "," + smr);
                     continue;
                 }
-                
+
                 m++;
-                
+
                 //Used
                 syaryo.addUsed(db, company, date, price, satei_price, String.valueOf(Integer.valueOf(price) - Integer.valueOf(cost)));
-                
+
                 //Customer
-                syaryo.addOwner(db, company, date, "?-?"+nctry_name, "-1", nname);
+                syaryo.addOwner(db, company, date, "?-?" + nctry_name, "-1", nname);
                 syaryo.addOwner(db, company, shire_date, "?-?", "-1", sname);
-                
+
                 //SMR
                 syaryo.addSMR(db, company, shire_date, smr);
-                
+
                 //Last
                 syaryo.addLast(db, company, reg_date);
 
@@ -250,7 +352,7 @@ public class SellsData {
                 }
             }
 
-            System.out.println("Total Processed Syaryo = "+  m + "/" + n);
+            System.out.println("Total Processed Syaryo = " + m + "/" + n);
             System.out.println("Total Update Syaryo = " + map.size());
 
             return map;
