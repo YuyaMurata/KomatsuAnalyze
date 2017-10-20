@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 import json.JsonToSyaryoObj;
 import obj.SyaryoObject;
@@ -26,9 +27,11 @@ public class SyaryoToCSV {
         String kisy = "PC200";
         Map<String, SyaryoObject> syaryoMap = new JsonToSyaryoObj().reader("syaryo_obj_"+kisy+"_form.json");
         
+        service(path+kisy, syaryoMap);
+        
         //order(path+kisy, syaryoMap);
         
-        komtrax(path+kisy, syaryoMap);
+        //komtrax(path+kisy, syaryoMap);
         
     }
     
@@ -75,6 +78,44 @@ public class SyaryoToCSV {
             
             pw1.close();
             pw2.close();
+        } catch (IOException ex) {
+        }
+    }
+    
+    public static void service(String filename, Map<String, SyaryoObject> syaryoMap){
+        PrintWriter pw;
+        
+        try {
+            pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(filename+"_service_num.csv"))));
+            
+            List<String> typs = syaryoMap.values().stream()
+                                        .map(s -> s.getType())
+                                        .distinct()
+                                        .collect(Collectors.toList());
+            
+            Map<String, Integer> map = new TreeMap();
+            for(String typ : typs){
+                List<SyaryoObject> syaryos = syaryoMap.values().stream()
+                                                    .filter(s -> s.getType().toString().equals(typ))
+                                                    .collect(Collectors.toList());
+                
+                for(SyaryoObject syaryo : syaryos){
+                    for(String date : syaryo.getHistory().keySet()){
+                        List history = syaryo.getHistory().get(date);
+                        if(!history.get(1).toString().contains("service"))
+                            continue;
+                        String d = date.split("#")[0];
+                        if(map.get(d+","+typ) == null) map.put(d+","+typ, 1);
+                        else map.put(d+","+typ, map.get(d+","+typ)+1);
+                    }
+                }
+            }
+            
+            for(String key : map.keySet()){
+                pw.println(key+","+map.get(key));
+            }
+            
+            pw.close();
         } catch (IOException ex) {
         }
     }

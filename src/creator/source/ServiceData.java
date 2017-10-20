@@ -40,11 +40,11 @@ public class ServiceData {
                     Service._Service.HY_KKYKCD, //顧客コード
                     Service._Service.KYKNM, //顧客名
                     Service._Service.SGYO_MSINO, //作業明細番号
+                    Service._Service.UPD_RRK_MNO, //追番
                     Service._Service.UAGE_KBN_3, //売上区分3
                     Service._Service.SGYO_KTICD, //作業形態コード
                     Service._Service.SGYOCD, //作業コード
                     Service._Service.SGYO_NM, //作業名
-                    Service._Service.DIHY_SGYO_FLG, //代表作業フラグ
                     Service._Service.GAIYO, //概要
                     Service._Service.KISY_CMT, //機種コメント
                     Service._Service.JKOS, //工数
@@ -91,7 +91,6 @@ public class ServiceData {
                 String text = res.getString(Service._Service.GAIYO.get());     //概要
 
                 //Order
-                String flg = res.getString(Service._Service.DIHY_SGYO_FLG.get()); //代表作業フラグ
                 String odr_kbn = res.getString(Service._Service.ODR_KBN.get());       //受注区分
                 String uag_kbn = res.getString(Service._Service.UAGE_KBN_3.get());    //売上区分3
                 String price = res.getString(Service._Service.SKKG.get());
@@ -108,6 +107,7 @@ public class ServiceData {
 
                 //Work
                 String sg_mid = res.getString(Service._Service.SGYO_MSINO.get());    //作業明細番号
+                String sg_add_id = res.getString(Service._Service.UPD_RRK_MNO.get());    //追番
                 String sg_keitai_id = res.getString(Service._Service.SGYO_KTICD.get());    //作業形態コード
                 String sg_id = res.getString(Service._Service.SGYOCD.get());        //作業コード
                 String sg_name = res.getString(Service._Service.SGYO_NM.get());       //作業名
@@ -139,7 +139,7 @@ public class ServiceData {
                 String comment = res.getString(Service._Service.KISY_CMT.get());
                 if (syaryo == null) {
                     errpw.println(n + "," + name + "," + last_date + "," + db + "," + company + "," + cid + "," + gyosyu + "," + cname
-                            + "," + date + "," + id + "," + odr_kbn + "," + uag_kbn + "," + flg + "," + price + "," + sg_mid
+                            + "," + date + "," + id + "," + odr_kbn + "," + uag_kbn + "," + "," + price + "," + sg_mid + "," + sg_add_id
                             + "," + sg_keitai_id + "," + sg_id + "," + sg_name + "," + kosu + "," + suryo + "," + parts_id + "," + parts_name
                             + "," + smr + "," + text + "," + comment);
                     continue;
@@ -148,11 +148,9 @@ public class ServiceData {
                 m++;
 
                 //Order
-                if (flg.equals("1")) {
-                    //History
-                    syaryo.addHistory(db, company, date, id);
-                    syaryo.addOrder(db, company, "-1", "-1", "-1", date, id, odr_kbn, "-1", "?", "?", "?", "?", cid, cname, "?", "-1", "-1", kosu, "-1", price1, price2, price3, text);
-                }
+                //History
+                syaryo.addHistory(db, company, date, id);
+                syaryo.addOrder(db, company, "-1", "-1", "-1", date, id, odr_kbn, "-1", "?", "?", "?", "?", cid, cname, "?", "-1", "-1", kosu, "-1", price1, price2, price3, text);
 
                 //Parts
                 if (odr_kbn.equals("1")) {

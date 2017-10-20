@@ -22,17 +22,18 @@ import obj.SyaryoTemplate;
  * @author ZZ17390
  */
 public class SyaryoData {
+
     //SYARYO DATA
     public Map<String, SyaryoTemplate> addSyaryoCategory(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap, Map<String, SyaryoTemplate> noneType) {
         Map<String, SyaryoTemplate> map = new TreeMap<>();
-        
+
         try {
             Statement stmt = con.createStatement();
 
             //Syaryo
             String sql = String.format("select s.%s,s.%s,s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, c.%s, c.%s, c.%s from %s s join %s c on (s.%s=c.%s and s.%s=c.%s) ",
                     Syaryo._Syaryo.KISY, Syaryo._Syaryo.TYP, Syaryo._Syaryo.KIBAN, //Unique ID
-                    Syaryo._Syaryo.KSYCD,   //会社コード
+                    Syaryo._Syaryo.KSYCD, //会社コード
                     Syaryo._Syaryo.SEHN_BNR_CD_B, //製品分類コード B
                     Syaryo._Syaryo.NU_KBN, //NU区分
                     Syaryo._Syaryo.NNY_YMD, //納入年月日
@@ -40,7 +41,7 @@ public class SyaryoData {
                     Syaryo._Syaryo.SYRK_KBN, //車歴
                     Syaryo._Syaryo.SYRK_YMD, //車歴変更日付
                     Syaryo._Syaryo.KOMTRX_SOTY_KBN, //Komtrax
-                    Syaryo._Syaryo.LAST_UPD_DAYT,  //最終更新日
+                    Syaryo._Syaryo.LAST_UPD_DAYT, //最終更新日
                     Customer.Common.KYKNM_1,
                     Customer.Common.GYSD_BNRCD,
                     Customer.Common.GYSCD,
@@ -65,12 +66,16 @@ public class SyaryoData {
 
                 //車両
                 SyaryoTemplate syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
-                if(syaryo != null){
+                if (syaryo != null) {
                     syaryo = new SyaryoTemplate(syaryo.getName());
-                    if(map.get(syaryo.name) != null) syaryo = (SyaryoTemplate) map.get(syaryo.name);
-                }else if((noneType.get(kisy + "-" + kiban) != null)){
+                    if (map.get(syaryo.name) != null) {
+                        syaryo = (SyaryoTemplate) map.get(syaryo.name);
+                    }
+                } else if ((noneType.get(kisy + "-" + kiban) != null)) {
                     syaryo = new SyaryoTemplate(syaryoMap.get(noneType.get(kisy + "-" + kiban)).getName());
-                    if(map.get(syaryo.name) != null) syaryo = (SyaryoTemplate) map.get(syaryo.name);
+                    if (map.get(syaryo.name) != null) {
+                        syaryo = (SyaryoTemplate) map.get(syaryo.name);
+                    }
                 }
 
                 //車両マスタ
@@ -84,13 +89,13 @@ public class SyaryoData {
                 //Customer
                 String cid = res.getString(Syaryo._Syaryo.HY_KKYKCD.get());
                 String cname = res.getString(Customer.Common.KYKNM_1.get());
-                String gyosyu = res.getString(Customer.Common.GYSD_BNRCD.get())+
-                                "-"+res.getString(Customer.Common.GYSCD.get());
+                String gyosyu = res.getString(Customer.Common.GYSD_BNRCD.get())
+                        + "-" + res.getString(Customer.Common.GYSCD.get());
 
                 //Date
                 String nounyu = res.getString(Syaryo._Syaryo.NNY_YMD.get());
                 String syareki_date = res.getString(Syaryo._Syaryo.SYRK_YMD.get());
-                String last_date = res.getString(Syaryo._Syaryo.LAST_UPD_DAYT.get()).replace("-", "").substring(0,8);
+                String last_date = res.getString(Syaryo._Syaryo.LAST_UPD_DAYT.get()).replace("-", "").substring(0, 8);
 
                 //DB
                 String db = "syaryo";
@@ -100,14 +105,14 @@ public class SyaryoData {
                 String name = kisy + "-" + type + "-" + kiban;
                 if (syaryo == null) {
                     errpw.println(n + "," + name + "," + last_date + "," + db + "," + company + "," + cid + "," + gyosyu + "," + cname + "," + category
-                                    + "," + komtrax + "," + nu + "," + nounyu + "," + syareki_date + "," + syareki);
+                            + "," + komtrax + "," + nu + "," + nounyu + "," + syareki_date + "," + syareki);
                     continue;
                 }
-                
+
                 m++;
 
                 //Spec
-                syaryo.addSpec(komtrax, category);
+                syaryo.addSpec(komtrax, "?",category);
                 //NU
                 if (nu.equals("N")) {
                     syaryo.addNew(db, company, nounyu, "-1", "-1", "-1");
@@ -129,7 +134,7 @@ public class SyaryoData {
                 }
             }
 
-            System.out.println("Total Processed Syaryo = "+  m + "/" + n);
+            System.out.println("Total Processed Syaryo = " + m + "/" + n);
             System.out.println("Total Update Syaryo = " + map.size());
 
             return map;

@@ -24,11 +24,12 @@ public class SyaryoCheck {
     
     public static void main(String[] args) {
         JsonToSyaryoObj obj = new JsonToSyaryoObj();
-        syaryoMap = obj.reader("syaryo_obj_"+kisy+".json");
+        syaryoMap = obj.reader("syaryo_obj_"+kisy+"_form.json");
+        System.out.println(syaryoMap.size());
         
-        //count();
+        count();
         
-        nullCheck();
+        //nullCheck();
         
         //Check 1:
         //randomSampling(10, syaryoMap);
@@ -39,7 +40,7 @@ public class SyaryoCheck {
                                         .map(s -> s.getType())
                                         .distinct()
                                         .collect(Collectors.toList());
-        
+
         for(String typ : typs){
             long cnt = 0L;//syaryoMap.keySet().stream().filter(s -> s.split("-")[1].contains(typ)).filter(s -> syaryoMap.get(s).getKomtrax()).count();
             for(SyaryoObject syaryo : syaryoMap.values()){

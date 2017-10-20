@@ -20,7 +20,7 @@ public class SyaryoTemplateAggregate {
 
     public static void main(String[] args) {
         String path = "車両テンプレート";
-        String kisy = "WA470";
+        String kisy = "PC200";
         String FILENAME = "syaryo_mid_" + kisy + ".json";
         File[] flist = (new File(path)).listFiles();
 
@@ -49,7 +49,7 @@ public class SyaryoTemplateAggregate {
                     int index = 0;
                     for (String str : template.getAll().get(key).split("\n")) {
                         //System.out.println(str);
-                        if (str.contains("会社コード") || str.contains("年月日") || str.contains("製品分類")) {
+                        if (str.contains("会社コード") || str.contains("年月日") || str.contains("製品分類") || str.contains("販売ユニットコード") ) {
                             index = str.split(",").length;
                             continue;
                         }

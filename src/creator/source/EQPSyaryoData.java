@@ -29,11 +29,12 @@ public class EQPSyaryoData {
             Statement stmt = con.createStatement();
 
             //EQP_Syaryo
-            String sql = String.format("select %s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s from %s",
+            String sql = String.format("select %s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s from %s",
                     EQP.Syaryo.KISY, EQP.Syaryo.TYP, EQP.Syaryo.KIBAN, //Unique ID
                     EQP.Syaryo.MNF_DATE, //生産日
                     EQP.Syaryo.PLANT, //生産工場(catalog)
                     EQP.Syaryo.SHIP_DATE, //出荷日
+                    EQP.Syaryo.NEW_DELI_DATE, //新車納入日
                     EQP.Syaryo.DELI_CTG, //中古納入区分
                     EQP.Syaryo.LTST_DELI_DATE, //最新納入日
                     EQP.Syaryo.SCRAP_DATE, //廃車日
@@ -42,6 +43,9 @@ public class EQPSyaryoData {
                     EQP.Syaryo.DB, //代理店
                     EQP.Syaryo.LTST_SMR_DATE, //最新SMR日付
                     EQP.Syaryo.LTST_SMR, //SMR
+                    EQP.Syaryo.SYHK,    //小変形
+                    EQP.Syaryo.KMTRX_APP_CTG, //Komtrax
+                    EQP.Syaryo.VHMS_APP_CTG, //Komtrax plus
                     HiveDB.TABLE.EQP_SYARYO
             );
             System.out.println("Running: " + sql);
@@ -70,6 +74,7 @@ public class EQPSyaryoData {
                 //Date
                 String mnf_date = res.getString(EQP.Syaryo.MNF_DATE.get());
                 String ship_date = res.getString(EQP.Syaryo.SHIP_DATE.get());
+                String new_date = res.getString(EQP.Syaryo.NEW_DELI_DATE.get());
                 String used_date = res.getString(EQP.Syaryo.LTST_DELI_DATE.get());
                 String scrap_date = res.getString(EQP.Syaryo.SCRAP_DATE.get());
                 String smr_date = res.getString(EQP.Syaryo.LTST_SMR_DATE.get());
@@ -77,6 +82,16 @@ public class EQPSyaryoData {
 
                 //Plant
                 String plant = res.getString(EQP.Syaryo.PLANT.get());
+                
+                //Spec
+                String s_type = res.getString(EQP.Syaryo.SYHK.get());
+                String komtrax = res.getString(EQP.Syaryo.KMTRX_APP_CTG.get());
+                String komtrax_plus = res.getString(EQP.Syaryo.VHMS_APP_CTG.get());
+                if(komtrax.equals("Y") || komtrax_plus.equals("Y"))
+                    komtrax = "1";
+                else
+                    komtrax = "0";
+                
 
                 //Used
                 String used_flg = res.getString(EQP.Syaryo.DELI_CTG.get());
@@ -110,10 +125,23 @@ public class EQPSyaryoData {
                 syaryo.addBorn(mnf_date, plant);
                 syaryo.addDeploy(ship_date);
                 syaryo.addDead(db, company, scrap_date);
+                
+                //納入
+                //新車
+                syaryo.addNew(db, company, new_date, "-1", "-1", "-1");
+                //中古
                 if (used_flg.equals("1")) {
                     syaryo.addUsed(db, company, used_date, "-1", "-1", "-1");
-                    syaryo.addOwner(db, company, used_date, "-1", cid, cname);
+                    syaryo.addOwner(db, company, used_date, "?-?", cid, cname);
+                    syaryo.addOwner(db, company, new_date, "-1", "-1", "?");
+                }else{
+                    syaryo.addOwner(db, company, new_date, "?-?", cid, cname);
                 }
+                
+                //Spec
+                syaryo.addSpec(komtrax, s_type, "?");
+                
+                //SMR
                 syaryo.addSMR(db, company, smr_date, smr);
                 syaryo.addLast(db, company, smr_date);
                 
