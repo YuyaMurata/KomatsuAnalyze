@@ -33,6 +33,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Slider;
+import javafx.util.StringConverter;
 import json.JsonToSyaryoObj;
 import obj.SyaryoObject;
 
@@ -52,7 +53,6 @@ public class GoogleMapFXMLController implements Initializable {
 
     @FXML
     private Slider dateSlider;
-    private TreeMap<Double, String> sliderMap = new TreeMap<>();
 
     /**
      * Initializes the controller class.
@@ -164,22 +164,35 @@ public class GoogleMapFXMLController implements Initializable {
         Double first = Double.valueOf(timeMap.keySet().toArray(new String[timeMap.size()])[0]);
         Double last = Double.valueOf(timeMap.keySet().toArray(new String[timeMap.size()])[timeMap.size()-1]);
     
-        Double width = last - first + 1;
-        Double i = 0d;
-        for(String y : timeMap.keySet())
-            sliderMap.put((i++)*(100d / width), y);
+        dateSlider.setMin(first);
+        dateSlider.setMax(last);
+        dateSlider.setMajorTickUnit(1);
+        dateSlider.setBlockIncrement(1);
+        dateSlider.setShowTickLabels(true);
+        dateSlider.setShowTickMarks(true);
+        dateSlider.setSnapToTicks(true);
+        dateSlider.setLabelFormatter(new StringConverter<Double>() {
+            @Override
+            public String toString(Double value) {
+                return String.valueOf(value.intValue());
+            }
+
+            @Override
+            public Double fromString(String string) {
+                return null;
+            }
+        });
         
-        System.out.println(sliderMap);
+        //System.out.println(sliderMap);
     }
 
-    protected void dateScroll(double oldv, double newv) {
+    protected void dateScroll(Double oldv, Double newv) {
         System.out.println("Scroll!"+newv);
-        String oy = sliderMap.floorEntry(oldv).getValue();
-        String y = sliderMap.floorEntry(newv).getValue();
-        
+        //String oy = sliderMap.floorEntry(oldv).getValue();
         if(oldMapShape != null)
             map.removeMapShape(oldMapShape);
-        gpsPath(timeMap.get(y), 2, "#ff4500");
+        
+        gpsPath(timeMap.get(String.valueOf(newv.intValue())), 2, "#ff4500");
     }
     
     private MapShape oldMapShape;
