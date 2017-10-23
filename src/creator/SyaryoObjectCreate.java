@@ -17,7 +17,10 @@ import obj.SyaryoTemplate;
  * @author ZZ17390
  */
 public class SyaryoObjectCreate {
-
+    public static void main(String[] args) {
+        new SyaryoObjectCreate().create("WA470");
+    }
+    
     public void create(String kisy) {
         String midtemp = "中間データ\\syaryo_mid_" + kisy + ".zip";
         String FILENAME = "syaryo_obj_" + kisy + ".json";
@@ -58,9 +61,5 @@ public class SyaryoObjectCreate {
         json.write(FILENAME, syaryoMap);
         
         System.out.println(syaryoMap.size());
-    }
-    
-    public static void main(String[] args) {
-        new SyaryoObjectCreate().create("PC200");
     }
 }

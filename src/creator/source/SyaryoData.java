@@ -31,10 +31,9 @@ public class SyaryoData {
             Statement stmt = con.createStatement();
 
             //Syaryo
-            String sql = String.format("select s.%s,s.%s,s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, c.%s, c.%s, c.%s from %s s join %s c on (s.%s=c.%s and s.%s=c.%s) ",
+            String sql = String.format("select s.%s,s.%s,s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, c.%s, c.%s, c.%s from %s s join %s c on (s.%s=c.%s and s.%s=c.%s) ",
                     Syaryo._Syaryo.KISY, Syaryo._Syaryo.TYP, Syaryo._Syaryo.KIBAN, //Unique ID
                     Syaryo._Syaryo.KSYCD, //会社コード
-                    Syaryo._Syaryo.SEHN_BNR_CD_B, //製品分類コード B
                     Syaryo._Syaryo.NU_KBN, //NU区分
                     Syaryo._Syaryo.NNY_YMD, //納入年月日
                     Syaryo._Syaryo.HY_KKYKCD, //保有顧客
@@ -79,7 +78,6 @@ public class SyaryoData {
                 }
 
                 //車両マスタ
-                String category = res.getString(Syaryo._Syaryo.SEHN_BNR_CD_B.get());
                 String nu = res.getString(Syaryo._Syaryo.NU_KBN.get());
 
                 //Code
@@ -104,15 +102,13 @@ public class SyaryoData {
                 //車両チェック
                 String name = kisy + "-" + type + "-" + kiban;
                 if (syaryo == null) {
-                    errpw.println(n + "," + name + "," + last_date + "," + db + "," + company + "," + cid + "," + gyosyu + "," + cname + "," + category
+                    errpw.println(n + "," + name + "," + last_date + "," + db + "," + company + "," + cid + "," + gyosyu + "," + cname
                             + "," + komtrax + "," + nu + "," + nounyu + "," + syareki_date + "," + syareki);
                     continue;
                 }
 
                 m++;
 
-                //Spec
-                syaryo.addSpec(komtrax, "?",category);
                 //NU
                 if (nu.equals("N")) {
                     syaryo.addNew(db, company, nounyu, "-1", "-1", "-1");

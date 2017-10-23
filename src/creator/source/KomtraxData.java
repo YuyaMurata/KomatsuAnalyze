@@ -17,7 +17,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
 import java.util.TreeMap;
-import json.SyaryoObjToJson;
+import json.SyaryoTemplateToJson;
 import obj.SyaryoTemplate;
 
 /**
@@ -36,26 +36,17 @@ public class KomtraxData {
         this.noneType = noneType;
         
         //JSON Writer
-        SyaryoObjToJson json = new SyaryoObjToJson();
         
-        Map<String, SyaryoTemplate> komtraxMap = addGPS(syaryoMap);
-        json.write(FILENAME.replace(".json", "_komtrax_gps.json"), komtraxMap);
+        addGPS(syaryoMap);
+        addSMR(syaryoMap);
+        addEngine(syaryoMap);
+        addError(syaryoMap);
+        addCaution(syaryoMap);
         
-        komtraxMap = addSMR(syaryoMap);
-        json.write(FILENAME.replace(".json", "_komtrax_smr.json"), komtraxMap);
-        
-        komtraxMap = addEngine(syaryoMap);
-        json.write(FILENAME.replace(".json", "_komtrax_engine.json"), komtraxMap);
-        
-        komtraxMap = addError(syaryoMap);
-        json.write(FILENAME.replace(".json", "_komtrax_error.json"), komtraxMap);
-        
-        komtraxMap = addCaution(syaryoMap);
-        json.write(FILENAME.replace(".json", "_komtrax_caution.json"), komtraxMap);
     }
     
     //GPS
-    public Map<String, SyaryoTemplate> addGPS(Map<String, SyaryoTemplate> syaryoMap){       
+    public void addGPS(Map<String, SyaryoTemplate> syaryoMap){       
         Map map = new TreeMap();
         
         try {
@@ -79,7 +70,7 @@ public class KomtraxData {
             int m=0;
             while (res.next()) {
                 n++;
-
+                
                 //Name
                 String kisy = res.getString(Komtrax.CW_GPS.KIND.get());
                 String type = res.getString(Komtrax.CW_GPS.TYPE.get());
@@ -129,18 +120,16 @@ public class KomtraxData {
             System.out.println("Total Update Syaryo = " + map.size());
             
             errpw.close();
+            new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_komtrax_gps.json"), map);
             
-            return map;
         } catch (SQLException sqlex) {
             sqlex.printStackTrace();
-            return null;
         } catch (IOException ex) {
-            return null;
         }
     }
     
     //SMR
-    public Map<String, SyaryoTemplate> addSMR(Map<String, SyaryoTemplate> syaryoMap){       
+    public void addSMR(Map<String, SyaryoTemplate> syaryoMap){       
         Map map = new TreeMap();
         
         try {
@@ -212,18 +201,15 @@ public class KomtraxData {
             System.out.println("Total Update Syaryo = " + map.size());
             
             errpw.close();
-            
-            return map;
+            new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_komtrax_smr.json"), map);
         } catch (SQLException sqlex) {
             sqlex.printStackTrace();
-            return null;
         } catch (IOException ex) {
-            return null;
         }
     }
     
     //Engine
-    public Map<String, SyaryoTemplate> addEngine(Map<String, SyaryoTemplate> syaryoMap){       
+    public void addEngine(Map<String, SyaryoTemplate> syaryoMap){       
         Map map = new TreeMap();
         
         try {
@@ -296,17 +282,15 @@ public class KomtraxData {
             
             errpw.close();
             
-            return map;
+            new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_komtrax_engine.json"), map);
         } catch (SQLException sqlex) {
             sqlex.printStackTrace();
-            return null;
         } catch (IOException ex) {
-            return null;
         }
     }
     
     //Error
-    public Map<String, SyaryoTemplate> addError(Map<String, SyaryoTemplate> syaryoMap){       
+    public void addError(Map<String, SyaryoTemplate> syaryoMap){       
         Map map = new TreeMap();
 
         try {
@@ -381,17 +365,15 @@ public class KomtraxData {
             
             errpw.close();
             
-            return map;
+            new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_komtrax_error.json"), map);
         } catch (SQLException sqlex) {
             sqlex.printStackTrace();
-            return null;
         } catch (IOException ex) {
-            return null;
         }
     }
     
     //Caution
-    public Map<String, SyaryoTemplate> addCaution(Map<String, SyaryoTemplate> syaryoMap){       
+    public void addCaution(Map<String, SyaryoTemplate> syaryoMap){       
         Map map = new TreeMap();
 
         try {
@@ -468,12 +450,10 @@ public class KomtraxData {
             
             errpw.close();
             
-            return map;
+            new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_komtrax_caution.json"), map);
         } catch (SQLException sqlex) {
             sqlex.printStackTrace();
-            return null;
         } catch (IOException ex) {
-            return null;
         }
     }
 }

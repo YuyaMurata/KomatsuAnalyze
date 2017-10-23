@@ -30,28 +30,26 @@ public class SyaryoHistoryCreate extends HiveDB {
         Connection con = getConnection(); //HiveDB
 
         //テンプレート生成
-        template(con);
+        //template(con);
         Map<String, SyaryoTemplate> syaryoTemplate = readTempate();
 
         //インデックス作成
         Map noneTypeSearch = createNoneTypeSearch(syaryoTemplate);
 
         //KOMPAS車両データの読み込み
-        Map<String, SyaryoTemplate> syaryoMap = syaryo(con, syaryoTemplate, noneTypeSearch);
+        //Map<String, SyaryoTemplate> syaryoMap = syaryo(con, syaryoTemplate, noneTypeSearch);
 
         //KOMPAS車両マスタとテンプレートのマージ。 消せば工場データが中心となる。
-        syaryoTemplate = merge(syaryoTemplate, syaryoMap);
+        //syaryoTemplate = merge(syaryoTemplate, syaryoMap);
 
         //インデックス再生成
-        noneTypeSearch = createNoneTypeSearch(syaryoTemplate);
+        //noneTypeSearch = createNoneTypeSearch(syaryoTemplate);
 
         //データ入力
         
         //EQP
         eqp_syaryo(con, syaryoTemplate, noneTypeSearch);
-        
-        System.exit(0);
-        eqp_spec(con, syaryoTemplate, noneTypeSearch);
+        /*eqp_spec(con, syaryoTemplate, noneTypeSearch);
         eqp_keireki(con, syaryoTemplate, noneTypeSearch);
         
         //KOMPAS
@@ -68,7 +66,7 @@ public class SyaryoHistoryCreate extends HiveDB {
         
         //KOMTRAX
         komtrax(con, syaryoTemplate, noneTypeSearch);
-
+        */
     }
 
     public static void template(Connection con) {

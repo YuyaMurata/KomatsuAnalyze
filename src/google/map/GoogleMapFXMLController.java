@@ -82,6 +82,7 @@ public class GoogleMapFXMLController implements Initializable {
         MarkerOptions mopt = new MarkerOptions();
         InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
         List<Marker> syaryoGPS = new ArrayList<>();
+        List<LatLong> syaryoPath = new ArrayList<>();
         int i = 0;
         for (String gpsDate : syaryo.getGPS().keySet()) {
             String[] gps = syaryo.getGPS().get(gpsDate).get(0).toString().split("_");
@@ -93,15 +94,18 @@ public class GoogleMapFXMLController implements Initializable {
             /*InfoWindow info = new InfoWindow(infoWindowOptions);
             info.setContent(syaryo.getName()+"\n"+gpsDate);
             info.open(map, marker);*/
-            List<LatLong> path = new ArrayList<>();
-            path.add(latLong);
-            path.add(latLong);
-            gpsPath(path);
+            syaryoPath.add(latLong);
+            List<LatLong> point = new ArrayList<>();
+            point.add(latLong);
+            point.add(latLong);
+            gpsPath(point, 10);
 
             i++;
             System.out.println(gpsDate+":"+latLong+" ("+i+"/"+syaryo.getGPS().size()+")");
         }
 
+        gpsPath(syaryoPath, 5);
+        
         //Add Marker to Map
         //map.addMarkers(syaryoGPS);
     }
@@ -110,7 +114,7 @@ public class GoogleMapFXMLController implements Initializable {
         System.out.println("Scroll!");
     }
     
-    public void gpsPath(List<LatLong> path){
+    public void gpsPath(List<LatLong> path, int size){
         PolylineOptions line_opt;
         Polyline line;
 
@@ -120,7 +124,7 @@ public class GoogleMapFXMLController implements Initializable {
                 .draggable(false)
                 .editable(false)
                 .strokeColor("#ff4500")
-                .strokeWeight(10)
+                .strokeWeight(size)
                 .visible(true);
 
         line = new Polyline(line_opt);

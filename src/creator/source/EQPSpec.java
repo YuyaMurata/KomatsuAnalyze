@@ -29,12 +29,10 @@ public class EQPSpec {
             Statement stmt = con.createStatement();
 
             //EQP_Spec
-            String sql = String.format("select s.%s,s.%s,s.%s, s.%s, u.%s, u.%s, u.%s, u.%s from %s s join %s u on (s.kisy=u.kisy and s.typ=u.typ and s.SALES_UNIT_CD=u.SALES_UNIT_CD)",
+            String sql = String.format("select s.%s,s.%s,s.%s, s.%s, u.%s, u.%s from %s s join %s u on (s.kisy=u.kisy and s.typ=u.typ and s.SALES_UNIT_CD=u.SALES_UNIT_CD)",
                     EQP.Spec.KISY, EQP.Spec.TYP, EQP.Spec.KIBAN, //Unique ID
                     EQP.Spec.SALES_UNIT_CD,
-                    EQP.Hanbai.CTG_M_CD,
                     EQP.Hanbai.CTG_M_NM,
-                    EQP.Hanbai.CTG_S_CD,
                     EQP.Hanbai.CTG_S_NM,
                     HiveDB.TABLE.EQP_SPEC,
                     HiveDB.TABLE.EQP_HANBAI
@@ -64,9 +62,7 @@ public class EQPSpec {
                 
                 //SpecDetail
                 String unit = res.getString(EQP.Spec.SALES_UNIT_CD.get());
-                String spec_m_id = res.getString(EQP.Hanbai.CTG_M_CD.get());
                 String spec_m_name = res.getString(EQP.Hanbai.CTG_M_NM.get());
-                String spec_s_id = res.getString(EQP.Hanbai.CTG_S_CD.get());
                 String spec_s_name = res.getString(EQP.Hanbai.CTG_S_NM.get());
                 
                 //DB
@@ -76,13 +72,13 @@ public class EQPSpec {
                 //車両チェック
                 String name = kisy + "-" + type + "-" + kiban;
                 if (syaryo == null) {
-                    errpw.println(n + "," + name + "," + db + "," + company + "," + unit + "," + spec_m_id + "," + spec_m_name + "," + spec_s_id + "," + spec_s_name);
+                    errpw.println(n + "," + name + "," + db + "," + company + "," + unit + "," + spec_m_name + "," + spec_s_name);
                     continue;
                 }
                 m++;
 
                 //Syaryo Spec Detail
-                syaryo.addDetail(unit, spec_m_id, spec_m_name, spec_s_id, spec_s_name);
+                syaryo.addDetail(unit, spec_m_name, spec_s_name);
                 
                 map.put(syaryo.getName(), syaryo);
 

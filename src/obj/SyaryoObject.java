@@ -46,7 +46,11 @@ public class SyaryoObject {
 
                 try {
                     if (field.equals("仕様")) {
-                        addSpec(s[0], s[1], "syaryo_?");
+                        addSpec(s[0], s[1], "eqp+syaryo_?");
+                    } else if(field.equals("詳細")){
+                        list.add(s[1]);
+                        list.add(s[2]);
+                        addDetail(s[0], list, "eqp_syaryo_?");
                     } else if (field.equals("生産")) {
                         addBorn(s[0]);
                     } else if (field.equals("出荷")) {
@@ -124,12 +128,15 @@ public class SyaryoObject {
     }
 
     public void addNew(String date, String cid, List price, String source) {
-        TreeMap newmap = new TreeMap();
+        TreeMap newmap = (TreeMap) map.get("新車");
+        if (newmap == null) {
+            newmap = new TreeMap();
+        }
         List<Object> list = new ArrayList<>();
         list.add(cid);
         list.addAll(price);
         list.add(source);
-        newmap.put(date, list);
+        newmap.put(date_no("新車", date), list);
         map.put("新車", newmap);
     }
 
@@ -139,6 +146,20 @@ public class SyaryoObject {
         list.add(komtrax);
         list.add(source);
         map.put("仕様", list);
+    }
+    
+    private int detilno = 0;
+    public void addDetail(String unitID, List names, String source) {
+        TreeMap detailmap = (TreeMap) map.get("詳細");
+        if (detailmap == null) {
+            detailmap = new TreeMap();
+        }
+        List<Object> list = new ArrayList<>();
+        list.add(unitID);
+        list.addAll(names);
+        list.add(source);
+        detailmap.put(detilno++, list);
+        map.put("詳細", detailmap);
     }
 
     public void addUsed(String date, String cid, List price, String source) {

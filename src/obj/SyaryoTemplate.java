@@ -36,7 +36,7 @@ public class SyaryoTemplate{
     
     public void add(String key, String[] s){
         if(key.equals("仕様")) addSpec(s[0], s[1], s[2]);
-        if(key.equals("詳細")) addDetail(s[0], s[1], s[2], s[3], s[4]);
+        if(key.equals("詳細")) addDetail(s[0], s[1], s[2]);
         if(key.equals("生産")) addBorn(s[0], s[1]);
         if(key.equals("出荷")) addDeploy(s[0]);
         if(key.equals("新車")) addNew(s[0], s[1], s[2], s[3], s[4], s[5]);
@@ -65,7 +65,7 @@ public class SyaryoTemplate{
     public void addSpec(String komtrax, String stype, String category) {
         String str = "";
         if (map.get("仕様") == null) {
-            str = "Komtrax, 製品分類B \n ";
+            str = "Komtrax, 小変形, 製品分類B \n ";
         } else {
             str = map.get("仕様") + " \n ";
         }
@@ -75,17 +75,17 @@ public class SyaryoTemplate{
         map.put("仕様", str);
     }
     
-    public void addDetail(String unit_id, String mid, String mname, String sid, String sname) {
+    public void addDetail(String unit_id, String mname, String sname) {
         String str = "";
         if (map.get("詳細") == null) {
-            str = "販売ユニットコード, 中分類コード, 中分類名, 小分類コード, 小分類名 \n ";
+            str = "販売ユニットコード, 中分類名, 小分類名 \n ";
         } else {
-            str = map.get("仕様") + " \n ";
+            str = map.get("詳細") + " \n ";
         }
 
-        str += unit_id + "," + mid + "," + mname + "," + sid + "," + sname;
+        str += unit_id + "," + mname + "," + sname;
 
-        map.put("仕様", str);
+        map.put("詳細", str);
     }
 
     public void addBorn(String date, String plant) {

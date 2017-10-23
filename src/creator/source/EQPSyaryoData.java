@@ -7,6 +7,7 @@ package creator.source;
 
 import db.HiveDB;
 import db.field.EQP;
+import db.field.Syaryo;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -29,7 +30,7 @@ public class EQPSyaryoData {
             Statement stmt = con.createStatement();
 
             //EQP_Syaryo
-            String sql = String.format("select %s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s from %s",
+            String sql = String.format("select e.%s,e.%s,e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, s.%s from %s e join %s s on (e.kisy=s.kisy and e.kiban=s.kiban)",
                     EQP.Syaryo.KISY, EQP.Syaryo.TYP, EQP.Syaryo.KIBAN, //Unique ID
                     EQP.Syaryo.MNF_DATE, //生産日
                     EQP.Syaryo.PLANT, //生産工場(catalog)
@@ -46,7 +47,9 @@ public class EQPSyaryoData {
                     EQP.Syaryo.SYHK,    //小変形
                     EQP.Syaryo.KMTRX_APP_CTG, //Komtrax
                     EQP.Syaryo.VHMS_APP_CTG, //Komtrax plus
-                    HiveDB.TABLE.EQP_SYARYO
+                    Syaryo._Syaryo.SEHN_BNR_CD_B, //製品分類コード B
+                    HiveDB.TABLE.EQP_SYARYO,
+                    HiveDB.TABLE.SYARYO
             );
             System.out.println("Running: " + sql);
 
@@ -87,12 +90,12 @@ public class EQPSyaryoData {
                 String s_type = res.getString(EQP.Syaryo.SYHK.get());
                 String komtrax = res.getString(EQP.Syaryo.KMTRX_APP_CTG.get());
                 String komtrax_plus = res.getString(EQP.Syaryo.VHMS_APP_CTG.get());
+                String category = res.getString(Syaryo._Syaryo.SEHN_BNR_CD_B.get());
                 if(komtrax.equals("Y") || komtrax_plus.equals("Y"))
                     komtrax = "1";
                 else
                     komtrax = "0";
                 
-
                 //Used
                 String used_flg = res.getString(EQP.Syaryo.DELI_CTG.get());
 
@@ -139,7 +142,7 @@ public class EQPSyaryoData {
                 }
                 
                 //Spec
-                syaryo.addSpec(komtrax, s_type, "?");
+                syaryo.addSpec(komtrax, s_type, category);
                 
                 //SMR
                 syaryo.addSMR(db, company, smr_date, smr);
