@@ -48,8 +48,8 @@ public class SyaryoHistoryCreate extends HiveDB {
         //データ入力
         
         //EQP
-        eqp_syaryo(con, syaryoTemplate, noneTypeSearch);
-        /*eqp_spec(con, syaryoTemplate, noneTypeSearch);
+        /*eqp_syaryo(con, syaryoTemplate, noneTypeSearch);
+        eqp_spec(con, syaryoTemplate, noneTypeSearch);
         eqp_keireki(con, syaryoTemplate, noneTypeSearch);
         
         //KOMPAS
@@ -59,8 +59,8 @@ public class SyaryoHistoryCreate extends HiveDB {
         work(con, syaryoTemplate, noneTypeSearch);
         parts(con, syaryoTemplate, noneTypeSearch);
         sell(con, syaryoTemplate, noneTypeSearch);
-        sell_used(con, syaryoTemplate, noneTypeSearch);
-        
+        */sell_used(con, syaryoTemplate, noneTypeSearch);
+        /*
         //KOSMIC
         sell_old(con, syaryoTemplate, noneTypeSearch);
         

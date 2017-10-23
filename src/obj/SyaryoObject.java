@@ -148,7 +148,7 @@ public class SyaryoObject {
         map.put("仕様", list);
     }
     
-    private int detilno = 0;
+    transient int detilno = 0;
     public void addDetail(String unitID, List names, String source) {
         TreeMap detailmap = (TreeMap) map.get("詳細");
         if (detailmap == null) {

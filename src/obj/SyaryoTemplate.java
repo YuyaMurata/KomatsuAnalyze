@@ -307,7 +307,8 @@ public class SyaryoTemplate{
 
         String str = "";
         if (map.get("部品") == null) {
-            str = "DB, 会社コード, 日付, 作番, 部品明細番号, 品番, 品名, 受注数量, キャンセル数量, 標準金額 \n ";
+            str = "DB, 会社コード, 日付, 作番, 部品明細番号, 品番, "
+                    + "品名, 受注数量, キャンセル数量, 標準金額 \n ";
         } else {
             str = map.get("部品") + " \n ";
         }

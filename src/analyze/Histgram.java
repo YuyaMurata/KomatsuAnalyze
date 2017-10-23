@@ -158,7 +158,7 @@ public class Histgram {
                 list.addAll((List) l);
             }
             list = (List) list.stream()
-                    .map(s -> Integer.valueOf(s.toString().replace("+", "").replace(".", "")))
+                    .map(s -> Integer.valueOf(s.toString()))
                     .collect(Collectors.toList());
 
             allList.addAll(list);

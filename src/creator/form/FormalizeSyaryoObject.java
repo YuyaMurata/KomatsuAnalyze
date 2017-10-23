@@ -5,10 +5,15 @@
  */
 package creator.form;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import json.JsonToSyaryoObj;
 import json.SyaryoObjToJson;
@@ -21,7 +26,7 @@ import obj.SyaryoObject;
 public class FormalizeSyaryoObject {
 
     public static void main(String[] args) {
-        String kisy = "PC200";
+        String kisy = "WA470";
         Map map = new JsonToSyaryoObj().reader("syaryo_obj_"+kisy+".json");
         Map syaryoMap = new FormalizeSyaryoObject().formalize(map);
 
@@ -32,6 +37,9 @@ public class FormalizeSyaryoObject {
         Map map = new TreeMap();
 
         for (String name : syaryoMap.keySet()) {
+            //新車
+            formNew(syaryoMap.get(name).getNew());
+
             //中古
             formUsed(syaryoMap.get(name).getUsed());
 
@@ -41,11 +49,17 @@ public class FormalizeSyaryoObject {
             //経歴
             formHistory(syaryoMap.get(name).getHistory());
             
+            //受注
+            formOrder(syaryoMap.get(name).getOrder());
+            
             //Last
             formLastUpdate(syaryoMap.get(name).getLast());
             
             //SMR
             formSMR(syaryoMap.get(name).getSMR());
+            
+            //GPS
+            formGPS(syaryoMap.get(name).getGPS(), syaryoMap.get(name).getSMR());
 
             //Country
             formCountry(syaryoMap.get(name).getCountry());
@@ -58,9 +72,38 @@ public class FormalizeSyaryoObject {
 
         return map;
     }
-
-    private void formUsed(Map<String, List> used) {
+    
+    private void formNew(Map<String, List> news) {
         Map update = new TreeMap();
+
+        if (news == null) {
+            return;
+        }
+
+        for (String date : news.keySet()) {
+            List obj = news.get(date);
+
+            //System.out.println(date+":"+obj);
+            if (date.contains("#")) {
+                date = date.split("#")[0];
+            }
+            
+            if(!obj.get(0).equals("-1") || !obj.get(1).equals("-1") || !obj.get(2).equals("-1"))
+                update.put(date, obj);
+        }
+        
+        if(update.isEmpty()){
+            String date = news.keySet().stream().findFirst().get();
+            update.put(date, news.get(date));
+        }
+            
+
+        news.clear();
+        news.putAll(update);
+    }
+    
+    private void formUsed(Map<String, List> used) {
+        Map<String, List> update = new TreeMap();
 
         if (used == null) {
             return;
@@ -68,10 +111,20 @@ public class FormalizeSyaryoObject {
 
         for (String date : used.keySet()) {
             List obj = used.get(date);
-
+            if(!obj.get(0).equals("-1") || !obj.get(1).equals("-1") || !obj.get(2).equals("-1")){
+                obj.set(0, String.valueOf(Float.valueOf(obj.get(0).toString()).intValue()));
+                if(obj.get(1).equals("")) obj.set(1, "-1");
+                obj.set(1, String.valueOf(Float.valueOf(obj.get(1).toString()).intValue()));
+                obj.set(2, String.valueOf(Float.valueOf(obj.get(2).toString()).intValue()));
+            }
+            
             //System.out.println(date+":"+obj);
             if (date.contains("#")) {
                 date = date.split("#")[0];
+                if(update.get(date) != null){
+                    if(!update.get(date).get(0).equals("-1") || !update.get(date).get(1).equals("-1") || !update.get(date).get(2).equals("-1"))
+                        obj = update.get(date);
+                }
             }
             update.put(date, obj);
         }
@@ -138,6 +191,27 @@ public class FormalizeSyaryoObject {
         history.clear();
         history.putAll(update);
     }
+    
+    private void formOrder(Map<String, List> order) {
+        Map update = new TreeMap();
+
+        if (order == null) {
+            return;
+        }
+
+        for (String date : order.keySet()) {
+            List list = order.get(date);
+            if(!list.get(15).equals("-1"))list.set(15, Float.valueOf(list.get(15).toString()).toString());
+            if(!list.get(16).equals("-1"))list.set(16, Float.valueOf(list.get(16).toString()).toString());
+            list.set(17, String.valueOf(Float.valueOf(list.get(17).toString()).intValue()));
+            list.set(18, String.valueOf(Float.valueOf(list.get(18).toString()).intValue()));
+            list.set(19, String.valueOf(Float.valueOf(list.get(19).toString()).intValue()));
+            update.put(date, list);
+        }
+
+        order.clear();
+        order.putAll(update);
+    }
 
     private void formLastUpdate(Map<String, List> last) {
         Map<String, List> update = new TreeMap();
@@ -185,6 +259,7 @@ public class FormalizeSyaryoObject {
                 //obj.add(0, "-1");
             }
             
+            //komtraxSMR 分→時間 変換
             if(obj.get(1).toString().contains("komtrax")){
                 obj.set(0, Integer.valueOf(obj.get(0).toString()) / 60);
             }
@@ -198,6 +273,38 @@ public class FormalizeSyaryoObject {
 
         smr.clear();
         smr.putAll(update);
+    }
+    
+    private void formGPS(Map<String, List> gps, Map<String, List> smr){
+        Map update = new TreeMap();
+
+        if (gps == null) {
+            return;
+        }
+        
+        SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+
+        Date startDate=null, lastDate=null;
+        try {
+            List dates = smr.keySet().stream().filter(d -> !smr.get(d).get(0).toString().equals("0.0")).collect(Collectors.toList());
+            startDate = format.parse(dates.get(0).toString());
+            lastDate = format.parse(dates.get(dates.size()-1).toString());
+        } catch (ParseException ex) {
+        }
+        for(String date : gps.keySet()){
+            try {
+                Date d = format.parse(date);
+                if(startDate.compareTo(d) > 0) continue;
+                if(lastDate.compareTo(d) < 0) break;
+                
+                update.put(date, gps.get(date));
+            } catch (ParseException ex) {
+                Logger.getLogger(FormalizeSyaryoObject.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        gps.clear();
+        gps.putAll(update);
     }
 
     private void formCountry(Map<String, List> country) {
@@ -230,7 +337,20 @@ public class FormalizeSyaryoObject {
                         continue;
                     }
                 }
-                update1.put(date, work.get(date));
+                List list = work.get(date);
+                if(list.get(8).equals("")) list.set(8, "-1");
+                list.set(8, String.valueOf(Float.valueOf(list.get(8).toString()).intValue()));
+                list.set(10, String.valueOf(Float.valueOf(list.get(10).toString()).intValue()));
+                if(!list.get(11).equals("-1"))
+                    list.set(11, Float.valueOf(list.get(11).toString()).toString());
+                if(!list.get(12).equals("-1"))
+                    list.set(12, Float.valueOf(list.get(12).toString()).toString());
+                if(!list.get(13).equals("-1"))
+                    list.set(13, Float.valueOf(list.get(13).toString()).toString());
+                if(!list.get(14).equals("-1"))
+                    list.set(14, Float.valueOf(list.get(14).toString()).toString());
+                
+                update1.put(date, list);
             }
             work.clear();
             work.putAll(update1);
@@ -246,7 +366,9 @@ public class FormalizeSyaryoObject {
                         continue;
                     }
                 }
-                update2.put(date, parts.get(date));
+                List list = parts.get(date);
+                list.set(6, String.valueOf(Float.valueOf(list.get(6).toString()).intValue()));
+                update2.put(date, list);
             }
             parts.clear();
             parts.putAll(update2);

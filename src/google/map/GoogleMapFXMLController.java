@@ -6,14 +6,13 @@
 package google.map;
 
 import com.lynden.gmapsfx.GoogleMapView;
-import com.lynden.gmapsfx.javascript.event.GMapMouseEvent;
-import com.lynden.gmapsfx.javascript.event.UIEventType;
 import com.lynden.gmapsfx.javascript.object.GoogleMap;
 import com.lynden.gmapsfx.javascript.object.InfoWindow;
 import com.lynden.gmapsfx.javascript.object.InfoWindowOptions;
 import com.lynden.gmapsfx.javascript.object.LatLong;
 import com.lynden.gmapsfx.javascript.object.MVCArray;
 import com.lynden.gmapsfx.javascript.object.MapOptions;
+import com.lynden.gmapsfx.javascript.object.MapShape;
 import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
 import com.lynden.gmapsfx.javascript.object.Marker;
 import com.lynden.gmapsfx.javascript.object.MarkerOptions;
@@ -26,7 +25,10 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.ResourceBundle;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -47,9 +49,10 @@ public class GoogleMapFXMLController implements Initializable {
     private GoogleMap map;
 
     private DecimalFormat formatter = new DecimalFormat("###.00000");
-    
+
     @FXML
     private Slider dateSlider;
+    private TreeMap<Double, String> sliderMap = new TreeMap<>();
 
     /**
      * Initializes the controller class.
@@ -58,8 +61,7 @@ public class GoogleMapFXMLController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
         mapView.addMapInializedListener(() -> configureMap());
-        dateSlider.valueProperty().addListener((ObservableValue<? extends Number> 
-        observ, Number oldVal, Number newVal) -> {
+        dateSlider.valueProperty().addListener((ObservableValue<? extends Number> observ, Number oldVal, Number newVal) -> {
             dateScroll(oldVal.doubleValue(), newVal.doubleValue());
         });
     }
@@ -75,46 +77,113 @@ public class GoogleMapFXMLController implements Initializable {
 
         //Get Syaryo Data
         Map<String, SyaryoObject> syaryoMap = new JsonToSyaryoObj().reader("syaryo_obj_WA470_form.json");
-        SyaryoObject syaryo = syaryoMap.get("WA470-7-10180");
-        System.out.println(syaryo.getName() + ":" + syaryo.getGPS().size());
-
-        //Create GPS Marker
-        MarkerOptions mopt = new MarkerOptions();
-        InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
-        List<Marker> syaryoGPS = new ArrayList<>();
-        List<LatLong> syaryoPath = new ArrayList<>();
-        int i = 0;
-        for (String gpsDate : syaryo.getGPS().keySet()) {
-            String[] gps = syaryo.getGPS().get(gpsDate).get(0).toString().split("_");
-            LatLong latLong = new LatLong(compValue(gps[0]), compValue(gps[1]));
-            //Marker marker = new Marker(mopt);
-            //marker.setPosition(latLong);
-            //syaryoGPS.add(marker);
-
-            /*InfoWindow info = new InfoWindow(infoWindowOptions);
-            info.setContent(syaryo.getName()+"\n"+gpsDate);
-            info.open(map, marker);*/
-            syaryoPath.add(latLong);
-            List<LatLong> point = new ArrayList<>();
-            point.add(latLong);
-            point.add(latLong);
-            gpsPath(point, 10);
-
-            i++;
-            System.out.println(gpsDate+":"+latLong+" ("+i+"/"+syaryo.getGPS().size()+")");
-        }
-
-        gpsPath(syaryoPath, 5);
         
-        //Add Marker to Map
-        //map.addMarkers(syaryoGPS);
+        String rule = "WA470-7-10180";
+        List<SyaryoObject> syaryoList = syaryoMap.values().stream()
+                                                .filter(s -> s.getName().contains(rule))
+                                                .filter(s -> s.getGPS() != null)
+                                                .collect(Collectors.toList());
+        System.out.println("GPS車両 : " + syaryoList.size());
+        
+        //allPoint(syaryoList);
+        timePoint(syaryoList);
     }
     
-    protected void dateScroll(double oldv, double newv){
-        System.out.println("Scroll!");
+    public void allPoint(List<SyaryoObject> syaryoList){
+        //Color
+        Random rand = new Random();
+        
+        for (SyaryoObject syaryo : syaryoList) {
+
+            System.out.println(syaryo.getName() + ":" + syaryo.getGPS().size());
+
+            //Color
+            Integer r = rand.nextInt(256);
+            Integer g = rand.nextInt(256);
+            Integer b = rand.nextInt(256);
+            String color = "#" + Integer.toHexString(r) + Integer.toHexString(g) + Integer.toHexString(b);
+
+            //Create GPS Marker
+            MarkerOptions mopt = new MarkerOptions();
+            InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
+            List<Marker> syaryoGPS = new ArrayList<>();
+            List<LatLong> syaryoPath = new ArrayList<>();
+            
+            int i = 0;
+            for (String gpsDate : syaryo.getGPS().keySet()) {
+                String[] gps = syaryo.getGPS().get(gpsDate).get(0).toString().split("_");
+                LatLong latLong = new LatLong(compValue(gps[0]), compValue(gps[1]));
+
+                syaryoPath.add(latLong);
+                List<LatLong> point = new ArrayList<>();
+                point.add(latLong);
+                point.add(latLong);
+
+                if (i == 0 || i == syaryo.getGPS().size() - 1) {
+                    if (i == 0) {
+                        //Marker
+                        Marker marker = new Marker(mopt);
+                        marker.setPosition(latLong);
+                        syaryoGPS.add(marker);
+                        InfoWindow info = new InfoWindow(infoWindowOptions);
+                        info.setContent(syaryo.getName() + "\n" + gpsDate);
+                        info.open(map, marker);
+                    }
+
+                    gpsPath(point, 15, color);
+                } else {
+                    gpsPath(point, 8, color);
+                }
+
+                i++;
+                //System.out.println(gpsDate + ":" + latLong + " (" + i + "/" + syaryo.getGPS().size() + ")");
+            }
+
+            gpsPath(syaryoPath, 2, color);
+            //Add Marker to Map
+            map.addMarkers(syaryoGPS);
+        }
     }
     
-    public void gpsPath(List<LatLong> path, int size){
+    private Map<String, List> timeMap;
+    public void timePoint(List<SyaryoObject> syaryoList){
+        timeMap = new TreeMap();
+        for (SyaryoObject syaryo : syaryoList) {
+            System.out.println(syaryo.getName() + ":" + syaryo.getGPS().size());
+            for (String gpsDate : syaryo.getGPS().keySet()) {
+                String[] gps = syaryo.getGPS().get(gpsDate).get(0).toString().split("_");
+                LatLong latLong = new LatLong(compValue(gps[0]), compValue(gps[1]));
+                String y = gpsDate.substring(0,4);
+                
+                if(timeMap.get(y) == null) timeMap.put(y, new ArrayList());
+                timeMap.get(y).add(latLong);
+            }
+        }
+        
+        //Slider Initialize
+        Double first = Double.valueOf(timeMap.keySet().toArray(new String[timeMap.size()])[0]);
+        Double last = Double.valueOf(timeMap.keySet().toArray(new String[timeMap.size()])[timeMap.size()-1]);
+    
+        Double width = last - first + 1;
+        Double i = 0d;
+        for(String y : timeMap.keySet())
+            sliderMap.put((i++)*(100d / width), y);
+        
+        System.out.println(sliderMap);
+    }
+
+    protected void dateScroll(double oldv, double newv) {
+        System.out.println("Scroll!"+newv);
+        String oy = sliderMap.floorEntry(oldv).getValue();
+        String y = sliderMap.floorEntry(newv).getValue();
+        
+        if(oldMapShape != null)
+            map.removeMapShape(oldMapShape);
+        gpsPath(timeMap.get(y), 2, "#ff4500");
+    }
+    
+    private MapShape oldMapShape;
+    public void gpsPath(List<LatLong> path, int size, String color) {
         PolylineOptions line_opt;
         Polyline line;
 
@@ -123,12 +192,13 @@ public class GoogleMapFXMLController implements Initializable {
                 .clickable(false)
                 .draggable(false)
                 .editable(false)
-                .strokeColor("#ff4500")
+                .strokeColor(color)
                 .strokeWeight(size)
                 .visible(true);
 
         line = new Polyline(line_opt);
         map.addMapShape(line);
+        oldMapShape = line;
     }
 
     public double compValue(String str) {

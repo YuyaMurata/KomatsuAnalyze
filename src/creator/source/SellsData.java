@@ -288,6 +288,7 @@ public class SellsData {
                 if (satei_price.contains("_")) {
                     satei_price = satei_price.replace("_", "");
                 }
+                if(satei_price.equals("")) satei_price = "-1";
                 if (price.contains("_")) {
                     price = price.replace("_", "");
                 }
