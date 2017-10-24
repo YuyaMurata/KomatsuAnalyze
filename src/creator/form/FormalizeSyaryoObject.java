@@ -59,7 +59,7 @@ public class FormalizeSyaryoObject {
             formSMR(syaryoMap.get(name).getSMR());
             
             //GPS
-            formGPS(syaryoMap.get(name).getGPS(), syaryoMap.get(name).getSMR());
+            //formGPS(syaryoMap.get(name).getGPS(), syaryoMap.get(name).getSMR());
 
             //Country
             formCountry(syaryoMap.get(name).getCountry());

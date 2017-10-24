@@ -30,7 +30,7 @@ public class Histgram {
 
     //Test
     public static void main(String[] args) {
-        String filename = "syaryo_obj_PC200_form.json";
+        String filename = "syaryo_obj_WA470_form.json";
         Map<String, SyaryoObject> syaryoMap = new JsonToSyaryoObj().reader(filename);
         //orderanalyze(filename, syaryoMap);
         //orderpriceanalyze(filename, syaryoMap);
