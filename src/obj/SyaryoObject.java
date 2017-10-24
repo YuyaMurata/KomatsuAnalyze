@@ -359,12 +359,25 @@ public class SyaryoObject {
         return (Map) map.get("最終更新日");
     }
 
+    //Komtrax
     public Map<String, List> getSMR() {
         return (Map) map.get("SMR");
     }
     
     public Map<String, List> getGPS() {
         return (Map) map.get("GPS");
+    }
+    
+    public Map<String, List> getEngine() {
+        return (Map) map.get("エンジン");
+    }
+    
+    public Map<String, List> getCaution() {
+        return (Map) map.get("警告");
+    }
+    
+    public Map<String, List> getError() {
+        return (Map) map.get("エラー");
     }
 
     public Map<String, List> getOrder() {

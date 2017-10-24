@@ -5,11 +5,14 @@
  */
 package distance;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 /**
  *
  * @author kaeru
  */
-public class OnoMethod {
+public class DistanceCulc {
 	//WGS84
 	private static final Double A = 6378137.0;	//赤道半径
 	private static final Double F = 1/298.257222101;	//扁平率
@@ -21,7 +24,7 @@ public class OnoMethod {
 	 * http://www2.nc-toyama.ac.jp/~mkawai/lecture/sailing/geodetic/geosail.html
 	 */
 	
-	public Double distanceOno(Double lat1, Double lon1, Double lat2, Double lon2){
+	public Double onoFormula(Double lat1, Double lon1, Double lat2, Double lon2){
 		Double lat1Rad = Math.toRadians(lat1);
 		Double lon1Rad = Math.toRadians(lon1);
 		Double lat2Rad = Math.toRadians(lat2);
@@ -42,17 +45,36 @@ public class OnoMethod {
 		
 		Double distance = A * sd - c*p - d*q;
 		
-		return distance / 1000;
+                if(distance.isNaN()) distance = 0d;
+                
+		return distance;
+	}
+        
+        public Double compValue(String str) {
+		//変換
+		str = str.replace("N", "").replace("S", "-").replace("E", "").replace("W", "-");
+
+		String[] s = str.split("\\.");
+
+		BigDecimal b1 = new BigDecimal(s[0]);
+		BigDecimal b2 = new BigDecimal(s[1]).divide(new BigDecimal("60"), 7, RoundingMode.HALF_UP);
+		BigDecimal b3 = new BigDecimal(s[2]).divide(new BigDecimal("3600"), 7, RoundingMode.HALF_UP);
+		BigDecimal b4 = new BigDecimal(s[3]).divide(new BigDecimal("21600"), 7, RoundingMode.HALF_UP);
+
+		BigDecimal result = b1.add(b2).add(b3).add(b4);
+
+		return result.doubleValue();
 	}
 	
 	public static void main(String[] args) {
-		OnoMethod lambert = new OnoMethod();
+		DistanceCulc lambert = new DistanceCulc();
 		Double lat1 = 35.658572;
 		Double lon1 = 139.745411;
 		Double lat2 = 48.858377;
 		Double lon2 = 2.294503;
 		
-		System.out.println(lambert.distanceOno(lat1, lon1, lat2, lon2));
+		System.out.println(lambert.onoFormula(lat1, lon1, lat2, lon2));
 		//GoogleMap 9719.48km
+                //国土地理院 9743.05km
 	}
 }
