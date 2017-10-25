@@ -18,11 +18,11 @@ import obj.SyaryoTemplate;
  */
 public class SyaryoObjectCreate {
     public static void main(String[] args) {
-        new SyaryoObjectCreate().create("WA470");
+        new SyaryoObjectCreate().create("PC210");
     }
     
     public void create(String kisy) {
-        String midtemp = "中間データ\\syaryo_mid_" + kisy + ".zip";
+        String midtemp = "..\\KomatsuData\\中間データ\\syaryo_mid_" + kisy + ".zip";
         String FILENAME = "syaryo_obj_" + kisy + ".json";
 
         Map<String, SyaryoTemplate> syaryoTemplates = new JsonToSyaryoTemplate().reader2(midtemp);

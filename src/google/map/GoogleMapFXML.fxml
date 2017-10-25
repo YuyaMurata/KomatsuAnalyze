@@ -7,9 +7,10 @@
 <?import javafx.scene.layout.*?>
 <?import com.lynden.gmapsfx.GoogleMapView?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="google.map.GoogleMapFXMLController">
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="google.map.GoogleMapFXMLController">
    <children>
       <GoogleMapView fx:id="mapView" layoutX="-311.0" layoutY="-244.0" prefWidth="490.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-      <Slider fx:id="dateSlider" layoutX="100.0" layoutY="14.0" />
+      <Slider fx:id="dateSlider" layoutX="117.0" layoutY="14.0" />
+      <Button fx:id="runBtn" layoutX="257.0" layoutY="10.0" mnemonicParsing="false" onAction="#runTime" text="Run" />
    </children>
 </AnchorPane>

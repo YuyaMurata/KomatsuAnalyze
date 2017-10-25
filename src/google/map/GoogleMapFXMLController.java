@@ -31,8 +31,10 @@ import java.util.ResourceBundle;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.util.StringConverter;
 import json.JsonToSyaryoObj;
@@ -54,6 +56,8 @@ public class GoogleMapFXMLController implements Initializable {
 
     @FXML
     private Slider dateSlider;
+    @FXML
+    private Button runBtn;
 
     /**
      * Initializes the controller class.
@@ -79,9 +83,10 @@ public class GoogleMapFXMLController implements Initializable {
         //Get Syaryo Data
         Map<String, SyaryoObject> syaryoMap = new JsonToSyaryoObj().reader("syaryo_obj_WA470_form.json");
 
-        String rule = "WA470-7-10180";
+        String rule = "";//"WA470-7-10180";
         List<SyaryoObject> syaryoList = syaryoMap.values().stream()
                 .filter(s -> s.getName().contains(rule))
+                .filter(s -> s.getType().equals("8"))
                 .filter(s -> s.getGPS() != null)
                 .limit(5)
                 .collect(Collectors.toList());
@@ -102,7 +107,7 @@ public class GoogleMapFXMLController implements Initializable {
         dateSlider.setMax(last);
         dateSlider.setMajorTickUnit(1);
         dateSlider.setBlockIncrement(1);
-        dateSlider.setShowTickLabels(true);
+        //dateSlider.setShowTickLabels(true);
         dateSlider.setShowTickMarks(true);
         dateSlider.setSnapToTicks(true);
         dateSlider.setLabelFormatter(new StringConverter<Double>() {
@@ -165,7 +170,6 @@ public class GoogleMapFXMLController implements Initializable {
                 }
 
                 i++;
-                //System.out.println(gpsDate + ":" + latLong + " (" + i + "/" + syaryo.getGPS().size() + ")");
             }
 
             gpsPath(syaryoPath, 2, color);
@@ -175,7 +179,6 @@ public class GoogleMapFXMLController implements Initializable {
     }
 
     private TreeMap<String, Map<String, Map<String, List>>> timeMap;
-
     public void timePoint(List<SyaryoObject> syaryoList) {
         Random rand = new Random();
         timeMap = new TreeMap();
@@ -283,5 +286,9 @@ public class GoogleMapFXMLController implements Initializable {
         BigDecimal result = b1.add(b2).add(b3).add(b4);
 
         return result.doubleValue();
+    }
+
+    @FXML
+    private void runTime(ActionEvent event) {
     }
 }

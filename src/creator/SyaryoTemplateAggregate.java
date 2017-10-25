@@ -19,8 +19,8 @@ import obj.SyaryoTemplate;
 public class SyaryoTemplateAggregate {
 
     public static void main(String[] args) {
-        String path = "車両テンプレート";
-        String kisy = "WA470";
+        String path = "..\\KomatsuData\\車両テンプレート";
+        String kisy = "HB215";
         String FILENAME = "syaryo_mid_" + kisy + ".json";
         File[] flist = (new File(path)).listFiles();
 

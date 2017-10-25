@@ -26,11 +26,34 @@ import obj.SyaryoObject;
 public class FormalizeSyaryoObject {
 
     public static void main(String[] args) {
-        String kisy = "WA470";
+        String kisy = "PC200";
         Map map = new JsonToSyaryoObj().reader("syaryo_obj_"+kisy+".json");
         Map syaryoMap = new FormalizeSyaryoObject().formalize(map);
 
         new SyaryoObjToJson().write("syaryo_obj_"+kisy+"_form.json", syaryoMap);
+    }
+    
+    public Map<String, SyaryoObject> split(Map<String, SyaryoObject> syaryoMap){
+        //Type
+        Map map = new TreeMap();
+        for(SyaryoObject syaryo : syaryoMap.values()){
+            if(syaryo.getName().contains("PC2000")) continue;
+            
+            if(Integer.valueOf(syaryo.getType()) > 6)
+                map.put(syaryo.getName(), syaryo);
+        }
+        
+        return map;
+    }
+    
+    public Map<String, SyaryoObject> join(String kisy1, String kisy2){
+        //Type
+        Map map = new TreeMap();
+        Map map1 = new JsonToSyaryoObj().reader("syaryo_obj_"+kisy1+"_form.json");
+        Map map2 = new JsonToSyaryoObj().reader("syaryo_obj_"+kisy2+"_form.json");
+        map.putAll(map1);
+        map.putAll(map2);
+        return map;
     }
     
     public Map<String, SyaryoObject> formalize(Map<String, SyaryoObject> syaryoMap) {
