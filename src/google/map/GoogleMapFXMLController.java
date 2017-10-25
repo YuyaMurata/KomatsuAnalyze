@@ -75,11 +75,11 @@ public class GoogleMapFXMLController implements Initializable {
                 .mapType(MapTypeIdEnum.ROADMAP)
                 .zoom(9);
         map = mapView.createMap(mapOptions, false);
-
+        
         //Get Syaryo Data
         Map<String, SyaryoObject> syaryoMap = new JsonToSyaryoObj().reader("syaryo_obj_WA470_form.json");
 
-        String rule = "";//"WA470-7-10180";
+        String rule = "WA470-7-10180";
         List<SyaryoObject> syaryoList = syaryoMap.values().stream()
                 .filter(s -> s.getName().contains(rule))
                 .filter(s -> s.getGPS() != null)
@@ -89,6 +89,33 @@ public class GoogleMapFXMLController implements Initializable {
 
         //allPoint(syaryoList);
         timePoint(syaryoList);
+        
+        sliderInitialize();
+    }
+    
+    public void sliderInitialize(){
+        //Slider Initialize
+        Double first = Double.valueOf(timeMap.keySet().toArray(new String[timeMap.size()])[0]);
+        Double last = Double.valueOf(timeMap.keySet().toArray(new String[timeMap.size()])[timeMap.size() - 1]);
+
+        dateSlider.setMin(first);
+        dateSlider.setMax(last);
+        dateSlider.setMajorTickUnit(1);
+        dateSlider.setBlockIncrement(1);
+        dateSlider.setShowTickLabels(true);
+        dateSlider.setShowTickMarks(true);
+        dateSlider.setSnapToTicks(true);
+        dateSlider.setLabelFormatter(new StringConverter<Double>() {
+            @Override
+            public String toString(Double value) {
+                return String.valueOf(value.intValue());
+            }
+
+            @Override
+            public Double fromString(String string) {
+                return null;
+            }
+        });
     }
 
     public void allPoint(List<SyaryoObject> syaryoList) {
@@ -147,7 +174,7 @@ public class GoogleMapFXMLController implements Initializable {
         }
     }
 
-    private Map<String, Map<String, Map<String, List>>> timeMap;
+    private TreeMap<String, Map<String, Map<String, List>>> timeMap;
 
     public void timePoint(List<SyaryoObject> syaryoList) {
         Random rand = new Random();
@@ -184,30 +211,6 @@ public class GoogleMapFXMLController implements Initializable {
                 timeMap.get(y).get(syaryo.getName()).get("latlong").add(latLong);
             }
         }
-
-        //Slider Initialize
-        Double first = Double.valueOf(timeMap.keySet().toArray(new String[timeMap.size()])[0]);
-        Double last = Double.valueOf(timeMap.keySet().toArray(new String[timeMap.size()])[timeMap.size() - 1]);
-
-        dateSlider.setMin(first);
-        dateSlider.setMax(last);
-        dateSlider.setMajorTickUnit(1);
-        dateSlider.setBlockIncrement(1);
-        dateSlider.setShowTickLabels(true);
-        dateSlider.setShowTickMarks(true);
-        dateSlider.setSnapToTicks(true);
-        dateSlider.setLabelFormatter(new StringConverter<Double>() {
-            @Override
-            public String toString(Double value) {
-                return String.valueOf(value.intValue());
-            }
-
-            @Override
-            public Double fromString(String string) {
-                return null;
-            }
-        });
-
         //System.out.println(sliderMap);
     }
 
@@ -216,6 +219,7 @@ public class GoogleMapFXMLController implements Initializable {
         //String oy = sliderMap.floorEntry(oldv).getValue();
         if (oldMapShape != null) {
             for (MapShape old : oldMapShape) {
+                System.out.println(old);
                 map.removeMapShape(old);
             }
             oldMapShape.clear();
