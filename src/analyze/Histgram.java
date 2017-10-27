@@ -15,6 +15,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import json.JsonToSyaryoObj;
@@ -34,7 +35,8 @@ public class Histgram {
         Map<String, SyaryoObject> syaryoMap = new JsonToSyaryoObj().reader(filename);
         //orderanalyze(filename, syaryoMap);
         //orderpriceanalyze(filename, syaryoMap);
-        smrAnalyze(filename, syaryoMap);
+        //smrAnalyze(filename, syaryoMap);
+        komerrAnalyze(filename, syaryoMap);
     }
 
     //階級幅の整形
@@ -79,11 +81,7 @@ public class Histgram {
         double min = kaikyu.stream().min(Comparator.naturalOrder()).get();
         double max = kaikyu.stream().max(Comparator.naturalOrder()).get();
         System.out.println(max);
-        if (flg) { //最大値を除去
-            kaikyu.remove(max);
-            max = kaikyu.stream().max(Comparator.naturalOrder()).get();
-            flg = false;
-        }
+
         List<Integer> seq = pretty(min, max, k * m);
         for (Integer value : seq) {
             map.put(value, 0);
@@ -192,13 +190,13 @@ public class Histgram {
         Map<String, List<Integer>> analyzData = new HashMap<>();
         for (String typ : type) {
             List list = syaryoMap.values().stream()
-                                    .filter(s -> s.getType().equals(typ))
-                                    .filter(s -> s.getSMR() != null)
-                                    .map(smr -> smr.getSMR().values().stream()
-                                            .map(s -> Integer.valueOf(s.get(0).toString().split("\\.")[0]))
-                                            .max(Comparator.naturalOrder()).get())
-                                    .collect(Collectors.toList());
-            
+                    .filter(s -> s.getType().equals(typ))
+                    .filter(s -> s.getSMR() != null)
+                    .map(smr -> smr.getSMR().values().stream()
+                    .map(s -> Integer.valueOf(s.get(0).toString().split("\\.")[0]))
+                    .max(Comparator.naturalOrder()).get())
+                    .collect(Collectors.toList());
+
             analyzData.put(typ, list);
             allList.addAll(list);
 
@@ -207,7 +205,9 @@ public class Histgram {
         }
 
         for (String typ : type) {
-            if(analyzData.get(typ) == null) continue;
+            if (analyzData.get(typ) == null) {
+                continue;
+            }
             //Histgram
             Map map = new Histgram().create(5, allList, analyzData.get(typ));
             PrintWriter pw;
@@ -221,7 +221,7 @@ public class Histgram {
             }
         }
     }
-    
+
     //SMR_Komtrax
     public static void komsmrAnalyze(String filename, Map<String, SyaryoObject> syaryoMap) {
         List<String> type = syaryoMap.values().stream()
@@ -231,24 +231,33 @@ public class Histgram {
         Map<String, List<Integer>> analyzData = new HashMap<>();
         for (String typ : type) {
             List list = new ArrayList();
-            for(SyaryoObject syaryo : syaryoMap.values()){
-                if(!syaryo.getType().equals(typ)) continue;
-                if(!syaryo.getKomtrax()) continue;
-                if(syaryo.getSMR() == null) continue;
-                
+            for (SyaryoObject syaryo : syaryoMap.values()) {
+                if (!syaryo.getType().equals(typ)) {
+                    continue;
+                }
+                if (!syaryo.getKomtrax()) {
+                    continue;
+                }
+                if (syaryo.getSMR() == null) {
+                    continue;
+                }
+
                 Map<String, List> smr = syaryo.getSMR();
                 List valueList = new ArrayList();
-                for(List l : smr.values()){
-                    if(l.get(1).toString().contains("komtrax"))
+                for (List l : smr.values()) {
+                    if (l.get(1).toString().contains("komtrax")) {
                         valueList.add(l.get(0).toString().split("\\.")[0]);
+                    }
                 }
-                if(!valueList.isEmpty())
+                if (!valueList.isEmpty()) {
                     list.add(valueList.stream().map(s -> Integer.valueOf(s.toString())).max(Comparator.naturalOrder()).get());
+                }
             }
-            
-            if(list.isEmpty())
+
+            if (list.isEmpty()) {
                 continue;
-            
+            }
+
             analyzData.put(typ, list);
             allList.addAll(list);
 
@@ -257,7 +266,9 @@ public class Histgram {
         }
 
         for (String typ : type) {
-            if(analyzData.get(typ) == null) continue;
+            if (analyzData.get(typ) == null) {
+                continue;
+            }
             //Histgram
             Map map = new Histgram().create(5, allList, analyzData.get(typ));
             PrintWriter pw;
@@ -269,6 +280,60 @@ public class Histgram {
                 pw.close();
             } catch (IOException ex) {
             }
+        }
+    }
+
+    //Error_Komtrax
+    public static void komerrAnalyze(String filename, Map<String, SyaryoObject> syaryoMap) {
+        Map<String, List<Integer>> analyzData = new HashMap<>();
+        List<Integer> allValueList = new ArrayList<>();
+        for (SyaryoObject syaryo : syaryoMap.values()) {
+            if (!syaryo.getKomtrax()) {
+                continue;
+            }
+            if (syaryo.getError() == null) {
+                continue;
+            }
+
+            Map<String, List> err = syaryo.getError();
+            Map<String, Integer> errCount = new HashMap<>();
+            for (List l : err.values()) {
+                errCount.put((String) l.get(0), Integer.valueOf((String) l.get(1)));
+            }
+
+            for (String code : errCount.keySet()) {
+                if (analyzData.get(code) == null) {
+                    analyzData.put(code, new ArrayList<>());
+                }
+                analyzData.get(code).add(errCount.get(code));
+                allValueList.add(errCount.get(code));
+            }
+        }
+
+        System.out.println("車両数:" + allValueList.size());
+
+        List<String> headers = new ArrayList();
+        List<Map> outputList = new ArrayList();
+        for (String code : analyzData.keySet()) {
+            //Histgram
+            Map map = new Histgram().create(5, allValueList, analyzData.get(code));
+            headers.add(code);
+            outputList.add(map);
+        }
+
+        //Output
+        PrintWriter pw;
+        try {
+            pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(filename.split("_")[2] + "_komerr.csv"))));
+            Set keys = outputList.get(0).keySet();
+            pw.println(","+headers.stream().collect(Collectors.joining(",")));
+            for(Object key : keys){
+                List value = outputList.stream().map(m -> m.get(key).toString()).collect(Collectors.toList());
+                pw.println(key+","+value.stream().collect(Collectors.joining(",")));
+            }
+            
+            pw.close();
+        } catch (IOException ex) {
         }
     }
 }

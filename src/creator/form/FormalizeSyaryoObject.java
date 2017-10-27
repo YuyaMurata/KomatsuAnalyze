@@ -21,41 +21,53 @@ import obj.SyaryoObject;
 
 /**
  * 車両オブジェクトから重複部分を排除して整形
+ *
  * @author ZZ17390
  */
 public class FormalizeSyaryoObject {
 
     public static void main(String[] args) {
-        String kisy = "PC200";
-        Map map = new JsonToSyaryoObj().reader("syaryo_obj_"+kisy+".json");
+        String kisy = "WA470";
+
+        //1次処理
+        Map map = new JsonToSyaryoObj().reader("syaryo_obj_" + kisy + ".json");
         Map syaryoMap = new FormalizeSyaryoObject().formalize(map);
 
-        new SyaryoObjToJson().write("syaryo_obj_"+kisy+"_form.json", syaryoMap);
+        new SyaryoObjToJson().write("syaryo_obj_" + kisy + "_form.json", syaryoMap);
+
+        //2次処理
+        map = new JsonToSyaryoObj().reader("syaryo_obj_" + kisy + "_form.json");
+        syaryoMap = new FormalizeSyaryoObject().split(map);
+        new SyaryoObjToJson().write("syaryo_obj_" + kisy + "_form.json", syaryoMap);
+
+        //3次処理　結合・圧縮
+        //Map syaryoMap = new FormalizeSyaryoObject().join(new String[]{"PC200", "PC210", "HB205", "HB215"});
+        //new SyaryoObjToJson().write2("syaryo_obj_"+kisy+"_form.json", syaryoMap);
     }
-    
-    public Map<String, SyaryoObject> split(Map<String, SyaryoObject> syaryoMap){
+
+    public Map<String, SyaryoObject> split(Map<String, SyaryoObject> syaryoMap) {
         //Type
         Map map = new TreeMap();
-        for(SyaryoObject syaryo : syaryoMap.values()){
-            if(syaryo.getName().contains("PC2000")) continue;
-            
-            if(Integer.valueOf(syaryo.getType()) > 6)
+        for (SyaryoObject syaryo : syaryoMap.values()) {
+            if (Integer.valueOf(syaryo.getType()) > 6) {
                 map.put(syaryo.getName(), syaryo);
+            }
         }
-        
+
         return map;
     }
-    
-    public Map<String, SyaryoObject> join(String kisy1, String kisy2){
+
+    public Map<String, SyaryoObject> join(String[] kisy) {
         //Type
         Map map = new TreeMap();
-        Map map1 = new JsonToSyaryoObj().reader("syaryo_obj_"+kisy1+"_form.json");
-        Map map2 = new JsonToSyaryoObj().reader("syaryo_obj_"+kisy2+"_form.json");
-        map.putAll(map1);
-        map.putAll(map2);
+        for (String s : kisy) {
+            Map map1 = new JsonToSyaryoObj().reader("syaryo_obj_" + s + "_form.json");
+            map.putAll(map1);
+        }
+
         return map;
     }
-    
+
     public Map<String, SyaryoObject> formalize(Map<String, SyaryoObject> syaryoMap) {
         Map map = new TreeMap();
 
@@ -68,22 +80,21 @@ public class FormalizeSyaryoObject {
 
             //顧客
             formOwner(syaryoMap.get(name).getOwner());
-            
+
             //経歴
             formHistory(syaryoMap.get(name).getHistory());
-            
+
             //受注
             formOrder(syaryoMap.get(name).getOrder());
-            
+
             //Last
             formLastUpdate(syaryoMap.get(name).getLast());
-            
+
             //SMR
             formSMR(syaryoMap.get(name).getSMR());
-            
+
             //GPS
             //formGPS(syaryoMap.get(name).getGPS(), syaryoMap.get(name).getSMR());
-
             //Country
             formCountry(syaryoMap.get(name).getCountry());
 
@@ -95,7 +106,7 @@ public class FormalizeSyaryoObject {
 
         return map;
     }
-    
+
     private void formNew(Map<String, List> news) {
         Map update = new TreeMap();
 
@@ -110,21 +121,21 @@ public class FormalizeSyaryoObject {
             if (date.contains("#")) {
                 date = date.split("#")[0];
             }
-            
-            if(!obj.get(0).equals("-1") || !obj.get(1).equals("-1") || !obj.get(2).equals("-1"))
+
+            if (!obj.get(0).equals("-1") || !obj.get(1).equals("-1") || !obj.get(2).equals("-1")) {
                 update.put(date, obj);
+            }
         }
-        
-        if(update.isEmpty()){
+
+        if (update.isEmpty()) {
             String date = news.keySet().stream().findFirst().get();
             update.put(date, news.get(date));
         }
-            
 
         news.clear();
         news.putAll(update);
     }
-    
+
     private void formUsed(Map<String, List> used) {
         Map<String, List> update = new TreeMap();
 
@@ -134,19 +145,22 @@ public class FormalizeSyaryoObject {
 
         for (String date : used.keySet()) {
             List obj = used.get(date);
-            if(!obj.get(0).equals("-1") || !obj.get(1).equals("-1") || !obj.get(2).equals("-1")){
+            if (!obj.get(0).equals("-1") || !obj.get(1).equals("-1") || !obj.get(2).equals("-1")) {
                 obj.set(0, String.valueOf(Float.valueOf(obj.get(0).toString()).intValue()));
-                if(obj.get(1).equals("")) obj.set(1, "-1");
+                if (obj.get(1).equals("")) {
+                    obj.set(1, "-1");
+                }
                 obj.set(1, String.valueOf(Float.valueOf(obj.get(1).toString()).intValue()));
                 obj.set(2, String.valueOf(Float.valueOf(obj.get(2).toString()).intValue()));
             }
-            
+
             //System.out.println(date+":"+obj);
             if (date.contains("#")) {
                 date = date.split("#")[0];
-                if(update.get(date) != null){
-                    if(!update.get(date).get(0).equals("-1") || !update.get(date).get(1).equals("-1") || !update.get(date).get(2).equals("-1"))
+                if (update.get(date) != null) {
+                    if (!update.get(date).get(0).equals("-1") || !update.get(date).get(1).equals("-1") || !update.get(date).get(2).equals("-1")) {
                         obj = update.get(date);
+                    }
                 }
             }
             update.put(date, obj);
@@ -158,7 +172,8 @@ public class FormalizeSyaryoObject {
 
     private void formOwner(Map<String, List> owner) {
         Map update = new TreeMap();
-        Object[] temp = new Object[3];
+        String[] temp = new String[3];
+        temp[1] = "?";
 
         if (owner == null) {
             return;
@@ -168,20 +183,24 @@ public class FormalizeSyaryoObject {
             List obj = owner.get(date);
 
             //System.out.println(date+":"+obj);
-            if (!obj.get(0).equals(temp[0]) && !((List) obj.get(1)).get(1).equals(temp[1])) {
-                if (!obj.get(0).toString().contains("##")) {
-                    if (date.contains("#")) {
-                        date = date.split("#")[0];
-                    }
-                    update.put(date, obj);
-                }
-                temp[0] = obj.get(0);
-                temp[1] = ((List) obj.get(1)).get(1);
-                temp[2] = date;
-            } else{
-                if(!((List) obj.get(1)).get(0).equals("-1") && !((List) obj.get(1)).get(0).toString().contains("?"))
-                    update.put(temp[2].toString(), obj);
+            if (obj.get(0).toString().contains("##") || obj.get(0).toString().equals("")) {
+                continue;
             }
+
+            //System.out.println(((List<String>)obj.get(1)).get(2));
+            if(temp[0] != null)
+                if (obj.get(0).equals(temp[0]) || ((List<String>) obj.get(1)).get(2).contains(temp[1])) {
+                    continue;
+                }
+            
+            if (date.contains("#")) {
+                date = date.split("#")[0];
+            }
+            update.put(date, obj);
+            temp[0] = (String) obj.get(0);
+            temp[1] = ((List<String>) obj.get(1)).get(2);
+            temp[2] = date;
+
         }
 
         owner.clear();
@@ -214,7 +233,7 @@ public class FormalizeSyaryoObject {
         history.clear();
         history.putAll(update);
     }
-    
+
     private void formOrder(Map<String, List> order) {
         Map update = new TreeMap();
 
@@ -223,9 +242,19 @@ public class FormalizeSyaryoObject {
         }
 
         for (String date : order.keySet()) {
+            if (Integer.valueOf(date.split("#")[0]) >= 20090101) {
+                if (order.get(date).get(2).toString().contains("service")) {
+                    continue;
+                }
+            }
+
             List list = order.get(date);
-            if(!list.get(15).equals("-1"))list.set(15, Float.valueOf(list.get(15).toString()).toString());
-            if(!list.get(16).equals("-1"))list.set(16, Float.valueOf(list.get(16).toString()).toString());
+            if (!list.get(15).equals("-1")) {
+                list.set(15, Float.valueOf(list.get(15).toString()).toString());
+            }
+            if (!list.get(16).equals("-1")) {
+                list.set(16, Float.valueOf(list.get(16).toString()).toString());
+            }
             list.set(17, String.valueOf(Float.valueOf(list.get(17).toString()).intValue()));
             list.set(18, String.valueOf(Float.valueOf(list.get(18).toString()).intValue()));
             list.set(19, String.valueOf(Float.valueOf(list.get(19).toString()).intValue()));
@@ -247,7 +276,7 @@ public class FormalizeSyaryoObject {
             String key = date.split("#")[0] + "-" + last.get(date);
             List list = new ArrayList();
             if (update.get(key) != null) {
-                list.add((int)update.get(key).get(0) + 1);
+                list.add((int) update.get(key).get(0) + 1);
             } else {
                 list.add(1);
             }
@@ -281,9 +310,9 @@ public class FormalizeSyaryoObject {
                 //obj.remove(0);
                 //obj.add(0, "-1");
             }
-            
+
             //komtraxSMR 分→時間 変換
-            if(obj.get(1).toString().contains("komtrax")){
+            if (obj.get(1).toString().contains("komtrax")) {
                 obj.set(0, Integer.valueOf(obj.get(0).toString()) / 60);
             }
 
@@ -297,35 +326,39 @@ public class FormalizeSyaryoObject {
         smr.clear();
         smr.putAll(update);
     }
-    
-    private void formGPS(Map<String, List> gps, Map<String, List> smr){
+
+    private void formGPS(Map<String, List> gps, Map<String, List> smr) {
         Map update = new TreeMap();
 
         if (gps == null) {
             return;
         }
-        
+
         SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
-        Date startDate=null, lastDate=null;
+        Date startDate = null, lastDate = null;
         try {
             List dates = smr.keySet().stream().filter(d -> !smr.get(d).get(0).toString().equals("0.0")).collect(Collectors.toList());
             startDate = format.parse(dates.get(0).toString());
-            lastDate = format.parse(dates.get(dates.size()-1).toString());
+            lastDate = format.parse(dates.get(dates.size() - 1).toString());
         } catch (ParseException ex) {
         }
-        for(String date : gps.keySet()){
+        for (String date : gps.keySet()) {
             try {
                 Date d = format.parse(date);
-                if(startDate.compareTo(d) > 0) continue;
-                if(lastDate.compareTo(d) < 0) break;
-                
+                if (startDate.compareTo(d) > 0) {
+                    continue;
+                }
+                if (lastDate.compareTo(d) < 0) {
+                    break;
+                }
+
                 update.put(date, gps.get(date));
             } catch (ParseException ex) {
                 Logger.getLogger(FormalizeSyaryoObject.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
+
         gps.clear();
         gps.putAll(update);
     }
@@ -361,18 +394,24 @@ public class FormalizeSyaryoObject {
                     }
                 }
                 List list = work.get(date);
-                if(list.get(8).equals("")) list.set(8, "-1");
+                if (list.get(8).equals("")) {
+                    list.set(8, "-1");
+                }
                 list.set(8, String.valueOf(Float.valueOf(list.get(8).toString()).intValue()));
                 list.set(10, String.valueOf(Float.valueOf(list.get(10).toString()).intValue()));
-                if(!list.get(11).equals("-1"))
+                if (!list.get(11).equals("-1")) {
                     list.set(11, Float.valueOf(list.get(11).toString()).toString());
-                if(!list.get(12).equals("-1"))
+                }
+                if (!list.get(12).equals("-1")) {
                     list.set(12, Float.valueOf(list.get(12).toString()).toString());
-                if(!list.get(13).equals("-1"))
+                }
+                if (!list.get(13).equals("-1")) {
                     list.set(13, Float.valueOf(list.get(13).toString()).toString());
-                if(!list.get(14).equals("-1"))
+                }
+                if (!list.get(14).equals("-1")) {
                     list.set(14, Float.valueOf(list.get(14).toString()).toString());
-                
+                }
+
                 update1.put(date, list);
             }
             work.clear();
@@ -396,5 +435,6 @@ public class FormalizeSyaryoObject {
             parts.clear();
             parts.putAll(update2);
         }
+
     }
 }
