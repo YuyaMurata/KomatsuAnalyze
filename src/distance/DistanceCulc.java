@@ -19,8 +19,7 @@ public class DistanceCulc {
 	private static final Double B = A * (1.0 - F);		//極半径
 	
 	/**
-	 * 小野の公式
-	 * 小野房吉. (1984). 電波航法の新しい測位原理と測位精度の評価. 航海, 79, 35-40.
+	 * 
 	 * http://www2.nc-toyama.ac.jp/~mkawai/lecture/sailing/geodetic/geosail.html
 	 */
 	

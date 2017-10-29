@@ -18,24 +18,25 @@ import com.lynden.gmapsfx.javascript.object.Marker;
 import com.lynden.gmapsfx.javascript.object.MarkerOptions;
 import com.lynden.gmapsfx.shapes.Polyline;
 import com.lynden.gmapsfx.shapes.PolylineOptions;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.ResourceBundle;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.ScheduledService;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
+import javafx.util.Duration;
 import javafx.util.StringConverter;
 import json.JsonToSyaryoObj;
 import obj.SyaryoObject;
@@ -146,7 +147,7 @@ public class GoogleMapFXMLController implements Initializable {
             oldMapShape.clear();
         }
 
-        gpsPath(data.getPath(newv.intValue()), 5, data.color);
+        gpsPath(data.getPath(newv.intValue()), 3, data.color);
     }
 
     //Map process
@@ -200,5 +201,14 @@ public class GoogleMapFXMLController implements Initializable {
 
     @FXML
     private void runTime(ActionEvent event) {
+        dateSlider.setValue(dateSlider.getMin());
+        Timeline timer = new Timeline(new KeyFrame(Duration.millis(100), new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent event) {
+                dateSlider.increment();
+            }
+        }));
+        timer.setCycleCount(Timeline.INDEFINITE);
+        timer.play();
     }
 }
