@@ -33,11 +33,11 @@ public class MapPathData {
     
     private String setColor(){
         //Color
-        /*Integer r = rand.nextInt(256);
+        Integer r = rand.nextInt(256);
         Integer g = rand.nextInt(256);
         Integer b = rand.nextInt(256);
-        return "#" + Integer.toHexString(r) + Integer.toHexString(g) + Integer.toHexString(b);
-        */
+        //return "#" + Integer.toHexString(r) + Integer.toHexString(g) + Integer.toHexString(b);
+        
         return "#000000";
     }
     

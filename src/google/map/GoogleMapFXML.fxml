@@ -1,16 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+
 <?import com.lynden.gmapsfx.GoogleMapView?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="google.map.GoogleMapFXMLController">
-   <children>
-      <GoogleMapView fx:id="mapView" layoutX="-311.0" layoutY="-244.0" prefWidth="490.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-      <Slider fx:id="dateSlider" layoutX="117.0" layoutY="14.0" />
-      <Button fx:id="runBtn" layoutX="257.0" layoutY="10.0" mnemonicParsing="false" onAction="#runTime" text="Run" />
-   </children>
-</AnchorPane>
+<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="google.map.GoogleMapFXMLController">
+    <children>
+        <Pane prefHeight="32.0" prefWidth="600.0">
+            <children>
+                <!--<GoogleMapView fx:id="mapView" layoutX="-311.0" layoutY="-244.0" prefWidth="490.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />-->
+                <Slider fx:id="dateSlider" layoutX="14.0" layoutY="11.0">
+                    <opaqueInsets>
+                        <Insets bottom="5.0" left="10.0" right="5.0" top="5.0" />
+                    </opaqueInsets>
+                </Slider>
+                <Button fx:id="runBtn" layoutX="168.0" layoutY="5.0" mnemonicParsing="false" onAction="#runTime" prefHeight="23.0" prefWidth="61.0" text="Run" />
+                <Label fx:id="dateLabel" layoutX="241.0" layoutY="5.0" prefHeight="23.0" prefWidth="104.0" />
+            </children>
+            <opaqueInsets>
+                <Insets />
+            </opaqueInsets>
+        </Pane>
+        <AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" VBox.vgrow="ALWAYS">
+            <children>
+                <GoogleMapView fx:id="mapView" layoutX="-311.0" layoutY="-244.0" prefWidth="490.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            </children>
+        </AnchorPane>
+    </children>
+</VBox>

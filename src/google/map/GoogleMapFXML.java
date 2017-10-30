@@ -24,7 +24,7 @@ public class GoogleMapFXML extends Application {
         
         Scene scene = new Scene(root);
         
-        stage.setTitle("JavaFX Komatsu");
+        stage.setTitle("GPS View");
         stage.setScene(scene);
         stage.show();
     }

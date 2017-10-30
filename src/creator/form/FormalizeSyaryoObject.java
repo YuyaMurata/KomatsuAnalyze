@@ -5,15 +5,11 @@
  */
 package creator.form;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import json.JsonToSyaryoObj;
 import json.SyaryoObjToJson;
@@ -94,7 +90,8 @@ public class FormalizeSyaryoObject {
             formSMR(syaryoMap.get(name).getSMR());
 
             //GPS
-            //formGPS(syaryoMap.get(name).getGPS(), syaryoMap.get(name).getSMR());
+            formGPS(syaryoMap.get(name).getGPS(), syaryoMap.get(name).getSMR());
+            
             //Country
             formCountry(syaryoMap.get(name).getCountry());
 
@@ -333,7 +330,16 @@ public class FormalizeSyaryoObject {
         if (gps == null) {
             return;
         }
-
+        
+        Map check = new HashMap();
+        for (String date : gps.keySet()) {
+            if(check.get(date.replace("/", "").substring(0,8)) == null){
+                check.put(date.replace("/", "").substring(0,8), 1);
+                update.put(date, gps.get(date));
+            }
+        }
+        
+        /*
         SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
         Date startDate = null, lastDate = null;
@@ -357,7 +363,7 @@ public class FormalizeSyaryoObject {
             } catch (ParseException ex) {
                 Logger.getLogger(FormalizeSyaryoObject.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
+        }*/
 
         gps.clear();
         gps.putAll(update);
