@@ -26,7 +26,7 @@ public class AllSyaryoToCSV {
 
     public static void main(String[] args) {
         String path = "..\\KomatsuData\\分析結果\\";
-        String kisy = "HB205";
+        String kisy = "PC200";
         Map<String, SyaryoObject> syaryoMap = new JsonToSyaryoObj().reader("syaryo_obj_" + kisy + "_form.json");
 
         //service(path + kisy, syaryoMap);
@@ -34,7 +34,8 @@ public class AllSyaryoToCSV {
         //komtrax(path+kisy, syaryoMap);
         //komtraxError(path+kisy, syaryoMap);
         //orderDataCount(path+kisy, syaryoMap, "KDPF");
-        workDataCount(kisy, syaryoMap, "01");
+        //workDataCount(kisy, syaryoMap, "01");
+        workDataCount2(kisy, syaryoMap, "01");
     }
 
     public static void order(String filename, Map<String, SyaryoObject> syaryoMap) {
@@ -140,91 +141,148 @@ public class AllSyaryoToCSV {
             Map<String, Map<String, Integer>> map = new TreeMap();
             List<String> header = new ArrayList<>();
             for (SyaryoObject syaryo : syaryoMap.values()) {
-                if(syaryo.getError() == null) continue;
-                
+                if (syaryo.getError() == null) {
+                    continue;
+                }
+
                 TreeMap<String, Integer> errCode = new TreeMap<>();
                 map.put(syaryo.getName(), errCode);
-                
+
                 for (List err : syaryo.getError().values()) {
-                    errCode.put((String)err.get(0), Integer.valueOf((String)err.get(1)));
+                    errCode.put((String) err.get(0), Integer.valueOf((String) err.get(1)));
                     header.add((String) err.get(0));
                 }
             }
-            
+
             header = header.stream().distinct().collect(Collectors.toList());
-            pw.println(","+header.stream().collect(Collectors.joining(",")));
-            for(String name : map.keySet()){
+            pw.println("," + header.stream().collect(Collectors.joining(",")));
+            for (String name : map.keySet()) {
                 List err = new ArrayList();
                 for (String code : header) {
-                    if(map.get(name).get(code) == null)
+                    if (map.get(name).get(code) == null) {
                         err.add(0);
-                    else
+                    } else {
                         err.add(map.get(name).get(code));
+                    }
                 }
-                pw.println(name+","+err.stream().map(s->s.toString()).collect(Collectors.joining(",")));
+                pw.println(name + "," + err.stream().map(s -> s.toString()).collect(Collectors.joining(",")));
             }
 
             pw.close();
         } catch (IOException ex) {
         }
     }
-    
-    public static void orderDataCount(String filename, Map<String, SyaryoObject> syaryoMap, String rule){
+
+    public static void orderDataCount(String filename, Map<String, SyaryoObject> syaryoMap, String rule) {
         try {
-            PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(filename + "_extract_ordercnt_r"+rule+".csv"))));
-            pw.println("name,customer,"+rule+"_CNT");
-            
-            for(String name : syaryoMap.keySet()){
+            PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(filename + "_extract_ordercnt_r" + rule + ".csv"))));
+            pw.println("name,customer," + rule + "_CNT");
+
+            for (String name : syaryoMap.keySet()) {
                 List data = new ArrayList();
                 data.add(name);
                 data.add(syaryoMap.get(name).getOwner().values().stream().map(own -> own.get(0)).findFirst().get());
-                Long cnt=0L;
-                if(syaryoMap.get(name).getOrder() != null)
-                    for(List order : syaryoMap.get(name).getOrder().values())
-                        if(order.get(20).toString().contains(rule))
+                Long cnt = 0L;
+                if (syaryoMap.get(name).getOrder() != null) {
+                    for (List order : syaryoMap.get(name).getOrder().values()) {
+                        if (order.get(20).toString().contains(rule)) {
                             cnt++;
-                        
+                        }
+                    }
+                }
+
                 data.add(cnt.toString());
                 pw.println(data.stream().collect(Collectors.joining(",")));
             }
-            
+
             pw.close();
         } catch (IOException ex) {
         }
 
     }
-    
-    public static void workDataCount(String filename, Map<String, SyaryoObject> syaryoMap, String rule){
+
+    public static void workDataCount(String filename, Map<String, SyaryoObject> syaryoMap, String rule) {
         try {
-            PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(filename + "_extract_workcnt_r"+rule+".csv"))));
-            pw.println("type,"+rule+"_CNT, inv");
-            
+            PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(filename + "_extract_workcnt_r" + rule + ".csv"))));
+            pw.println("type," + rule + "_CNT, inv");
+
             Map<String, Integer> map = new TreeMap();
             Map<String, Integer> map2 = new TreeMap();
-            for(String name : syaryoMap.keySet()){
-                if(map.get(syaryoMap.get(name).getType()) == null) {
+            for (String name : syaryoMap.keySet()) {
+                if (map.get(syaryoMap.get(name).getType()) == null) {
                     map.put(syaryoMap.get(name).getType(), 0);
                     map2.put(syaryoMap.get(name).getType(), 0);
                 }
-                if(syaryoMap.get(name).getWork() != null){
+                if (syaryoMap.get(name).getWork() != null) {
                     Boolean flg = true;
-                    for(List work : syaryoMap.get(name).getWork().values()){
-                        if(work.get(4).toString().length() < 2) continue;
-                        if(work.get(4).toString().substring(0,2).equals(rule)){
-                            map.put(syaryoMap.get(name).getType(), map.get(syaryoMap.get(name).getType())+1);
+                    for (List work : syaryoMap.get(name).getWork().values()) {
+                        if (work.get(4).toString().length() < 2) {
+                            continue;
+                        }
+                        if (work.get(4).toString().substring(0, 2).equals(rule)) {
+                            map.put(syaryoMap.get(name).getType(), map.get(syaryoMap.get(name).getType()) + 1);
                             flg = false;
                             break;
                         }
                     }
-                    if(flg)
-                        map2.put(syaryoMap.get(name).getType(), map2.get(syaryoMap.get(name).getType())+1);
+                    if (flg) {
+                        map2.put(syaryoMap.get(name).getType(), map2.get(syaryoMap.get(name).getType()) + 1);
+                    }
                 }
             }
-            
-            for(String typ : map.keySet()){
-                pw.println(typ+","+map.get(typ)+","+map2.get(typ));
+
+            for (String typ : map.keySet()) {
+                pw.println(typ + "," + map.get(typ) + "," + map2.get(typ));
             }
-            
+
+            pw.close();
+        } catch (IOException ex) {
+        }
+
+    }
+
+    public static void workDataCount2(String filename, Map<String, SyaryoObject> syaryoMap, String rule) {
+        try {
+            PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(filename + "_workcnt_r" + rule + ".csv"))));
+            pw.println("name,type," + rule + "_CNT, 金額, 会社, 作番, SMR, 経過年");
+
+            for (String name : syaryoMap.keySet()) {
+                Integer cnt = 0;
+                Integer price = -1;
+                String sbn = "";
+                String smr = "";
+                String comp = "";
+                Integer year = -1;
+                if (syaryoMap.get(name).getWork() != null) {
+                    for (String date : syaryoMap.get(name).getWork().keySet()) {
+                        List work = syaryoMap.get(name).getWork().get(date);
+                        if (work.get(4).toString().length() < 2) {
+                            continue;
+                        }
+                        if (work.get(4).toString().substring(0, 2).equals(rule)) {
+                            cnt++;
+                            price = Integer.valueOf(work.get(8).toString());
+                            sbn = work.get(0).toString();
+                            
+                            String d = date.substring(0,4)+"/"+date.substring(4,6)+"/"+date.substring(6,8);
+                            if(syaryoMap.get(name).getSMR() != null)
+                                try{
+                                smr = (String) syaryoMap.get(name).getSMR().entrySet().stream()
+                                                                        .filter(s -> s.getKey().contains(d))
+                                                                        .findFirst()
+                                                                        .map(s -> s.getValue().get(0)).get();
+                                }catch(Exception e){
+                                    
+                                }
+                            comp = work.get(15).toString();
+                            System.out.println(name +":" + date);
+                            year = Integer.valueOf(date.substring(0,4)) - Integer.valueOf(syaryoMap.get(name).getOwner().keySet().stream().findFirst().get().substring(0,4));
+                        }
+                    }
+                }
+                pw.println(name+","+syaryoMap.get(name).getType()+","+cnt+","+price+","+comp+","+sbn+","+smr+","+year);
+            }
+
             pw.close();
         } catch (IOException ex) {
         }

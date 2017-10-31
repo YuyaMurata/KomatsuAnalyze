@@ -27,7 +27,8 @@ public class SyaryoCheck {
         syaryoMap = obj.reader("syaryo_obj_"+kisy+"_form.json");
         System.out.println(syaryoMap.size());
         
-        count();
+        //count();
+        smr("PC200-10-450972", syaryoMap);
         
         //nullCheck();
         
@@ -57,6 +58,10 @@ public class SyaryoCheck {
             
             System.out.println(typ+"="+cnt);
         }
+    }
+    
+    public static void smr(String name, Map<String, SyaryoObject> map){
+        map.get(name).getSMR().entrySet().stream().forEach(e -> System.out.println(e.getKey()+":"+e.getValue()));
     }
     
     public static void nullCheck(){
