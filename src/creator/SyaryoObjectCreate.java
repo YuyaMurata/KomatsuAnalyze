@@ -14,52 +14,54 @@ import obj.SyaryoTemplate;
 
 /**
  * 車両テンプレートから車両オブジェクトを作成
+ *
  * @author ZZ17390
  */
 public class SyaryoObjectCreate {
-    public static void main(String[] args) {
-        new SyaryoObjectCreate().create("WA470");
-    }
-    
-    public void create(String kisy) {
-        String midtemp = "中間データ\\syaryo_mid_" + kisy + ".zip";
-        String FILENAME = "syaryo_obj_" + kisy + ".json";
 
-        Map<String, SyaryoTemplate> syaryoTemplates = new JsonToSyaryoTemplate().reader2(midtemp);
-        TreeMap<String, SyaryoObject> syaryoMap = new TreeMap();
+	public static void main(String[] args) {
+		new SyaryoObjectCreate().create("WA470");
+	}
 
-        int n = 0;
-        //車両のオブジェクト化
-        for (String syaryoName : syaryoTemplates.keySet()) {
-            //
-            SyaryoTemplate syaryo = syaryoTemplates.get(syaryoName);
+	public void create(String kisy) {
+		String midtemp = "中間データ\\syaryo_mid_" + kisy + ".zip";
+		String FILENAME = "json\\syaryo_obj_" + kisy + ".json";
 
-            Map<String, String> template = syaryo.getAll();
-            
-            SyaryoObject syaryoObj = new SyaryoObject(syaryo.getName());
+		Map<String, SyaryoTemplate> syaryoTemplates = new JsonToSyaryoTemplate().reader2(midtemp);
+		TreeMap<String, SyaryoObject> syaryoMap = new TreeMap();
 
-            //Summary
-            if (syaryoName.equals("_summary")) {
-                syaryoMap.put(syaryoName, syaryoObj);
-                continue;
-            }
+		int n = 0;
+		//車両のオブジェクト化
+		for (String syaryoName : syaryoTemplates.keySet()) {
+			//
+			SyaryoTemplate syaryo = syaryoTemplates.get(syaryoName);
 
-            n++;
-            
-            syaryoObj.add(template);
+			Map<String, String> template = syaryo.getAll();
 
-            //System.out.println(syaryoObj.dump());
-            syaryoMap.put(syaryoObj.getName(), syaryoObj);
+			SyaryoObject syaryoObj = new SyaryoObject(syaryo.getName());
 
-            if (n % 10000 == 0) {
-                System.out.println(n + " 台");
+			//Summary
+			if (syaryoName.equals("_summary")) {
+				syaryoMap.put(syaryoName, syaryoObj);
+				continue;
+			}
 
-            }
-        }
-        
-        SyaryoObjToJson json = new SyaryoObjToJson();
-        json.write(FILENAME, syaryoMap);
-        
-        System.out.println(syaryoMap.size());
-    }
+			n++;
+
+			syaryoObj.add(template);
+
+			//System.out.println(syaryoObj.dump());
+			syaryoMap.put(syaryoObj.getName(), syaryoObj);
+
+			if (n % 10000 == 0) {
+				System.out.println(n + " 台");
+
+			}
+		}
+
+		SyaryoObjToJson json = new SyaryoObjToJson();
+		json.write(FILENAME, syaryoMap);
+
+		System.out.println(syaryoMap.size());
+	}
 }

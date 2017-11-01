@@ -56,210 +56,210 @@ import obj.SyaryoObject;
  */
 public class GoogleMapFXMLController implements Initializable {
 
-    @FXML
-    private GoogleMapView mapView;
+	@FXML
+	private GoogleMapView mapView;
 
-    private GoogleMap map;
+	private GoogleMap map;
 
-    private DecimalFormat formatter = new DecimalFormat("###.00000");
-    private DecimalFormat dateFormatter = new DecimalFormat("00");
+	private DecimalFormat formatter = new DecimalFormat("###.00000");
+	private DecimalFormat dateFormatter = new DecimalFormat("00");
 
-    @FXML
-    private Slider dateSlider;
-    @FXML
-    private Button runBtn;
-    @FXML
-    private Label dateLabel;
+	@FXML
+	private Slider dateSlider;
+	@FXML
+	private Button runBtn;
+	@FXML
+	private Label dateLabel;
 
-    /**
-     * Initializes the controller class.
-     */
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        // TODO
-        mapView.addMapInializedListener(() -> configureMap());
-        dateSlider.valueProperty().addListener((ObservableValue<? extends Number> observ, Number oldVal, Number newVal) -> {
-            dateScroll(oldVal.doubleValue(), newVal.doubleValue());
-        });
-    }
+	/**
+	 * Initializes the controller class.
+	 */
+	@Override
+	public void initialize(URL url, ResourceBundle rb) {
+		// TODO
+		mapView.addMapInializedListener(() -> configureMap());
+		dateSlider.valueProperty().addListener((ObservableValue<? extends Number> observ, Number oldVal, Number newVal) -> {
+			dateScroll(oldVal.doubleValue(), newVal.doubleValue());
+		});
+	}
 
-    protected void configureMap() {
-        MapOptions mapOptions = new MapOptions();
+	protected void configureMap() {
+		MapOptions mapOptions = new MapOptions();
 
-        //Create Map
-        mapOptions.center(new LatLong(35.670889, 139.742127))
-                .mapType(MapTypeIdEnum.ROADMAP)
-                .zoom(12);
-        map = mapView.createMap(mapOptions, false);
+		//Create Map
+		mapOptions.center(new LatLong(35.670889, 139.742127))
+			.mapType(MapTypeIdEnum.ROADMAP)
+			.zoom(12);
+		map = mapView.createMap(mapOptions, false);
 
-        //Get Syaryo Data
-        Map<String, SyaryoObject> syaryoMap = new JsonToSyaryoObj().reader("syaryo_obj_WA470_form.json");
+		//Get Syaryo Data
+		Map<String, SyaryoObject> syaryoMap = new JsonToSyaryoObj().reader("syaryo_obj_WA470_form.json");
 
-        String rule = "WA470-7-10180";
-        List<SyaryoObject> syaryoList = syaryoMap.values().stream()
-                .filter(s -> s.getName().contains(rule))
-                .filter(s -> s.getGPS() != null)
-                .collect(Collectors.toList());
-        System.out.println("GPS車両 : " + syaryoList.size());
+		String rule = "WA470-7-10180";
+		List<SyaryoObject> syaryoList = syaryoMap.values().stream()
+			.filter(s -> s.getName().contains(rule))
+			.filter(s -> s.getGPS() != null)
+			.collect(Collectors.toList());
+		System.out.println("GPS車両 : " + syaryoList.size());
 
-        //allPoint(syaryoList);
-        timePoint(syaryoMap.get(rule));
+		//allPoint(syaryoList);
+		timePoint(syaryoMap.get(rule));
 
-        sliderInitialize();
-    }
+		sliderInitialize();
+	}
 
-    public void sliderInitialize() {
-        //Slider Initialize
-        dateSlider.setMin(data.first());
-        dateSlider.setMax(data.last());
-        dateSlider.setMajorTickUnit(1);
-        dateSlider.setBlockIncrement(1);
-        //dateSlider.setShowTickLabels(true);
-        dateSlider.setShowTickMarks(true);
-        dateSlider.setSnapToTicks(true);
-        dateSlider.setLabelFormatter(new StringConverter<Double>() {
-            @Override
-            public String toString(Double value) {
-                return String.valueOf(value.intValue());
-            }
+	public void sliderInitialize() {
+		//Slider Initialize
+		dateSlider.setMin(data.first());
+		dateSlider.setMax(data.last());
+		dateSlider.setMajorTickUnit(1);
+		dateSlider.setBlockIncrement(1);
+		//dateSlider.setShowTickLabels(true);
+		dateSlider.setShowTickMarks(true);
+		dateSlider.setSnapToTicks(true);
+		dateSlider.setLabelFormatter(new StringConverter<Double>() {
+			@Override
+			public String toString(Double value) {
+				return String.valueOf(value.intValue());
+			}
 
-            @Override
-            public Double fromString(String string) {
-                return null;
-            }
-        });
-    }
+			@Override
+			public Double fromString(String string) {
+				return null;
+			}
+		});
+	}
 
-    MapPathData data;
+	MapPathData data;
 
-    public void timePoint(SyaryoObject syaryo) {
-        System.out.println(syaryo.getName() + ":" + syaryo.getGPS().size());
-        data = new MapPathData(syaryo.getName());
+	public void timePoint(SyaryoObject syaryo) {
+		System.out.println(syaryo.getName() + ":" + syaryo.getGPS().size());
+		data = new MapPathData(syaryo.getName());
 
-        for (String gpsDate : syaryo.getGPS().keySet()) {
-            if (gpsDate.contains("#")) {
-                continue;
-            }
-            String ymd = gpsDate.split(" ")[0].replace("/", "").substring(0, 8);
+		for (String gpsDate : syaryo.getGPS().keySet()) {
+			if (gpsDate.contains("#")) {
+				continue;
+			}
+			String ymd = gpsDate.split(" ")[0].replace("/", "").substring(0, 8);
 
-            data.addData(Integer.valueOf(ymd), (String) syaryo.getGPS().get(gpsDate).get(0));
-        }
+			data.addData(Integer.valueOf(ymd), (String) syaryo.getGPS().get(gpsDate).get(0));
+		}
 
-    }
+	}
 
-    protected void dateScroll(Double oldv, Double newv) {
-        String d = String.valueOf(newv.intValue());
-        dateLabel.setText(d.substring(0,4)+"/"+d.substring(4,6)+"/"+d.substring(6,8));
-        
-        //System.out.println("Scroll!" + newv);
-        //String oy = sliderMap.floorEntry(oldv).getValue();
-        if (oldMapShape != null) {
-            for (MapShape old : oldMapShape) {
-                //System.out.println(old);
-                map.removeMapShape(old);
-                
-                if(oldMarker.size() > 3){
-                    map.removeMarker(oldMarker.poll());
-                    oldInfoWin.poll().close();
-                }
-            }
-            oldMapShape.clear();
-        }
-        
-        marker("車両 No.1", data.getPath(newv.intValue()).get(data.getPath(newv.intValue()).size()-1), dateLabel.getText());
-        gpsPath(data.getPath(newv.intValue()), 3, data.color);
-    }
+	protected void dateScroll(Double oldv, Double newv) {
+		String d = String.valueOf(newv.intValue());
+		dateLabel.setText(d.substring(0, 4) + "/" + d.substring(4, 6) + "/" + d.substring(6, 8));
 
-    //Map process
-    public void marker(String name, LatLong latLong, String content) {
-        //Create GPS Marker
-        MarkerOptions mopt = new MarkerOptions();
-        InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
-        
-        //Marker
-        Marker marker = new Marker(mopt);
-        marker.setPosition(latLong);
-        oldMarker.add(marker);
-        
-        InfoWindow info = new InfoWindow(infoWindowOptions);
-        info.setContent(name + ":" + content);
-        info.open(map, marker);
-        oldInfoWin.add(info);
-        
-        map.setCenter(latLong);
-        map.addMarker(marker);
-    }
+		//System.out.println("Scroll!" + newv);
+		//String oy = sliderMap.floorEntry(oldv).getValue();
+		if (oldMapShape != null) {
+			for (MapShape old : oldMapShape) {
+				//System.out.println(old);
+				map.removeMapShape(old);
 
-    private List<MapShape> oldMapShape = new ArrayList<>();
-    private Queue<Marker> oldMarker = new ArrayDeque<>();
-    private Queue<InfoWindow> oldInfoWin = new ArrayDeque<>();
-    private Timeline timer;
+				if (oldMarker.size() > 3) {
+					map.removeMarker(oldMarker.poll());
+					oldInfoWin.poll().close();
+				}
+			}
+			oldMapShape.clear();
+		}
 
-    public void gpsPath(List<LatLong> path, int size, String color) {
-        PolylineOptions line_opt;
-        Polyline line;
+		marker("車両 No.1", data.getPath(newv.intValue()).get(data.getPath(newv.intValue()).size() - 1), dateLabel.getText());
+		gpsPath(data.getPath(newv.intValue()), 3, data.color);
+	}
 
-        line_opt = new PolylineOptions();
-        line_opt.path(new MVCArray(path.toArray(new LatLong[path.size()])))
-                .clickable(false)
-                .draggable(false)
-                .editable(false)
-                .strokeColor(color)
-                .strokeWeight(size)
-                .visible(true);
+	//Map process
+	public void marker(String name, LatLong latLong, String content) {
+		//Create GPS Marker
+		MarkerOptions mopt = new MarkerOptions();
+		InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
 
-        line = new Polyline(line_opt);
-        map.addMapShape(line);
-        oldMapShape.add(line);
-    }
+		//Marker
+		Marker marker = new Marker(mopt);
+		marker.setPosition(latLong);
+		oldMarker.add(marker);
 
-    public void gpsPoint(List<LatLong> path, int size, String color, Boolean info) {
-        for (LatLong latlong : path) {
-            List point = new ArrayList();
-            point.add(latlong);
+		InfoWindow info = new InfoWindow(infoWindowOptions);
+		info.setContent(name + ":" + content);
+		info.open(map, marker);
+		oldInfoWin.add(info);
 
-            gpsPath(point, size, color);
-        }
+		map.setCenter(latLong);
+		map.addMarker(marker);
+	}
 
-        if (info) {
-            marker("", path.get(0), color);
-        }
-    }
+	private List<MapShape> oldMapShape = new ArrayList<>();
+	private Queue<Marker> oldMarker = new ArrayDeque<>();
+	private Queue<InfoWindow> oldInfoWin = new ArrayDeque<>();
+	private Timeline timer;
 
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-    private Calendar calendar = Calendar.getInstance();
+	public void gpsPath(List<LatLong> path, int size, String color) {
+		PolylineOptions line_opt;
+		Polyline line;
 
-    @FXML
-    private void runTime(ActionEvent event) {
-        //dateSlider.setValue(dateSlider.getMin());
+		line_opt = new PolylineOptions();
+		line_opt.path(new MVCArray(path.toArray(new LatLong[path.size()])))
+			.clickable(false)
+			.draggable(false)
+			.editable(false)
+			.strokeColor(color)
+			.strokeWeight(size)
+			.visible(true);
 
-        //Date
-        Date date = null;
-        try {
-            date = sdf.parse(String.valueOf(Double.valueOf(dateSlider.getValue()).intValue()));
-        } catch (ParseException ex) {
-        }
-        calendar.setTime(date);
+		line = new Polyline(line_opt);
+		map.addMapShape(line);
+		oldMapShape.add(line);
+	}
 
-        timer = new Timeline(new KeyFrame(Duration.millis(1000), new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                String d = String.valueOf(calendar.get(Calendar.YEAR))
-                            + dateFormatter.format(calendar.get(Calendar.MONTH) + 1)
-                            + dateFormatter.format(calendar.get(Calendar.DAY_OF_MONTH));
+	public void gpsPoint(List<LatLong> path, int size, String color, Boolean info) {
+		for (LatLong latlong : path) {
+			List point = new ArrayList();
+			point.add(latlong);
 
-                    System.out.println(d);
+			gpsPath(point, size, color);
+		}
 
-                    dateSlider.setValue(Double.valueOf(d));
+		if (info) {
+			marker("", path.get(0), color);
+		}
+	}
 
-                    calendar.add(Calendar.DAY_OF_MONTH, 1);
+	private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+	private Calendar calendar = Calendar.getInstance();
 
-                    if (dateSlider.getMax() < dateSlider.getValue()) {
-                        timer.stop();
-                    }
-            }
-        }));
-        timer.setCycleCount(Timeline.INDEFINITE);
-        timer.play();
-    }
+	@FXML
+	private void runTime(ActionEvent event) {
+		//dateSlider.setValue(dateSlider.getMin());
+
+		//Date
+		Date date = null;
+		try {
+			date = sdf.parse(String.valueOf(Double.valueOf(dateSlider.getValue()).intValue()));
+		} catch (ParseException ex) {
+		}
+		calendar.setTime(date);
+
+		timer = new Timeline(new KeyFrame(Duration.millis(1000), new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				String d = String.valueOf(calendar.get(Calendar.YEAR))
+					+ dateFormatter.format(calendar.get(Calendar.MONTH) + 1)
+					+ dateFormatter.format(calendar.get(Calendar.DAY_OF_MONTH));
+
+				System.out.println(d);
+
+				dateSlider.setValue(Double.valueOf(d));
+
+				calendar.add(Calendar.DAY_OF_MONTH, 1);
+
+				if (dateSlider.getMax() < dateSlider.getValue()) {
+					timer.stop();
+				}
+			}
+		}));
+		timer.setCycleCount(Timeline.INDEFINITE);
+		timer.play();
+	}
 }

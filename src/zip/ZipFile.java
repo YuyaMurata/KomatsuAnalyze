@@ -23,34 +23,34 @@ import obj.SyaryoObject;
  * @author murata
  */
 public class ZipFile {
-    
-    public Reader unzip(String file) throws FileNotFoundException, IOException {
-        String fileZip = file;
-        byte[] buffer = new byte[4096];
-        ZipInputStream zis = new ZipInputStream(new FileInputStream(fileZip));
-        ZipEntry zipEntry = zis.getNextEntry();
-        String fileName = zipEntry.getName();
-        System.out.println(fileName);
-        
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        int len;
-        while ((len = zis.read(buffer)) > 0) {
-            bos.write(buffer, 0, len);
-        }
-        
-        zis.closeEntry();
-        zis.close();
-        
-        Reader reader = new InputStreamReader(new ByteArrayInputStream(bos.toByteArray()));
-        
-        return reader;
-    }
-    
-    //Test
-    public static void main(String[] args) {
-        JsonToSyaryoObj json = new JsonToSyaryoObj();
-        Map<String, SyaryoObject> syaryoMap = json.reader2("syaryo_obj_WA470.zip");
-        
-        System.out.println(syaryoMap.keySet().stream().findFirst());
-    }
+
+	public Reader unzip(String file) throws FileNotFoundException, IOException {
+		String fileZip = file;
+		byte[] buffer = new byte[4096];
+		ZipInputStream zis = new ZipInputStream(new FileInputStream(fileZip));
+		ZipEntry zipEntry = zis.getNextEntry();
+		String fileName = zipEntry.getName();
+		System.out.println(fileName);
+
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		int len;
+		while ((len = zis.read(buffer)) > 0) {
+			bos.write(buffer, 0, len);
+		}
+
+		zis.closeEntry();
+		zis.close();
+
+		Reader reader = new InputStreamReader(new ByteArrayInputStream(bos.toByteArray()));
+
+		return reader;
+	}
+
+	//Test
+	public static void main(String[] args) {
+		JsonToSyaryoObj json = new JsonToSyaryoObj();
+		Map<String, SyaryoObject> syaryoMap = json.reader2("syaryo_obj_WA470.zip");
+
+		System.out.println(syaryoMap.keySet().stream().findFirst());
+	}
 }
