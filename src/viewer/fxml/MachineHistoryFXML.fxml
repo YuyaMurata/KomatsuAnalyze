@@ -43,6 +43,7 @@
                     </columns>
                   </TableView>
                   <Button fx:id="applyButton" layoutX="414.0" layoutY="340.0" mnemonicParsing="false" onAction="#applyAction" prefHeight="31.0" prefWidth="63.0" text="∨" />
+                  <Button fx:id="csv" layoutX="433.0" layoutY="482.0" mnemonicParsing="false" onAction="#writeCSV" text="CSV" />
                </children>
             </AnchorPane>
             </items>

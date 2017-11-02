@@ -186,9 +186,8 @@ public class FormalizeSyaryoObject {
 				continue;
 			}
 
-			//System.out.println(((List<String>)obj.get(1)).get(2));
 			if (temp[0] != null) {
-				if (obj.get(0).equals(temp[0]) || ((List<String>) obj.get(1)).get(2).contains(temp[1])) {
+				if (obj.get(0).equals(temp[0]) || obj.get(2).toString().contains(temp[1])) {
 					continue;
 				}
 			}
@@ -198,7 +197,7 @@ public class FormalizeSyaryoObject {
 			}
 			update.put(date, obj);
 			temp[0] = (String) obj.get(0);
-			temp[1] = ((List<String>) obj.get(1)).get(2);
+			temp[1] = (String) obj.get(2);
 			temp[2] = date;
 
 		}

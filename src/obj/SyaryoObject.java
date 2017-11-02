@@ -119,7 +119,7 @@ public class SyaryoObject {
 			System.out.println("欠損データ=" + n);
 		}
 	}
-
+	
 	public void addBorn(String date) {
 		map.put("生産", date);
 	}
@@ -150,7 +150,9 @@ public class SyaryoObject {
 		list.add(category);
 		list.add(komtrax);
 		list.add(source);
-		map.put("仕様", list);
+		TreeMap specmap = new TreeMap();
+		specmap.put(0, list);
+		map.put("仕様", specmap);
 	}
 	
 	public void addDetail(String unitID, List names, String source) {
@@ -210,7 +212,7 @@ public class SyaryoObject {
 		list.add(id);
 		list.addAll(customer);
 		list.add(source);
-		ownmap.put(date_no("顧客", date), new Object[]{id, list, source});
+		ownmap.put(date_no("顧客", date), list);
 		map.put("顧客", ownmap);
 	}
 
@@ -404,12 +406,6 @@ public class SyaryoObject {
 		return (Map) map.get("顧客");
 	}
 
-	public List getNewOwner() {
-		Map<String, List> owner = getOwner();
-		List first = owner.values().stream().findFirst().get();
-		return first;
-	}
-
 	public Map<String, List> getHistory() {
 		return (Map) map.get("経歴");
 	}
@@ -445,6 +441,17 @@ public class SyaryoObject {
 				return date + "#" + i;
 			}
 		}
+	}
+	
+	
+	public List<String> get(String key, Integer index){
+		if(index == -1) return ((Map<String, List>)map.get(key)).keySet().stream().collect(Collectors.toList());
+		else if (index == -2) {
+			List list = new ArrayList();
+			list.add(map.get(key));
+			return list;
+		}
+		return ((Map<String, List<String>>)map.get(key)).values().stream().map(l -> l.get(index)).collect(Collectors.toList());
 	}
 
 	public String dump() {

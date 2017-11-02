@@ -5,16 +5,27 @@ package viewer.fxml;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -25,9 +36,12 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.CheckBoxListCell;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
+import javafx.util.Callback;
 import json.JsonToSyaryoObj;
 import obj.Element;
 import obj.SyaryoElements;
@@ -57,10 +71,14 @@ public class MachineHistoryFXMLController implements Initializable {
 	private ListView<Item> cList;
 	private Map<String, ObservableList<Item>> cMap;
 	@FXML
-	private TableView<TableColumn> sampleView;
+	private TableView sampleView;
 	@FXML
 	private Button applyButton;
-	
+
+	private SyaryoObject syaryo;
+	@FXML
+	private Button csv;
+
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
 		// TODO
@@ -68,31 +86,29 @@ public class MachineHistoryFXMLController implements Initializable {
 		String fileName = "json\\syaryo_obj_WA470_form.json";
 		syaryoMap = new JsonToSyaryoObj().reader(fileName);
 
+		syaryo = syaryoMap.values().stream().findFirst().get();
+
 		//ListViewSettings
 		cMap = new HashMap<>();
 		for (String prefName : SyaryoElements.list) {
 			//parent
 			Item pref = new Item(0, prefName, false);
-			/*pref.onProperty().addListener((ov, old_val, new_val) -> {
-				elementChecked(pref.getName(), new_val);
-			});*/
 			pList.getItems().add(pref);
-			
+
 			//child
-			ListView<Item> list = new ListView() ;
-			for(Element e : SyaryoElements.map.get(prefName)){
-				if(e.getText().contains("format")) continue;
-				
+			ListView<Item> list = new ListView();
+			for (Element e : SyaryoElements.map.get(prefName)) {
+				if (e.getText().contains("format")) {
+					continue;
+				}
+
 				Item pref2 = new Item(e.getNo(), e.getText(), false);
-				/*pref2.onProperty().addListener((ov, old_val, new_val) -> {
-					System.out.println(pref2.getIndex()+":"+pref2.getName());
-				});*/
 				list.getItems().add(pref2);
 			}
 			cMap.put(prefName, list.getItems());
 		}
 		pList.setCellFactory(CheckBoxListCell.forListView((Item item) -> item.onProperty()));
-		
+
 		//Add ListView
 		ObservableList machines = machineList.getItems();
 
@@ -108,7 +124,7 @@ public class MachineHistoryFXMLController implements Initializable {
 				machineHistorySelected();
 			}
 		);
-		
+
 		pList.getSelectionModel().selectedIndexProperty().addListener(
 			(ov, old, current) -> {
 				// リスト・ビュー内の選択項目を出力
@@ -123,34 +139,91 @@ public class MachineHistoryFXMLController implements Initializable {
 		System.out.println("Selection in the listView is : " + index);
 		String name = machineList.getItems().get(index).toString().split(" : ")[1];
 		history_label.setText(syaryoMap.get(name).dump());
-
+		syaryo = syaryoMap.get(name);
 	}
-	
+
 	//Selected SyaryoElements
 	public void elementSelected() {
 		int index = pList.getSelectionModel().getSelectedIndex();
 		String name = pList.getItems().get(index).toString();
-		
+
 		cList.setItems(cMap.get(name));
 		cList.setCellFactory(CheckBoxListCell.forListView((Item item) -> item.onProperty()));
 	}
-
+	
+	Map<String, Integer> selectData;
 	@FXML
 	private void applyAction(ActionEvent event) {
 		System.out.println("Apply!");
+		selectData = new LinkedHashMap();
 		
 		sampleView.getColumns().clear();
-		sampleView.getColumns().add(new TableColumn("機種・型・機番"));
+
+		ObservableList<ObservableList> data = FXCollections.observableArrayList();
+		ObservableList<String> list = FXCollections.observableArrayList();
+		list.add(syaryo.getName());
+		//data.add(list);
+
+		List<TableColumn> column = new ArrayList<>();
+		column.add(createColumn("機種・型・機番", 0));
+		selectData.put("機種・型・機番", 0);
 		
-		for(Item item : pList.getItems()){
-			System.out.println(item.getName());
-			for(Item item2 : cMap.get(item.getName())){
-				//System.out.print("("+item2.getIndex()+","+item2.name+","+item2.isOn()+"),");
-				if(item2.isOn())
-					sampleView.getColumns().add(new TableColumn(item.getName()+"."+item2.getName()));
+		int n = 0;
+		for (Item item : pList.getItems()) {
+			//System.out.println(item.getName());
+			if (!item.isOn()) {
+				continue;
 			}
-			System.out.println("");
+			for (Item item2 : cMap.get(item.getName())) {
+				//System.out.print("("+item2.getIndex()+","+item2.name+","+item2.isOn()+"),");
+				if (item2.isOn()) {
+					n++;
+					final int idx = n;
+					String colName = item.getName() + "." + item2.getName();
+					column.add(createColumn(colName, idx));
+					selectData.put(colName, item2.getIndex());
+					//ObservableList<String> list2 = FXCollections.observableArrayList();
+					list.add(syaryo.get(item.getName(), item2.getIndex()).get(0));
+					//data.add(list);
+				}
+			}
 		}
+		data.add(list);
+		sampleView.getColumns().addAll(column.toArray(new TableColumn[column.size()]));
+
+		sampleView.setItems(data);
+	}
+
+	public TableColumn createColumn(String header, int index) {
+		TableColumn tc = new TableColumn(header);
+		tc.setCellValueFactory(
+			new Callback<CellDataFeatures<ObservableList, String>, ObservableValue<String>>() {
+			@Override
+			public ObservableValue<String> call(CellDataFeatures<ObservableList, String> param) {
+				return new SimpleStringProperty(param.getValue().get(index).toString());
+			}
+		});
+
+		return tc;
+	}
+
+	@FXML
+	private void writeCSV(ActionEvent event) {
+		//Update
+		applyAction(null);
+		
+		try {
+			PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(syaryo.getName()+"_"+System.currentTimeMillis()+".csv"))));
+			pw.printf(selectData.keySet().stream().collect(Collectors.joining(",")));
+			List<List> data = new ArrayList();
+			for(String header : selectData.keySet()){
+				String key = header.split(".")[0];
+				List col = new ArrayList();
+				
+			}
+		} catch (IOException ex) {
+		}
+            
 	}
 
 	static class Item {
@@ -172,7 +245,7 @@ public class MachineHistoryFXMLController implements Initializable {
 		public final Integer getIndex() {
 			return this.index;
 		}
-		
+
 		public final String getName() {
 			return this.nameProperty().get();
 		}

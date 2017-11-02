@@ -42,8 +42,8 @@ public class SyaryoElements {
 	
 	//Spec
 	public enum Spec implements Element{
-		Category("製品分類B", 0),
-		Komtrax("Komtrax", 1),
+		Komtrax("Komtrax", 0),
+		Category("製品分類B", 1),
 		DB_Company("DB_会社",2);
 		
 		final String name;
@@ -64,6 +64,7 @@ public class SyaryoElements {
 	
 	//Detail
 	public enum Detail implements Element{
+		No("ナンバー", -1),
 		Unit("販売ユニットコード", 0),
 		MCategory("中分類名", 1),
 		SCategory("小分類名",2),
@@ -87,7 +88,7 @@ public class SyaryoElements {
 	
 	//Product
 	public enum Product implements Element{
-		Date("生産日", 0),
+		Date("生産日", -2),
 		Format("format:yyyyMMdd", 0);
 		
 		final String name;
@@ -108,7 +109,7 @@ public class SyaryoElements {
 	
 	//Deploy
 	public enum Deploy implements Element{
-		Date("出荷日", 0),
+		Date("出荷日", -2),
 		Format("format:yyyyMMdd", 0);
 		
 		final String name;
@@ -129,7 +130,7 @@ public class SyaryoElements {
 	
 	//Dead
 	public enum Dead implements Element{
-		Date("廃車日", 0),
+		Date("廃車日", -2),
 		Format("format:yyyyMMdd", 0);
 		
 		final String name;
@@ -150,7 +151,7 @@ public class SyaryoElements {
 	
 	//New
 	public enum New implements Element{
-		Date("納品日", 0),
+		Date("納品日", -1),
 		SPrice("標準価格", 0),
 		HPrice("表面価格", 1),
 		RPrice("実質価格", 2),
@@ -175,7 +176,7 @@ public class SyaryoElements {
 	
 	//Used
 	public enum Used implements Element{
-		Date("納品日", 0),
+		Date("納品日", -1),
 		SPrice("標準価格", 0),
 		HPrice("表面価格", 1),
 		RPrice("実質価格", 2),
@@ -200,7 +201,7 @@ public class SyaryoElements {
 	
 	//Customer
 	public enum Customer implements Element{
-		Date("登録日", 0),
+		Date("登録日", -1),
 		Customer("顧客ID", 0),
 		Code("業種コード", 1),
 		Name("顧客名", 2),
@@ -225,7 +226,7 @@ public class SyaryoElements {
 	
 	//Country
 	public enum Country implements Element{
-		Date("登録日", 0),
+		Date("登録日", -1),
 		Code("国", 0),
 		Format("format:yyyyMMdd", 0);
 		
@@ -247,7 +248,7 @@ public class SyaryoElements {
 	
 	//Order
 	public enum Order implements Element{
-		Date("受注日", 0),
+		Date("受注日", -1),
 		RDate("作番登録日", 0),
 		PDate("実施予定日", 1),
 		FDate("完了日", 2),
@@ -286,7 +287,7 @@ public class SyaryoElements {
 	
 	//Work
 	public enum Work implements Element{
-		Date("実施予定日", 0),
+		Date("実施予定日", -1),
 		ID("作番", 0),
 		SID("作業明細番号", 1),
 		SFCode("作業形態コード", 2),
@@ -323,7 +324,7 @@ public class SyaryoElements {
 	
 	//Parts
 	public enum Parts implements Element{
-		Date("日付", 0),
+		Date("日付", -1),
 		ID("作番", 0),
 		PID("部品明細番号", 1),
 		HID("品番", 2),
@@ -352,7 +353,7 @@ public class SyaryoElements {
 	
 	//Caution
 	public enum Caution implements Element{
-		Date("日付", 0),
+		Date("日付", -1),
 		Unit("ユニット", 0),
 		Map("マップ", 1),
 		Count("カウント", 2),
@@ -377,7 +378,7 @@ public class SyaryoElements {
 	
 	//Error
 	public enum Error implements Element{
-		Date("日付", 0),
+		Date("日付", -1),
 		Code("エラーコード", 0),
 		Count("カウント", 1),
 		Source("DB_会社",2),
@@ -401,7 +402,7 @@ public class SyaryoElements {
 	
 	//Engine
 	public enum Engine implements Element{
-		Date("日付", 0),
+		Date("日付", -1),
 		Throttle("スロットル", 0),
 		Source("DB_会社",1),
 		Format("format:yyyy/MM/dd HH:MM:SS", 0);
@@ -424,7 +425,7 @@ public class SyaryoElements {
 	
 	//SMR
 	public enum SMR implements Element{
-		Date("日付", 0),
+		Date("日付", -1),
 		_SMR("SMR", 0),
 		Source("DB_会社",1),
 		Format("format:yyyy/MM/dd HH:MM:SS", 0);
@@ -447,8 +448,8 @@ public class SyaryoElements {
 	
 	//GPS
 	public enum GPS implements Element{
-		Date("日付", 0),
-		_SMR("GPS", 0),
+		Date("日付", -1),
+		_GPS("GPS", 0),
 		Source("DB_会社",1),
 		Format("format:yyyy/MM/dd HH:MM:SS", 0),
 		GPSFormat("format:N99.99.99.999_E999.99.99.999", 0);
