@@ -5,6 +5,7 @@
  */
 package obj;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,6 +41,15 @@ public class SyaryoElements {
 		put(list[16], SyaryoElements.GPS.values());
 	}};
 	
+    //リストのインデックスを取得
+    public static Integer get(String key, String element){
+        Element[] elements = map.get(key);
+        return Arrays.stream(elements)
+                        .filter(e -> e.getText().equals(element))
+                        .findFirst().map(e -> e.getNo())
+                        .get();
+    }
+    
 	//Spec
 	public enum Spec implements Element{
 		Komtrax("Komtrax", 0),
@@ -354,8 +364,7 @@ public class SyaryoElements {
 	//Caution
 	public enum Caution implements Element{
 		Date("日付", -1),
-		Unit("ユニット", 0),
-		Map("マップ", 1),
+		Icon("ICONコード", 0),
 		Count("カウント", 2),
 		Source("DB_会社",3),
 		Format("format:yyyy/MM/dd HH:MM:SS", 0);

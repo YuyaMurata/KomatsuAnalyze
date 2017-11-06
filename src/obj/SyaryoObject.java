@@ -7,7 +7,6 @@ package obj;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,7 +63,7 @@ public class SyaryoObject {
 							list.add(s[j]);
 						}
 						addNew(s[2], s[3], list, (s[0] + "_" + s[1]));
-					} else if (field.equals("中古")) {
+					} else if (field.equals("中古車")) {
 						for (int j = 4; j < s.length; j++) {
 							list.add(s[j]);
 						}
@@ -169,7 +168,7 @@ public class SyaryoObject {
 	}
 
 	public void addUsed(String date, String cid, List price, String source) {
-		TreeMap usedmap = (TreeMap) map.get("中古");
+		TreeMap usedmap = (TreeMap) map.get("中古車");
 		if (usedmap == null) {
 			usedmap = new TreeMap();
 		}
@@ -177,8 +176,8 @@ public class SyaryoObject {
 		list.add(cid);
 		list.addAll(price);
 		list.add(source);
-		usedmap.put(date_no("中古", date), list);
-		map.put("中古", usedmap);
+		usedmap.put(date_no("中古車", date), list);
+		map.put("中古車", usedmap);
 	}
 
 	public void addCountry(String date, String country) {
@@ -354,7 +353,7 @@ public class SyaryoObject {
 	}
 
 	public Map getUsed() {
-		return (Map) map.get("中古");
+		return (Map) map.get("中古車");
 	}
 
 	public String getDead() {
@@ -443,16 +442,36 @@ public class SyaryoObject {
 		}
 	}
 	
+    public Integer getSize(String key){
+        if(key.contains("機種") || key.contains("仕様"))
+            return 1;
+        if(map.get(key) == null) return 0;
+        return ((Map<String, List<String>>)map.get(key)).size();
+    }
 	
 	public List<String> get(String key, Integer index){
-		if(index == -1) return ((Map<String, List>)map.get(key)).keySet().stream().collect(Collectors.toList());
+        List list = new ArrayList();
+        if(key.contains("機種")){
+			list.add(getName());
+			return list;
+        }else if(map.get(key) == null) {
+            list.add("NA");
+            return list;
+        }
+        
+        if(index == -1) {
+            return ((Map<String, List>)map.get(key)).keySet().stream().collect(Collectors.toList());
+        }
 		else if (index == -2) {
-			List list = new ArrayList();
 			list.add(map.get(key));
 			return list;
 		}
-		return ((Map<String, List<String>>)map.get(key)).values().stream().map(l -> l.get(index)).collect(Collectors.toList());
+		return ((Map<String, List>)map.get(key)).values().stream().map(l -> l.get(index).toString()).collect(Collectors.toList());
 	}
+    
+    public void remove(String key){
+        map.remove(key);
+    }
 
 	public String dump() {
 		StringBuilder sb = new StringBuilder();

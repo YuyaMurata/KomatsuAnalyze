@@ -23,32 +23,36 @@ import zip.ZipFile;
 public class JsonToSyaryoObj {
     
     public Map<String, SyaryoObject> reader(String filename){
+        Map<String, SyaryoObject> syaryoMap;
+        
         try(JsonReader reader = new JsonReader(new BufferedReader(new FileReader(filename)))){
             Type type = new TypeToken<Map<String, SyaryoObject>>(){}.getType();
 
             Gson gson = new Gson();
-            Map<String, SyaryoObject> syaryoMap = gson.fromJson(reader, type);
+            syaryoMap = gson.fromJson(reader, type);
             syaryoMap.remove("_summary");
-            
-            return syaryoMap;
         }catch(IOException e){
             return null;
         }
+        
+        return syaryoMap;
     }
     
     public Map<String, SyaryoObject> reader2(String filename){
+        Map<String, SyaryoObject> syaryoMap;
+        
         try{
             Type type = new TypeToken<Map<String, SyaryoObject>>(){}.getType();
 
             Gson gson = new Gson();
-            Map<String, SyaryoObject> syaryoMap = gson.fromJson(new ZipFile().unzip(filename), type);
+            syaryoMap = gson.fromJson(new ZipFile().unzip(filename), type);
             /*for(SyaryoObject obj : syaryoMap.values()){
                 System.out.println(obj.dump());
             }*/
-            
-            return syaryoMap;
         }catch(IOException e){
             return null;
         }
+        
+        return syaryoMap;
     }
 }

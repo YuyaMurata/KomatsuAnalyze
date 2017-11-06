@@ -23,7 +23,7 @@ import obj.SyaryoTemplate;
  */
 public class SyaryoHistoryCreate extends HiveDB {
 
-    private static final String FILENAME = "syaryo_history_template.json";
+    private static final String FILENAME = "..\\KomatsuData\\車両テンプレート\\syaryo_history_template.json";
 
     public static void main(String[] args) throws IOException {
         //DB接続
@@ -33,7 +33,7 @@ public class SyaryoHistoryCreate extends HiveDB {
         //template(con);
         Map<String, SyaryoTemplate> syaryoTemplate = readTempate();
 
-        //インデックス作成
+        //型が無いときのインデックス作成
         Map noneTypeSearch = createNoneTypeSearch(syaryoTemplate);
 
         //KOMPAS車両データの読み込み
@@ -59,14 +59,14 @@ public class SyaryoHistoryCreate extends HiveDB {
         work(con, syaryoTemplate, noneTypeSearch);
         parts(con, syaryoTemplate, noneTypeSearch);
         sell(con, syaryoTemplate, noneTypeSearch);
-        */sell_used(con, syaryoTemplate, noneTypeSearch);
-        /*
+        sell_used(con, syaryoTemplate, noneTypeSearch);
+        
         //KOSMIC
         sell_old(con, syaryoTemplate, noneTypeSearch);
         
         //KOMTRAX
-        komtrax(con, syaryoTemplate, noneTypeSearch);
-        */
+        */komtrax(con, syaryoTemplate, noneTypeSearch);
+        
     }
 
     public static void template(Connection con) {

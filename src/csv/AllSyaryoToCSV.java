@@ -27,7 +27,7 @@ public class AllSyaryoToCSV {
     public static void main(String[] args) {
         String path = "..\\KomatsuData\\分析結果\\";
         String kisy = "PC200";
-        Map<String, SyaryoObject> syaryoMap = new JsonToSyaryoObj().reader("syaryo_obj_" + kisy + "_form.json");
+        Map<String, SyaryoObject> syaryoMap = new JsonToSyaryoObj().reader("json\\syaryo_obj_" + kisy + "_form.json");
 
         //service(path + kisy, syaryoMap);
         //order(path+kisy, syaryoMap);

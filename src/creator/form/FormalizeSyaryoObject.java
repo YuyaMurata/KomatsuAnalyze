@@ -23,26 +23,31 @@ import obj.SyaryoObject;
 public class FormalizeSyaryoObject {
 
 	public static void main(String[] args) {
-		String kisy = "WA470";
+		String kisy = "PC200";
 		String filename = "json\\syaryo_obj_" + kisy + ".json";
 		String output = "json\\syaryo_obj_" + kisy + "_form.json";
 		
 		//1次処理
 		Map map = new JsonToSyaryoObj().reader(filename);
 		Map syaryoMap = new FormalizeSyaryoObject().formalize(map);
-
 		new SyaryoObjToJson().write(output, syaryoMap);
-
+        System.out.println("Finish forming json data!");
+        map = null;
+        syaryoMap = null;
+        
 		//2次処理
 		map = new JsonToSyaryoObj().reader(output);
 		syaryoMap = new FormalizeSyaryoObject().split(map);
-		new SyaryoObjToJson().write(output, syaryoMap);
-
+		new SyaryoObjToJson().write2(output, syaryoMap);
+        System.out.println("Finish deleting old type data!");
+        
 		//3次処理　結合・圧縮
 		//Map syaryoMap = new FormalizeSyaryoObject().join(new String[]{"PC200", "PC210", "HB205", "HB215"});
 		//new SyaryoObjToJson().write2("syaryo_obj_"+kisy+"_form.json", syaryoMap);
+        //System.out.println("Finish joining & compressing json data!");
 	}
 
+    //古い型を除去
 	public Map<String, SyaryoObject> split(Map<String, SyaryoObject> syaryoMap) {
 		//Type
 		Map map = new TreeMap();
@@ -80,14 +85,16 @@ public class FormalizeSyaryoObject {
 			formOwner(syaryoMap.get(name).getOwner());
 
 			//経歴
-			formHistory(syaryoMap.get(name).getHistory());
-
+			//formHistory(syaryoMap.get(name).getHistory());
+            syaryoMap.get(name).remove("経歴");
+            
 			//受注
 			formOrder(syaryoMap.get(name).getOrder());
 
 			//Last
-			formLastUpdate(syaryoMap.get(name).getLast());
-
+			//formLastUpdate(syaryoMap.get(name).getLast());
+            syaryoMap.get(name).remove("最終更新日");
+            
 			//SMR
 			formSMR(syaryoMap.get(name).getSMR());
 

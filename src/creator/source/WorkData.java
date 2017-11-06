@@ -7,7 +7,6 @@ package creator.source;
 
 import db.HiveDB;
 import db.field.Order;
-import db.field.Syaryo;
 import db.field.Work;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -32,12 +31,12 @@ public class WorkData {
             Statement stmt = con.createStatement();
 
             //Syaryo
-            String sql = String.format("select o.%s,o.%s,o.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, o.%s, o.%s, w.%s from %s w join %s o on (w.%s=o.%s and w.%s=o.%s)",
+            String sql = String.format("select o.%s,o.%s,o.%s, w.%s, w.%s, w.%s, o.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, o.%s, o.%s, w.%s from %s w join %s o on (w.%s=o.%s and w.%s=o.%s)",
                     Order._Order.KISY, Order._Order.TYP, Order._Order.KIBAN, //Unique ID
                     Work.Info.KSYCD, //会社コード
                     Work.Info.SBN, //作番
                     Work.Info.SGYO_MSINO, //作業明細番号
-                    Work.Info.SGYO_SJDAY, //作業指示日
+                    Order._Order.ODDAY, //受注日
                     Work.Info.SGYOCD, //作業コード
                     Work.Info.SGYO_NM, //作業名
                     Work.Info.SGYO_KRFLG, //作業管理フラグ
@@ -67,9 +66,9 @@ public class WorkData {
                 n++;
 
                 //Name
-                String kisy = res.getString(Syaryo._Syaryo.KISY.get());
-                String type = res.getString(Syaryo._Syaryo.TYP.get());
-                String kiban = res.getString(Syaryo._Syaryo.KIBAN.get());
+                String kisy = res.getString(Order._Order.KISY.get());
+                String type = res.getString(Order._Order.TYP.get());
+                String kiban = res.getString(Order._Order.KIBAN.get());
 
                 //車両
                 SyaryoTemplate syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
@@ -103,7 +102,7 @@ public class WorkData {
                 String gaichu_price = res.getString(Work.Info.GT_GKGK.get());      //外注合計原価
                 
                 //Date
-                String date = res.getString(Work.Info.SGYO_SJDAY.get());   //作業指示日
+                String date = res.getString(Order._Order.ODDAY.get());   //受注日
                 String last_date = res.getString(Work.Info.LAST_UPD_DAYT.get());
 
                 //DB

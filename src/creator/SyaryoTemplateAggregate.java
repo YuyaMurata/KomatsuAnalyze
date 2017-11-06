@@ -20,12 +20,13 @@ import obj.SyaryoTemplate;
 public class SyaryoTemplateAggregate {
 
 	public static void main(String[] args) {
-		String path = "..\\KomatsuData\\車両テンプレート";
-		String kisy = "HB215";
-		String FILENAME = "syaryo_mid_" + kisy + ".json";
+		String path = "..\\KomatsuData\\車両テンプレート\\";
+        String outpath = "..\\KomatsuData\\中間データ\\";
+		String kisy = "PC200";
+		String FILENAME = outpath+"syaryo_mid_" + kisy + ".json";
 		File[] flist = (new File(path)).listFiles();
 
-		Map<String, SyaryoTemplate> syaryoBase = new JsonToSyaryoTemplate().reader(path + "\\syaryo_history_template_syaryo.json");
+		Map<String, SyaryoTemplate> syaryoBase = new JsonToSyaryoTemplate().reader(path + "syaryo_history_template_syaryo.json");
 		TreeMap<String, SyaryoTemplate> syaryoMap = new TreeMap();
 
 		//System.out.println(syaryoBase.keySet().stream().map(s -> s.split("-")[0]).distinct().collect(Collectors.toList()));

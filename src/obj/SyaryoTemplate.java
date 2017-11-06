@@ -50,7 +50,7 @@ public class SyaryoTemplate {
 		if (key.equals("新車")) {
 			addNew(s[0], s[1], s[2], s[3], s[4], s[5]);
 		}
-		if (key.equals("中古")) {
+		if (key.equals("中古車")) {
 			addUsed(s[0], s[1], s[2], s[3], s[4], s[5]);
 		}
 		if (key.equals("廃車")) {
@@ -98,7 +98,7 @@ public class SyaryoTemplate {
 			addKMError(s[0], s[1], s[2], s[3], s[4]);
 		}
 		if (key.equals("KMCAUTION")) {
-			addKMCaution(s[0], s[1], s[2], s[3], s[4], s[5]);
+			addKMCaution(s[0], s[1], s[2], s[3], s[4]);
 		}
 	}
 
@@ -184,14 +184,14 @@ public class SyaryoTemplate {
 		}
 
 		String str = "";
-		if (map.get("中古") == null) {
+		if (map.get("中古車") == null) {
 			str = "DB, 会社コード, 納入年月日, 標準価格, 表面売上高, 実質売上高 \n ";
 		} else {
-			str = map.get("中古") + " \n ";
+			str = map.get("中古車") + " \n ";
 		}
 
 		str += db + "," + company + "," + date + "," + price + "," + hyomenPrice + "," + jishitsuPrice;
-		map.put("中古", str);
+		map.put("中古車", str);
 	}
 
 	public void addDead(String db, String company, String date) {
@@ -321,7 +321,7 @@ public class SyaryoTemplate {
 
 		String str = "";
 		if (map.get("作業") == null) {
-			str = "DB, 会社コード, 実施予定日, 作番, 作業明細番号, "
+			str = "DB, 会社コード, 受注日, 作番, 作業明細番号, "
 				+ "作業形態コード, 作業形態名, "
 				+ "作業コード, 作業名, 完了フラグ, "
 				+ "数量, 標準金額, "
@@ -455,7 +455,7 @@ public class SyaryoTemplate {
 	}
 
 	//CAUTION
-	public void addKMCaution(String db, String company, String date, String caution_unit, String caution_map, String caution_cnt) {
+	public void addKMCaution(String db, String company, String date, String caution_icon, String caution_cnt) {
 		String check_date = date.replace("/", "").substring(0, 8);
 		if (errorCheck(check_date)) {
 			return;
@@ -465,12 +465,12 @@ public class SyaryoTemplate {
 
 		String str = "";
 		if (map.get("KMCAUTION") == null) {
-			str = "DB, 会社コード, 日付, ユニット, マップ, カウント \n ";
+			str = "DB, 会社コード, 日付, ICONコード, カウント \n ";
 		} else {
 			str = map.get("KMCAUTION") + " \n ";
 		}
 
-		str += db + "," + company + "," + date + "," + caution_unit + "," + caution_map + "," + caution_cnt;
+		str += db + "," + company + "," + date + "," + caution_icon + "," + caution_cnt;
 		map.put("KMCAUTION", str);
 	}
 

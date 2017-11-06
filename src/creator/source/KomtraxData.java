@@ -37,11 +37,11 @@ public class KomtraxData {
         
         //JSON Writer
         
-        addGPS(syaryoMap);
+        /*addGPS(syaryoMap);
         addSMR(syaryoMap);
         addEngine(syaryoMap);
         addError(syaryoMap);
-        addCaution(syaryoMap);
+        */addCaution(syaryoMap);
         
     }
     
@@ -382,11 +382,10 @@ public class KomtraxData {
             Statement stmt = con.createStatement();
 
             //CW_CAUTION
-            String sql = String.format("select %s,%s,%s, %s, %s, %s, %s from %s",
+            String sql = String.format("select %s,%s,%s, %s, %s, %s from %s",
                     Komtrax.CW_CAUTION_DATA.KIND, Komtrax.CW_CAUTION_DATA.TYPE, Komtrax.CW_CAUTION_DATA.MACHINE_NUMBER, //Unique ID
-                    Komtrax.CW_CAUTION_DATA.CAUTION_DATE,    //Error Date
-                    Komtrax.CW_CAUTION_DATA.CAUTION_UNIT,    //Error code
-                    Komtrax.CW_CAUTION_DATA.CAUTION_MAP,
+                    Komtrax.CW_CAUTION_DATA.CAUTION_DATE,    //Caution Date
+                    Komtrax.CW_CAUTION_DATA.ICON_CODE,  //Caution Icon code
                     Komtrax.CW_CAUTION_DATA.CAUTION_COUNT,
                     Komtrax.TABLE.CW_CAUTION_DATA.get()
             );
@@ -416,8 +415,7 @@ public class KomtraxData {
 
                 //Caution
                 String date = res.getString(Komtrax.CW_CAUTION_DATA.CAUTION_DATE.get());    //Caution Date
-                String caution_unit = res.getString(Komtrax.CW_CAUTION_DATA.CAUTION_UNIT.get());    //Caution Unit
-                String caution_map = res.getString(Komtrax.CW_CAUTION_DATA.CAUTION_MAP.get());    //Caution Map
+                String caution_icon = res.getString(Komtrax.CW_CAUTION_DATA.ICON_CODE.get());    //Caution Icon Code
                 String caution_cnt = res.getString(Komtrax.CW_CAUTION_DATA.CAUTION_COUNT.get());    //Caution count
 
                 //DB
@@ -427,14 +425,14 @@ public class KomtraxData {
                 //車両チェック
                 String name = kisy + "-" + type + "-" + kiban;
                 if (syaryo == null) {
-                    errpw.println(n + "," + name + "," + date + "," + db + "," + company + "," + caution_unit + "," + caution_map + "," + caution_cnt);
+                    errpw.println(n + "," + name + "," + date + "," + db + "," + company + "," + caution_icon + "," + caution_cnt);
                     continue;
                 }
                 
                 m++;
                 
-                //Error
-                syaryo.addKMCaution(db, company, date, caution_unit, caution_map, caution_cnt);
+                //Caution
+                syaryo.addKMCaution(db, company, date, caution_icon, caution_cnt);
                 
                 
                 //AddSyaryo
