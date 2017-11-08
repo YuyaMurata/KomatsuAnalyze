@@ -7,7 +7,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox fx:id="root_vbox" prefHeight="561.0" prefWidth="804.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="viewer.fxml.MachineHistoryFXMLController">
+<VBox fx:id="root_vbox" prefHeight="586.0" prefWidth="805.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="viewer.fxml.MachineHistoryFXMLController">
     <children>
         <MenuBar fx:id="fileMenu">
             <menus>
@@ -44,10 +44,16 @@
                   </TableView>
                   <Button fx:id="applyButton" layoutX="414.0" layoutY="340.0" mnemonicParsing="false" onAction="#applyAction" prefHeight="31.0" prefWidth="63.0" text="∨" />
                   <Button fx:id="csv" layoutX="433.0" layoutY="482.0" mnemonicParsing="false" onAction="#writeCSV" text="CSV" />
-                  <CheckBox fx:id="allCheck" layoutX="433.0" layoutY="42.0" mnemonicParsing="false" text="/ALL" />
+                  <CheckBox fx:id="allCheck" layoutX="433.0" layoutY="42.0" mnemonicParsing="false" onAction="#allChecked" text="/ALL" />
                </children>
             </AnchorPane>
             </items>
         </SplitPane>
+      <Pane maxHeight="30.0" minHeight="30.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="30.0" VBox.vgrow="NEVER">
+         <children>
+            <ProgressBar fx:id="csvProgress" layoutX="61.0" layoutY="5.0" prefWidth="200.0" progress="0.0" />
+            <Label fx:id="csvProgressLabel" layoutX="13.0" layoutY="4.0" prefHeight="21.0" prefWidth="47.0" text="100%" />
+         </children>
+      </Pane>
     </children>
 </VBox>

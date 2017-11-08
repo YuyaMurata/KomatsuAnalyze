@@ -118,7 +118,7 @@ public class SyaryoObject {
 			System.out.println("欠損データ=" + n);
 		}
 	}
-	
+
 	public void addBorn(String date) {
 		map.put("生産", date);
 	}
@@ -153,7 +153,7 @@ public class SyaryoObject {
 		specmap.put(0, list);
 		map.put("仕様", specmap);
 	}
-	
+
 	public void addDetail(String unitID, List names, String source) {
 		TreeMap detailmap = (TreeMap) map.get("詳細");
 		if (detailmap == null) {
@@ -441,37 +441,39 @@ public class SyaryoObject {
 			}
 		}
 	}
-	
-    public Integer getSize(String key){
-        if(key.contains("機種") || key.contains("仕様"))
-            return 1;
-        if(map.get(key) == null) return 0;
-        return ((Map<String, List<String>>)map.get(key)).size();
-    }
-	
-	public List<String> get(String key, Integer index){
-        List list = new ArrayList();
-        if(key.contains("機種")){
+
+	public Integer getSize(String key) {
+		if (key.contains("機種") || key.contains("仕様") || key.contains("生産") || key.contains("出荷") || key.contains("廃車")) {
+			return 1;
+		}
+		if (map.get(key) == null) {
+			return 0;
+		}
+		return ((Map<String, List<String>>) map.get(key)).size();
+	}
+
+	public List<String> get(String key, Integer index) {
+		List list = new ArrayList();
+		if (key.contains("機種")) {
 			list.add(getName());
 			return list;
-        }else if(map.get(key) == null) {
-            list.add("NA");
-            return list;
-        }
-        
-        if(index == -1) {
-            return ((Map<String, List>)map.get(key)).keySet().stream().collect(Collectors.toList());
-        }
-		else if (index == -2) {
+		} else if (map.get(key) == null) {
+			list.add("NA");
+			return list;
+		}
+
+		if (index == -1) {
+			return ((Map<String, List>) map.get(key)).keySet().stream().collect(Collectors.toList());
+		} else if (index == -2) {
 			list.add(map.get(key));
 			return list;
 		}
-		return ((Map<String, List>)map.get(key)).values().stream().map(l -> l.get(index).toString()).collect(Collectors.toList());
+		return ((Map<String, List>) map.get(key)).values().stream().map(l -> l.get(index).toString()).collect(Collectors.toList());
 	}
-    
-    public void remove(String key){
-        map.remove(key);
-    }
+
+	public void remove(String key) {
+		map.remove(key);
+	}
 
 	public String dump() {
 		StringBuilder sb = new StringBuilder();

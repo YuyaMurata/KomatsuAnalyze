@@ -23,31 +23,31 @@ import obj.SyaryoObject;
 public class FormalizeSyaryoObject {
 
 	public static void main(String[] args) {
-		String kisy = "PC200";
+		String kisy = "WA470";
 		String filename = "json\\syaryo_obj_" + kisy + ".json";
 		String output = "json\\syaryo_obj_" + kisy + "_form.json";
-		
+
 		//1次処理
 		Map map = new JsonToSyaryoObj().reader(filename);
 		Map syaryoMap = new FormalizeSyaryoObject().formalize(map);
 		new SyaryoObjToJson().write(output, syaryoMap);
-        System.out.println("Finish forming json data!");
-        map = null;
-        syaryoMap = null;
-        
+		System.out.println("Finish forming json data!");
+		map = null;
+		syaryoMap = null;
+
 		//2次処理
 		map = new JsonToSyaryoObj().reader(output);
 		syaryoMap = new FormalizeSyaryoObject().split(map);
-		new SyaryoObjToJson().write2(output, syaryoMap);
-        System.out.println("Finish deleting old type data!");
-        
+		new SyaryoObjToJson().write(output, syaryoMap);
+		System.out.println("Finish deleting old type data!");
+
 		//3次処理　結合・圧縮
 		//Map syaryoMap = new FormalizeSyaryoObject().join(new String[]{"PC200", "PC210", "HB205", "HB215"});
 		//new SyaryoObjToJson().write2("syaryo_obj_"+kisy+"_form.json", syaryoMap);
-        //System.out.println("Finish joining & compressing json data!");
+		//System.out.println("Finish joining & compressing json data!");
 	}
 
-    //古い型を除去
+	//古い型を除去
 	public Map<String, SyaryoObject> split(Map<String, SyaryoObject> syaryoMap) {
 		//Type
 		Map map = new TreeMap();
@@ -86,15 +86,15 @@ public class FormalizeSyaryoObject {
 
 			//経歴
 			//formHistory(syaryoMap.get(name).getHistory());
-            syaryoMap.get(name).remove("経歴");
-            
+			syaryoMap.get(name).remove("経歴");
+
 			//受注
 			formOrder(syaryoMap.get(name).getOrder());
 
 			//Last
 			//formLastUpdate(syaryoMap.get(name).getLast());
-            syaryoMap.get(name).remove("最終更新日");
-            
+			syaryoMap.get(name).remove("最終更新日");
+
 			//SMR
 			formSMR(syaryoMap.get(name).getSMR());
 
@@ -178,7 +178,7 @@ public class FormalizeSyaryoObject {
 
 	private void formOwner(Map<String, List> owner) {
 		Map update = new TreeMap();
-		String[] temp = new String[3];
+		String[] temp = new String[4];
 		temp[1] = "?";
 
 		if (owner == null) {
@@ -194,7 +194,10 @@ public class FormalizeSyaryoObject {
 			}
 
 			if (temp[0] != null) {
-				if (obj.get(0).equals(temp[0]) || obj.get(2).toString().contains(temp[1])) {
+				if (obj.get(0).equals(temp[0]) || obj.get(2).toString().contains(temp[2])) {
+					if(!obj.get(1).toString().contains("?") && !obj.get(1).toString().equals("-1") ){
+						update.put(temp[3], obj);
+					}
 					continue;
 				}
 			}
@@ -204,8 +207,9 @@ public class FormalizeSyaryoObject {
 			}
 			update.put(date, obj);
 			temp[0] = (String) obj.get(0);
-			temp[1] = (String) obj.get(2);
-			temp[2] = date;
+			temp[1] = (String) obj.get(1);
+			temp[2] = (String) obj.get(2);
+			temp[3] = date;
 
 		}
 

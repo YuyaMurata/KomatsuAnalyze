@@ -365,8 +365,8 @@ public class SyaryoElements {
 	public enum Caution implements Element{
 		Date("日付", -1),
 		Icon("ICONコード", 0),
-		Count("カウント", 2),
-		Source("DB_会社",3),
+		Count("カウント", 1),
+		Source("DB_会社",2),
 		Format("format:yyyy/MM/dd HH:MM:SS", 0);
 		
 		final String name;
