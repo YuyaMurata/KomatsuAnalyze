@@ -149,7 +149,7 @@ public class Histgram {
             List data = syaryoMap.values().stream()
                     .filter(s -> s.getType().equals(typ))
                     .filter(s -> s.getOrder() != null)
-                    .map(s -> s.getOrder("17")) //列の指定
+                    //.map(s -> s.getOrder("17")) //列の指定
                     .collect(Collectors.toList());
             List list = new ArrayList();
             for (Object l : data) {

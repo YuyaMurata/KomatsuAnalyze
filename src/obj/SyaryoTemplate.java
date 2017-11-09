@@ -95,7 +95,7 @@ public class SyaryoTemplate {
 			addKMEngine(s[0], s[1], s[2], s[3]);
 		}
 		if (key.equals("KMERROR")) {
-			addKMError(s[0], s[1], s[2], s[3], s[4]);
+			addKMError(s[0], s[1], s[2], s[3], s[4], s[5]);
 		}
 		if (key.equals("KMCAUTION")) {
 			addKMCaution(s[0], s[1], s[2], s[3], s[4]);
@@ -435,7 +435,7 @@ public class SyaryoTemplate {
 	}
 
 	//ERROR
-	public void addKMError(String db, String company, String date, String error_code, String error_cnt) {
+	public void addKMError(String db, String company, String date, String error_code, String error_kind, String error_cnt) {
 		String check_date = date.replace("/", "").substring(0, 8);
 		if (errorCheck(check_date)) {
 			return;
@@ -445,12 +445,12 @@ public class SyaryoTemplate {
 
 		String str = "";
 		if (map.get("KMERROR") == null) {
-			str = "DB, 会社コード, 日付, エラーコード, カウント \n ";
+			str = "DB, 会社コード, 日付, エラーコード, エラー種類, カウント \n ";
 		} else {
 			str = map.get("KMERROR") + " \n ";
 		}
 
-		str += db + "," + company + "," + date + "," + error_code + "," + error_cnt;
+		str += db + "," + company + "," + date + "," + error_code + "," + error_kind + "," + error_cnt;
 		map.put("KMERROR", str);
 	}
 

@@ -8,7 +8,9 @@ package viewer.fxml;
 import file.CSVFileReadWrite;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -27,6 +29,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuBar;
@@ -42,6 +45,7 @@ import json.JsonToSyaryoObj;
 import obj.Element;
 import obj.SyaryoElements;
 import obj.SyaryoObject;
+import viewer.csv.CSVViewerOutput;
 
 /**
  *
@@ -76,10 +80,10 @@ public class MachineHistoryFXMLController implements Initializable {
 	private Button csv;
 	@FXML
 	private CheckBox allCheck;
-	@FXML
-	private ProgressBar csvProgress;
-	@FXML
-	private Label csvProgressLabel;
+    @FXML
+    private ChoiceBox<String> csvOutputForm;
+    @FXML
+    private Label csvWorkingLabel;
 
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
@@ -87,10 +91,36 @@ public class MachineHistoryFXMLController implements Initializable {
 		//File Read
 		String fileName = "json\\syaryo_obj_WA470_form.json";
 		syaryoMap = new JsonToSyaryoObj().reader(fileName);
-
 		syaryo = syaryoMap.values().stream().findFirst().get();
 
-		//ListViewSettings
+		//ViewData Initialize
+        machineListInitialize();
+        machineDataListInitialize();
+        
+        //CSVOutputForm Initialize
+        csvOutputFormInitialize();
+	}
+    
+    public void machineListInitialize(){
+        //Add ListView
+		ObservableList machines = machineList.getItems();
+
+		int i = 0;
+		for (Object name : syaryoMap.keySet()) {
+			machines.add((++i) + " : " + name);
+		}
+
+		//Event
+		machineList.getSelectionModel().selectedIndexProperty().addListener(
+			(ov, old, current) -> {
+				// リスト・ビュー内の選択項目を出力
+				machineHistorySelected();
+			}
+		);
+    }
+    
+    public void machineDataListInitialize(){
+        //ListViewSettings
 		cMap = new HashMap<>();
 		for (String prefName : SyaryoElements.list) {
 			//parent
@@ -111,22 +141,6 @@ public class MachineHistoryFXMLController implements Initializable {
 		}
 		pList.setCellFactory(CheckBoxListCell.forListView((Item item) -> item.onProperty()));
 
-		//Add ListView
-		ObservableList machines = machineList.getItems();
-
-		int i = 0;
-		for (Object name : syaryoMap.keySet()) {
-			machines.add((++i) + " : " + name);
-		}
-
-		//Event
-		machineList.getSelectionModel().selectedIndexProperty().addListener(
-			(ov, old, current) -> {
-				// リスト・ビュー内の選択項目を出力
-				machineHistorySelected();
-			}
-		);
-
 		pList.getSelectionModel().selectedIndexProperty().addListener(
 			(ov, old, current) -> {
 				// リスト・ビュー内の選択項目を出力
@@ -135,7 +149,16 @@ public class MachineHistoryFXMLController implements Initializable {
 				elementSelected(name);
 			}
 		);
-	}
+    }
+    
+    public void csvOutputFormInitialize(){
+        ObservableList<String> options =
+                FXCollections.observableArrayList(
+                "None",
+                "Time");
+        csvOutputForm.getItems().addAll(options);
+        csvOutputForm.getSelectionModel().select(0);
+    }
 
 	//Selected Machine
 	public void machineHistorySelected() {
@@ -185,7 +208,7 @@ public class MachineHistoryFXMLController implements Initializable {
 					column.add(createColumn(colName, idx));
 					selectData.put(colName, item2.getIndex());
 					//ObservableList<String> list2 = FXCollections.observableArrayList();
-					list.add(syaryo.get(item.getName(), item2.getIndex()).get(0));
+					list.add(syaryo.getRow(item.getName(), item2.getIndex()).get(0));
 					//data.add(list);
 				}
 			}
@@ -215,42 +238,22 @@ public class MachineHistoryFXMLController implements Initializable {
 		applyAction(null);
 		
 		//Initialize
-		csvProgress.setProgress(0);
-		csvProgressLabel.setText("0%");
-
-		String filename = syaryo.getName() + "_" + System.currentTimeMillis() + ".csv";
-		try (PrintWriter pw = CSVFileReadWrite.writer(filename)) {
-			pw.println(selectData.keySet().stream().collect(Collectors.joining(",")));
-
-			int max = 0;
-			for (String header : selectData.keySet()) {
-				String key = header.split("\\.")[0];
-				if (max < syaryo.getSize(key)) {
-					max = syaryo.getSize(key);
-				}
-			}
-			
-			for (int i = 0; i < max; i++) {
-				List<String> row = new ArrayList();
-				for (String header : selectData.keySet()) {
-					String key = header.split("\\.")[0];
-					Integer index = selectData.get(header);
-					//System.out.println(key + " ," + index);
-					if(i < syaryo.get(key, index).size())
-						row.add(syaryo.get(key, index).get(i));
-					else {
-						row.add("");
-					}
-				}
-				pw.println(row.stream().collect(Collectors.joining(",")));
-				
-				//Progress
-				Double workProcess = (double)(i*100) / (max-1);
-				csvProgress.setProgress(workProcess);
-				csvProgressLabel.setText(String.valueOf(workProcess.intValue())+"%");
-			}
-			System.out.println(max + "行 csv出力!");
-		}
+		csvWorkingLabel.setText("Start : CSV 出力");
+        
+        Date now = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HHMMSS ");
+		String filename = syaryo.getName() + "_" + sdf.format(now) + ".csv";
+		
+        //Select Form
+        int n = 0;
+        if(csvOutputForm.getSelectionModel().isSelected(0)){
+            n = CSVViewerOutput.none("None_"+filename, selectData, syaryo);
+        }else if(csvOutputForm.getSelectionModel().isSelected(1)){
+            n = CSVViewerOutput.time("Time_"+filename, selectData, syaryo);
+        }else
+            System.out.println("Not select output form.");
+        
+        csvWorkingLabel.setText("Stop : "+n+"行 CSV 出力");
 	}
 
 	@FXML

@@ -97,7 +97,7 @@ public class SyaryoObject {
 						}
 						addCaution(s[2], s[3], list, (s[0] + "_" + s[1]));
 					} else if (field.toString().contains("ERROR")) {
-						addError(s[2], s[3], s[4], (s[0] + "_" + s[1]));
+						addError(s[2], s[3], s[4], s[5], (s[0] + "_" + s[1]));
 					} else if (field.toString().contains("ENGINE")) {
 						addEngine(s[2], s[3], (s[0] + "_" + s[1]));
 					} else if (field.toString().contains("SMR")) {
@@ -290,13 +290,14 @@ public class SyaryoObject {
 		map.put("GPS", histmap);
 	}
 
-	public void addError(String date, String id, String count, String source) {
+	public void addError(String date, String id, String kind, String count, String source) {
 		TreeMap histmap = (TreeMap) map.get("エラー");
 		if (histmap == null) {
 			histmap = new TreeMap();
 		}
 		List<Object> list = new ArrayList<>();
 		list.add(id);
+        list.add(kind);
 		list.add(count);
 		list.add(source);
 		histmap.put(date_no("エラー", date), list);
@@ -352,7 +353,7 @@ public class SyaryoObject {
 		return (Map) map.get("新車");
 	}
 
-	public Map getUsed() {
+	public Map<String, List> getUsed() {
 		return (Map) map.get("中古車");
 	}
 
@@ -387,18 +388,6 @@ public class SyaryoObject {
 
 	public Map<String, List> getOrder() {
 		return (Map) map.get("受注");
-	}
-
-	//行
-	public List<Object> getOrder(String date) {
-		if (date.length() >= 6) {
-			Map<String, List> order = getOrder();
-			return order.get(date);
-		} else {
-			Map<String, List> order = getOrder();
-			int i = Integer.valueOf(date);
-			return order.values().stream().map(l -> l.get(i)).collect(Collectors.toList());
-		}
 	}
 
 	public Map<String, List> getOwner() {
@@ -452,7 +441,7 @@ public class SyaryoObject {
 		return ((Map<String, List<String>>) map.get(key)).size();
 	}
 
-	public List<String> get(String key, Integer index) {
+	public List<String> getRow(String key, Integer index) {
 		List list = new ArrayList();
 		if (key.contains("機種")) {
 			list.add(getName());
@@ -470,6 +459,23 @@ public class SyaryoObject {
 		}
 		return ((Map<String, List>) map.get(key)).values().stream().map(l -> l.get(index).toString()).collect(Collectors.toList());
 	}
+    
+    public List<String> getCol(String key, String date) {
+		List list = new ArrayList();
+        
+        if(map.get(key) == null) return null;
+        
+        if (key.contains("生産") || key.contains("出荷") || key.contains("廃車")){
+            list.addAll((List<String>)map.get(key));
+        }else{
+            if(((Map<String, List<String>>)map.get(key)).get(date) == null)
+                list.addAll(((Map<String, List<String>>)map.get(key)).get("0"));
+            else
+                list.addAll(((Map<String, List<String>>)map.get(key)).get(date));
+        }
+        
+        return list;
+    }
 
 	public void remove(String key) {
 		map.remove(key);

@@ -389,8 +389,9 @@ public class SyaryoElements {
 	public enum Error implements Element{
 		Date("日付", -1),
 		Code("エラーコード", 0),
-		Count("カウント", 1),
-		Source("DB_会社",2),
+        Kind("エラー種類", 1),
+		Count("カウント", 2),
+		Source("DB_会社",3),
 		Format("format:yyyy/MM/dd HH:MM:SS", 0);
 		
 		final String name;

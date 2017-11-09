@@ -37,11 +37,11 @@ public class KomtraxData {
         
         //JSON Writer
         
-        /*addGPS(syaryoMap);
-        addSMR(syaryoMap);
-        addEngine(syaryoMap);
+        //addGPS(syaryoMap);
+        //addSMR(syaryoMap);
+        //addEngine(syaryoMap);
         addError(syaryoMap);
-        */addCaution(syaryoMap);
+        //addCaution(syaryoMap);
         
     }
     
@@ -299,10 +299,11 @@ public class KomtraxData {
             Statement stmt = con.createStatement();
 
             //CW_ERROR
-            String sql = String.format("select %s,%s,%s, %s, %s, %s from %s",
+            String sql = String.format("select %s,%s,%s, %s, %s, %s, %s from %s",
                     Komtrax.CW_ERROR.KIND, Komtrax.CW_ERROR.TYPE, Komtrax.CW_ERROR.MACHINE_NUMBER, //Unique ID
                     Komtrax.CW_ERROR.ERROR_TIME,    //Error Date
                     Komtrax.CW_ERROR.ERROR_CODE,    //Error code
+                    Komtrax.CW_ERROR.ERROR_KIND,    //Error Kind
                     Komtrax.CW_ERROR.COUNT,
                     Komtrax.TABLE.CW_ERROR.get()
             );
@@ -332,6 +333,7 @@ public class KomtraxData {
 
                 //Error
                 String date = res.getString(Komtrax.CW_ERROR.ERROR_TIME.get());    //Error Date
+                String error_kind = res.getString(Komtrax.CW_ERROR.ERROR_KIND.get());    //Error
                 String error_code = res.getString(Komtrax.CW_ERROR.ERROR_CODE.get());    //Error
                 String error_cnt = res.getString(Komtrax.CW_ERROR.COUNT.get());    //Error count
 
@@ -342,14 +344,15 @@ public class KomtraxData {
                 //車両チェック
                 String name = kisy + "-" + type + "-" + kiban;
                 if (syaryo == null) {
-                    errpw.println(n + "," + name + "," + date + "," + db + "," + company + "," + error_code + "," + error_cnt);
+                    errpw.println(n + "," + name + "," + date + "," + db + "," + company + "," 
+                                    + error_code + "," + error_kind + "," + error_cnt);
                     continue;
                 }
                 
                 m++;
                 
                 //Error
-                syaryo.addKMError(db, company, date, error_code, error_cnt);
+                syaryo.addKMError(db, company, date, error_code, error_kind, error_cnt);
                 
                 
                 //AddSyaryo

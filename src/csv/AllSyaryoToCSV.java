@@ -46,7 +46,7 @@ public class AllSyaryoToCSV {
             for (SyaryoObject syaryo : syaryoMap.values()) {
                 if (syaryo.getOrder() != null) {
                     for (String date : syaryo.getOrder().keySet()) {
-                        List order = syaryo.getOrder(date);
+                        List order = syaryo.getCol("受注", date);
                         //System.out.println(order);
                         pw.println(syaryo.getName() + "," + syaryo.getType() + "," + order.stream().collect(Collectors.joining(",")));
                     }
