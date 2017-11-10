@@ -5,8 +5,6 @@ package viewer.fxml;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-import file.CSVFileReadWrite;
-import java.io.PrintWriter;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,7 +14,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -33,7 +30,6 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuBar;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
@@ -187,7 +183,6 @@ public class MachineHistoryFXMLController implements Initializable {
 		ObservableList<ObservableList> data = FXCollections.observableArrayList();
 		ObservableList<String> list = FXCollections.observableArrayList();
 		list.add(syaryo.getName());
-		//data.add(list);
 
 		List<TableColumn> column = new ArrayList<>();
 		column.add(createColumn("機種・型・機番", 0));
@@ -207,9 +202,7 @@ public class MachineHistoryFXMLController implements Initializable {
 					String colName = item.getName() + "." + item2.getName();
 					column.add(createColumn(colName, idx));
 					selectData.put(colName, item2.getIndex());
-					//ObservableList<String> list2 = FXCollections.observableArrayList();
-					list.add(syaryo.getRow(item.getName(), item2.getIndex()).get(0));
-					//data.add(list);
+					list.add(syaryo.getCol(item.getName(), item2.getIndex()).get(0));
 				}
 			}
 		}
@@ -241,7 +234,7 @@ public class MachineHistoryFXMLController implements Initializable {
 		csvWorkingLabel.setText("Start : CSV 出力");
         
         Date now = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HHMMSS ");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HHmmss ");
 		String filename = syaryo.getName() + "_" + sdf.format(now) + ".csv";
 		
         //Select Form

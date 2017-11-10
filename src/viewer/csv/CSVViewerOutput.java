@@ -10,7 +10,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import obj.SyaryoObject;
 
@@ -41,13 +40,13 @@ public class CSVViewerOutput {
                     String key = header.split("\\.")[0];
                     Integer index = selectData.get(header);
                     //System.out.println(key + " ," + index);
-                    if (i < syaryo.getRow(key, index).size()) {
-                        row.add(syaryo.getRow(key, index).get(i));
+                    if (i < syaryo.getCol(key, index).size()) {
+                        row.add(syaryo.getCol(key, index).get(i));
                     } else {
-                        row.add("");
+                        row.add(syaryo.getCol(key, index).get(syaryo.getCol(key, index).size()-1));
                     }
                 }
-                pw.println(row.stream().collect(Collectors.joining(",")));
+                pw.println(row.stream().map(s -> s.split("#")[0]).collect(Collectors.joining(",")));
             }
             
             System.out.println(max + "行 csv出力!");
@@ -59,57 +58,48 @@ public class CSVViewerOutput {
     public static Integer time(String filename, Map<String, Integer> selectData, SyaryoObject syaryo) {
         int n = 0;
         
+        //日付
+        List<String> dateHeaders = selectData.entrySet().stream()
+                                            .filter(s -> (s.getKey().contains("日") && (s.getValue() == -1)))
+                                            .map(s -> s.getKey())
+                                            .collect(Collectors.toList());
+        
         try (PrintWriter pw = CSVFileReadWrite.writer(filename)) {
-            pw.println("日付,データ,値");
-
-            List<String> uniqueHeader = selectData.keySet().stream()
-                .map(h -> h.split("\\.")[0])
-                .distinct()
-                .collect(Collectors.toList());
-
-            for (String uheader : uniqueHeader) {
-                n++;
-                
-                if (selectData.get(uheader) != null) {
-                    Integer index = selectData.get(uheader);
-                    if (uheader.contains("日")) {
-                        pw.println(syaryo.getRow(uheader, index).get(0) + "," + uheader + ",");
-                    } else {
-                        pw.println("NA," + uheader + "," + syaryo.getRow(uheader, index).get(0));
-                    }
-                } else {
-                    List<String> headers = selectData.keySet().stream()
-                        .filter(h -> h.contains(uheader))
-                        .collect(Collectors.toList());
-                    Optional<String> dateHeaderOption = headers.stream().filter(h -> h.contains("日")).findFirst();
-                    String dateHeader = "";
-                    if (dateHeaderOption.isPresent()) {
-                        dateHeader = dateHeaderOption.get();
-                    }
-
-                    headers.remove(dateHeader);
-
-                    String dateKey = dateHeader.split("\\.")[0];
-                    for (String date : syaryo.getRow(dateKey, selectData.get(dateHeader))) {
-                        List<String> row = new ArrayList<>();
-                        row.add(date);
-                        
-                        for (String header : headers) {
-                            String key = header.split("\\.")[0];
-                            Integer index = selectData.get(header);
-                            
-                            List<String> list = syaryo.getCol(key, date);
-                            if(list == null) continue;
-                            
-                            row.add(header);
-                            row.add(list.get(index));
-                        }
-                        
-                        if(row.size() > 1)
-                            pw.println(row.stream().collect(Collectors.joining(",")));
+            pw.println("日付,車両,データ,値");
+            
+            //日付 + データ
+            for(String header : dateHeaders){
+                String key = header.split("\\.")[0];
+                List<String> dates = syaryo.getCol(key, selectData.get(header));
+                for(String date : dates){
+                    List<String> hList = selectData.keySet().stream()
+                                                    .filter(s -> (!s.equals(header) && s.contains(key)))
+                                                    .collect(Collectors.toList());
+                    for(String h : hList){
+                        n++;
+                        String hkey = h.split("\\.")[0];
+                        if(h.contains("経過日")){
+                            pw.println(date.split("#")[0]+","+syaryo.getName()+","+h+","+syaryo.getRow("経過日", date).get(0));
+                        }else
+                            pw.println(date.split("#")[0]+","+syaryo.getName()+","+h+","+syaryo.getRow(hkey, date).get(selectData.get(h)));
                     }
                 }
             }
+            
+            //日付 = データ
+            dateHeaders = selectData.entrySet().stream()
+                                            .filter(s -> s.getValue() == -2)
+                                            .map(s -> s.getKey())
+                                            .collect(Collectors.toList());
+            
+            for(String header : dateHeaders){
+                n++;
+                String key = header.split("\\.")[0];
+                List<String> dates = syaryo.getCol(key, selectData.get(header));
+                String date = syaryo.getRow(key, "").get(0);
+                pw.println(date+","+syaryo.getName()+","+header+","+date);
+            }
+            
             System.out.println(n + "行 csv出力!");
         }
         

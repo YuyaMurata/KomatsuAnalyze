@@ -20,6 +20,18 @@ public class SyaryoTemplateToJson {
     
     public void write(String filename, Map syaryoMap){
         try(JsonWriter writer = new JsonWriter(new BufferedWriter(new FileWriter(filename)))){
+            writer.setIndent("  ");
+            
+            Gson gson = new Gson();
+            gson.toJson(syaryoMap, Map.class, writer);    
+
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+    
+    public void write2(String filename, Map syaryoMap){
+        try(JsonWriter writer = new JsonWriter(new BufferedWriter(new FileWriter(filename)))){
             //writer.setIndent("  ");
             
             Gson gson = new Gson();

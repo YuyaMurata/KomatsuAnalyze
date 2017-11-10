@@ -5,7 +5,11 @@
  */
 package creator.form;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -243,6 +247,18 @@ public class FormalizeSyaryoObject {
 		history.clear();
 		history.putAll(update);
 	}
+    
+    private Boolean serviceYearCheck(String date){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+        int diff = 0;
+        try {
+            Date baseDate = DateFormat.getInstance().parse("2009/01/01");
+            diff = sdf.parse(date).compareTo(baseDate);
+        } catch (ParseException ex) {
+        }
+        
+        return  diff > 0;
+    }
 
 	private void formOrder(Map<String, List> order) {
 		Map update = new TreeMap();
@@ -252,7 +268,7 @@ public class FormalizeSyaryoObject {
 		}
 
 		for (String date : order.keySet()) {
-			if (Integer.valueOf(date.split("#")[0]) >= 20090101) {
+			if (serviceYearCheck(date.split("#")[0])) {
 				if (order.get(date).get(21).toString().contains("service")) {
 					continue;
 				}
@@ -311,14 +327,8 @@ public class FormalizeSyaryoObject {
 			//System.out.println(date+":"+obj);
 			date = date.split("#")[0];
 
-			if (!date.contains("/")) {
-				date = date.substring(0, 4) + "/" + date.substring(4, 6) + "/" + date.substring(6, 8) + " 0:00:00";
-			}
-
 			if (obj.get(0).toString().contains("?")) {
 				continue;
-				//obj.remove(0);
-				//obj.add(0, "-1");
 			}
 
 			//komtraxSMR 分→時間 変換
@@ -346,37 +356,9 @@ public class FormalizeSyaryoObject {
 
 		Map check = new HashMap();
 		for (String date : gps.keySet()) {
-			if (check.get(date.replace("/", "").substring(0, 8)) == null) {
-				check.put(date.replace("/", "").substring(0, 8), 1);
-				update.put(date, gps.get(date));
-			}
+			update.put(date, gps.get(date));
 		}
 
-		/*
-        SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-
-        Date startDate = null, lastDate = null;
-        try {
-            List dates = smr.keySet().stream().filter(d -> !smr.get(d).get(0).toString().equals("0.0")).collect(Collectors.toList());
-            startDate = format.parse(dates.get(0).toString());
-            lastDate = format.parse(dates.get(dates.size() - 1).toString());
-        } catch (ParseException ex) {
-        }
-        for (String date : gps.keySet()) {
-            try {
-                Date d = format.parse(date);
-                if (startDate.compareTo(d) > 0) {
-                    continue;
-                }
-                if (lastDate.compareTo(d) < 0) {
-                    break;
-                }
-
-                update.put(date, gps.get(date));
-            } catch (ParseException ex) {
-                Logger.getLogger(FormalizeSyaryoObject.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }*/
 		gps.clear();
 		gps.putAll(update);
 	}
@@ -406,7 +388,7 @@ public class FormalizeSyaryoObject {
 		if (work != null) {
 			Map update1 = new TreeMap();
 			for (String date : work.keySet()) {
-				if (Integer.valueOf(date.split("#")[0]) >= 20090101) {
+				if (serviceYearCheck(date.split("#")[0])) {
 					if (work.get(date).get(15).toString().contains("service")) {
 						continue;
 					}
@@ -441,7 +423,7 @@ public class FormalizeSyaryoObject {
 
 			//Parts
 			for (String date : parts.keySet()) {
-				if (Integer.valueOf(date.split("#")[0]) >= 20090101) {
+				if (serviceYearCheck(date.split("#")[0])) {
 					if (parts.get(date).get(7).toString().contains("service")) {
 						continue;
 					}

@@ -50,6 +50,7 @@ public class SyaryoElements {
                         .get();
     }
     
+    //-1 = key, -2 = value, -3 = keyとの複合でしか利用不可, 0~N = index
 	//Spec
 	public enum Spec implements Element{
 		Komtrax("Komtrax", 0),
@@ -99,7 +100,7 @@ public class SyaryoElements {
 	//Product
 	public enum Product implements Element{
 		Date("生産日", -2),
-		Format("format:yyyyMMdd", 0);
+		Format("format:yyyy/MM/dd", 0);
 		
 		final String name;
 		final Integer index;
@@ -120,7 +121,7 @@ public class SyaryoElements {
 	//Deploy
 	public enum Deploy implements Element{
 		Date("出荷日", -2),
-		Format("format:yyyyMMdd", 0);
+		Format("format:yyyy/MM/dd", 0);
 		
 		final String name;
 		final Integer index;
@@ -141,7 +142,8 @@ public class SyaryoElements {
 	//Dead
 	public enum Dead implements Element{
 		Date("廃車日", -2),
-		Format("format:yyyyMMdd", 0);
+        Age("経過日", -3),
+		Format("format:yyyy/MM/dd", 0);
 		
 		final String name;
 		final Integer index;
@@ -166,7 +168,8 @@ public class SyaryoElements {
 		HPrice("表面価格", 1),
 		RPrice("実質価格", 2),
 		Source("DB_会社",3),
-		Format("format:yyyyMMdd", 0);
+        Age("経過日", -3),
+		Format("format:yyyy/MM/dd", 0);
 		
 		final String name;
 		final Integer index;
@@ -191,7 +194,8 @@ public class SyaryoElements {
 		HPrice("表面価格", 1),
 		RPrice("実質価格", 2),
 		Source("DB_会社",3),
-		Format("format:yyyyMMdd", 0);
+        Age("経過日", -3),
+		Format("format:yyyy/MM/dd", 0);
 		
 		final String name;
 		final Integer index;
@@ -216,7 +220,8 @@ public class SyaryoElements {
 		Code("業種コード", 1),
 		Name("顧客名", 2),
 		Source("DB_会社",3),
-		Format("format:yyyyMMdd", 0);
+        Age("経過日", -3),
+		Format("format:yyyy/MM/dd", 0);
 		
 		final String name;
 		final Integer index;
@@ -238,7 +243,8 @@ public class SyaryoElements {
 	public enum Country implements Element{
 		Date("登録日", -1),
 		Code("国", 0),
-		Format("format:yyyyMMdd", 0);
+        Age("経過日", -3),
+		Format("format:yyyy/MM/dd", 0);
 		
 		final String name;
 		final Integer index;
@@ -277,7 +283,8 @@ public class SyaryoElements {
 		CInvoice("社内請求", 19),
 		Summary("概要", 20),
 		Source("DB_会社",21),
-		Format("format:yyyyMMdd", 0);
+        Age("経過日", -3),
+		Format("format:yyyy/MM/dd", 0);
 		
 		final String name;
 		final Integer index;
@@ -314,7 +321,8 @@ public class SyaryoElements {
 		DStep("指示工数", 13),
 		RTStep("実質累計工数", 14),
 		Source("DB_会社",15),
-		Format("format:yyyyMMdd", 0);
+        Age("経過日", -3),
+		Format("format:yyyy/MM/dd", 0);
 		
 		final String name;
 		final Integer index;
@@ -343,7 +351,8 @@ public class SyaryoElements {
 		Cancel("キャンセル数量", 5),
 		Price("標準金額", 6),
 		Source("DB_会社",7),
-		Format("format:yyyyMMdd", 0);
+        Age("経過日", -3),
+		Format("format:yyyy/MM/dd", 0);
 		
 		final String name;
 		final Integer index;
@@ -367,7 +376,8 @@ public class SyaryoElements {
 		Icon("ICONコード", 0),
 		Count("カウント", 1),
 		Source("DB_会社",2),
-		Format("format:yyyy/MM/dd HH:MM:SS", 0);
+        Age("経過日", -3),
+		Format("format:yyyy/MM/dd", 0);
 		
 		final String name;
 		final Integer index;
@@ -392,7 +402,8 @@ public class SyaryoElements {
         Kind("エラー種類", 1),
 		Count("カウント", 2),
 		Source("DB_会社",3),
-		Format("format:yyyy/MM/dd HH:MM:SS", 0);
+        Age("経過日", -3),
+		Format("format:yyyy/MM/dd", 0);
 		
 		final String name;
 		final Integer index;
@@ -415,7 +426,8 @@ public class SyaryoElements {
 		Date("日付", -1),
 		Throttle("スロットル", 0),
 		Source("DB_会社",1),
-		Format("format:yyyy/MM/dd HH:MM:SS", 0);
+        Age("経過日", -3),
+		Format("format:yyyy/MM/dd", 0);
 		
 		final String name;
 		final Integer index;
@@ -438,7 +450,8 @@ public class SyaryoElements {
 		Date("日付", -1),
 		_SMR("SMR", 0),
 		Source("DB_会社",1),
-		Format("format:yyyy/MM/dd HH:MM:SS", 0);
+        Age("経過日", -3),
+		Format("format:yyyy/MM/dd", 0);
 		
 		final String name;
 		final Integer index;
@@ -461,7 +474,8 @@ public class SyaryoElements {
 		Date("日付", -1),
 		_GPS("GPS", 0),
 		Source("DB_会社",1),
-		Format("format:yyyy/MM/dd HH:MM:SS", 0),
+		Format("format:yyyy/MM/dd", 0),
+        Age("経過日", -3),
 		GPSFormat("format:N99.99.99.999_E999.99.99.999", 0);
 		
 		final String name;

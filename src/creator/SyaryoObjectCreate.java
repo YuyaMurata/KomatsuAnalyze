@@ -20,7 +20,7 @@ import obj.SyaryoTemplate;
 public class SyaryoObjectCreate {
 
 	public static void main(String[] args) {
-		new SyaryoObjectCreate().create("PC200");
+		new SyaryoObjectCreate().create("WA470");
 	}
 
 	public void create(String kisy) {
