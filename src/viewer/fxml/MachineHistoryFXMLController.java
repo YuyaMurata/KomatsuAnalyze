@@ -34,6 +34,7 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
@@ -49,270 +50,301 @@ import viewer.csv.CSVViewerOutput;
  */
 public class MachineHistoryFXMLController implements Initializable {
 
-	@FXML
-	private VBox root_vbox;
-	@FXML
-	private MenuBar fileMenu;
-	@FXML
-	private SplitPane history_splitpane;
-	@FXML
-	private ListView<?> machineList;
+    @FXML
+    private VBox root_vbox;
+    @FXML
+    private MenuBar fileMenu;
+    @FXML
+    private SplitPane history_splitpane;
+    @FXML
+    private ListView<?> machineList;
 
-	private Map<String, SyaryoObject> syaryoMap = new HashMap();
-	@FXML
-	private Label history_label;
-	@FXML
-	private ListView<Item> pList;
-	@FXML
-	private ListView<Item> cList;
-	private Map<String, ObservableList<Item>> cMap;
-	@FXML
-	private TableView sampleView;
-	@FXML
-	private Button applyButton;
+    private Map<String, SyaryoObject> syaryoMap = new HashMap();
+    @FXML
+    private Label history_label;
+    @FXML
+    private ListView<Item> pList;
+    @FXML
+    private ListView<Item> cList;
+    private Map<String, ObservableList<Item>> cMap;
+    @FXML
+    private TableView sampleView;
+    @FXML
+    private Button applyButton;
 
-	private SyaryoObject syaryo;
-	@FXML
-	private Button csv;
-	@FXML
-	private CheckBox allCheck;
+    private SyaryoObject syaryo;
+    @FXML
+    private Button csv;
+    @FXML
+    private CheckBox allCheck;
     @FXML
     private ChoiceBox<String> csvOutputForm;
     @FXML
     private Label csvWorkingLabel;
+    @FXML
+    private TextField conditionField;
+    private Map<String, String> conditionMap = new HashMap();
 
-	@Override
-	public void initialize(URL url, ResourceBundle rb) {
-		// TODO
-		//File Read
-		String fileName = "json\\syaryo_obj_WA470_form.json";
-		syaryoMap = new JsonToSyaryoObj().reader(fileName);
-		syaryo = syaryoMap.values().stream().findFirst().get();
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        // TODO
+        //File Read
+        String fileName = "json\\syaryo_obj_WA470_form.json";
+        syaryoMap = new JsonToSyaryoObj().reader(fileName);
+        syaryo = syaryoMap.values().stream().findFirst().get();
 
-		//ViewData Initialize
+        //ViewData Initialize
         machineListInitialize();
         machineDataListInitialize();
-        
+
         //CSVOutputForm Initialize
         csvOutputFormInitialize();
-	}
-    
-    public void machineListInitialize(){
+    }
+
+    public void machineListInitialize() {
         //Add ListView
-		ObservableList machines = machineList.getItems();
+        ObservableList machines = machineList.getItems();
 
-		int i = 0;
-		for (Object name : syaryoMap.keySet()) {
-			machines.add((++i) + " : " + name);
-		}
+        int i = 0;
+        for (Object name : syaryoMap.keySet()) {
+            machines.add((++i) + " : " + name);
+        }
 
-		//Event
-		machineList.getSelectionModel().selectedIndexProperty().addListener(
-			(ov, old, current) -> {
-				// リスト・ビュー内の選択項目を出力
-				machineHistorySelected();
-			}
-		);
+        //Event
+        machineList.getSelectionModel().selectedIndexProperty().addListener(
+            (ov, old, current) -> {
+                // リスト・ビュー内の選択項目を出力
+                machineHistorySelected(current.intValue());
+            }
+        );
     }
-    
-    public void machineDataListInitialize(){
+
+    private String beforeC;
+
+    public void machineDataListInitialize() {
         //ListViewSettings
-		cMap = new HashMap<>();
-		for (String prefName : SyaryoElements.list) {
-			//parent
-			Item pref = new Item(0, prefName, false);
-			pList.getItems().add(pref);
+        cMap = new HashMap<>();
+        for (String prefName : SyaryoElements.list) {
+            //parent
+            Item pref = new Item(0, prefName, false);
+            pList.getItems().add(pref);
 
-			//child
-			ListView<Item> list = new ListView();
-			for (Element e : SyaryoElements.map.get(prefName)) {
-				if (e.getText().contains("format")) {
-					continue;
-				}
+            //child
+            ListView<Item> list = new ListView();
+            for (Element e : SyaryoElements.map.get(prefName)) {
+                if (e.getText().contains("format")) {
+                    continue;
+                }
 
-				Item pref2 = new Item(e.getNo(), e.getText(), false);
-				list.getItems().add(pref2);
-			}
-			cMap.put(prefName, list.getItems());
-		}
-		pList.setCellFactory(CheckBoxListCell.forListView((Item item) -> item.onProperty()));
+                Item pref2 = new Item(e.getNo(), e.getText(), false);
+                list.getItems().add(pref2);
+            }
+            cMap.put(prefName, list.getItems());
+        }
+        pList.setCellFactory(CheckBoxListCell.forListView((Item item) -> item.onProperty()));
 
-		pList.getSelectionModel().selectedIndexProperty().addListener(
-			(ov, old, current) -> {
-				// リスト・ビュー内の選択項目を出力
-				int index = pList.getSelectionModel().getSelectedIndex();
-				String name = pList.getItems().get(index).toString();
-				elementSelected(name);
-			}
-		);
+        //Selected SyaryoElement-parent
+        pList.getSelectionModel().selectedIndexProperty().addListener(
+            (ov, old, current) -> {
+                // リスト・ビュー内の選択項目を出力
+                String name = pList.getItems().get(current.intValue()).toString();
+                if (old.intValue() > -1) {
+                    conditionStore(pList.getItems().get(old.intValue()).toString(),
+                                     beforeC);
+                }
+                elementSelected(name);
+            }
+        );
+
+        //Selected SyaryoElement-child
+        cList.getSelectionModel().selectedIndexProperty().addListener(
+            (ov, old, current) -> {
+                // リスト・ビュー内の選択項目を出力
+                if (current.intValue() > -1) {
+                    String name = cList.getItems().get(current.intValue()).toString();
+                    if (old.intValue() > -1) {
+                        conditionStore(pList.getSelectionModel().getSelectedItem().getName(),
+                            cList.getItems().get(old.intValue()).getName());
+                    }
+                    beforeC = name;
+                }
+            }
+        );
     }
-    
-    public void csvOutputFormInitialize(){
-        ObservableList<String> options =
-                FXCollections.observableArrayList(
+
+    public void csvOutputFormInitialize() {
+        ObservableList<String> options
+            = FXCollections.observableArrayList(
                 "None",
                 "Time");
         csvOutputForm.getItems().addAll(options);
         csvOutputForm.getSelectionModel().select(0);
     }
 
-	//Selected Machine
-	public void machineHistorySelected() {
-		int index = machineList.getSelectionModel().getSelectedIndex();
-		System.out.println("Selection in the listView is : " + index);
-		String name = machineList.getItems().get(index).toString().split(" : ")[1];
-		history_label.setText(syaryoMap.get(name).dump());
-		syaryo = syaryoMap.get(name);
-	}
+    //Selected Machine
+    public void machineHistorySelected(Integer index) {
+        System.out.println("Selection in the listView is : " + index);
+        String name = machineList.getItems().get(index).toString().split(" : ")[1];
+        history_label.setText(syaryoMap.get(name).dump());
+        syaryo = syaryoMap.get(name);
+    }
 
-	//Selected SyaryoElements
-	public void elementSelected(String name) {
-		cList.setItems(cMap.get(name));
-		cList.setCellFactory(CheckBoxListCell.forListView((Item item) -> item.onProperty()));
-	}
+    //Selected SyaryoElements
+    public void elementSelected(String name) {
+        cList.setItems(cMap.get(name));
+        cList.setCellFactory(CheckBoxListCell.forListView((Item item) -> item.onProperty()));
+    }
 
-	Map<String, Integer> selectData;
+    public void conditionStore(String pname, String cname) {
+        String key = pname + "." + cname;
+        conditionMap.put(key, conditionField.getText());
+        conditionField.clear();
+        System.out.println(conditionMap);
+    }
 
-	@FXML
-	private void applyAction(ActionEvent event) {
-		System.out.println("Apply!");
-		selectData = new LinkedHashMap();
+    Map<String, Integer> selectData;
 
-		sampleView.getColumns().clear();
+    @FXML
+    private void applyAction(ActionEvent event) {
+        System.out.println("Apply!");
+        selectData = new LinkedHashMap();
 
-		ObservableList<ObservableList> data = FXCollections.observableArrayList();
-		ObservableList<String> list = FXCollections.observableArrayList();
-		list.add(syaryo.getName());
+        sampleView.getColumns().clear();
 
-		List<TableColumn> column = new ArrayList<>();
-		column.add(createColumn("機種・型・機番", 0));
-		selectData.put("機種・型・機番", 0);
+        ObservableList<ObservableList> data = FXCollections.observableArrayList();
+        ObservableList<String> list = FXCollections.observableArrayList();
+        list.add(syaryo.getName());
 
-		int n = 0;
-		for (Item item : pList.getItems()) {
-			//System.out.println(item.getName());
-			if (!item.isOn()) {
-				continue;
-			}
-			for (Item item2 : cMap.get(item.getName())) {
-				if (item2.isOn()) {
-					//System.out.println("("+item2.getIndex()+","+item2.name+","+item2.isOn()+"),");
-					n++;
-					final int idx = n;
-					String colName = item.getName() + "." + item2.getName();
-					column.add(createColumn(colName, idx));
-					selectData.put(colName, item2.getIndex());
-					list.add(syaryo.getCol(item.getName(), item2.getIndex()).get(0));
-				}
-			}
-		}
-		data.add(list);
-		sampleView.getColumns().addAll(column.toArray(new TableColumn[column.size()]));
+        List<TableColumn> column = new ArrayList<>();
+        column.add(createColumn("機種・型・機番", 0));
+        selectData.put("機種・型・機番", 0);
 
-		sampleView.setItems(data);
-	}
+        int n = 0;
+        for (Item item : pList.getItems()) {
+            //System.out.println(item.getName());
+            if (!item.isOn()) {
+                continue;
+            }
+            for (Item item2 : cMap.get(item.getName())) {
+                if (item2.isOn()) {
+                    //System.out.println("("+item2.getIndex()+","+item2.name+","+item2.isOn()+"),");
+                    n++;
+                    final int idx = n;
+                    String colName = item.getName() + "." + item2.getName();
+                    column.add(createColumn(colName, idx));
+                    selectData.put(colName, item2.getIndex());
+                    list.add(syaryo.getCol(item.getName(), item2.getIndex()).get(0));
+                }
+            }
+        }
+        data.add(list);
+        sampleView.getColumns().addAll(column.toArray(new TableColumn[column.size()]));
 
-	public TableColumn createColumn(String header, int index) {
-		TableColumn tc = new TableColumn(header);
-		tc.setCellValueFactory(
-			new Callback<CellDataFeatures<ObservableList, String>, ObservableValue<String>>() {
-			@Override
-			public ObservableValue<String> call(CellDataFeatures<ObservableList, String> param) {
-				return new SimpleStringProperty(param.getValue().get(index).toString());
-			}
-		});
+        sampleView.setItems(data);
+    }
 
-		return tc;
-	}
+    public TableColumn createColumn(String header, int index) {
+        TableColumn tc = new TableColumn(header);
+        tc.setCellValueFactory(
+            new Callback<CellDataFeatures<ObservableList, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(CellDataFeatures<ObservableList, String> param) {
+                return new SimpleStringProperty(param.getValue().get(index).toString());
+            }
+        });
 
-	@FXML
-	private void writeCSV(ActionEvent event) {
-		//Update
-		applyAction(null);
-		
-		//Initialize
-		csvWorkingLabel.setText("Start : CSV 出力");
-        
+        return tc;
+    }
+
+    @FXML
+    private void writeCSV(ActionEvent event) {
+        //Update
+        applyAction(null);
+
+        //Initialize
+        csvWorkingLabel.setText("Start : CSV 出力");
+
         Date now = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HHmmss ");
-		String filename = syaryo.getName() + "_" + sdf.format(now) + ".csv";
-		
+        String filename = syaryo.getName() + "_" + sdf.format(now) + ".csv";
+
         //Select Form
         int n = 0;
-        if(csvOutputForm.getSelectionModel().isSelected(0)){
-            n = CSVViewerOutput.none("None_"+filename, selectData, syaryo);
-        }else if(csvOutputForm.getSelectionModel().isSelected(1)){
-            n = CSVViewerOutput.time("Time_"+filename, selectData, syaryo);
-        }else
+        if (csvOutputForm.getSelectionModel().isSelected(0)) {
+            n = CSVViewerOutput.none("None_" + filename, selectData, syaryo);
+        } else if (csvOutputForm.getSelectionModel().isSelected(1)) {
+            n = CSVViewerOutput.time("Time_" + filename, selectData, syaryo);
+        } else {
             System.out.println("Not select output form.");
-        
-        csvWorkingLabel.setText("Stop : "+n+"行 CSV 出力");
-	}
+        }
 
-	@FXML
-	private void allChecked(ActionEvent event) {
-		if (allCheck.isSelected()) {
-			for (Item item : pList.getItems()) {
-				item.setOn(true);
-				elementSelected(item.getName());
-				for (Item item2 : cList.getItems()) {
-					item2.setOn(true);
-				}
-			}
-		} else {
-			for (Item item : pList.getItems()) {
-				item.setOn(false);
-			}
-			for (Item item : cList.getItems()) {
-				item.setOn(false);
-			}
-		}
-	}
+        csvWorkingLabel.setText("Stop : " + n + "行 CSV 出力");
+    }
 
-	static class Item {
+    @FXML
+    private void allChecked(ActionEvent event) {
+        if (allCheck.isSelected()) {
+            for (Item item : pList.getItems()) {
+                item.setOn(true);
+                elementSelected(item.getName());
+                for (Item item2 : cList.getItems()) {
+                    item2.setOn(true);
+                }
+            }
+        } else {
+            for (Item item : pList.getItems()) {
+                item.setOn(false);
+            }
+            for (Item item : cList.getItems()) {
+                item.setOn(false);
+            }
+        }
+    }
 
-		private final StringProperty name = new SimpleStringProperty();
-		private final BooleanProperty on = new SimpleBooleanProperty();
-		private final Integer index;
+    static class Item {
 
-		public Item(Integer index, String name, boolean on) {
-			this.index = index;
-			setName(name);
-			setOn(on);
-		}
+        private final StringProperty name = new SimpleStringProperty();
+        private final BooleanProperty on = new SimpleBooleanProperty();
+        private final Integer index;
 
-		public final StringProperty nameProperty() {
-			return this.name;
-		}
+        public Item(Integer index, String name, boolean on) {
+            this.index = index;
+            setName(name);
+            setOn(on);
+        }
 
-		public final Integer getIndex() {
-			return this.index;
-		}
+        public final StringProperty nameProperty() {
+            return this.name;
+        }
 
-		public final String getName() {
-			return this.nameProperty().get();
-		}
+        public final Integer getIndex() {
+            return this.index;
+        }
 
-		public final void setName(final String name) {
-			this.nameProperty().set(name);
-		}
+        public final String getName() {
+            return this.nameProperty().get();
+        }
 
-		public final BooleanProperty onProperty() {
-			return this.on;
-		}
+        public final void setName(final String name) {
+            this.nameProperty().set(name);
+        }
 
-		public final boolean isOn() {
-			return this.onProperty().get();
-		}
+        public final BooleanProperty onProperty() {
+            return this.on;
+        }
 
-		public final void setOn(final boolean on) {
-			this.onProperty().set(on);
-		}
+        public final boolean isOn() {
+            return this.onProperty().get();
+        }
 
-		@Override
-		public String toString() {
-			return getName();
-		}
+        public final void setOn(final boolean on) {
+            this.onProperty().set(on);
+        }
 
-	}
+        @Override
+        public String toString() {
+            return getName();
+        }
+
+    }
 }
