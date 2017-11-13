@@ -53,9 +53,10 @@ public class SyaryoElements {
     //-1 = key, -2 = value, -3 = keyとの複合でしか利用不可, 0~N = index
 	//Spec
 	public enum Spec implements Element{
-		Komtrax("Komtrax", 0),
-		Category("製品分類B", 1),
-		DB_Company("DB_会社",2);
+        SType("小変形", 0),
+        Category("製品分類B", 1),
+		Komtrax("Komtrax", 2),
+		DB_Company("DB_会社",3);
 		
 		final String name;
 		final Integer index;

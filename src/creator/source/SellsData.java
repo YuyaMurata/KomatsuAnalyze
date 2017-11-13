@@ -43,7 +43,7 @@ public class SellsData {
                     Sell._Sell.STD_SY_KKU, //標準価
                     Sell._Sell.LAST_UPD_DAYT,
                     HiveDB.TABLE.SELL,
-                    Sell._Sell.CO_URI_SEQ + "=2",
+                    Sell._Sell.CO_URI_ACT_KBN + "=2",
                     Sell._Sell.MKM_ACT_KBN + "=2",
                     Sell._Sell.SP_MTO_SK_KBN + "=1",
                     Sell._Sell.CO_URI_LA_FLG + "=1"

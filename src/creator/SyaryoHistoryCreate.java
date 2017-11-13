@@ -58,15 +58,15 @@ public class SyaryoHistoryCreate extends HiveDB {
         order(con, syaryoTemplate, noneTypeSearch);
         work(con, syaryoTemplate, noneTypeSearch);
         parts(con, syaryoTemplate, noneTypeSearch);
-        sell(con, syaryoTemplate, noneTypeSearch);
-        sell_used(con, syaryoTemplate, noneTypeSearch);
+        */sell(con, syaryoTemplate, noneTypeSearch);
+        /*sell_used(con, syaryoTemplate, noneTypeSearch);
         
         //KOSMIC
         sell_old(con, syaryoTemplate, noneTypeSearch);
         
         //KOMTRAX
-        */komtrax(con, syaryoTemplate, noneTypeSearch);
-        
+        komtrax(con, syaryoTemplate, noneTypeSearch);
+        */
     }
 
     public static void template(Connection con) {

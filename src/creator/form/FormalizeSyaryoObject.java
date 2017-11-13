@@ -17,6 +17,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import json.JsonToSyaryoObj;
 import json.SyaryoObjToJson;
+import obj.SyaryoElements;
 import obj.SyaryoObject;
 
 /**
@@ -104,6 +105,12 @@ public class FormalizeSyaryoObject {
 
 			//GPS
 			formGPS(syaryoMap.get(name).getGPS(), syaryoMap.get(name).getSMR());
+            
+            //Caution
+            syaryoMap.get(name).remove("警告");
+            
+            //Error
+            formError(syaryoMap.get(name).getError());
 
 			//Country
 			formCountry(syaryoMap.get(name).getCountry());
@@ -118,22 +125,29 @@ public class FormalizeSyaryoObject {
 	}
 
 	private void formNew(Map<String, List> news) {
-		Map update = new TreeMap();
+		Map<String, List<String>> update = new TreeMap();
 
 		if (news == null) {
 			return;
 		}
-
+        
+        Boolean flg = false;
 		for (String date : news.keySet()) {
-			List obj = news.get(date);
+			List<String> obj = news.get(date);
 
 			//System.out.println(date+":"+obj);
 			if (date.contains("#")) {
 				date = date.split("#")[0];
 			}
 
-			if (!obj.get(0).equals("-1") || !obj.get(1).equals("-1") || !obj.get(2).equals("-1")) {
-				update.put(date, obj);
+			if (obj.get(SyaryoElements.New.Source.getNo()).contains("sell")) {
+                if(flg) break;
+                if(!obj.get(SyaryoElements.New.Source.getNo()).contains("old"))
+                    flg = true;
+                obj.set(SyaryoElements.New.HPrice.getNo(), String.valueOf(Double.valueOf(obj.get(SyaryoElements.New.HPrice.getNo())).intValue()));
+                obj.set(SyaryoElements.New.RPrice.getNo(), String.valueOf(Double.valueOf(obj.get(SyaryoElements.New.RPrice.getNo())).intValue()));
+                obj.set(SyaryoElements.New.SPrice.getNo(), String.valueOf(Double.valueOf(obj.get(SyaryoElements.New.SPrice.getNo())).intValue()));
+                update.put(date, obj);
 			}
 		}
 
@@ -437,4 +451,18 @@ public class FormalizeSyaryoObject {
 		}
 
 	}
+    
+    private void formError(Map<String, List> error){
+        if(error == null) return;
+        Map<String, Integer> errorCnt = new HashMap();
+        for(String date : error.keySet()){
+            String code = (String) error.get(date).get(SyaryoElements.Error.Code.getNo());
+            Integer cnt = Integer.valueOf((String) error.get(date).get(SyaryoElements.Error.Count.getNo()));
+            
+            if(errorCnt.get(code) == null) errorCnt.put(code, 0);
+            error.get(date).set(SyaryoElements.Error.Count.getNo(),String.valueOf(cnt - errorCnt.get(code)));
+            
+            errorCnt.put(code, cnt);
+        }
+    }
 }

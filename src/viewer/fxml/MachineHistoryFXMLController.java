@@ -14,6 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -84,6 +85,8 @@ public class MachineHistoryFXMLController implements Initializable {
     @FXML
     private TextField conditionField;
     private Map<String, String> conditionMap = new HashMap();
+    @FXML
+    private CheckBox machineAllCkeck;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -148,26 +151,7 @@ public class MachineHistoryFXMLController implements Initializable {
             (ov, old, current) -> {
                 // リスト・ビュー内の選択項目を出力
                 String name = pList.getItems().get(current.intValue()).toString();
-                if (old.intValue() > -1) {
-                    conditionStore(pList.getItems().get(old.intValue()).toString(),
-                                     beforeC);
-                }
                 elementSelected(name);
-            }
-        );
-
-        //Selected SyaryoElement-child
-        cList.getSelectionModel().selectedIndexProperty().addListener(
-            (ov, old, current) -> {
-                // リスト・ビュー内の選択項目を出力
-                if (current.intValue() > -1) {
-                    String name = cList.getItems().get(current.intValue()).toString();
-                    if (old.intValue() > -1) {
-                        conditionStore(pList.getSelectionModel().getSelectedItem().getName(),
-                            cList.getItems().get(old.intValue()).getName());
-                    }
-                    beforeC = name;
-                }
             }
         );
     }
@@ -193,13 +177,6 @@ public class MachineHistoryFXMLController implements Initializable {
     public void elementSelected(String name) {
         cList.setItems(cMap.get(name));
         cList.setCellFactory(CheckBoxListCell.forListView((Item item) -> item.onProperty()));
-    }
-
-    public void conditionStore(String pname, String cname) {
-        String key = pname + "." + cname;
-        conditionMap.put(key, conditionField.getText());
-        conditionField.clear();
-        System.out.println(conditionMap);
     }
 
     Map<String, Integer> selectData;
@@ -265,15 +242,24 @@ public class MachineHistoryFXMLController implements Initializable {
         csvWorkingLabel.setText("Start : CSV 出力");
 
         Date now = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HHmmss ");
-        String filename = syaryo.getName() + "_" + sdf.format(now) + ".csv";
-
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HHmmss");
+        
+        List syaryos = new ArrayList();
+        String filename;
+        if(machineAllCkeck.isSelected()){
+            syaryos = syaryoMap.values().stream().collect(Collectors.toList());
+            filename = syaryo.getMachine() + "_" + sdf.format(now) + ".csv";
+        }else{
+            syaryos.add(syaryo);
+            filename = syaryo.getName() + "_" + sdf.format(now) + ".csv";
+        }
+        
         //Select Form
         int n = 0;
         if (csvOutputForm.getSelectionModel().isSelected(0)) {
-            n = CSVViewerOutput.none("None_" + filename, selectData, syaryo);
+            n = CSVViewerOutput.none("None_" + filename, selectData, syaryos);
         } else if (csvOutputForm.getSelectionModel().isSelected(1)) {
-            n = CSVViewerOutput.time("Time_" + filename, selectData, syaryo);
+            n = CSVViewerOutput.time("Time_" + filename, selectData, syaryos);
         } else {
             System.out.println("Not select output form.");
         }
@@ -300,6 +286,7 @@ public class MachineHistoryFXMLController implements Initializable {
             }
         }
     }
+
 
     static class Item {
 

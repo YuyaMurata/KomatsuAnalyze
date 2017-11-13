@@ -24,8 +24,8 @@ public class SyaryoObjectCreate {
 	}
 
 	public void create(String kisy) {
-		//String midtemp = "..\\KomatsuData\\中間データ\\syaryo_mid_" + kisy + ".zip";
-		String midtemp = "中間データ\\syaryo_mid_" + kisy + ".zip";
+		String midtemp = "..\\KomatsuData\\中間データ\\syaryo_mid_" + kisy + ".zip";
+		//String midtemp = "中間データ\\syaryo_mid_" + kisy + ".zip";
 		String FILENAME = "json\\syaryo_obj_" + kisy + ".json";
 
 		Map<String, SyaryoTemplate> syaryoTemplates = new JsonToSyaryoTemplate().reader2(midtemp);

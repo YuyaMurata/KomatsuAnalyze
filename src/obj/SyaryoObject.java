@@ -90,7 +90,7 @@ public class SyaryoObject {
 
                 try {
                     if (field.equals("仕様")) {
-                        addSpec(s[0], s[1], "eqp+syaryo_?");
+                        addSpec(s[1], s[0], s[2], "eqp+syaryo_?");
                     } else if (field.equals("詳細")) {
                         list.add(s[1]);
                         list.add(s[2]);
@@ -188,10 +188,11 @@ public class SyaryoObject {
         map.put("新車", newmap);
     }
 
-    public void addSpec(String category, String komtrax, String source) {
+    public void addSpec(String stype, String category, String komtrax, String source) {
         List<Object> list = new ArrayList<>();
-        list.add(category);
+        list.add(stype);
         list.add(komtrax);
+        list.add(category);
         list.add(source);
         TreeMap specmap = new TreeMap();
         specmap.put(0, list);
@@ -440,7 +441,7 @@ public class SyaryoObject {
     }
 
     public Boolean getKomtrax() {
-        return ((List) map.get("仕様")).get(0).toString().equals("1");
+        return ((List) map.get("仕様")).get(SyaryoElements.Spec.Komtrax.getNo()).toString().equals("1");
     }
 
     //Komtrax
