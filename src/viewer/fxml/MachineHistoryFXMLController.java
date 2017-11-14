@@ -121,9 +121,7 @@ public class MachineHistoryFXMLController implements Initializable {
             }
         );
     }
-
-    private String beforeC;
-
+    
     public void machineDataListInitialize() {
         //ListViewSettings
         cMap = new HashMap<>();
@@ -169,7 +167,7 @@ public class MachineHistoryFXMLController implements Initializable {
     public void machineHistorySelected(Integer index) {
         System.out.println("Selection in the listView is : " + index);
         String name = machineList.getItems().get(index).toString().split(" : ")[1];
-        history_label.setText(syaryoMap.get(name).dump());
+        history_label.setText(name);
         syaryo = syaryoMap.get(name);
     }
 
