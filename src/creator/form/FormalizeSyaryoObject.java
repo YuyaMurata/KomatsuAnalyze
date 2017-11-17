@@ -347,7 +347,7 @@ public class FormalizeSyaryoObject {
 
 			//komtraxSMR 分→時間 変換
 			if (obj.get(1).toString().contains("komtrax")) {
-				obj.set(0, Integer.valueOf(obj.get(0).toString()) / 60);
+				obj.set(0, String.valueOf(Integer.valueOf(obj.get(0).toString()) / 60));
 			}
 
 			if (!obj.get(0).equals(temp)) {

@@ -121,7 +121,7 @@ public class MachineHistoryFXMLController implements Initializable {
             }
         );
     }
-    
+
     public void machineDataListInitialize() {
         //ListViewSettings
         cMap = new HashMap<>();
@@ -241,23 +241,31 @@ public class MachineHistoryFXMLController implements Initializable {
 
         Date now = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HHmmss");
-        
+
         List syaryos = new ArrayList();
         String filename;
-        if(machineAllCkeck.isSelected()){
+        if (machineAllCkeck.isSelected()) {
             syaryos = syaryoMap.values().stream().collect(Collectors.toList());
             filename = syaryo.getMachine() + "_" + sdf.format(now) + ".csv";
-        }else{
+        } else {
             syaryos.add(syaryo);
             filename = syaryo.getName() + "_" + sdf.format(now) + ".csv";
         }
         
+        String[] condition = conditionField.getText().split(",");
+        if(condition.length > 0){
+            for(String c : condition){
+                if(c.contains("="))
+                    conditionMap.put(c.split("=")[0], c.split("=")[1]);
+            }
+        }
+
         //Select Form
         int n = 0;
         if (csvOutputForm.getSelectionModel().isSelected(0)) {
-            n = CSVViewerOutput.none("None_" + filename, selectData, syaryos);
+            n = CSVViewerOutput.none("None_" + filename, conditionMap, selectData, syaryos);
         } else if (csvOutputForm.getSelectionModel().isSelected(1)) {
-            n = CSVViewerOutput.time("Time_" + filename, selectData, syaryos);
+            n = CSVViewerOutput.time("Time_" + filename, conditionMap, selectData, syaryos);
         } else {
             System.out.println("Not select output form.");
         }
@@ -278,13 +286,13 @@ public class MachineHistoryFXMLController implements Initializable {
         } else {
             for (Item item : pList.getItems()) {
                 item.setOn(false);
-            }
-            for (Item item : cList.getItems()) {
-                item.setOn(false);
+                elementSelected(item.getName());
+                for (Item item2 : cList.getItems()) {
+                    item2.setOn(false);
+                }
             }
         }
     }
-
 
     static class Item {
 

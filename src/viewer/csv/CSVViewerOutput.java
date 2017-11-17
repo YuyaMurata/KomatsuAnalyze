@@ -19,7 +19,7 @@ import obj.SyaryoObject;
  */
 public class CSVViewerOutput {
 
-    public static Integer none(String filename, Map<String, Integer> selectData, List<SyaryoObject> syaryos) {
+    public static Integer none(String filename, Map<String, String> condition, Map<String, Integer> selectData, List<SyaryoObject> syaryos) {
         int n = 0;
 
         try (PrintWriter pw = CSVFileReadWrite.writer(filename)) {
@@ -57,7 +57,7 @@ public class CSVViewerOutput {
         return n;
     }
 
-    public static Integer time(String filename, Map<String, Integer> selectData, List<SyaryoObject> syaryos) {
+    public static Integer time(String filename, Map<String, String> condition, Map<String, Integer> selectData, List<SyaryoObject> syaryos) {
         int n = 0;
 
         //日付
@@ -83,11 +83,26 @@ public class CSVViewerOutput {
                             n++;
                             n1++;
                             String hkey = h.split("\\.")[0];
+                            String hval = h.split("\\.")[1];
+                            String str = "";
+                            
                             if (h.contains("経過日")) {
-                                pw.println(date.split("#")[0] + "," + syaryo.getName() + "," + h + "," + syaryo.getRow("経過日", date).get(0));
+                                str = syaryo.getRow("経過日", date).get(0);
                             } else {
-                                pw.println(date.split("#")[0] + "," + syaryo.getName() + "," + h + "," + syaryo.getRow(hkey, date).get(selectData.get(h)));
+                                str = syaryo.getRow(hkey, date).get(selectData.get(h));
                             }
+                            
+                            //条件処理
+                            String datatype = "";
+                            if(condition.get(hval) != null)
+                                if(!str.contains(condition.get(hval))){
+                                    System.out.println(str);
+                                    continue;
+                                }else
+                                    datatype = h+"."+condition.get(hval);
+                                    
+                            
+                            pw.println(date.split("#")[0] + "," + syaryo.getName() + "," + h + "," + str);
                         }
                     }
                 }
