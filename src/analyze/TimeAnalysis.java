@@ -27,7 +27,7 @@ import obj.SyaryoObject;
 public class TimeAnalysis {
 
 	public static void main(String[] args) {
-		String filename = "syaryo_obj_WA470_form.json";
+		String filename = "json\\syaryo_obj_WA470_form.json";
 		Map<String, SyaryoObject> syaryoMap = new JsonToSyaryoObj().reader(filename);
 		orderDate(filename, syaryoMap);
 	}

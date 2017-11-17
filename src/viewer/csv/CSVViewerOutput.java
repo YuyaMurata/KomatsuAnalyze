@@ -94,13 +94,19 @@ public class CSVViewerOutput {
                             
                             //条件処理
                             String datatype = "";
-                            if(condition.get(hval) != null)
-                                if(!str.contains(condition.get(hval))){
+                            if(condition.get(hval) != null){
+                                if(Integer.valueOf(str) > Integer.valueOf(condition.get(hval))){
                                     System.out.println(str);
                                     continue;
                                 }else
                                     datatype = h+"."+condition.get(hval);
-                                    
+                                //equal
+                                /*if(!str.contains(condition.get(hval))){
+                                    System.out.println(str);
+                                    continue;
+                                }else
+                                    datatype = h+"."+condition.get(hval);*/
+                            }
                             
                             pw.println(date.split("#")[0] + "," + syaryo.getName() + "," + h + "," + str);
                         }
