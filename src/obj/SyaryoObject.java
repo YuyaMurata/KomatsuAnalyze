@@ -439,9 +439,14 @@ public class SyaryoObject {
     public Map<String, List> getParts() {
         return (Map) map.get("部品");
     }
-
+    
+    public Map<String, List> getSpec() {
+        return (Map) map.get("仕様");
+    }
+    
     public Boolean getKomtrax() {
-        return ((List) map.get("仕様")).get(SyaryoElements.Spec.Komtrax.getNo()).toString().equals("1");
+        Map<String, List> spec = getSpec();
+        return spec.get("0").get(SyaryoElements.Spec.Komtrax.getNo()).toString().equals("1");
     }
 
     //Komtrax
@@ -525,7 +530,7 @@ public class SyaryoObject {
         return list;
     }
 
-    private String getAge(String date) {
+    public String getAge(String date) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
             Date birth = sdf.parse(getNew().keySet().stream().findFirst().get());
@@ -534,6 +539,28 @@ public class SyaryoObject {
 
             //System.out.println(sdf.format(birth) + " - " + sdf.format(last) +" = "+age);
             return age.toString();
+        } catch (ParseException ex) {
+            return "NA";
+        }
+    }
+    
+    public Integer getNumUsed(){
+        if(getUsed() == null)
+            return 0;
+        else
+            return getUsed().size();
+    }
+    
+    public String getSMR(String date) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+            Date d = sdf.parse(date);
+            
+            TreeMap map = new TreeMap(getSMR());
+            String smr = "";
+            //System.out.println(sdf.format(birth) + " - " + sdf.format(last) +" = "+age);
+            
+            return smr;
         } catch (ParseException ex) {
             return "NA";
         }
