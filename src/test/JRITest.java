@@ -16,9 +16,18 @@ public class JRITest
 	public static void main(String[] args) 
 	{
 		Rengine engine = new Rengine(new String[]{"--no-save"}, false, null);
-		engine.assign("a", new int[]{36});
-		REXP result = engine.eval("sqrt(a)");
-		System.out.println(result.asDouble());
+		REXP result = engine.eval("x <- matrix(c(12,32,25,30), nrow=2)");
+		System.out.println(result.toString());
+		double[][] d = result.asMatrix();
+		for(int i=0; i < d.length; i++){
+			for(int j =0; j < d[i].length; j++){
+				System.out.print(d[i][j]+" ");
+			}
+			System.out.println("");
+		}
+		
+		result = engine.eval("res <- fisher.test(x)");
+		System.out.println(result.asVector().at(0).asDouble());
 		engine.end();
 	}
 }
