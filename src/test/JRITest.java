@@ -28,6 +28,10 @@ public class JRITest
 		
 		result = engine.eval("res <- fisher.test(x)");
 		System.out.println(result.asVector().at(0).asDouble());
+        
+        engine.eval("x <- 1:10");
+        engine.eval("plot(x)");
+        
 		engine.end();
 	}
 }

@@ -7,12 +7,9 @@ package analyze;
 
 import file.CSVFileReadWrite;
 import java.io.PrintWriter;
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
-import jsc.contingencytables.ContingencyTable2x2;
-import jsc.contingencytables.FishersExactTest;
 import org.rosuda.JRI.REXP;
 import org.rosuda.JRI.Rengine;
 
@@ -87,6 +84,33 @@ public class SFET {
 				Double[] xth = quartile(timeData.subMap(t, tr), w);
 				for (int i = 0; i < 3; i++) {
 					int[][] contTable = count(timeData.subMap(t, tr), th, xth[i]);
+					//double p = new Combinations(i, i)
+					//System.out.println("a=" + contTable[0][0] + " b=" + contTable[1][0] + " c=" + contTable[0][1] + " d=" + contTable[1][1]);
+					REXP result = engine.eval("x <- matrix(c("+contTable[0][0]+","+contTable[1][0]+","+contTable[0][1]+","+contTable[1][1]+"), nrow=2)");
+					//printMat(result);
+					Double p = engine.eval("fisher.test(x)").asVector().at(0).asDouble();
+					Integer s = contTable[0][0] * contTable[1][0] - contTable[0][1] * contTable[1][1];
+					if (p <= alpha) {
+						pw.println("t_th=," + th + " ,s=" + s + " ,P=," + p);
+						//map.put(th, p);
+					}
+				}
+				//System.exit(0);
+			}
+		}
+		engine.end();
+	}
+    
+    public SFET(TimeSpread data, int w, double alpha) {
+		PrintWriter pw = CSVFileReadWrite.writer("test_SFET.csv");
+		for (int t = 0; t < (data.size() - w+1); t++) {
+			int tr = t + w - 1;
+			System.out.println("tr="+tr);
+			for (int th = t; th < tr; th++) {
+				//System.out.println("th="+th);
+				Double[] xth = quartile(data.divide(t, tr), w);
+				for (int i = 0; i < 3; i++) {
+					int[][] contTable = count(data.divide(t, tr), th, xth[i]);
 					//double p = new Combinations(i, i)
 					//System.out.println("a=" + contTable[0][0] + " b=" + contTable[1][0] + " c=" + contTable[0][1] + " d=" + contTable[1][1]);
 					REXP result = engine.eval("x <- matrix(c("+contTable[0][0]+","+contTable[1][0]+","+contTable[0][1]+","+contTable[1][1]+"), nrow=2)");

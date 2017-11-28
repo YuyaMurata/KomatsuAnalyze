@@ -5,8 +5,10 @@
  */
 package file;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -22,6 +24,15 @@ public class CSVFileReadWrite {
         } catch (FileNotFoundException | UnsupportedEncodingException ex) {
             ex.printStackTrace();
             System.exit(0);
+        }
+        
+        return null;
+    }
+    
+    public static BufferedReader reader(String filename){
+        try {
+            return new BufferedReader(new FileReader(filename));
+        } catch (FileNotFoundException ex) {
         }
         
         return null;
