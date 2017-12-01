@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package obj;
+package creator.template;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -80,7 +80,7 @@ public class SyaryoTemplate {
 				s[14], s[15], s[16], s[17]);
 		}
 		if (key.equals("部品")) {
-			addParts(s[0], s[1], s[2], s[3], s[4], s[5], s[6], s[7], s[8], s[9]);
+			addParts(s[0], s[1], s[2], s[3], s[4], s[5], s[6], s[7], s[8], s[9], s[10]);
 		}
 		if (key.equals("国")) {
 			addCountry(s[0], s[1], s[2], s[3]);
@@ -340,20 +340,20 @@ public class SyaryoTemplate {
 		map.put("作業", str);
 	}
 
-	public void addParts(String db, String company, String date, String sbn, String mid, String id, String name, String suryo, String cancel, String kingaku) {
+	public void addParts(String db, String company, String date, String sbn, String mid, String maker, String id, String name, String suryo, String cancel, String kingaku) {
 		if (errorCheck(date)) {
 			return;
 		}
 
 		String str = "";
 		if (map.get("部品") == null) {
-			str = "DB, 会社コード, 日付, 作番, 部品明細番号, 品番, "
+			str = "DB, 会社コード, 日付, 作番, 部品明細番号, 部品メーカ区分, 品番, "
 				+ "品名, 受注数量, キャンセル数量, 標準金額 \n ";
 		} else {
 			str = map.get("部品") + " \n ";
 		}
 
-		str += db + "," + company + "," + date + "," + sbn + "," + mid + "," + id + "," + name + "," + suryo + "," + cancel + "," + kingaku;
+		str += db + "," + company + "," + date + "," + sbn + "," + mid + "," + maker + "," + id + "," + name + "," + suryo + "," + cancel + "," + kingaku;
 		map.put("部品", str);
 	}
 

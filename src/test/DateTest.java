@@ -15,9 +15,14 @@ import java.util.Date;
  */
 public class DateTest {
     public static void main(String[] args) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date date = sdf.parse("2010-01-01");
-        Date date1 = sdf.parse("2010-01-05 #1");
-        System.out.println(sdf.format(date1));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+        String date = "2010/10/10";
+        
+        System.out.println(date.compareTo("2017/01/01"));
+        System.out.println(date.compareTo("2010/10/11"));
+        System.out.println(date.compareTo("2010/10/10"));
+        System.out.println(date.compareTo("2010/10/09"));
+        System.out.println(date.compareTo("2010/01/01"));
+        System.out.println(date.compareTo("2009/10/10"));
     }
 }

@@ -457,7 +457,6 @@ public class FormalizeSyaryoObject {
     }
 
     private void formWorkParts(Map<String, List> work, Map<String, List> parts) {
-
         //Work
         if (work != null) {
             Map update1 = new TreeMap();
@@ -502,8 +501,19 @@ public class FormalizeSyaryoObject {
                         continue;
                     }
                 }
+                
                 List list = parts.get(date);
-                list.set(6, String.valueOf(Float.valueOf(list.get(6).toString()).intValue()));
+                list.set(SyaryoElements.Parts.Price.getNo(), String.valueOf(Float.valueOf(list.get(SyaryoElements.Parts.Price.getNo()).toString()).intValue()));
+                
+                //注文数量 == キャンセル数量
+                if(list.get(SyaryoElements.Parts.Quant.getNo()).toString().compareTo(list.get(SyaryoElements.Parts.Cancel.getNo()).toString()) == 0)
+                    continue;
+                if(Integer.valueOf(list.get(SyaryoElements.Parts.Quant.getNo()).toString()) > Integer.valueOf(list.get(SyaryoElements.Parts.Cancel.getNo()).toString())){
+                    list.set(SyaryoElements.Parts.Quant.getNo(),
+                                String.valueOf(Integer.valueOf(list.get(SyaryoElements.Parts.Quant.getNo()).toString()) - Integer.valueOf(list.get(SyaryoElements.Parts.Cancel.getNo()).toString())));
+                    list.set(SyaryoElements.Parts.Cancel.getNo(),"0");
+                }
+                    
                 update2.put(date, list);
             }
             parts.clear();

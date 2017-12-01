@@ -18,7 +18,7 @@ import java.sql.Statement;
 import java.util.Map;
 import java.util.TreeMap;
 import json.SyaryoTemplateToJson;
-import obj.SyaryoTemplate;
+import creator.template.SyaryoTemplate;
 
 /**
  *

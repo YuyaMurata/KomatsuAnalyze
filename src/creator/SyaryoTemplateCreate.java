@@ -14,14 +14,14 @@ import java.util.Map;
 import java.util.TreeMap;
 import json.JsonToSyaryoTemplate;
 import json.SyaryoTemplateToJson;
-import obj.SyaryoTemplate;
+import creator.template.SyaryoTemplate;
 
 /**
  * DBから車両テンプレートを作成する
  *
  * @author ZZ17390
  */
-public class SyaryoHistoryCreate extends HiveDB {
+public class SyaryoTemplateCreate extends HiveDB {
 
     private static final String FILENAME = "..\\KomatsuData\\車両テンプレート\\syaryo_history_template.json";
 
@@ -57,8 +57,8 @@ public class SyaryoHistoryCreate extends HiveDB {
         service_t(con, syaryoTemplate, noneTypeSearch);
         order(con, syaryoTemplate, noneTypeSearch);
         work(con, syaryoTemplate, noneTypeSearch);
-        parts(con, syaryoTemplate, noneTypeSearch);
-        */sell(con, syaryoTemplate, noneTypeSearch);
+        */parts(con, syaryoTemplate, noneTypeSearch);
+        /*sell(con, syaryoTemplate, noneTypeSearch);
         /*sell_used(con, syaryoTemplate, noneTypeSearch);
         
         //KOSMIC

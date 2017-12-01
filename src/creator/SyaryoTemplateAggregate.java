@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import json.JsonToSyaryoTemplate;
 import json.SyaryoTemplateToJson;
-import obj.SyaryoTemplate;
+import creator.template.SyaryoTemplate;
 
 /**
  * 作業明細を確認 WA470-7-10200など

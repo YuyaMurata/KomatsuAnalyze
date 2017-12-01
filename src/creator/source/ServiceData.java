@@ -15,7 +15,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
 import java.util.TreeMap;
-import obj.SyaryoTemplate;
+import creator.template.SyaryoTemplate;
 
 /**
  *
@@ -154,7 +154,7 @@ public class ServiceData {
 
                 //Parts
                 if (odr_kbn.equals("1")) {
-                    syaryo.addParts(db, company, date, id, sg_mid, parts_id, parts_name, suryo, "-1", price);
+                    syaryo.addParts(db, company, date, id, sg_mid, "??", parts_id, parts_name, suryo, "-1", price);
                 } else if (odr_kbn.equals("2")) {
                     syaryo.addWork(db, company, date, id, sg_mid, sg_keitai_id, "?", sg_id, sg_name, "-1", suryo, price, "-1", "-1", "-1", "-1", "-1", kosu);
                 }

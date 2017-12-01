@@ -14,7 +14,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
 import java.util.TreeMap;
-import obj.SyaryoTemplate;
+import creator.template.SyaryoTemplate;
 
 /**
  *
@@ -30,12 +30,13 @@ public class PartsData {
             Statement stmt = con.createStatement();
 
             //Syaryo
-            String sql = String.format("select o.%s,o.%s,o.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s from %s p join %s o on (p.%s=o.%s and p.%s=o.%s)",
+            String sql = String.format("select o.%s,o.%s,o.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s from %s p join %s o on (p.%s=o.%s and p.%s=o.%s)",
                     Order._Order.KISY, Order._Order.TYP, Order._Order.KIBAN, //Unique ID
                     Order.Parts.KSYCD, //会社コード
                     Order.Parts.SBN, //作番
                     Order.Parts.BHN_MSINO, //部品明細番号
                     Order.Parts.MIDAY, //明細登録日
+                    Order.Parts.BHN_MAKR_KBN, //部品メーカ
                     Order.Parts.HNBN, //品番
                     Order.Parts.BHN_NM, //品名
                     Order.Parts.ODR_SU, //受注数量
@@ -74,6 +75,7 @@ public class PartsData {
                 //Parts
                 String sbn = res.getString(Order.Parts.SBN.get()); //作番
                 String mid = res.getString(Order.Parts.BHN_MSINO.get()); //部品明細番号
+                String maker = res.getString(Order.Parts.BHN_MAKR_KBN.get()); //部品メーカー
                 String parts_id = res.getString(Order.Parts.HNBN.get()); //品番
                 String parts_name = res.getString(Order.Parts.BHN_NM.get()); //品名
                 String suryo = res.getString(Order.Parts.ODR_SU.get()); //受注数量
@@ -92,7 +94,7 @@ public class PartsData {
                 String name = kisy + "-" + type + "-" + kiban;
                 if (syaryo == null) {
                     errpw.println(n + "," + name + "," + last_date + "," + db + "," + company + "," + date + "," + sbn + "," + mid 
-                                    + "," + parts_id + "," + parts_name + "," + suryo + "," + cancel + "," + price);
+                                    + "," + maker + "," + parts_id + "," + parts_name + "," + suryo + "," + cancel + "," + price);
                     continue;
                 }
                 
@@ -102,7 +104,7 @@ public class PartsData {
                 syaryo.addLast(db, company, last_date);
 
                 //Parts
-                syaryo.addParts(db, company, date, sbn, mid, parts_id, parts_name, suryo, cancel, price);
+                syaryo.addParts(db, company, date, sbn, mid, maker, parts_id, parts_name, suryo, cancel, price);
                 
                 //AddSyaryo
                 map.put(syaryo.getName(), syaryo);

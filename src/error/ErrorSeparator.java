@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import json.JsonToSyaryoObj;
 import json.JsonToSyaryoTemplate;
-import obj.SyaryoTemplate;
+import creator.template.SyaryoTemplate;
 
 /**
  *

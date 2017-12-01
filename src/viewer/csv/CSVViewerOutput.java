@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import obj.SyaryoObject;
+import viewer.filter.DataRuleFilter;
 
 /**
  *
@@ -19,7 +20,7 @@ import obj.SyaryoObject;
  */
 public class CSVViewerOutput {
 
-    public static Integer none(String filename, Map<String, String> condition, Map<String, Integer> selectData, List<SyaryoObject> syaryos) {
+    public static Integer none(String filename, DataRuleFilter filter, Map<String, Integer> selectData, List<SyaryoObject> syaryos) {
         int n = 0;
 
         try (PrintWriter pw = CSVFileReadWrite.writer(filename)) {
@@ -40,12 +41,16 @@ public class CSVViewerOutput {
                     for (String header : selectData.keySet()) {
                         String key = header.split("\\.")[0];
                         Integer index = selectData.get(header);
-                        //System.out.println(key + " ," + index);
+                        String str = "";
                         if (i < syaryo.getCol(key, index).size()) {
-                            row.add(syaryo.getCol(key, index).get(i));
+                            str = syaryo.getCol(key, index).get(i);
                         } else {
-                            row.add(syaryo.getCol(key, index).get(syaryo.getCol(key, index).size() - 1));
+                            str = syaryo.getCol(key, index).get(syaryo.getCol(key, index).size() - 1);
                         }
+                        if(filter.getRule(header, str))
+                            row.add(str);
+                        else
+                            row.add("");
                     }
                     pw.println(row.stream().map(s -> s.split("#")[0]).collect(Collectors.joining(",")));
                 }
@@ -57,7 +62,7 @@ public class CSVViewerOutput {
         return n;
     }
 
-    public static Integer time(String filename, Map<String, String> condition, Map<String, Integer> selectData, List<SyaryoObject> syaryos) {
+    public static Integer time(String filename, DataRuleFilter filter, Map<String, Integer> selectData, List<SyaryoObject> syaryos) {
         int n = 0;
 
         //日付
@@ -83,7 +88,6 @@ public class CSVViewerOutput {
                             n++;
                             n1++;
                             String hkey = h.split("\\.")[0];
-                            String hval = h.split("\\.")[1];
                             String str = "";
                             
                             if (h.contains("経過日")) {
@@ -93,19 +97,9 @@ public class CSVViewerOutput {
                             }
                             
                             //条件処理
-                            String datatype = "";
-                            if(condition.get(hval) != null){
-                                if(Integer.valueOf(str) > Integer.valueOf(condition.get(hval))){
-                                    System.out.println(str);
-                                    continue;
-                                }else
-                                    datatype = h+"."+condition.get(hval);
-                                //equal
-                                /*if(!str.contains(condition.get(hval))){
-                                    System.out.println(str);
-                                    continue;
-                                }else
-                                    datatype = h+"."+condition.get(hval);*/
+                            if(filter.getRule(h, str)){
+                                System.out.println(str);
+                                continue;
                             }
                             
                             pw.println(date.split("#")[0] + "," + syaryo.getName() + "," + h + "," + str);

@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import json.JsonToSyaryoObj;
 import obj.SyaryoElements;
 import obj.SyaryoObject;
-import obj.SyaryoTemplate;
+import creator.template.SyaryoTemplate;
 
 /**
  *

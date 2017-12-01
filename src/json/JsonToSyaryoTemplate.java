@@ -13,7 +13,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Map;
-import obj.SyaryoTemplate;
+import creator.template.SyaryoTemplate;
 import zip.ZipFile;
 
 /**

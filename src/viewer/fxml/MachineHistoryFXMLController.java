@@ -44,6 +44,7 @@ import obj.Element;
 import obj.SyaryoElements;
 import obj.SyaryoObject;
 import viewer.csv.CSVViewerOutput;
+import viewer.filter.DataRuleFilter;
 
 /**
  *
@@ -84,7 +85,7 @@ public class MachineHistoryFXMLController implements Initializable {
     private Label csvWorkingLabel;
     @FXML
     private TextField conditionField;
-    private Map<String, String> conditionMap = new HashMap();
+    private DataRuleFilter filter;
     @FXML
     private CheckBox machineAllCkeck;
 
@@ -253,19 +254,19 @@ public class MachineHistoryFXMLController implements Initializable {
         }
         
         String[] condition = conditionField.getText().split(",");
+        filter = new DataRuleFilter();
         if(condition.length > 0){
             for(String c : condition){
-                if(c.contains("="))
-                    conditionMap.put(c.split("=")[0], c.split("=")[1]);
+                filter.setRule(c);
             }
         }
 
         //Select Form
         int n = 0;
         if (csvOutputForm.getSelectionModel().isSelected(0)) {
-            n = CSVViewerOutput.none("None_" + filename, conditionMap, selectData, syaryos);
+            n = CSVViewerOutput.none("None_" + filename, filter, selectData, syaryos);
         } else if (csvOutputForm.getSelectionModel().isSelected(1)) {
-            n = CSVViewerOutput.time("Time_" + filename, conditionMap, selectData, syaryos);
+            n = CSVViewerOutput.time("Time_" + filename, filter, selectData, syaryos);
         } else {
             System.out.println("Not select output form.");
         }
