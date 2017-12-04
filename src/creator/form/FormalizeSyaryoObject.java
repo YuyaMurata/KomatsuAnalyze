@@ -508,11 +508,6 @@ public class FormalizeSyaryoObject {
                 //注文数量 == キャンセル数量
                 if(list.get(SyaryoElements.Parts.Quant.getNo()).toString().compareTo(list.get(SyaryoElements.Parts.Cancel.getNo()).toString()) == 0)
                     continue;
-                if(Integer.valueOf(list.get(SyaryoElements.Parts.Quant.getNo()).toString()) > Integer.valueOf(list.get(SyaryoElements.Parts.Cancel.getNo()).toString())){
-                    list.set(SyaryoElements.Parts.Quant.getNo(),
-                                String.valueOf(Integer.valueOf(list.get(SyaryoElements.Parts.Quant.getNo()).toString()) - Integer.valueOf(list.get(SyaryoElements.Parts.Cancel.getNo()).toString())));
-                    list.set(SyaryoElements.Parts.Cancel.getNo(),"0");
-                }
                     
                 update2.put(date, list);
             }

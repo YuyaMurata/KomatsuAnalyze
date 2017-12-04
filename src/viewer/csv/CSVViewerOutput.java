@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import obj.SyaryoObject;
 import viewer.filter.DataRuleFilter;
+import viewer.sql.DataToSQLLite;
+import viewer.sql.DataTransaction;
 
 /**
  *
@@ -47,10 +49,11 @@ public class CSVViewerOutput {
                         } else {
                             str = syaryo.getCol(key, index).get(syaryo.getCol(key, index).size() - 1);
                         }
-                        if(filter.getRule(header, str))
+                        if (filter.getRule(header, str)) {
                             row.add(str);
-                        else
+                        } else {
                             row.add("");
+                        }
                     }
                     pw.println(row.stream().map(s -> s.split("#")[0]).collect(Collectors.joining(",")));
                 }
@@ -89,19 +92,19 @@ public class CSVViewerOutput {
                             n1++;
                             String hkey = h.split("\\.")[0];
                             String str = "";
-                            
+
                             if (h.contains("経過日")) {
                                 str = syaryo.getRow("経過日", date).get(0);
                             } else {
                                 str = syaryo.getRow(hkey, date).get(selectData.get(h));
                             }
-                            
+
                             //条件処理
-                            if(filter.getRule(h, str)){
+                            if (filter.getRule(h, str)) {
                                 System.out.println(str);
                                 continue;
                             }
-                            
+
                             pw.println(date.split("#")[0] + "," + syaryo.getName() + "," + h + "," + str);
                         }
                     }
@@ -122,10 +125,30 @@ public class CSVViewerOutput {
                     pw.println(date + "," + syaryo.getName() + "," + header + "," + date);
                 }
 
-                System.out.println(syaryo.getName() +":" + n1 + "行 csv出力!");
+                System.out.println(syaryo.getName() + ":" + n1 + "行 csv出力!");
             }
         }
 
+        return n;
+    }
+
+    public static Integer sql(String filename, DataRuleFilter filter, Map<String, Map<String, Integer>> selectData, List<SyaryoObject> syaryos) {
+        int n = 0;
+        
+        DataToSQLLite sql = new DataToSQLLite();
+        
+        for (SyaryoObject syaryo : syaryos) {
+            for (String header : selectData.keySet()) {
+                DataTransaction dt = new DataTransaction(header, selectData.get(header).keySet().stream().collect(Collectors.toList()));
+                
+                for(String item : selectData.get(header).keySet())
+                    dt.setData(syaryo.getCol(header, selectData.get(header).get(item)));
+                
+                n += sql.toSQLLite(dt);
+            }
+
+            System.out.println(syaryo.getName() + ":" + n + "行 csv出力!");
+        }
         return n;
     }
 }

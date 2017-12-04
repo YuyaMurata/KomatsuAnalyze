@@ -164,7 +164,7 @@ public class SyaryoElements {
 	
 	//New
 	public enum New implements Element{
-		Date("納品日", -1),
+		Date("日付", -1),
 		SPrice("標準価格", 0),
 		HPrice("表面価格", 1),
 		RPrice("実質価格", 2),
@@ -190,7 +190,7 @@ public class SyaryoElements {
 	
 	//Used
 	public enum Used implements Element{
-		Date("納品日", -1),
+		Date("日付", -1),
 		SPrice("標準価格", 0),
 		HPrice("表面価格", 1),
 		RPrice("実質価格", 2),
@@ -216,7 +216,7 @@ public class SyaryoElements {
 	
 	//Customer
 	public enum Customer implements Element{
-		Date("登録日", -1),
+		Date("日付", -1),
 		Customer("顧客ID", 0),
 		Code("業種コード", 1),
 		Name("顧客名", 2),
@@ -265,7 +265,7 @@ public class SyaryoElements {
 	
 	//Order
 	public enum Order implements Element{
-		Date("受注日", -1),
+		Date("日付", -1),
 		RDate("作番登録日", 0),
 		PDate("実施予定日", 1),
 		FDate("完了日", 2),
@@ -305,7 +305,7 @@ public class SyaryoElements {
 	
 	//Work
 	public enum Work implements Element{
-		Date("実施予定日", -1),
+		Date("日付", -1),
 		ID("作番", 0),
 		SID("作業明細番号", 1),
 		SFCode("作業形態コード", 2),

@@ -179,11 +179,13 @@ public class MachineHistoryFXMLController implements Initializable {
     }
 
     Map<String, Integer> selectData;
+    Map<String, Map<String, Integer>> selectData2;
 
     @FXML
     private void applyAction(ActionEvent event) {
         System.out.println("Apply!");
         selectData = new LinkedHashMap();
+        selectData2 = new LinkedHashMap();
 
         sampleView.getColumns().clear();
 
@@ -209,6 +211,10 @@ public class MachineHistoryFXMLController implements Initializable {
                     String colName = item.getName() + "." + item2.getName();
                     column.add(createColumn(colName, idx));
                     selectData.put(colName, item2.getIndex());
+                    if(selectData2.get(item.getName()) == null)
+                        selectData2.put(item.getName(), new LinkedHashMap<>());
+                    selectData2.get(item.getName()).put(item2.getName(), item2.getIndex());
+                    
                     list.add(syaryo.getCol(item.getName(), item2.getIndex()).get(0));
                 }
             }
@@ -243,6 +249,7 @@ public class MachineHistoryFXMLController implements Initializable {
         Date now = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HHmmss");
 
+        //出力車両
         List syaryos = new ArrayList();
         String filename;
         if (machineAllCkeck.isSelected()) {
@@ -253,9 +260,11 @@ public class MachineHistoryFXMLController implements Initializable {
             filename = syaryo.getName() + "_" + sdf.format(now) + ".csv";
         }
         
-        String[] condition = conditionField.getText().split(",");
+        //ルール
         filter = new DataRuleFilter();
-        if(condition.length > 0){
+        if(conditionField.getText().length() > 0){
+            String[] condition = conditionField.getText().split(",");
+            System.out.println("number of condition : "+condition.length);
             for(String c : condition){
                 filter.setRule(c);
             }
@@ -264,7 +273,8 @@ public class MachineHistoryFXMLController implements Initializable {
         //Select Form
         int n = 0;
         if (csvOutputForm.getSelectionModel().isSelected(0)) {
-            n = CSVViewerOutput.none("None_" + filename, filter, selectData, syaryos);
+            //n = CSVViewerOutput.none("None_" + filename, filter, selectData, syaryos);
+            n = CSVViewerOutput.sql("None_" + filename, filter, selectData2, syaryos);
         } else if (csvOutputForm.getSelectionModel().isSelected(1)) {
             n = CSVViewerOutput.time("Time_" + filename, filter, selectData, syaryos);
         } else {
