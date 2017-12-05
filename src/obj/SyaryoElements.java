@@ -56,7 +56,8 @@ public class SyaryoElements {
         SType("小変形", 0),
         Category("製品分類B", 1),
 		Komtrax("Komtrax", 2),
-		DB_Company("DB_会社",3);
+		Company("会社",3),
+        DB("DB", 4);
 		
 		final String name;
 		final Integer index;
@@ -80,7 +81,8 @@ public class SyaryoElements {
 		Unit("販売ユニットコード", 0),
 		MCategory("中分類名", 1),
 		SCategory("小分類名",2),
-		Source("DB_会社",3);
+		Company("会社",3),
+        DB("DB", 4);
 		
 		final String name;
 		final Integer index;
@@ -168,7 +170,8 @@ public class SyaryoElements {
 		SPrice("標準価格", 0),
 		HPrice("表面価格", 1),
 		RPrice("実質価格", 2),
-		Source("DB_会社",3),
+		Company("会社",3),
+        DB("DB", 4),
         Age("経過日", -3),
 		Format("format:yyyy/MM/dd", 0);
 		
@@ -194,7 +197,8 @@ public class SyaryoElements {
 		SPrice("標準価格", 0),
 		HPrice("表面価格", 1),
 		RPrice("実質価格", 2),
-		Source("DB_会社",3),
+		Company("会社",3),
+        DB("DB", 4),
         Age("経過日", -3),
 		Format("format:yyyy/MM/dd", 0);
 		
@@ -220,7 +224,8 @@ public class SyaryoElements {
 		Customer("顧客ID", 0),
 		Code("業種コード", 1),
 		Name("顧客名", 2),
-		Source("DB_会社",3),
+		Company("会社",3),
+        DB("DB", 4),
         Age("経過日", -3),
 		Format("format:yyyy/MM/dd", 0);
 		
@@ -283,7 +288,8 @@ public class SyaryoElements {
 		KInvoice("コマツ請求", 18),
 		CInvoice("社内請求", 19),
 		Summary("概要", 20),
-		Source("DB_会社",21),
+		Company("会社",21),
+        DB("DB", 22),
         Age("経過日", -3),
 		Format("format:yyyy/MM/dd", 0);
 		
@@ -321,7 +327,8 @@ public class SyaryoElements {
 		RStep("請求工数", 12),
 		DStep("指示工数", 13),
 		RTStep("実質累計工数", 14),
-		Source("DB_会社",15),
+		Company("会社",15),
+        DB("DB", 16),
         Age("経過日", -3),
 		Format("format:yyyy/MM/dd", 0);
 		
@@ -352,7 +359,8 @@ public class SyaryoElements {
 		Quant("数量", 5),
 		Cancel("キャンセル数量", 6),
 		Price("標準金額", 7),
-		Source("DB_会社",8),
+		Company("会社",8),
+        DB("DB", 9),
         Age("経過日", -3),
 		Format("format:yyyy/MM/dd", 0);
 		
@@ -377,7 +385,8 @@ public class SyaryoElements {
 		Date("日付", -1),
 		Icon("ICONコード", 0),
 		Count("カウント", 1),
-		Source("DB_会社",2),
+		Company("会社",2),
+        DB("DB", 3),
         Age("経過日", -3),
 		Format("format:yyyy/MM/dd", 0);
 		
@@ -403,7 +412,8 @@ public class SyaryoElements {
 		Code("エラーコード", 0),
         Kind("エラー種類", 1),
 		Count("カウント", 2),
-		Source("DB_会社",3),
+		Company("会社",3),
+        DB("DB", 4),
         Age("経過日", -3),
 		Format("format:yyyy/MM/dd", 0);
 		
@@ -427,7 +437,8 @@ public class SyaryoElements {
 	public enum Engine implements Element{
 		Date("日付", -1),
 		Throttle("スロットル", 0),
-		Source("DB_会社",1),
+		Company("会社",1),
+        DB("DB", 2),
         Age("経過日", -3),
 		Format("format:yyyy/MM/dd", 0);
 		
@@ -451,7 +462,8 @@ public class SyaryoElements {
 	public enum SMR implements Element{
 		Date("日付", -1),
 		_SMR("SMR", 0),
-		Source("DB_会社",1),
+		Company("会社", 1),
+        DB("DB", 2),
         Age("経過日", -3),
 		Format("format:yyyy/MM/dd", 0);
 		
@@ -475,7 +487,8 @@ public class SyaryoElements {
 	public enum GPS implements Element{
 		Date("日付", -1),
 		_GPS("GPS", 0),
-		Source("DB_会社",1),
+		Company("会社", 1),
+        DB("DB", 2),
 		Format("format:yyyy/MM/dd", 0),
         Age("経過日", -3),
 		GPSFormat("format:N99.99.99.999_E999.99.99.999", 0);

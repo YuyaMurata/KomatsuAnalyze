@@ -133,22 +133,24 @@ public class CSVViewerOutput {
     }
 
     public static Integer sql(String filename, DataRuleFilter filter, Map<String, Map<String, Integer>> selectData, List<SyaryoObject> syaryos) {
-        int n = 0;
-        
         DataToSQLLite sql = new DataToSQLLite();
         
+        int n = 0;
         for (SyaryoObject syaryo : syaryos) {
-            for (String header : selectData.keySet()) {
-                DataTransaction dt = new DataTransaction(header, selectData.get(header).keySet().stream().collect(Collectors.toList()));
+            int m = 0;
+            selectData.keySet().parallelStream().forEach(header ->{
+                DataTransaction dt = new DataTransaction(syaryo.getName(), header, selectData.get(header).keySet().stream().collect(Collectors.toList()));
                 
                 for(String item : selectData.get(header).keySet())
                     dt.setData(syaryo.getCol(header, selectData.get(header).get(item)));
                 
-                n += sql.toSQLLite(dt);
-            }
-
-            System.out.println(syaryo.getName() + ":" + n + "行 csv出力!");
+                sql.toSQLLite(dt);
+            }); 
+            n += m - n;
+            System.out.println(syaryo.getName() + ":" + (m - n) + "行 csv出力!");
         }
+        
+        sql.close();
         return n;
     }
 }

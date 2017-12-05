@@ -5,11 +5,9 @@
  */
 package creator.form;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -148,11 +146,11 @@ public class FormalizeSyaryoObject {
                 date = date.split("#")[0];
             }
 
-            if (obj.get(SyaryoElements.New.Source.getNo()).contains("sell")) {
+            if (obj.get(SyaryoElements.New.DB.getNo()).contains("sell")) {
                 if (flg) {
                     break;
                 }
-                if (!obj.get(SyaryoElements.New.Source.getNo()).contains("old")) {
+                if (!obj.get(SyaryoElements.New.DB.getNo()).contains("old")) {
                     flg = true;
                 }
                 obj.set(SyaryoElements.New.HPrice.getNo(), String.valueOf(Double.valueOf(obj.get(SyaryoElements.New.HPrice.getNo())).intValue()));
@@ -337,7 +335,7 @@ public class FormalizeSyaryoObject {
 
         for (String date : order.keySet()) {
             if (serviceYearCheck(date.split("#")[0])) {
-                if (order.get(date).get(SyaryoElements.Order.Source.getNo()).toString().contains("service")) {
+                if (order.get(date).get(SyaryoElements.Order.DB.getNo()).toString().contains("service")) {
                     continue;
                 }
             }
@@ -388,7 +386,7 @@ public class FormalizeSyaryoObject {
             return;
         }
 
-        int source = SyaryoElements.SMR.Source.getNo();
+        int source = SyaryoElements.SMR.DB.getNo();
         int smr = SyaryoElements.SMR._SMR.getNo();
 
         LinkedList<String> queue = new LinkedList<>();
@@ -462,7 +460,7 @@ public class FormalizeSyaryoObject {
             Map update1 = new TreeMap();
             for (String date : work.keySet()) {
                 if (serviceYearCheck(date.split("#")[0])) {
-                    if (work.get(date).get(SyaryoElements.Work.Source.getNo()).toString().contains("service")) {
+                    if (work.get(date).get(SyaryoElements.Work.DB.getNo()).toString().contains("service")) {
                         continue;
                     }
                 }
@@ -497,7 +495,7 @@ public class FormalizeSyaryoObject {
             //Parts
             for (String date : parts.keySet()) {
                 if (serviceYearCheck(date.split("#")[0])) {
-                    if (parts.get(date).get(SyaryoElements.Parts.Source.getNo()).toString().contains("service")) {
+                    if (parts.get(date).get(SyaryoElements.Parts.DB.getNo()).toString().contains("service")) {
                         continue;
                     }
                 }

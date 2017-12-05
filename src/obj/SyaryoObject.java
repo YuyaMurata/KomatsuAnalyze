@@ -90,11 +90,11 @@ public class SyaryoObject {
 
                 try {
                     if (field.equals("仕様")) {
-                        addSpec(s[1], s[0], s[2], "eqp+syaryo_?");
+                        addSpec(s[1], s[0], s[2], "eqpsyaryo", "?");
                     } else if (field.equals("詳細")) {
                         list.add(s[1]);
                         list.add(s[2]);
-                        addDetail(s[0], list, "eqp_syaryo_?");
+                        addDetail(s[0], list, "eqpsyaryo", "?");
                     } else if (field.equals("生産")) {
                         addBorn(s[0]);
                     } else if (field.equals("出荷")) {
@@ -102,53 +102,52 @@ public class SyaryoObject {
                     } else if (field.equals("廃車")) {
                         addDead(s[2]);
                     } else if (field.equals("新車")) {
-                        for (int j = 4; j < s.length; j++) {
+                        for (int j = 4; j < s.length; j++)
                             list.add(s[j]);
-                        }
-                        addNew(s[2], s[3], list, (s[0] + "_" + s[1]));
+                        addNew(s[2], s[3], list, s[0], s[1]);
                     } else if (field.equals("中古車")) {
                         for (int j = 4; j < s.length; j++) {
                             list.add(s[j]);
                         }
-                        addUsed(s[2], s[3], list, (s[0] + "_" + s[1]));
+                        addUsed(s[2], s[3], list, s[0], s[1]);
                     } else if (field.equals("顧客")) {
                         list.add(s[3]);
                         list.add(s[5]);
-                        addOwner(s[2], s[4], list, (s[0] + "_" + s[1]));
+                        addOwner(s[2], s[4], list, s[0], s[1]);
                     } else if (field.equals("国")) {
                         addCountry(s[2], s[3]);
                     } else if (field.equals("経歴")) {
-                        addHistory(s[2], s[3], (s[0] + "_" + s[1]));
+                        addHistory(s[2], s[3], s[0], s[1]);
                     } else if (field.equals("受注")) {
                         for (int j = 4; j < s.length; j++) {
                             list.add(s[j]);
                         }
-                        addOrder(s[2], s[3], list, (s[0] + "_" + s[1]));
+                        addOrder(s[2], s[3], list, s[0], s[1]);
                     } else if (field.equals("作業")) {
                         for (int j = 4; j < s.length; j++) {
                             list.add(s[j]);
                         }
-                        addWork(s[2], s[3], list, (s[0] + "_" + s[1]));
+                        addWork(s[2], s[3], list, s[0], s[1]);
                     } else if (field.equals("部品")) {
                         for (int j = 4; j < s.length; j++) {
                             list.add(s[j]);
                         }
-                        addParts(s[2], s[3], list, (s[0] + "_" + s[1]));
+                        addParts(s[2], s[3], list, s[0], s[1]);
                     } else if (field.toString().contains("CAUTION")) {
                         for (int j = 4; j < s.length; j++) {
                             list.add(s[j]);
                         }
-                        addCaution(s[2], s[3], list, (s[0] + "_" + s[1]));
+                        addCaution(s[2], s[3], list, s[0], s[1]);
                     } else if (field.toString().contains("ERROR")) {
-                        addError(s[2], s[3], s[4], s[5], (s[0] + "_" + s[1]));
+                        addError(s[2], s[3], s[4], s[5], s[0], s[1]);
                     } else if (field.toString().contains("ENGINE")) {
-                        addEngine(s[2], s[3], (s[0] + "_" + s[1]));
+                        addEngine(s[2], s[3], s[0], s[1]);
                     } else if (field.toString().contains("SMR")) {
-                        addSMR(s[2], s[3], (s[0] + "_" + s[1]));
+                        addSMR(s[2], s[3], s[0], s[1]);
                     } else if (field.toString().contains("GPS")) {
-                        addGPS(s[2], (s[3] + "_" + s[4]), (s[0] + "_" + s[1]));
+                        addGPS(s[2], (s[3] + "_" + s[4]), s[0], s[1]);
                     } else if (field.equals("最終更新日")) {
-                        addLast(s[2], (s[0] + "_" + s[1]));
+                        addLast(s[2], s[0], s[1]);
                     }
                 } catch (ArrayIndexOutOfBoundsException e) {
                     System.out.println(field + ":" + Arrays.asList(s));
@@ -175,7 +174,7 @@ public class SyaryoObject {
         map.put("廃車", dateFormat(date));
     }
 
-    public void addNew(String date, String cid, List price, String source) {
+    public void addNew(String date, String cid, List price, String source, String company) {
         TreeMap newmap = (TreeMap) map.get("新車");
         if (newmap == null) {
             newmap = new TreeMap();
@@ -183,23 +182,25 @@ public class SyaryoObject {
         List<Object> list = new ArrayList<>();
         list.add(cid);
         list.addAll(price);
+        list.add(company);
         list.add(source);
         newmap.put(date_no("新車", dateFormat(date)), list);
         map.put("新車", newmap);
     }
 
-    public void addSpec(String stype, String category, String komtrax, String source) {
+    public void addSpec(String stype, String category, String komtrax, String source, String company) {
         List<Object> list = new ArrayList<>();
         list.add(stype);
         list.add(komtrax);
         list.add(category);
+        list.add(company);
         list.add(source);
         TreeMap specmap = new TreeMap();
         specmap.put(0, list);
         map.put("仕様", specmap);
     }
 
-    public void addDetail(String unitID, List names, String source) {
+    public void addDetail(String unitID, List names, String source, String company) {
         TreeMap detailmap = (TreeMap) map.get("詳細");
         if (detailmap == null) {
             detailmap = new TreeMap();
@@ -207,12 +208,13 @@ public class SyaryoObject {
         List<Object> list = new ArrayList<>();
         list.add(unitID);
         list.addAll(names);
+        list.add(company);
         list.add(source);
         detailmap.put(deteilno++, list);
         map.put("詳細", detailmap);
     }
 
-    public void addUsed(String date, String cid, List price, String source) {
+    public void addUsed(String date, String cid, List price, String source, String company) {
         TreeMap usedmap = (TreeMap) map.get("中古車");
         if (usedmap == null) {
             usedmap = new TreeMap();
@@ -220,6 +222,7 @@ public class SyaryoObject {
         List<Object> list = new ArrayList<>();
         list.add(cid);
         list.addAll(price);
+        list.add(company);
         list.add(source);
         usedmap.put(date_no("中古車", dateFormat(date)), list);
         map.put("中古車", usedmap);
@@ -236,18 +239,19 @@ public class SyaryoObject {
         map.put("国", contmap);
     }
 
-    public void addLast(String date, String source) {
+    public void addLast(String date, String source, String company) {
         TreeMap lastmap = (TreeMap) map.get("最終更新日");
         if (lastmap == null) {
             lastmap = new TreeMap();
         }
         List<Object> list = new ArrayList<>();
+        list.add(company);
         list.add(source);
         lastmap.put(date_no("最終更新日", dateFormat(date)), list);
         map.put("最終更新日", lastmap);
     }
 
-    public void addOwner(String date, String id, List customer, String source) {
+    public void addOwner(String date, String id, List customer, String source, String company) {
         TreeMap ownmap = (TreeMap) map.get("顧客");
         if (ownmap == null) {
             ownmap = new TreeMap();
@@ -255,37 +259,40 @@ public class SyaryoObject {
         List<Object> list = new ArrayList<>();
         list.add(id);
         list.addAll(customer);
+        list.add(company);
         list.add(source);
         ownmap.put(date_no("顧客", dateFormat(date)), list);
         map.put("顧客", ownmap);
     }
 
     //一部Komtrax
-    public void addSMR(String date, String smr, String source) {
+    public void addSMR(String date, String smr, String source, String company) {
         TreeMap smrmap = (TreeMap) map.get("SMR");
         if (smrmap == null) {
             smrmap = new TreeMap();
         }
         List<Object> list = new ArrayList<>();
         list.add(smr);
+        list.add(company);
         list.add(source);
         smrmap.put(date_no("SMR", dateFormat(date)), list);
         map.put("SMR", smrmap);
     }
 
-    public void addHistory(String date, String id, String source) {
+    public void addHistory(String date, String id, String source, String company) {
         TreeMap histmap = (TreeMap) map.get("経歴");
         if (histmap == null) {
             histmap = new TreeMap();
         }
         List<Object> list = new ArrayList<>();
         list.add(id);
+        list.add(company);
         list.add(source);
         histmap.put(date_no("経歴", dateFormat(date)), list);
         map.put("経歴", histmap);
     }
 
-    public void addOrder(String date, String id, List od, String source) {
+    public void addOrder(String date, String id, List od, String source, String company) {
         TreeMap histmap = (TreeMap) map.get("受注");
         if (histmap == null) {
             histmap = new TreeMap();
@@ -293,12 +300,13 @@ public class SyaryoObject {
         List<Object> list = new ArrayList<>();
         list.add(id);
         list.addAll(od);
+        list.add(company);
         list.add(source);
         histmap.put(date_no("受注", dateFormat(date)), list);
         map.put("受注", histmap);
     }
 
-    public void addWork(String date, String id, List wr, String source) {
+    public void addWork(String date, String id, List wr, String source, String company) {
         TreeMap histmap = (TreeMap) map.get("作業");
         if (histmap == null) {
             histmap = new TreeMap();
@@ -306,12 +314,13 @@ public class SyaryoObject {
         List<Object> list = new ArrayList<>();
         list.add(id);
         list.addAll(wr);
+        list.add(company);
         list.add(source);
         histmap.put(date_no("作業", dateFormat(date)), list);
         map.put("作業", histmap);
     }
 
-    public void addParts(String date, String id, List pa, String source) {
+    public void addParts(String date, String id, List pa, String source, String company) {
         TreeMap histmap = (TreeMap) map.get("部品");
         if (histmap == null) {
             histmap = new TreeMap();
@@ -319,25 +328,27 @@ public class SyaryoObject {
         List<Object> list = new ArrayList<>();
         list.add(id);
         list.addAll(pa);
+        list.add(company);
         list.add(source);
         histmap.put(date_no("部品", dateFormat(date)), list);
         map.put("部品", histmap);
     }
 
     //Komtrax
-    public void addGPS(String date, String id, String source) {
+    public void addGPS(String date, String id, String source, String company) {
         TreeMap histmap = (TreeMap) map.get("GPS");
         if (histmap == null) {
             histmap = new TreeMap();
         }
         List<Object> list = new ArrayList<>();
         list.add(id);
+        list.add(company);
         list.add(source);
         histmap.put(date_no("GPS", dateFormat(date)), list);
         map.put("GPS", histmap);
     }
 
-    public void addError(String date, String id, String kind, String count, String source) {
+    public void addError(String date, String id, String kind, String count, String source, String company) {
         TreeMap histmap = (TreeMap) map.get("エラー");
         if (histmap == null) {
             histmap = new TreeMap();
@@ -346,12 +357,13 @@ public class SyaryoObject {
         list.add(id);
         list.add(kind);
         list.add(count);
+        list.add(company);
         list.add(source);
         histmap.put(date_no("エラー", dateFormat(date)), list);
         map.put("エラー", histmap);
     }
 
-    public void addCaution(String date, String id, List cau, String source) {
+    public void addCaution(String date, String id, List cau, String source, String company) {
         TreeMap histmap = (TreeMap) map.get("警告");
         if (histmap == null) {
             histmap = new TreeMap();
@@ -359,18 +371,20 @@ public class SyaryoObject {
         List<Object> list = new ArrayList<>();
         list.add(id);
         list.addAll(cau);
+        list.add(company);
         list.add(source);
         histmap.put(date_no("警告", dateFormat(date)), list);
         map.put("警告", histmap);
     }
 
-    public void addEngine(String date, String id, String source) {
+    public void addEngine(String date, String id, String source, String company) {
         TreeMap histmap = (TreeMap) map.get("エンジン");
         if (histmap == null) {
             histmap = new TreeMap();
         }
         List<Object> list = new ArrayList<>();
         list.add(id);
+        list.add(company);
         list.add(source);
         histmap.put(date_no("エンジン", dateFormat(date)), list);
         map.put("エンジン", histmap);

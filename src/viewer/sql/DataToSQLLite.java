@@ -10,8 +10,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.List;
 
 /**
  *
@@ -19,6 +18,7 @@ import java.util.logging.Logger;
  */
 public class DataToSQLLite {
     Connection c;
+    
     public DataToSQLLite(){
         try {
             Class.forName("org.sqlite.JDBC");
@@ -31,13 +31,16 @@ public class DataToSQLLite {
     public Integer toSQLLite(DataTransaction dt){
         int n = -1;
         try(Statement stmt = c.createStatement()) {
+            //Prepared
+            //stmt.executeUpdate(dt.preparedSQL());
+            
             //Create Table
-            System.out.println("Table:"+dt.getCreateTableSQL());
+            //System.out.println("Table:"+dt.getCreateTableSQL());
             stmt.executeUpdate(dt.getCreateTableSQL());
             
             //Insert Data
-            System.out.println(dt.getDatSQL());
-            stmt.executeUpdate(dt.getDatSQL());
+            //System.out.println(dt.getDataSQL());
+            stmt.executeUpdate(dt.getDataSQL());
             
             //Count Recode
             ResultSet rs = stmt.executeQuery(dt.getRecordCountSQL());
@@ -49,5 +52,33 @@ public class DataToSQLLite {
         }
         
         return n;
+    }
+    
+    public void toCSV(List<String> table){
+        try(Statement stmt = c.createStatement()) {
+            StringBuilder sql = new StringBuilder();
+            sql.append("SELECT * FROM ");
+            sql.append(String.join(",", table));
+            sql.append(" WHERE ");
+            for(int i=1; i < table.size()-2; i++){
+                sql.append("SID.");
+                sql.append(table.get(i));
+                sql.append("=");
+                sql.append("SID.");
+                sql.append(table.get(i+1));
+            }
+            ResultSet rs = stmt.executeQuery("SELECT * FROM ");
+            
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+    public void close(){
+        try {
+            c.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
     }
 }

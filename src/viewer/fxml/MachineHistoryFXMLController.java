@@ -137,7 +137,6 @@ public class MachineHistoryFXMLController implements Initializable {
                 if (e.getText().contains("format")) {
                     continue;
                 }
-
                 Item pref2 = new Item(e.getNo(), e.getText(), false);
                 list.getItems().add(pref2);
             }
