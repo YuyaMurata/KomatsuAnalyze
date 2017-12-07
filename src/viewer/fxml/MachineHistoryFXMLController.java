@@ -272,8 +272,8 @@ public class MachineHistoryFXMLController implements Initializable {
         //Select Form
         int n = 0;
         if (csvOutputForm.getSelectionModel().isSelected(0)) {
-            //n = CSVViewerOutput.none("None_" + filename, filter, selectData, syaryos);
-            n = CSVViewerOutput.sql("None_" + filename, filter, selectData2, syaryos);
+            n = CSVViewerOutput.none("None_" + filename, filter, selectData, syaryos);
+            //n = CSVViewerOutput.sql("None_" + filename, filter, selectData2, syaryos);
         } else if (csvOutputForm.getSelectionModel().isSelected(1)) {
             n = CSVViewerOutput.time("Time_" + filename, filter, selectData, syaryos);
         } else {

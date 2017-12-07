@@ -137,7 +137,6 @@ public class CSVViewerOutput {
         
         int n = 0;
         for (SyaryoObject syaryo : syaryos) {
-            int m = 0;
             selectData.keySet().parallelStream().forEach(header ->{
                 DataTransaction dt = new DataTransaction(syaryo.getName(), header, selectData.get(header).keySet().stream().collect(Collectors.toList()));
                 
@@ -145,9 +144,11 @@ public class CSVViewerOutput {
                     dt.setData(syaryo.getCol(header, selectData.get(header).get(item)));
                 
                 sql.toSQLLite(dt);
-            }); 
-            n += m - n;
-            System.out.println(syaryo.getName() + ":" + (m - n) + "行 csv出力!");
+            });
+            
+            int m = sql.dataCount(selectData.keySet(), syaryo.getName());
+            System.out.println(syaryo.getName() + ":" + m + "行 csv出力!");
+            n += m;
         }
         
         sql.close();

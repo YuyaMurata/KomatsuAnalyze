@@ -8,7 +8,6 @@ package viewer.sql;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import obj.SyaryoElements;
 
 /**
  *
@@ -85,15 +84,6 @@ public class DataTransaction {
             value.add(v.toString());
         }
         sql.append(String.join(",", value));
-        sql.append(";");
-        
-        return sql.toString();
-    }
-    
-    public String getRecordCountSQL(){
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT COUNT(*) FROM ");
-        sql.append(table);
         sql.append(";");
         
         return sql.toString();

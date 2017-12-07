@@ -389,8 +389,6 @@ public class FormalizeSyaryoObject {
         int source = SyaryoElements.SMR.DB.getNo();
         int smr = SyaryoElements.SMR._SMR.getNo();
 
-        LinkedList<String> queue = new LinkedList<>();
-
         for (String date : smrMap.keySet()) {
             List obj = smrMap.get(date);
 
@@ -414,7 +412,6 @@ public class FormalizeSyaryoObject {
 
             update.put(date, obj);
         }
-
         smrMap.clear();
         smrMap.putAll(update);
     }
@@ -540,7 +537,7 @@ public class FormalizeSyaryoObject {
         for (String name : syaryoMap.keySet()) {
             //System.out.println(name);
 
-            interSMR(syaryoMap.get(name).getSMR());
+            interSMR(syaryoMap.get(name), syaryoMap.get(name).getSMR());
 
             map.put(name, syaryoMap.get(name));
         }
@@ -549,7 +546,7 @@ public class FormalizeSyaryoObject {
     }
 
     //SMRの補間
-    private void interSMR(Map<String, List> smrMap) {
+    private void interSMR(SyaryoObject syaryo, Map<String, List> smrMap) {
         Map<String, List> update = new TreeMap();
 
         if (smrMap == null) {

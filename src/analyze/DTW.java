@@ -5,9 +5,6 @@
  */
 package analyze;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
  *
  * @author zz17390
@@ -37,6 +34,6 @@ public class DTW {
         Integer[] s = new Integer[]{199, 199, 184, 162, 146, 166, 171, 180, 193, 181, 183, 218, 230, 242, 209};
         Integer[] t = new Integer[]{183, 218, 230, 242, 209, 191, 172, 194, 196, 196, 236, 235, 229, 243, 264};
         
-        System.out.println(DTW.distance(s, t));
+        System.out.println(DTW.distance(t, s));
     }
 }

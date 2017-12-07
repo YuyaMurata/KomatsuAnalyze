@@ -543,11 +543,15 @@ public class SyaryoObject {
 
         return list;
     }
-
+    
+    public String getFirstDate(){
+        return getNew().keySet().stream().findFirst().get();
+    }
+    
     public String getAge(String date) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-            Date birth = sdf.parse(getNew().keySet().stream().findFirst().get());
+            Date birth = sdf.parse(getFirstDate());
             Date last = sdf.parse(date);
             Long age = (last.getTime() - birth.getTime()) / (1000 * 60 * 60 * 24);
 
@@ -578,6 +582,18 @@ public class SyaryoObject {
         } catch (ParseException ex) {
             return "NA";
         }
+    }
+    
+    public String diffSMR(String date){
+        TreeMap<String, List> map = new TreeMap(getSMR());
+        Integer smr = Integer.valueOf(map.get(date).get(SyaryoElements.SMR._SMR.getNo()).toString());
+        Integer smr2 = 0;
+        try{
+            smr2 = Integer.valueOf(map.lowerEntry(date).getValue().get(SyaryoElements.SMR._SMR.getNo()).toString());
+        }catch(NullPointerException e){
+        }
+        
+        return String.valueOf(smr - smr2);
     }
 
     //Remove
