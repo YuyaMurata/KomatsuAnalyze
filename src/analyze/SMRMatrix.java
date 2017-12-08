@@ -22,9 +22,8 @@ import obj.SyaryoObject;
  */
 public class SMRMatrix {
 
-    public static void main(String[] args) {
-        String fileName = "json\\syaryo_obj_WA470_form.json";
-        Map<String, SyaryoObject> syaryoMap = new JsonToSyaryoObj().reader(fileName);
+    public static Object[][] create(String filename) {
+        Map<String, SyaryoObject> syaryoMap = new JsonToSyaryoObj().reader(filename);
 
         int n = syaryoMap.values().stream()
             .map(s -> s.getAge(s.getSMR().keySet().toArray(new String[s.getSMR().size()])[s.getSMR().size() - 1]))
@@ -71,7 +70,7 @@ public class SMRMatrix {
             String temp = "0";
             String pare = "0";
             Boolean flg = true;
-            for (int x = 1; x < numAge; x++) {
+            for (int x = 1; x < numAge + 1; x++) {
                 if (mat[x][i].equals("")) {
                     if (flg) {
                         pare = temp;
@@ -86,31 +85,44 @@ public class SMRMatrix {
                 temp = String.valueOf(x);
             }
 
-            System.out.println(syaryo + ":" + interX);
-            
-            for(String interval : interX){
+            System.out.println(syaryo + ":" + interX + ":" + pare);
+
+            for (String interval : interX) {
                 Integer[] x = {Integer.valueOf(interval.split(",")[0]), Integer.valueOf(interval.split(",")[1])};
                 Integer[] y;
-                if(x[0] == 0)
+                if (x[0] == 0) {
                     y = new Integer[]{0, Integer.valueOf(mat[x[1]][i].toString())};
-                else{
+                } else {
                     y = new Integer[]{Integer.valueOf(mat[x[0]][i].toString()), Integer.valueOf(mat[x[1]][i].toString())};
                 }
-                
-                for(int k = x[0]+1; k < x[1]; k++){
+
+                for (int k = x[0] + 1; k < x[1]; k++) {
                     mat[k][i] = linearInterpolation(x, y, k);
                 }
             }
             
+            //Syaryo increment
             i++;
         }
 
-        printMat(mat);
+        //diff
+        for (int k = 2; k < mat.length; k++) {
+            for (int l = 1; l < mat[k].length; l++) {
+                if (mat[k][l].toString().equals("")) {
+                    mat[k - 1][l] = "";
+                    continue;
+                }
+                //System.out.println("mat[" + k + "][" + l + "]:" + mat[k][l]);
+                mat[k - 1][l] = Integer.valueOf(mat[k][l].toString()) - Integer.valueOf(mat[k - 1][l].toString());
+            }
+        }
+        
+        return mat;
     }
 
     public static void printMat(Object[][] mat) {
-        try (PrintWriter pw = CSVFileReadWrite.writer("test_smrmat.csv")) {
-            for (int i = 0; i < mat.length; i++) {
+        try (PrintWriter pw = CSVFileReadWrite.writer("test2_smrmat_daily.csv")) {
+            for (int i = 0; i < mat.length - 1; i++) {
                 List str = new ArrayList();
                 for (int j = 0; j < mat[i].length; j++) {
                     str.add(mat[i][j]);
@@ -128,7 +140,12 @@ public class SMRMatrix {
 
     //線形補間
     private static String linearInterpolation(Integer[] x, Integer[] y, Integer targetX) {
-        Integer interValue = y[0] + (y[1] - y[0])*(targetX - x[0])/(x[1] - x[0]);
+        Integer interValue = y[0] + (y[1] - y[0]) * (targetX - x[0]) / (x[1] - x[0]);
         return interValue.toString();
+    }
+    
+    public static void main(String[] args) {
+        Object[][] mat = create("json\\syaryo_obj_WA470_form.json");
+        printMat(mat);
     }
 }

@@ -31,8 +31,8 @@ public class DTW {
     
     //test
     public static void main(String[] args){
-        Integer[] s = new Integer[]{199, 199, 184, 162, 146, 166, 171, 180, 193, 181, 183, 218, 230, 242, 209};
-        Integer[] t = new Integer[]{183, 218, 230, 242, 209, 191, 172, 194, 196, 196, 236, 235, 229, 243, 264};
+        Integer[] s = new Integer[]{1,2,3,4,5,6,14,16,18};
+        Integer[] t = new Integer[]{1,2,3,4,5,6,7,8,9};
         
         System.out.println(DTW.distance(t, s));
     }

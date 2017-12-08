@@ -188,7 +188,6 @@ public class KomtraxData {
                 //SMR
                 syaryo.addKMSMR(db, company, date, smr);
                 
-                
                 //AddSyaryo
                 map.put(syaryo.getName(), syaryo);
 

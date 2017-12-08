@@ -5,6 +5,7 @@
  */
 package obj;
 
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -24,7 +25,9 @@ public class SyaryoObject {
 
     public String name;
     public Map<String, Object> map = new LinkedHashMap();
+    
     private transient int deteilno = 0;
+    private transient DecimalFormat dformat = new DecimalFormat("000");
 
     public SyaryoObject(String name) {
         this.name = name;
@@ -59,10 +62,10 @@ public class SyaryoObject {
                 return date;
             } else {
                 int i = 1;
-                while (oldMap.get(date + "#" + i) != null) {
+                while (oldMap.get(date + "#" + dformat.format(i)) != null) {
                     i++;
                 }
-                return date + "#" + i;
+                return date + "#" + dformat.format(i);
             }
         }
     }
