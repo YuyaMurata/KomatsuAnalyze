@@ -48,7 +48,8 @@ public class DTWMatrix {
         //Calc
         for(int i=1; i < dtwsize; i++){
             for(int j=1; j < dtwsize; j++){
-                dtw_mat[i][j] = DTW.distance(tmat[i-1].toArray(new Integer[tmat[i-1].size()]), tmat[j-1].toArray(new Integer[tmat[j-1].size()]));
+                int s = Math.min(tmat[i-1].size(), tmat[j-1].size());
+                dtw_mat[i][j] = DTW.distance(tmat[i-1].subList(0, s).toArray(new Integer[s]), tmat[j-1].subList(0, s).toArray(new Integer[s]));
             }
             
             System.out.println(i+"/"+dtwsize+" 行処理.");
