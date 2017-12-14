@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import json.JsonToSyaryoObj;
+import obj.SyaryoElements;
 import obj.SyaryoObject;
 
 /**
@@ -26,7 +27,7 @@ public class AllSyaryoToCSV {
 
     public static void main(String[] args) {
         String path = "..\\KomatsuData\\分析結果\\";
-        String kisy = "PC200";
+        String kisy = "WA470";
         Map<String, SyaryoObject> syaryoMap = new JsonToSyaryoObj().reader("json\\syaryo_obj_" + kisy + "_form.json");
 
         //service(path + kisy, syaryoMap);
@@ -35,7 +36,8 @@ public class AllSyaryoToCSV {
         //komtraxError(path+kisy, syaryoMap);
         //orderDataCount(path+kisy, syaryoMap, "KDPF");
         //workDataCount(kisy, syaryoMap, "01");
-        workDataCount2(kisy, syaryoMap, "01");
+        //workDataCount2(kisy, syaryoMap, "01");
+        smrOrderCount(kisy, syaryoMap);
     }
 
     public static void order(String filename, Map<String, SyaryoObject> syaryoMap) {
@@ -287,5 +289,26 @@ public class AllSyaryoToCSV {
         } catch (IOException ex) {
         }
 
+    }
+    
+    public static void smrOrderCount(String filename, Map<String, SyaryoObject> syaryoMap){
+        try {
+            PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(filename + "_smrToorder.csv"))));
+            pw.println("name,SMR,order");
+            
+            for(SyaryoObject syaryo : syaryoMap.values()){
+                if(syaryo.getOrder() == null){
+                    pw.println(syaryo.getName()+",NA, NA");
+                    continue;
+                }
+                
+                for(String d : syaryo.getOrder().keySet()){
+                    pw.println(syaryo.getName()+","+syaryo.getSMR(d)+",1");
+                }
+            }
+            
+            pw.close();
+        } catch (IOException ex) {
+        }
     }
 }

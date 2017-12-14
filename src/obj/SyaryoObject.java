@@ -25,7 +25,7 @@ public class SyaryoObject {
 
     public String name;
     public Map<String, Object> map = new LinkedHashMap();
-    
+
     private transient int deteilno = 0;
     private transient DecimalFormat dformat = new DecimalFormat("000");
 
@@ -105,8 +105,9 @@ public class SyaryoObject {
                     } else if (field.equals("廃車")) {
                         addDead(s[2]);
                     } else if (field.equals("新車")) {
-                        for (int j = 4; j < s.length; j++)
+                        for (int j = 4; j < s.length; j++) {
                             list.add(s[j]);
+                        }
                         addNew(s[2], s[3], list, s[0], s[1]);
                     } else if (field.equals("中古車")) {
                         for (int j = 4; j < s.length; j++) {
@@ -456,11 +457,11 @@ public class SyaryoObject {
     public Map<String, List> getParts() {
         return (Map) map.get("部品");
     }
-    
+
     public Map<String, List> getSpec() {
         return (Map) map.get("仕様");
     }
-    
+
     public Boolean getKomtrax() {
         Map<String, List> spec = getSpec();
         return spec.get("0").get(SyaryoElements.Spec.Komtrax.getNo()).toString().equals("1");
@@ -535,8 +536,9 @@ public class SyaryoObject {
             list.add(getAge(date.split("#")[0]));
         } else {
             if (map.get(key) == null) {
-                for(Element e : SyaryoElements.map.get(key))
+                for (Element e : SyaryoElements.map.get(key)) {
                     list.add("NA");
+                }
             } else if (((Map<String, List<String>>) map.get(key)).get(date) == null) {
                 list.addAll(((Map<String, List<String>>) map.get(key)).get("0"));
             } else {
@@ -546,11 +548,11 @@ public class SyaryoObject {
 
         return list;
     }
-    
-    public String getFirstDate(){
+
+    public String getFirstDate() {
         return getNew().keySet().stream().findFirst().get();
     }
-    
+
     public String getAge(String date) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
@@ -564,38 +566,36 @@ public class SyaryoObject {
             return "NA";
         }
     }
-    
-    public Integer getNumUsed(){
-        if(getUsed() == null)
+
+    public Integer getNumUsed() {
+        if (getUsed() == null) {
             return 0;
-        else
+        } else {
             return getUsed().size();
-    }
-    
-    public String getSMR(String date) {
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-            Date d = sdf.parse(date);
-            
-            TreeMap map = new TreeMap(getSMR());
-            String smr = "";
-            //System.out.println(sdf.format(birth) + " - " + sdf.format(last) +" = "+age);
-            
-            return smr;
-        } catch (ParseException ex) {
-            return "NA";
         }
     }
-    
-    public String diffSMR(String date){
+
+    public String getSMR(String date) {
+        String d = date.split("#")[0];
+
+        TreeMap<String, List<String>> map = new TreeMap(getSMR());
+        
+        String smr = "0";
+        if(map.floorEntry(d) != null)
+            smr = map.floorEntry(d).getValue().get(SyaryoElements.SMR._SMR.getNo());
+        
+        return smr;
+    }
+
+    public String diffSMR(String date) {
         TreeMap<String, List> map = new TreeMap(getSMR());
         Integer smr = Integer.valueOf(map.get(date).get(SyaryoElements.SMR._SMR.getNo()).toString());
         Integer smr2 = 0;
-        try{
+        try {
             smr2 = Integer.valueOf(map.lowerEntry(date).getValue().get(SyaryoElements.SMR._SMR.getNo()).toString());
-        }catch(NullPointerException e){
+        } catch (NullPointerException e) {
         }
-        
+
         return String.valueOf(smr - smr2);
     }
 

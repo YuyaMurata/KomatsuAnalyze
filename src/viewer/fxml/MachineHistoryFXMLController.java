@@ -37,6 +37,8 @@ import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxListCell;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import json.JsonToSyaryoObj;
@@ -88,6 +90,8 @@ public class MachineHistoryFXMLController implements Initializable {
     private DataRuleFilter filter;
     @FXML
     private CheckBox machineAllCkeck;
+    @FXML
+    private TextField syaryo_filter;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -100,6 +104,9 @@ public class MachineHistoryFXMLController implements Initializable {
         //ViewData Initialize
         machineListInitialize();
         machineDataListInitialize();
+        
+        //Number Of Count
+        history_label.setText("車両数:"+syaryoMap.size());
 
         //CSVOutputForm Initialize
         csvOutputFormInitialize();
@@ -301,6 +308,13 @@ public class MachineHistoryFXMLController implements Initializable {
                     item2.setOn(false);
                 }
             }
+        }
+    }
+
+    @FXML
+    private void filterEnter(KeyEvent event) {
+        if (event.getCode() == KeyCode.ENTER) {
+            
         }
     }
 

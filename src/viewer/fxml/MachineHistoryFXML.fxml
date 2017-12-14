@@ -7,7 +7,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox fx:id="root_vbox" prefHeight="586.0" prefWidth="805.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="viewer.fxml.MachineHistoryFXMLController">
+
+<VBox fx:id="root_vbox" prefHeight="586.0" prefWidth="704.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="viewer.fxml.MachineHistoryFXMLController">
     <children>
         <MenuBar fx:id="fileMenu">
             <menus>
@@ -28,10 +29,15 @@
                 </Menu>
             </menus>
         </MenuBar>
-        <SplitPane fx:id="history_splitpane" dividerPositions="0.5" VBox.vgrow="ALWAYS">
+        <SplitPane fx:id="history_splitpane" dividerPositions="0.25" VBox.vgrow="ALWAYS">
             <items>
-                <ListView fx:id="machineList" maxWidth="300.0" minWidth="300.0" prefWidth="300.0" />
-            <AnchorPane prefHeight="200.0" prefWidth="200.0">
+            <VBox maxWidth="200.0" minWidth="200.0" nodeOrientation="LEFT_TO_RIGHT" prefWidth="200.0">
+               <children>
+                  <TextField fx:id="syaryo_filter" maxWidth="200.0" minWidth="200.0" onKeyPressed="#filterEnter" prefWidth="200.0" VBox.vgrow="NEVER" />
+                      <ListView fx:id="machineList" maxWidth="200.0" minWidth="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+               </children>
+            </VBox>
+            <AnchorPane>
                <children>
                           <Label fx:id="history_label" layoutX="15.0" layoutY="14.0" text="Label" textOverrun="CLIP" />
                   <ListView fx:id="pList" layoutX="14.0" layoutY="68.0" prefHeight="262.0" prefWidth="229.0" />
