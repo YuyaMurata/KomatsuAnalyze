@@ -5,6 +5,7 @@
  */
 package viewer.filter;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,8 +49,9 @@ public class DataRuleFilter {
             return rule[1].compareTo(value) >= 0;
         else if(rule[0].equals("!="))
             return rule[1].compareTo(value) != 0;
-        else if(rule[0].equals("="))
+        else if(rule[0].equals("=")){
             return rule[1].compareTo(value) == 0;
+        }
         else if(rule[0].equals("<"))
             return rule[1].compareTo(value) > 0;
         else if(rule[0].equals(">"))

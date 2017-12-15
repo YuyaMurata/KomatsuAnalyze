@@ -44,11 +44,14 @@ public class CSVViewerOutput {
                         String key = header.split("\\.")[0];
                         Integer index = selectData.get(header);
                         String str = "";
+                        
                         if (i < syaryo.getCol(key, index).size()) {
                             str = syaryo.getCol(key, index).get(i);
                         } else {
                             str = syaryo.getCol(key, index).get(syaryo.getCol(key, index).size() - 1);
                         }
+                        
+                        
                         if (filter.getRule(header, str)) {
                             row.add(str);
                         } else {

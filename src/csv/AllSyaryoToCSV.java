@@ -11,13 +11,17 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import json.JsonToSyaryoObj;
 import obj.SyaryoElements;
 import obj.SyaryoObject;
+import org.apache.slider.common.tools.Comparators;
 
 /**
  *
@@ -37,7 +41,8 @@ public class AllSyaryoToCSV {
         //orderDataCount(path+kisy, syaryoMap, "KDPF");
         //workDataCount(kisy, syaryoMap, "01");
         //workDataCount2(kisy, syaryoMap, "01");
-        smrOrderCount(kisy, syaryoMap);
+        //smrOrderCount(kisy, syaryoMap);
+        smrReachCount(kisy, 100, syaryoMap);
     }
 
     public static void order(String filename, Map<String, SyaryoObject> syaryoMap) {
@@ -306,6 +311,40 @@ public class AllSyaryoToCSV {
                     pw.println(syaryo.getName()+","+syaryo.getSMR(d)+",1");
                 }
             }
+            
+            pw.close();
+        } catch (IOException ex) {
+        }
+    }
+    
+    public static void smrReachCount(String filename, Integer smriv,Map<String, SyaryoObject> syaryoMap){
+        try{
+            PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(filename + "_smr.csv"))));
+            pw.println("SMR,count");
+            
+            Integer max = 0;
+            for(SyaryoObject syaryo : syaryoMap.values()){
+                String last = syaryo.getSMR().keySet().stream().max(Comparator.naturalOrder()).get();
+                if(max < Integer.valueOf(syaryo.getSMR(last)))
+                    max = Integer.valueOf(syaryo.getSMR(last));
+            }
+            System.out.println("MAX="+max);
+            
+            TreeMap<Integer, Integer> map = new TreeMap();
+            for(int i=1; i < max; i+= smriv)
+                map.put(i, 0);
+            
+            for(SyaryoObject syaryo : syaryoMap.values()){
+                String last = syaryo.getSMR().keySet().stream().max(Comparator.naturalOrder()).get();
+                int i=1;
+                while(i < Integer.valueOf(syaryo.getSMR(last))){
+                    map.put(i, map.get(i)+1);
+                    i += smriv;
+                }
+            }
+            
+            for(Integer i : map.keySet())
+                pw.println(i+","+map.get(i));
             
             pw.close();
         } catch (IOException ex) {
