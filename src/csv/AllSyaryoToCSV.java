@@ -41,8 +41,8 @@ public class AllSyaryoToCSV {
         //orderDataCount(path+kisy, syaryoMap, "KDPF");
         //workDataCount(kisy, syaryoMap, "01");
         //workDataCount2(kisy, syaryoMap, "01");
-        //smrOrderCount(kisy, syaryoMap);
-        smrReachCount(kisy, 100, syaryoMap);
+        smrOrderCount(kisy, syaryoMap);
+        //smrReachCount(kisy, 100, syaryoMap);
     }
 
     public static void order(String filename, Map<String, SyaryoObject> syaryoMap) {

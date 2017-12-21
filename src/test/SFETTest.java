@@ -24,7 +24,7 @@ public class SFETTest {
 
     private static void test2() throws IOException {
         //TreeMap<Integer, Double> x = new TreeMap<>();
-        BufferedReader br = CSVFileReadWrite.reader("None_WA470-7-10180_error.csv");
+        BufferedReader br = CSVFileReadWrite.reader("WA470-7-10299_SMR.csv");
         
         //header
         br.readLine();
@@ -32,11 +32,12 @@ public class SFETTest {
         String str;
         while ((str = br.readLine()) != null) {
             //x.put(Integer.valueOf(str.split(",")[0]), Double.valueOf(str.split(",")[1]));
-            x.set(Integer.valueOf(str.split(",")[0]), Double.valueOf(str.split(",")[36]));
+            x.set(Integer.valueOf(str.split(",")[0]), Double.valueOf(str.split(",")[1]));
         }
         
         x.check();
         x.dump();
         SFET sfet = new SFET(x, 98, 0.05d);
+        sfet.print("WA470-7-10299_SMR_SFET.csv");
     }
 }

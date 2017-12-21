@@ -64,8 +64,7 @@ public class SFET {
     }
 
     TreeMap<Integer, Double> map = new TreeMap<>();
-    public SFET(TimeSpread data, int w, double alpha) {
-        PrintWriter pw = CSVFileReadWrite.writer("test_SFET.csv");
+    public SFET(TimeSpread data, int w, double alpha) {      
         for (int t = 0; t < (data.size() - w + 1); t++) {
             int tr = t + w - 1;
             System.out.println("tr=" + tr);
@@ -80,8 +79,12 @@ public class SFET {
                     Double p = engine.eval("fisher.test(x)").asVector().at(0).asDouble();
                     Integer s = contTable[0][0] * contTable[1][0] - contTable[0][1] * contTable[1][1];
                     if (p <= alpha) {
-                        pw.println("t_th=," + th + " ,s=" + s + " ,P=," + p);
-                        //map.put(th, p);
+                        //pw.println("t_th=," + th + " ,s=" + s + " ,P=," + p);
+                        if(map.get(th) == null) map.put(th, p);
+                        else {
+                            if(map.get(th) < p)
+                                map.put(th, p);
+                        }
                     }
                 }
                 //System.exit(0);
@@ -97,6 +100,13 @@ public class SFET {
                 System.out.print(d[i][j] + " ");
             }
             System.out.println("");
+        }
+    }
+    
+    public void print(String filename){
+        try(PrintWriter pw = CSVFileReadWrite.writer(filename)){
+            for(Integer th : map.keySet())
+                pw.println(th+","+map.get(th));
         }
     }
 }
