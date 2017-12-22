@@ -78,14 +78,14 @@ public class SFET {
                     //printMat(result);
                     Double p = engine.eval("fisher.test(x)").asVector().at(0).asDouble();
                     Integer s = contTable[0][0] * contTable[1][0] - contTable[0][1] * contTable[1][1];
-                    if (p <= alpha) {
+                    //if (p <= alpha) {
                         //pw.println("t_th=," + th + " ,s=" + s + " ,P=," + p);
                         if(map.get(th) == null) map.put(th, p);
                         else {
-                            if(map.get(th) < p)
+                            if(map.get(th) > p)
                                 map.put(th, p);
                         }
-                    }
+                    //}
                 }
                 //System.exit(0);
             }

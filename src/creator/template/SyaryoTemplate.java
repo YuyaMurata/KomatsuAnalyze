@@ -71,8 +71,7 @@ public class SyaryoTemplate {
 		if (key.equals("受注")) {
 			addOrder(s[0], s[1], s[2], s[3], s[4], s[5], s[6],
 				s[7], s[8], s[9], s[10], s[11], s[12], s[13],
-				s[14], s[15], s[16], s[17], s[18], s[19], s[20],
-				s[21], s[22], s[23]);
+				s[14], s[15], s[16], s[17], s[18]);
 		}
 		if (key.equals("作業")) {
 			addWork(s[0], s[1], s[2], s[3], s[4], s[5], s[6],
@@ -279,10 +278,9 @@ public class SyaryoTemplate {
 
 	public void addOrder(String db, String company, String date, String sbnDate, String startDate, String finishDate,
 		String sbn, String hanbai, String status,
-		String kokyakuId, String kokyakuName, String keiyakuId, String keiyakuName, String id, String name,
-		String keiyaku, String keiyakuSyubetu, String keiyaku_flg,
+		String kokyakuId, String kokyakuName, String id, String name,
 		String step, String sijistep,
-		String komatsu, String ippan, String syanai, String gaiyo
+		String uag_kbn, String ippan, String komatsu, String gaiyo
 	) {
 		if (errorCheck(date)) {
 			return;
@@ -292,20 +290,18 @@ public class SyaryoTemplate {
 		if (map.get("受注") == null) {
 			str = "DB, 会社コード, 日付, 作番登録日, 実施予定日, 完了日, "
 				+ "作番, 修・単, 作番ステータス, "
-				+ "顧客ID, 顧客名, 契約顧客ID, 契約顧客名, 保有顧客ID, 保有顧客名, "
-				+ "契約管理番号, 契約種別コード, 契約適用フラグ, "
+				+ "顧客ID, 顧客名, 保有顧客ID, 保有顧客名, "
 				+ "工数, 指示工数, "
-				+ "コマツ請求, 一般請求, 社内請求,"
+				+ "売上区分, 一般請求, コマツ請求,"
 				+ "概要 \n ";
 		} else {
 			str = map.get("受注") + " \n ";
 		}
 
 		str += db + "," + company + "," + date + "," + sbnDate + "," + startDate + "," + finishDate + "," + sbn + "," + hanbai + "," + status + ","
-			+ kokyakuId + "," + kokyakuName + "," + keiyakuId + "," + keiyakuName + "," + id + "," + name + ","
-			+ keiyaku + "," + keiyakuSyubetu + "," + keiyaku_flg + ","
+			+ kokyakuId + "," + kokyakuName + "," + id + "," + name + ","
 			+ step + "," + sijistep + ","
-			+ komatsu + "," + ippan + "," + syanai + "," + gaiyo;
+			+ uag_kbn + "," + ippan + "," + komatsu + "," + gaiyo;
 		map.put("受注", str);
 	}
 

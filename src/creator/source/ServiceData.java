@@ -16,6 +16,7 @@ import java.sql.Statement;
 import java.util.Map;
 import java.util.TreeMap;
 import creator.template.SyaryoTemplate;
+import db.field.Order;
 
 /**
  *
@@ -24,14 +25,14 @@ import creator.template.SyaryoTemplate;
 public class ServiceData {
 
     //SERVICE DATA
-    public Map<String, SyaryoTemplate> addService(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap, Map<String, SyaryoTemplate> noneType, String sp1, String sp2) {
+    public Map<String, SyaryoTemplate> addService(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap, Map<String, SyaryoTemplate> noneType, int sp1, int sp2, int uag1, int uag2, int uag3) {
         Map map = new TreeMap();
 
         try {
             Statement stmt = con.createStatement();
 
             //Syaryo
-            String sql = String.format("select %s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s from %s where %s and %s",
+            String sql = String.format("select s.%s,s.%s,s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s from %s s left outer join %s k on (s.%s=k.%s and s.%s=k.%s) where s.%s and s.%s and s.%s and s.%s and s.%s and k.%s is NULL",
                     Service._Service.KISY, Service._Service.TYP, Service._Service.KIBAN, //Unique ID
                     Service._Service.KSYCD, //会社コード
                     Service._Service.JSDAY, //実施日
@@ -41,7 +42,6 @@ public class ServiceData {
                     Service._Service.KYKNM, //顧客名
                     Service._Service.SGYO_MSINO, //作業明細番号
                     Service._Service.UPD_RRK_MNO, //追番
-                    Service._Service.UAGE_KBN_3, //売上区分3
                     Service._Service.SGYO_KTICD, //作業形態コード
                     Service._Service.SGYOCD, //作業コード
                     Service._Service.SGYO_NM, //作業名
@@ -55,8 +55,17 @@ public class ServiceData {
                     Service._Service.SVC_MTR, //サービスメータ
                     Service._Service.LAST_UPD_DAYT,
                     HiveDB.TABLE.SERVICE,
-                    Service._Service.HASSEI_KBN + sp1,
-                    Service._Service.ODR_KBN + sp2
+                    HiveDB.TABLE.ORDER.get(),
+                    Service._Service.KSYCD,
+                    Order._Order.KSYCD,
+                    Service._Service.SVCKR_KNRNO,
+                    Order._Order.SBN,
+                    Service._Service.HASSEI_KBN + "=" + sp1,
+                    Service._Service.ODR_KBN + "=" + sp2,
+                    Service._Service.UAGE_KBN_1 + "=" + uag1, //売上区分1
+                    Service._Service.UAGE_KBN_2 + "=" + uag1, //売上区分2
+                    Service._Service.UAGE_KBN_3 + "=" + uag1, //売上区分3
+                    Order._Order.SBN
             );
             System.out.println("Running: " + sql);
 
@@ -92,17 +101,12 @@ public class ServiceData {
 
                 //Order
                 String odr_kbn = res.getString(Service._Service.ODR_KBN.get());       //受注区分
-                String uag_kbn = res.getString(Service._Service.UAGE_KBN_3.get());    //売上区分3
                 String price = res.getString(Service._Service.SKKG.get());
-                String price1 = "0", price2 = "0", price3 = "0";
-                if (uag_kbn.equals("1") || uag_kbn.equals("3")) {
-                    price1 = price;      //請求金額
-                } else if (uag_kbn.equals("2")) {
-                    price2 = price;
-                } else if (!uag_kbn.equals("")) {
-                    price3 = price;
-                } else {
-                    price1 = "*" + price;
+                String gprice = "0", kprice = "0";
+                switch(uag3){
+                    case 1 : gprice = price; break;
+                    case 2 : kprice = price; break;
+                    case 3 : gprice = price; break;
                 }
 
                 //Work
@@ -139,7 +143,7 @@ public class ServiceData {
                 String comment = res.getString(Service._Service.KISY_CMT.get());
                 if (syaryo == null) {
                     errpw.println(n + "," + name + "," + last_date + "," + db + "," + company + "," + cid + "," + gyosyu + "," + cname
-                            + "," + date + "," + id + "," + odr_kbn + "," + uag_kbn + "," + "," + price + "," + sg_mid + "," + sg_add_id
+                            + "," + date + "," + id + "," + odr_kbn + "," + price + "," + sg_mid + "," + sg_add_id
                             + "," + sg_keitai_id + "," + sg_id + "," + sg_name + "," + kosu + "," + suryo + "," + parts_id + "," + parts_name
                             + "," + smr + "," + text + "," + comment);
                     continue;
@@ -148,14 +152,18 @@ public class ServiceData {
                 m++;
 
                 //Order
+                String uag_kbn = ""+uag1+uag2+uag3;
+                
                 //History
                 syaryo.addHistory(db, company, date, id);
-                syaryo.addOrder(db, company, "-1", "-1", "-1", date, id, odr_kbn, "-1", "?", "?", "?", "?", cid, cname, "?", "-1", "-1", kosu, "-1", price1, price2, price3, text);
+                
+                /*"DB, 会社コード, 日付, 作番登録日, 実施予定日, 完了日, 作番, 修・単, 作番ステータス, 顧客ID, 顧客名, 保有顧客ID, 保有顧客名, 工数, 指示工数, 売上区分, 一般請求, コマツ請求, 概要 ";*/
+                syaryo.addOrder(db, company, date, "-1", "-1", date, id, odr_kbn, "-1", "?", "?", cid, cname, kosu, "-1", uag_kbn, gprice, kprice, text);
 
                 //Parts
-                if (odr_kbn.equals("1")) {
-                    syaryo.addParts(db, company, date, id, sg_mid, "??", parts_id, parts_name, suryo, "-1", price);
-                } else if (odr_kbn.equals("2")) {
+                if (sp2 == 1) {
+                    syaryo.addParts(db, company, date, id, sg_mid, "?", parts_id, parts_name, suryo, "-1", price);
+                } else if (sp2 == 2) {
                     syaryo.addWork(db, company, date, id, sg_mid, sg_keitai_id, "?", sg_id, sg_name, "-1", suryo, price, "-1", "-1", "-1", "-1", "-1", kosu);
                 }
 
