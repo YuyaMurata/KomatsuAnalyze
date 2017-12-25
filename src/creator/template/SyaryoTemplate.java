@@ -5,6 +5,7 @@
  */
 package creator.template;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -13,16 +14,23 @@ import java.util.Map;
  * @author ZZ17390
  */
 public class SyaryoTemplate {
-
-	public String name;
+    private static Map<String, String> validate = new HashMap();
+    
 	public Map<String, String> map = new LinkedHashMap();
+    public String kisy, type, s_type, kiban;
 
-	public SyaryoTemplate(String name) {
-		this.name = name;
-	}
-
-	public SyaryoTemplate(String kisy, String type, String kiban) {
-		this.name = kisy + "-" + type + "-" + kiban;
+	public SyaryoTemplate(String kisy, String type, String s_type, String kiban) {
+		String name = kisy + "-" + type + s_type + "-" + kiban;
+        
+        this.kisy = kisy;
+        this.type = type;
+        this.s_type = s_type;
+        this.kiban = kiban;
+        
+        //Setting Map
+        validate.put(name, name);
+        validate.put(kisy+"-"+type+"-"+kiban, name);
+        validate.put(kisy+"--"+kiban, name);
 	}
 
 	private Boolean errorCheck(String date) {
@@ -98,6 +106,9 @@ public class SyaryoTemplate {
 		}
 		if (key.equals("KMCAUTION")) {
 			addKMCaution(s[0], s[1], s[2], s[3], s[4]);
+		}
+        if (key.equals("KMFUELCONSUME")) {
+			addKMFuelConsume(s[0], s[1], s[2], s[3]);
 		}
 	}
 
@@ -469,6 +480,26 @@ public class SyaryoTemplate {
 		str += db + "," + company + "," + date + "," + caution_icon + "," + caution_cnt;
 		map.put("KMCAUTION", str);
 	}
+    
+    //FUEL CONSUME
+	public void addKMFuelConsume(String db, String company, String date, String consume_cnt) {
+		String check_date = date.replace("/", "").substring(0, 8);
+		if (errorCheck(check_date)) {
+			return;
+		}
+
+		date = date.substring(0, 10) + " " + date.substring(11, date.length());
+
+		String str = "";
+		if (map.get("KMFUELCONSUME") == null) {
+			str = "DB, 会社コード, 日付, カウント \n ";
+		} else {
+			str = map.get("KMFUELCONSUME") + " \n ";
+		}
+
+		str += db + "," + company + "," + date + "," + consume_cnt;
+		map.put("KMFUELCONSUME", str);
+	}
 
 	public String get(String id) {
 		return map.get(id);
@@ -479,12 +510,19 @@ public class SyaryoTemplate {
 	}
 
 	public String getName() {
-		return name;
+		return kisy+"-"+type+s_type+"-"+kiban;
 	}
-
-	public String getName2() {
-		return name.split("-")[0] + "-" + name.split("-")[2];
-	}
+    
+    public static String getName(String kisy, String type, String s_type, String kiban){
+        return kisy+"-"+type+s_type+"-"+kiban;
+    }
+    
+    public static String check(String kisy, String type, String s_type, String kiban){
+        String n = validate.get(kisy+"-"+type+s_type+"-"+kiban);
+        if(n == null)
+            n = validate.get(kisy+"--"+kiban);
+        return n;
+    }
 
 	public String toString() {
 		StringBuilder sb = new StringBuilder(getName());

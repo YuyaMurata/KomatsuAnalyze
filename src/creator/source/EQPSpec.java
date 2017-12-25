@@ -22,15 +22,15 @@ import creator.template.SyaryoTemplate;
  */
 public class EQPSpec {
     //EQP_SPEC DATA
-    public Map<String, SyaryoTemplate> addEQPSpec(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap, Map<String, SyaryoTemplate> noneType) {
+    public Map<String, SyaryoTemplate> addEQPSpec(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap) {
         Map<String, SyaryoTemplate> map = new TreeMap<>();
         
         try {
             Statement stmt = con.createStatement();
 
             //EQP_Spec
-            String sql = String.format("select s.%s,s.%s,s.%s, s.%s, u.%s, u.%s from %s s join %s u on (s.kisy=u.kisy and s.typ=u.typ and s.SALES_UNIT_CD=u.SALES_UNIT_CD)",
-                    EQP.Spec.KISY, EQP.Spec.TYP, EQP.Spec.KIBAN, //Unique ID
+            String sql = String.format("select s.%s,s.%s,s.%s,s.%s, s.%s, u.%s, u.%s from %s s join %s u on (s.kisy=u.kisy and s.typ=u.typ and s.SALES_UNIT_CD=u.SALES_UNIT_CD)",
+                    EQP.Spec.KISY, EQP.Spec.TYP, EQP.Spec.SYHK, EQP.Spec.KIBAN, //Unique ID
                     EQP.Spec.SALES_UNIT_CD,
                     EQP.Hanbai.CTG_M_NM,
                     EQP.Hanbai.CTG_S_NM,
@@ -48,17 +48,8 @@ public class EQPSpec {
                 //Name
                 String kisy = res.getString(EQP.Spec.KISY.get());
                 String type = res.getString(EQP.Spec.TYP.get());
+                String s_type = res.getString(EQP.Spec.SYHK.get());
                 String kiban = res.getString(EQP.Spec.KIBAN.get());
-                
-                //車両
-                SyaryoTemplate syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
-                if(syaryo != null){
-                    syaryo = new SyaryoTemplate(syaryo.getName());
-                    if(map.get(syaryo.name) != null) syaryo = (SyaryoTemplate) map.get(syaryo.name);
-                }else if((noneType.get(kisy + "-" + kiban) != null)){
-                    syaryo = new SyaryoTemplate(syaryoMap.get(noneType.get(kisy + "-" + kiban)).getName());
-                    if(map.get(syaryo.name) != null) syaryo = (SyaryoTemplate) map.get(syaryo.name);
-                }
                 
                 //SpecDetail
                 String unit = res.getString(EQP.Spec.SALES_UNIT_CD.get());
@@ -70,11 +61,15 @@ public class EQPSpec {
                 String company = "??";
                 
                 //車両チェック
-                String name = kisy + "-" + type + "-" + kiban;
-                if (syaryo == null) {
-                    errpw.println(n + "," + name + "," + db + "," + company + "," + unit + "," + spec_m_name + "," + spec_s_name);
+                String name = SyaryoTemplate.check(kisy, type, s_type, kiban);
+                if (name == null) {
+                    errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + db + "," + company + "," + unit + "," + spec_m_name + "," + spec_s_name);
                     continue;
                 }
+                
+                //車両
+                SyaryoTemplate syaryo = syaryoMap.get(name);
+                
                 m++;
 
                 //Syaryo Spec Detail

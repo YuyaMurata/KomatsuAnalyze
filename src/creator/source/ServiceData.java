@@ -25,15 +25,15 @@ import db.field.Order;
 public class ServiceData {
 
     //SERVICE DATA
-    public Map<String, SyaryoTemplate> addService(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap, Map<String, SyaryoTemplate> noneType, int sp1, int sp2, int uag1, int uag2, int uag3) {
+    public Map<String, SyaryoTemplate> addService(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap, int sp1, int sp2, int uag1, int uag2, int uag3) {
         Map map = new TreeMap();
 
         try {
             Statement stmt = con.createStatement();
 
             //Syaryo
-            String sql = String.format("select s.%s,s.%s,s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s from %s s left outer join %s k on (s.%s=k.%s and s.%s=k.%s) where s.%s and s.%s and s.%s and s.%s and s.%s and k.%s is NULL",
-                    Service._Service.KISY, Service._Service.TYP, Service._Service.KIBAN, //Unique ID
+            String sql = String.format("select s.%s,s.%s,s.%s,s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s from %s s left outer join %s k on (s.%s=k.%s and s.%s=k.%s) where s.%s and s.%s and s.%s and s.%s and s.%s and k.%s is NULL",
+                    Service._Service.KISY, Service._Service.TYP, Service._Service.SYHK, Service._Service.KIBAN, //Unique ID
                     Service._Service.KSYCD, //会社コード
                     Service._Service.JSDAY, //実施日
                     Service._Service.SVCKR_KNRNO, //作番
@@ -63,8 +63,8 @@ public class ServiceData {
                     Service._Service.HASSEI_KBN + "=" + sp1,
                     Service._Service.ODR_KBN + "=" + sp2,
                     Service._Service.UAGE_KBN_1 + "=" + uag1, //売上区分1
-                    Service._Service.UAGE_KBN_2 + "=" + uag1, //売上区分2
-                    Service._Service.UAGE_KBN_3 + "=" + uag1, //売上区分3
+                    Service._Service.UAGE_KBN_2 + "=" + uag2, //売上区分2
+                    Service._Service.UAGE_KBN_3 + "=" + uag3, //売上区分3
                     Order._Order.SBN
             );
             System.out.println("Running: " + sql);
@@ -79,21 +79,8 @@ public class ServiceData {
                 //Name
                 String kisy = res.getString(Syaryo._Syaryo.KISY.get());
                 String type = res.getString(Syaryo._Syaryo.TYP.get());
+                String s_type = res.getString(Syaryo._Syaryo.SYHK.get());
                 String kiban = res.getString(Syaryo._Syaryo.KIBAN.get());
-
-                //車両
-                SyaryoTemplate syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
-                if (syaryo != null) {
-                    syaryo = new SyaryoTemplate(syaryo.getName());
-                    if (map.get(syaryo.name) != null) {
-                        syaryo = (SyaryoTemplate) map.get(syaryo.name);
-                    }
-                } else if ((noneType.get(kisy + "-" + kiban) != null)) {
-                    syaryo = new SyaryoTemplate(syaryoMap.get(noneType.get(kisy + "-" + kiban)).getName());
-                    if (map.get(syaryo.name) != null) {
-                        syaryo = (SyaryoTemplate) map.get(syaryo.name);
-                    }
-                }
 
                 //Service
                 String id = res.getString(Service._Service.SVCKR_KNRNO.get());   //作番
@@ -139,15 +126,18 @@ public class ServiceData {
                 String company = res.getString(Service._Service.KSYCD.get());   //会社コード
 
                 //車両チェック
-                String name = kisy + "-" + type + "-" + kiban;
                 String comment = res.getString(Service._Service.KISY_CMT.get());
-                if (syaryo == null) {
-                    errpw.println(n + "," + name + "," + last_date + "," + db + "," + company + "," + cid + "," + gyosyu + "," + cname
+                String name = SyaryoTemplate.check(kisy, type, s_type, kiban);
+                if (name == null) {
+                    errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + last_date + "," + db + "," + company + "," + cid + "," + gyosyu + "," + cname
                             + "," + date + "," + id + "," + odr_kbn + "," + price + "," + sg_mid + "," + sg_add_id
                             + "," + sg_keitai_id + "," + sg_id + "," + sg_name + "," + kosu + "," + suryo + "," + parts_id + "," + parts_name
                             + "," + smr + "," + text + "," + comment);
                     continue;
                 }
+                
+                //車両
+                SyaryoTemplate syaryo = syaryoMap.get(name);
 
                 m++;
 

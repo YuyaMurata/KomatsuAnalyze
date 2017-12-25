@@ -74,7 +74,7 @@ public class SyaryoTemplateAggregate {
 		System.out.println("データ件数, " + n);
 		System.out.println("車両数, " + syaryoMap.size());
 
-		syaryoMap.put("_summary", new SyaryoTemplate("データ件数, " + n + ",車両数, " + syaryoMap.size()));
+		syaryoMap.put("_summary", new SyaryoTemplate("データ件数, " + n, ",車両数, " + syaryoMap.size(), "", ""));
 
 		new SyaryoTemplateToJson().write(FILENAME, syaryoMap);
 	}

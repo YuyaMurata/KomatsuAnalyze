@@ -30,7 +30,7 @@ public class KomtraxData {
     private String FILENAME;
     
     //KOMTRAX DATA
-    public void addKomtrax(String FILENAME, Connection con, Map<String, SyaryoTemplate> syaryoMap, Map<String, SyaryoTemplate> noneType) {
+    public void addKomtrax(String FILENAME, Connection con, Map<String, SyaryoTemplate> syaryoMap) {
         this.FILENAME = FILENAME;
         this.con = con;
         this.noneType = noneType;
@@ -74,17 +74,8 @@ public class KomtraxData {
                 //Name
                 String kisy = res.getString(Komtrax.CW_GPS.KIND.get());
                 String type = res.getString(Komtrax.CW_GPS.TYPE.get());
+                String s_type = "";
                 String kiban = res.getString(Komtrax.CW_GPS.MACHINE_NUMBER.get());
-
-                //車両
-                SyaryoTemplate syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
-                if(syaryo != null){
-                    syaryo = new SyaryoTemplate(syaryo.getName());
-                    if(map.get(syaryo.name) != null) syaryo = (SyaryoTemplate) map.get(syaryo.name);
-                }else if((noneType.get(kisy + "-" + kiban) != null)){
-                    syaryo = new SyaryoTemplate(syaryoMap.get(noneType.get(kisy + "-" + kiban)).getName());
-                    if(map.get(syaryo.name) != null) syaryo = (SyaryoTemplate) map.get(syaryo.name);
-                }
 
                 //GPS
                 String date = res.getString(Komtrax.CW_GPS.GPS_TIME.get());    //GPS Date
@@ -96,11 +87,14 @@ public class KomtraxData {
                 String company = "?"; //会社コード
 
                 //車両チェック
-                String name = kisy + "-" + type + "-" + kiban;
-                if (syaryo == null) {
-                    errpw.println(n + "," + name + "," + date + "," + db + "," + company + "," + latitude + "," + longitude);
+                String name = SyaryoTemplate.check(kisy, type, s_type, kiban);
+                if (name == null) {
+                    errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + date + "," + db + "," + company + "," + latitude + "," + longitude);
                     continue;
                 }
+                
+                //車両
+                SyaryoTemplate syaryo = syaryoMap.get(name);
                 
                 m++;
                 
@@ -156,17 +150,8 @@ public class KomtraxData {
                 //Name
                 String kisy = res.getString(Komtrax.CW_SERVICE_METER.KIND.get());
                 String type = res.getString(Komtrax.CW_SERVICE_METER.TYPE.get());
+                String s_type = "";
                 String kiban = res.getString(Komtrax.CW_SERVICE_METER.MACHINE_NUMBER.get());
-
-                //車両
-                SyaryoTemplate syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
-                if(syaryo != null){
-                    syaryo = new SyaryoTemplate(syaryo.getName());
-                    if(map.get(syaryo.name) != null) syaryo = (SyaryoTemplate) map.get(syaryo.name);
-                }else if((noneType.get(kisy + "-" + kiban) != null)){
-                    syaryo = new SyaryoTemplate(syaryoMap.get(noneType.get(kisy + "-" + kiban)).getName());
-                    if(map.get(syaryo.name) != null) syaryo = (SyaryoTemplate) map.get(syaryo.name);
-                }
 
                 //SMR
                 String date = res.getString(Komtrax.CW_SERVICE_METER.SMR_TIME.get());        //SMR Date
@@ -177,11 +162,14 @@ public class KomtraxData {
                 String company = "?"; //会社コード
 
                 //車両チェック
-                String name = kisy + "-" + type + "-" + kiban;
-                if (syaryo == null) {
-                    errpw.println(n + "," + name + "," + date + "," + db + "," + company + "," + smr);
+                String name = SyaryoTemplate.check(kisy, type, s_type, kiban);
+                if (name == null) {
+                    errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + date + "," + db + "," + company + "," + smr);
                     continue;
                 }
+                
+                //車両
+                SyaryoTemplate syaryo = syaryoMap.get(name);
                 
                 m++;
                 
@@ -235,17 +223,8 @@ public class KomtraxData {
                 //Name
                 String kisy = res.getString(Komtrax.CW_DAILY_THROTTLE.KIND.get());
                 String type = res.getString(Komtrax.CW_DAILY_THROTTLE.TYPE.get());
+                String s_type = "";
                 String kiban = res.getString(Komtrax.CW_DAILY_THROTTLE.MACHINE_NUMBER.get());
-
-                //車両
-                SyaryoTemplate syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
-                if(syaryo != null){
-                    syaryo = new SyaryoTemplate(syaryo.getName());
-                    if(map.get(syaryo.name) != null) syaryo = (SyaryoTemplate) map.get(syaryo.name);
-                }else if((noneType.get(kisy + "-" + kiban) != null)){
-                    syaryo = new SyaryoTemplate(syaryoMap.get(noneType.get(kisy + "-" + kiban)).getName());
-                    if(map.get(syaryo.name) != null) syaryo = (SyaryoTemplate) map.get(syaryo.name);
-                }
 
                 //Engine
                 String date = res.getString(Komtrax.CW_DAILY_THROTTLE.THROTTLE_DATE.get());    //Engine Date
@@ -256,11 +235,14 @@ public class KomtraxData {
                 String company = "?"; //会社コード
 
                 //車両チェック
-                String name = kisy + "-" + type + "-" + kiban;
-                if (syaryo == null) {
-                    errpw.println(n + "," + name + "," + date + "," + db + "," + company + "," + engine_th);
+                String name = SyaryoTemplate.check(kisy, type, s_type, kiban);
+                if (name == null) {
+                    errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + date + "," + db + "," + company + "," + engine_th);
                     continue;
                 }
+                
+                //車両
+                SyaryoTemplate syaryo = syaryoMap.get(name);
                 
                 m++;
                 
@@ -318,17 +300,8 @@ public class KomtraxData {
                 //Name
                 String kisy = res.getString(Komtrax.CW_ERROR.KIND.get());
                 String type = res.getString(Komtrax.CW_ERROR.TYPE.get());
+                String s_type = "";
                 String kiban = res.getString(Komtrax.CW_ERROR.MACHINE_NUMBER.get());
-
-                //車両
-                SyaryoTemplate syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
-                if(syaryo != null){
-                    syaryo = new SyaryoTemplate(syaryo.getName());
-                    if(map.get(syaryo.name) != null) syaryo = (SyaryoTemplate) map.get(syaryo.name);
-                }else if((noneType.get(kisy + "-" + kiban) != null)){
-                    syaryo = new SyaryoTemplate(syaryoMap.get(noneType.get(kisy + "-" + kiban)).getName());
-                    if(map.get(syaryo.name) != null) syaryo = (SyaryoTemplate) map.get(syaryo.name);
-                }
 
                 //Error
                 String date = res.getString(Komtrax.CW_ERROR.ERROR_TIME.get());    //Error Date
@@ -341,12 +314,15 @@ public class KomtraxData {
                 String company = "?"; //会社コード
 
                 //車両チェック
-                String name = kisy + "-" + type + "-" + kiban;
-                if (syaryo == null) {
-                    errpw.println(n + "," + name + "," + date + "," + db + "," + company + "," 
+                String name = SyaryoTemplate.check(kisy, type, s_type, kiban);
+                if (name == null) {
+                    errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + date + "," + db + "," + company + "," 
                                     + error_code + "," + error_kind + "," + error_cnt);
                     continue;
                 }
+                
+                //車両
+                SyaryoTemplate syaryo = syaryoMap.get(name);
                 
                 m++;
                 
@@ -403,17 +379,8 @@ public class KomtraxData {
                 //Name
                 String kisy = res.getString(Komtrax.CW_CAUTION_DATA.KIND.get());
                 String type = res.getString(Komtrax.CW_CAUTION_DATA.TYPE.get());
+                String s_type = "";
                 String kiban = res.getString(Komtrax.CW_CAUTION_DATA.MACHINE_NUMBER.get());
-
-                //車両
-                SyaryoTemplate syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
-                if(syaryo != null){
-                    syaryo = new SyaryoTemplate(syaryo.getName());
-                    if(map.get(syaryo.name) != null) syaryo = (SyaryoTemplate) map.get(syaryo.name);
-                }else if((noneType.get(kisy + "-" + kiban) != null)){
-                    syaryo = new SyaryoTemplate(syaryoMap.get(noneType.get(kisy + "-" + kiban)).getName());
-                    if(map.get(syaryo.name) != null) syaryo = (SyaryoTemplate) map.get(syaryo.name);
-                }
 
                 //Caution
                 String date = res.getString(Komtrax.CW_CAUTION_DATA.CAUTION_DATE.get());    //Caution Date
@@ -425,11 +392,14 @@ public class KomtraxData {
                 String company = "?"; //会社コード
 
                 //車両チェック
-                String name = kisy + "-" + type + "-" + kiban;
-                if (syaryo == null) {
-                    errpw.println(n + "," + name + "," + date + "," + db + "," + company + "," + caution_icon + "," + caution_cnt);
+                String name = SyaryoTemplate.check(kisy, type, s_type, kiban);
+                if (name == null) {
+                    errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + date + "," + db + "," + company + "," + caution_icon + "," + caution_cnt);
                     continue;
                 }
+                
+                //車両
+                SyaryoTemplate syaryo = syaryoMap.get(name);
                 
                 m++;
                 
@@ -451,6 +421,81 @@ public class KomtraxData {
             errpw.close();
             
             new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_komtrax_caution.json"), map);
+        } catch (SQLException sqlex) {
+            sqlex.printStackTrace();
+        } catch (IOException ex) {
+        }
+    }
+    
+    //Fuel
+    public void addFuel(Map<String, SyaryoTemplate> syaryoMap){       
+        Map map = new TreeMap();
+
+        try {
+            PrintWriter errpw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_komtrax_fuelconsume_error.csv")))));
+            
+            Statement stmt = con.createStatement();
+
+            //CW_CAUTION
+            String sql = String.format("select %s,%s,%s, %s, %s from %s",
+                    Komtrax.CW_DAILY_FUEL_CONSUME.KIND, Komtrax.CW_DAILY_FUEL_CONSUME.TYPE, Komtrax.CW_DAILY_FUEL_CONSUME.MACHINE_NUMBER, //Unique ID
+                    Komtrax.CW_DAILY_FUEL_CONSUME.CONSUME_DATE,    //Caution Date
+                    Komtrax.CW_DAILY_FUEL_CONSUME.CONSUME_COUNT,
+                    Komtrax.TABLE.CW_DAILY_FUEL_CONSUME.get()
+            );
+            System.out.println("Running: " + sql);
+
+            ResultSet res = stmt.executeQuery(sql);
+
+            int n = 0;
+            int m = 0;
+            while (res.next()) {
+                n++;
+
+                //Name
+                String kisy = res.getString(Komtrax.CW_DAILY_FUEL_CONSUME.KIND.get());
+                String type = res.getString(Komtrax.CW_DAILY_FUEL_CONSUME.TYPE.get());
+                String s_type = "";
+                String kiban = res.getString(Komtrax.CW_DAILY_FUEL_CONSUME.MACHINE_NUMBER.get());
+
+                //Fuel Consume
+                String date = res.getString(Komtrax.CW_DAILY_FUEL_CONSUME.CONSUME_DATE.get());    //Consume Date
+                String consume_cnt = res.getString(Komtrax.CW_DAILY_FUEL_CONSUME.CONSUME_COUNT.get());    //Fuel Consume
+
+                //DB
+                String db = "komtrax_fuelconsume";
+                String company = "?"; //会社コード
+
+                //車両チェック
+                String name = SyaryoTemplate.check(kisy, type, s_type, kiban);
+                if (name == null) {
+                    errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + date + "," + db + "," + company + "," + consume_cnt);
+                    continue;
+                }
+                
+                //車両
+                SyaryoTemplate syaryo = syaryoMap.get(name);
+                
+                m++;
+                
+                //Caution
+                syaryo.addKMFuelConsume(db, company, date, consume_cnt);
+                
+                
+                //AddSyaryo
+                map.put(syaryo.getName(), syaryo);
+
+                if (n % 10000 == 0) {
+                    System.out.println("Syaryo Processed : " + n);
+                }
+            }
+
+            System.out.println("Total Processed Syaryo = "+  m + "/" + n);
+            System.out.println("Total Update Syaryo = " + map.size());
+            
+            errpw.close();
+            
+            new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_komtrax_fuelconsume.json"), map);
         } catch (SQLException sqlex) {
             sqlex.printStackTrace();
         } catch (IOException ex) {

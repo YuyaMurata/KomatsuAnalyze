@@ -23,15 +23,15 @@ import creator.template.SyaryoTemplate;
  */
 public class EQPKeirekiData {
     //EQP_KEIREKI DATA
-    public Map<String, SyaryoTemplate> addSyaryoKeireki(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap, Map<String, SyaryoTemplate> noneType) throws IOException {
+    public Map<String, SyaryoTemplate> addSyaryoKeireki(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap) throws IOException {
         Map<String, SyaryoTemplate> map = new TreeMap<>();
         
         try {
             Statement stmt = con.createStatement();
 
             //EQP_Syaryo
-            String sql = String.format("select %s,%s,%s, %s, %s, %s, %s, %s, %s, %s from %s",
-                    EQP.Keireki.KISY, EQP.Keireki.TYP, EQP.Keireki.KIBAN, //Unique ID
+            String sql = String.format("select %s,%s,%s,%s, %s, %s, %s, %s, %s, %s, %s from %s",
+                    EQP.Keireki.KISY, EQP.Keireki.TYP, EQP.Keireki.SYHK, EQP.Keireki.KIBAN, //Unique ID
                     EQP.Keireki.HIS_DATE, //経歴日
                     EQP.Keireki.HIS_INFO_CD, //経歴コード
                     EQP.Keireki.HIS_SMR, //SMR
@@ -53,17 +53,8 @@ public class EQPKeirekiData {
                 //Name
                 String kisy = res.getString(EQP.Keireki.KISY.get());
                 String type = res.getString(EQP.Keireki.TYP.get());
+                String s_type = res.getString(EQP.Keireki.SYHK.get());
                 String kiban = res.getString(EQP.Keireki.KIBAN.get());
-                
-                //車両
-                SyaryoTemplate syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
-                if(syaryo != null){
-                    syaryo = new SyaryoTemplate(syaryo.getName());
-                    if(map.get(syaryo.name) != null) syaryo = (SyaryoTemplate) map.get(syaryo.name);
-                }else if((noneType.get(kisy + "-" + kiban) != null)){
-                    syaryo = new SyaryoTemplate(syaryoMap.get(noneType.get(kisy + "-" + kiban)).getName());
-                    if(map.get(syaryo.name) != null) syaryo = (SyaryoTemplate) map.get(syaryo.name);
-                }
                 
                 //Date
                 String date = res.getString(EQP.Keireki.HIS_DATE.get());
@@ -91,11 +82,14 @@ public class EQPKeirekiData {
                 }
 
                 //車両チェック
-                String name = kisy + "-" + type + "-" + kiban;
-                if (syaryo == null) {
-                    errpw.println(n + "," + name + "," + date + "," + db + "," + company + "," + cid + "," + cname + "," + country + "," + id + "," + smr);
+                String name = SyaryoTemplate.check(kisy, type, s_type, kiban);
+                if (name == null) {
+                    errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + date + "," + db + "," + company + "," + cid + "," + cname + "," + country + "," + id + "," + smr);
                     continue;
                 }
+                
+                //車両
+                SyaryoTemplate syaryo = syaryoMap.get(name);
                 
                 m++;
 

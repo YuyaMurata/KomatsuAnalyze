@@ -24,7 +24,7 @@ import creator.template.SyaryoTemplate;
 public class OrderData {
 
     //ORDER DATA
-    public Map<String, SyaryoTemplate> addOrder(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap, Map<String, SyaryoTemplate> noneType, int uag1, int uag2, int uag3) {
+    public Map<String, SyaryoTemplate> addOrder(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap, int uag1, int uag2, int uag3) {
         Map map = new TreeMap();
         
         try {
@@ -32,7 +32,7 @@ public class OrderData {
 
             //Syaryo
             String sql = String.format("select %s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s from %s where %s and %s and %s",
-                    Order._Order.KISY, Order._Order.TYP, Order._Order.KIBAN, //Unique ID
+                    Order._Order.KISY, Order._Order.TYP, Order._Order.SYHK, Order._Order.KIBAN, //Unique ID
                     Order._Order.KSYCD, //会社コード
                     Order._Order.SBN, //作番
                     Order._Order.ODDAY, //受注日
@@ -69,17 +69,8 @@ public class OrderData {
                 //Name
                 String kisy = res.getString(Syaryo._Syaryo.KISY.get());
                 String type = res.getString(Syaryo._Syaryo.TYP.get());
+                String s_type = res.getString(Syaryo._Syaryo.SYHK.get());
                 String kiban = res.getString(Syaryo._Syaryo.KIBAN.get());
-
-                //車両
-                SyaryoTemplate syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
-                if(syaryo != null){
-                    syaryo = new SyaryoTemplate(syaryo.getName());
-                    if(map.get(syaryo.name) != null) syaryo = (SyaryoTemplate) map.get(syaryo.name);
-                }else if((noneType.get(kisy + "-" + kiban) != null)){
-                    syaryo = new SyaryoTemplate(syaryoMap.get(noneType.get(kisy + "-" + kiban)).getName());
-                    if(map.get(syaryo.name) != null) syaryo = (SyaryoTemplate) map.get(syaryo.name);
-                }
 
                 //Order
                 String id = res.getString(Order._Order.SBN.get());       //作番
@@ -122,14 +113,17 @@ public class OrderData {
                 String smr = res.getString(Order._Order.SVC_MTR.get()); //サービスメータ
                 
                 //車両チェック
-                String name = kisy + "-" + type + "-" + kiban;
-                if (syaryo == null) {
-                    errpw.println(n + "," + name + "," + last_date + "," + db + "," + company + "," + cid + "," + cname 
+                String name = SyaryoTemplate.check(kisy, type, s_type, kiban);
+                if (name == null) {
+                    errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + last_date + "," + db + "," + company + "," + cid + "," + cname 
                                     + "," + date + "," + id + "," + sbn_date + "," + sbn_status + "," + odr_kbn
                                     + "," + price + "," + sg_date + "," + sg_fin_flg + "," + sg_fin_date + "," + j_kosu + "," + s_kosu
                                     + "," + smr_date + "," + smr + "," + text);
                     continue;
                 }
+                
+                //車両
+                SyaryoTemplate syaryo = syaryoMap.get(name);
                 
                 m++;
                 

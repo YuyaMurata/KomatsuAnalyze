@@ -23,15 +23,15 @@ import creator.template.SyaryoTemplate;
 public class SellsData {
 
     //SELL DATA
-    public Map<String, SyaryoTemplate> addSell(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap, Map<String, SyaryoTemplate> noneType) {
+    public Map<String, SyaryoTemplate> addSell(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap) {
         Map map = new TreeMap();
 
         try {
             Statement stmt = con.createStatement();
 
             //Syaryo
-            String sql = String.format("select %s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s from %s where %s and %s and %s and %s",
-                    Sell._Sell.KISY, Sell._Sell.TYP, Sell._Sell.KIBAN, //Unique ID
+            String sql = String.format("select %s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s from %s where %s and %s and %s and %s",
+                    Sell._Sell.KISY, Sell._Sell.TYP, Sell._Sell.SYHK, Sell._Sell.KIBAN, //Unique ID
                     Sell._Sell.KSYCD, //会社コード
                     Sell._Sell.NOU_YTI_DAY, //納入年月
                     Sell._Sell.NU_KBN, //NU
@@ -60,21 +60,8 @@ public class SellsData {
                 //Name
                 String kisy = res.getString(Sell._Sell.KISY.get());
                 String type = res.getString(Sell._Sell.TYP.get());
+                String s_type = res.getString(Sell._Sell.SYHK.get());
                 String kiban = res.getString(Sell._Sell.KIBAN.get());
-
-                //車両
-                SyaryoTemplate syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
-                if (syaryo != null) {
-                    syaryo = new SyaryoTemplate(syaryo.getName());
-                    if (map.get(syaryo.name) != null) {
-                        syaryo = (SyaryoTemplate) map.get(syaryo.name);
-                    }
-                } else if ((noneType.get(kisy + "-" + kiban) != null)) {
-                    syaryo = new SyaryoTemplate(syaryoMap.get(noneType.get(kisy + "-" + kiban)).getName());
-                    if (map.get(syaryo.name) != null) {
-                        syaryo = (SyaryoTemplate) map.get(syaryo.name);
-                    }
-                }
 
                 //Sell
                 String nu_kbn = res.getString(Sell._Sell.NU_KBN.get());  //NUE
@@ -96,12 +83,15 @@ public class SellsData {
                 String company = res.getString(Sell._Sell.KSYCD.get());   //会社コード
 
                 //車両チェック
-                String name = kisy + "-" + type + "-" + kiban;
-                if (syaryo == null) {
-                    errpw.println(n + "," + name + "," + last_date + "," + db + "," + company + "," + gyosyu + "," + cid + "," + cname
+                String name = SyaryoTemplate.check(kisy, type, s_type, kiban);
+                if (name == null) {
+                    errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + last_date + "," + db + "," + company + "," + gyosyu + "," + cid + "," + cname
                             + "," + date + "," + nu_kbn + "," + price1 + "," + price2 + "," + price3);
                     continue;
                 }
+                
+                //車両
+                SyaryoTemplate syaryo = syaryoMap.get(name);
 
                 m++;
 
@@ -138,15 +128,15 @@ public class SellsData {
     }
 
     //SELL DATA
-    public Map<String, SyaryoTemplate> addOld(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap, Map<String, SyaryoTemplate> noneType) {
+    public Map<String, SyaryoTemplate> addOld(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap) {
         Map map = new TreeMap();
 
         try {
             Statement stmt = con.createStatement();
 
             //Syaryo
-            String sql = String.format("select %s,%s,%s, %s, %s, %s from %s",
-                    Sell.Old.KISY, Sell.Old.TYP, Sell.Old.KIBAN, //Unique ID
+            String sql = String.format("select %s,%s,%s,%s, %s, %s, %s from %s",
+                    Sell.Old.KISY, Sell.Old.TYP, Sell.Old.SYHK, Sell.Old.KIBAN, //Unique ID
                     Sell.Old.KSYCD, //会社コード
                     Sell.Old.URI_DAY, //売上年月
                     Sell.Old.URI_KNGK, //実質価
@@ -164,21 +154,8 @@ public class SellsData {
                 //Name
                 String kisy = res.getString(Sell.Old.KISY.get());
                 String type = res.getString(Sell.Old.TYP.get());
+                String s_type = res.getString(Sell.Old.SYHK.get());
                 String kiban = res.getString(Sell.Old.KIBAN.get());
-
-                //車両
-                SyaryoTemplate syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
-                if (syaryo != null) {
-                    syaryo = new SyaryoTemplate(syaryo.getName());
-                    if (map.get(syaryo.name) != null) {
-                        syaryo = (SyaryoTemplate) map.get(syaryo.name);
-                    }
-                } else if ((noneType.get(kisy + "-" + kiban) != null)) {
-                    syaryo = new SyaryoTemplate(syaryoMap.get(noneType.get(kisy + "-" + kiban)).getName());
-                    if (map.get(syaryo.name) != null) {
-                        syaryo = (SyaryoTemplate) map.get(syaryo.name);
-                    }
-                }
 
                 //Sell
                 String price2 = res.getString(Sell.Old.URI_KNGK.get());   //実質価
@@ -195,13 +172,16 @@ public class SellsData {
                     company = "?";
                 
                 //車両チェック
-                String name = kisy + "-" + type + "-" + kiban;
-                if (syaryo == null) {
-                    errpw.println(n + "," + name + "," + date + "," + db + "," + company + ","
+                String name = SyaryoTemplate.check(kisy, type, s_type, kiban);
+                if (name == null) {
+                    errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + date + "," + db + "," + company + ","
                             + "," + date + "," + price2);
                     continue;
                 }
 
+                //車両
+                SyaryoTemplate syaryo = syaryoMap.get(name);
+                
                 m++;
 
                 //Last
@@ -229,15 +209,15 @@ public class SellsData {
     }
 
     //SELL_USED DATA
-    public Map<String, SyaryoTemplate> addUsed(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap, Map<String, SyaryoTemplate> noneType) {
+    public Map<String, SyaryoTemplate> addUsed(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap) {
         Map map = new TreeMap();
 
         try {
             Statement stmt = con.createStatement();
 
             //Syaryo
-            String sql = String.format("select %s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s from %s",
-                    Sell.Used.KISY, Sell.Used.TYPE, Sell.Used.KIBAN, //Unique ID
+            String sql = String.format("select %s,%s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s from %s",
+                    Sell.Used.KISY, Sell.Used.TYPE, Sell.Used.S_TYPE, Sell.Used.KIBAN, //Unique ID
                     Sell.Used.URI_DAY, //売上日
                     Sell.Used.CO_CODE, //受注コード
                     Sell.Used.CO_CUST, //受注先名
@@ -265,21 +245,8 @@ public class SellsData {
                 //Name
                 String kisy = res.getString(Sell.Used.KISY.get());
                 String type = res.getString(Sell.Used.TYPE.get());
+                String s_type = res.getString(Sell.Used.S_TYPE.get());
                 String kiban = res.getString(Sell.Used.KIBAN.get());
-
-                //車両
-                SyaryoTemplate syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
-                if (syaryo != null) {
-                    syaryo = new SyaryoTemplate(syaryo.getName());
-                    if (map.get(syaryo.name) != null) {
-                        syaryo = (SyaryoTemplate) map.get(syaryo.name);
-                    }
-                } else if ((noneType.get(kisy + "-" + kiban) != null)) {
-                    syaryo = new SyaryoTemplate(syaryoMap.get(noneType.get(kisy + "-" + kiban)).getName());
-                    if (map.get(syaryo.name) != null) {
-                        syaryo = (SyaryoTemplate) map.get(syaryo.name);
-                    }
-                }
 
                 //Sell
                 String satei_price = res.getString(Sell.Used.ST_KKU.get()); //査定価格
@@ -322,14 +289,17 @@ public class SellsData {
                 String company = "?";   //会社コード
 
                 //車両チェック
-                String name = kisy + "-" + type + "-" + kiban;
-                if (syaryo == null) {
-                    errpw.println(n + "," + name + "," + reg_date + "," + db + "," + company + "," + "?-?-" + nctry_name + "," + "-1" + "," + nname
+                String name = SyaryoTemplate.check(kisy, type, s_type, kiban);
+                if (name == null) {
+                    errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + reg_date + "," + db + "," + company + "," + "?-?-" + nctry_name + "," + "-1" + "," + nname
                             + "," + jid + "," + jname + "," + shire_date + "," + sname + "," + satei_date + "," + satei_price + "," + date + "," + price + "," + cost
                             + "," + smr);
                     continue;
                 }
 
+                //車両
+                SyaryoTemplate syaryo = syaryoMap.get(name);
+                
                 m++;
 
                 //Used

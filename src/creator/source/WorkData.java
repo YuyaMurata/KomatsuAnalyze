@@ -24,15 +24,15 @@ import creator.template.SyaryoTemplate;
 public class WorkData {
 
     //WORK_INFO DATA
-    public Map<String, SyaryoTemplate> addWork(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap, Map<String, SyaryoTemplate> noneType) {
+    public Map<String, SyaryoTemplate> addWork(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap) {
         Map map = new TreeMap();
 
         try {
             Statement stmt = con.createStatement();
 
             //Syaryo
-            String sql = String.format("select o.%s,o.%s,o.%s, w.%s, w.%s, w.%s, o.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, o.%s, o.%s, w.%s from %s w join %s o on (w.%s=o.%s and w.%s=o.%s)",
-                    Order._Order.KISY, Order._Order.TYP, Order._Order.KIBAN, //Unique ID
+            String sql = String.format("select o.%s,o.%s,o.%s,o.%s, w.%s, w.%s, w.%s, o.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, o.%s, o.%s, w.%s from %s w join %s o on (w.%s=o.%s and w.%s=o.%s)",
+                    Order._Order.KISY, Order._Order.TYP, Order._Order.SYHK, Order._Order.KIBAN, //Unique ID
                     Work.Info.KSYCD, //会社コード
                     Work.Info.SBN, //作番
                     Work.Info.SGYO_MSINO, //作業明細番号
@@ -68,17 +68,8 @@ public class WorkData {
                 //Name
                 String kisy = res.getString(Order._Order.KISY.get());
                 String type = res.getString(Order._Order.TYP.get());
+                String s_type = res.getString(Order._Order.SYHK.get());
                 String kiban = res.getString(Order._Order.KIBAN.get());
-
-                //車両
-                SyaryoTemplate syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
-                if(syaryo != null){
-                    syaryo = new SyaryoTemplate(syaryo.getName());
-                    if(map.get(syaryo.name) != null) syaryo = (SyaryoTemplate) map.get(syaryo.name);
-                }else if((noneType.get(kisy + "-" + kiban) != null)){
-                    syaryo = new SyaryoTemplate(syaryoMap.get(noneType.get(kisy + "-" + kiban)).getName());
-                    if(map.get(syaryo.name) != null) syaryo = (SyaryoTemplate) map.get(syaryo.name);
-                }
 
                 //Work
                 String sbn = res.getString(Work.Info.SBN.get()); //作番
@@ -110,13 +101,16 @@ public class WorkData {
                 String company = res.getString(Work.Info.KSYCD.get()); //会社コード
 
                 //車両チェック
-                String name = kisy + "-" + type + "-" + kiban;
-                if (syaryo == null) {
-                    errpw.println(n + "," + name + "," + last_date + "," + db + "," + company + "," + date + "," + sbn + "," + id 
+                String name = SyaryoTemplate.check(kisy, type, s_type, kiban);
+                if (name == null) {
+                    errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + last_date + "," + db + "," + company + "," + date + "," + sbn + "," + id 
                                     + "," + sgkt_id + "," + sgkt_name + "," + sg_id + "," + sg_name + "," + sg_finishflg + "," + price 
                                     + "," + suryo + "," + hyouzyun + "," + seikyu + "," + siji + "," + jruikei + "," + gaichu + "," + gaichu_price);
                     continue;
                 }
+                
+                //車両
+                SyaryoTemplate syaryo = syaryoMap.get(name);
                 
                 m++;
                 

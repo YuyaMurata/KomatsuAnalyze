@@ -23,7 +23,7 @@ import creator.template.SyaryoTemplate;
  */
 public class EQPSyaryoData {
     //EQP_SYARYO DATA
-    public Map<String, SyaryoTemplate> addEQPSyaryo(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap, Map<String, SyaryoTemplate> noneType) {
+    public Map<String, SyaryoTemplate> addEQPSyaryo(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap) {
         Map<String, SyaryoTemplate> map = new TreeMap<>();
         
         try {
@@ -31,7 +31,7 @@ public class EQPSyaryoData {
 
             //EQP_Syaryo
             String sql = String.format("select e.%s,e.%s,e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, s.%s from %s e join %s s on (e.kisy=s.kisy and e.kiban=s.kiban)",
-                    EQP.Syaryo.KISY, EQP.Syaryo.TYP, EQP.Syaryo.KIBAN, //Unique ID
+                    EQP.Syaryo.KISY, EQP.Syaryo.TYP, EQP.Syaryo.SYHK, EQP.Syaryo.KIBAN, //Unique ID
                     EQP.Syaryo.MNF_DATE, //生産日
                     EQP.Syaryo.PLANT, //生産工場(catalog)
                     EQP.Syaryo.SHIP_DATE, //出荷日
@@ -44,7 +44,6 @@ public class EQPSyaryoData {
                     EQP.Syaryo.DB, //代理店
                     EQP.Syaryo.LTST_SMR_DATE, //最新SMR日付
                     EQP.Syaryo.LTST_SMR, //SMR
-                    EQP.Syaryo.SYHK,    //小変形
                     EQP.Syaryo.KMTRX_APP_CTG, //Komtrax
                     EQP.Syaryo.VHMS_APP_CTG, //Komtrax plus
                     Syaryo._Syaryo.SEHN_BNR_CD_B, //製品分類コード B
@@ -62,17 +61,8 @@ public class EQPSyaryoData {
                 //Name
                 String kisy = res.getString(EQP.Syaryo.KISY.get());
                 String type = res.getString(EQP.Syaryo.TYP.get());
+                String s_type = res.getString(EQP.Syaryo.SYHK.get());
                 String kiban = res.getString(EQP.Syaryo.KIBAN.get());
-                
-                //車両
-                SyaryoTemplate syaryo = syaryoMap.get(kisy + "-" + type + "-" + kiban);
-                if(syaryo != null){
-                    syaryo = new SyaryoTemplate(syaryo.getName());
-                    if(map.get(syaryo.name) != null) syaryo = (SyaryoTemplate) map.get(syaryo.name);
-                }else if((noneType.get(kisy + "-" + kiban) != null)){
-                    syaryo = new SyaryoTemplate(syaryoMap.get(noneType.get(kisy + "-" + kiban)).getName());
-                    if(map.get(syaryo.name) != null) syaryo = (SyaryoTemplate) map.get(syaryo.name);
-                }
 
                 //Date
                 String mnf_date = res.getString(EQP.Syaryo.MNF_DATE.get());
@@ -87,7 +77,6 @@ public class EQPSyaryoData {
                 String plant = res.getString(EQP.Syaryo.PLANT.get());
                 
                 //Spec
-                String s_type = res.getString(EQP.Syaryo.SYHK.get());
                 String komtrax = res.getString(EQP.Syaryo.KMTRX_APP_CTG.get());
                 String komtrax_plus = res.getString(EQP.Syaryo.VHMS_APP_CTG.get());
                 String category = res.getString(Syaryo._Syaryo.SEHN_BNR_CD_B.get());
@@ -116,12 +105,16 @@ public class EQPSyaryoData {
                 String smr = res.getString(EQP.Syaryo.LTST_SMR.get());
                 
                 //車両チェック
-                String name = kisy + "-" + type + "-" + kiban;
-                if (syaryo == null) {
-                    errpw.println(n + "," + name + "," + smr_date + "," + db + "," + company + "," + cid + "," + cname + "," + plant
+                String name = SyaryoTemplate.check(kisy, type, s_type, kiban);
+                if (name == null) {
+                    errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + smr_date + "," + db + "," + company + "," + cid + "," + cname + "," + plant
                                     + "," + mnf_date + "," + ship_date + "," + scrap_date + "," + used_flg + "," + used_date + "," + smr);
                     continue;
                 }
+                
+                //車両
+                SyaryoTemplate syaryo = syaryoMap.get(name);
+                
                 m++;
 
                 //Syaryo Template

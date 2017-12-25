@@ -30,42 +30,36 @@ public class SyaryoTemplateCreate extends HiveDB {
         Connection con = getConnection(); //HiveDB
 
         //テンプレート生成
-        template(con);
+        //template(con);
         Map<String, SyaryoTemplate> syaryoTemplate = readTempate();
 
-        //型が無いときのインデックス作成
-        Map noneTypeSearch = createNoneTypeSearch(syaryoTemplate);
-
         //KOMPAS車両データの読み込み
-        Map<String, SyaryoTemplate> syaryoMap = syaryo(con, syaryoTemplate, noneTypeSearch);
+        //Map<String, SyaryoTemplate> syaryoMap = syaryo(con, syaryoTemplate);
 
         //KOMPAS車両マスタとテンプレートのマージ。 消せば工場データが中心となる。
-        syaryoTemplate = merge(syaryoTemplate, syaryoMap);
-
-        //インデックス再生成
-        noneTypeSearch = createNoneTypeSearch(syaryoTemplate);
+        //syaryoTemplate = merge(syaryoTemplate, syaryoMap);
 
         //データ入力
         
         //EQP
-        eqp_syaryo(con, syaryoTemplate, noneTypeSearch);
-        eqp_spec(con, syaryoTemplate, noneTypeSearch);
-        eqp_keireki(con, syaryoTemplate, noneTypeSearch);
+        //eqp_syaryo(con, syaryoTemplate);
+        //eqp_spec(con, syaryoTemplate);
+        //eqp_keireki(con, syaryoTemplate);
         
         //KOMPAS
-        service_s(con, syaryoTemplate, noneTypeSearch);
-        service_t(con, syaryoTemplate, noneTypeSearch);
-        order(con, syaryoTemplate, noneTypeSearch);
-        work(con, syaryoTemplate, noneTypeSearch);
-        parts(con, syaryoTemplate, noneTypeSearch);
-        sell(con, syaryoTemplate, noneTypeSearch);
-        sell_used(con, syaryoTemplate, noneTypeSearch);
+        //service_s(con, syaryoTemplate);
+        //service_t(con, syaryoTemplate);
+        //order(con, syaryoTemplate);
+        work(con, syaryoTemplate);
+        parts(con, syaryoTemplate);
+        sell(con, syaryoTemplate);
+        sell_used(con, syaryoTemplate);
         
         //KOSMIC
-        sell_old(con, syaryoTemplate, noneTypeSearch);
+        sell_old(con, syaryoTemplate);
         
         //KOMTRAX
-        komtrax(con, syaryoTemplate, noneTypeSearch);
+        //komtrax(con, syaryoTemplate);*/
     }
 
     public static void template(Connection con) {
@@ -80,21 +74,14 @@ public class SyaryoTemplateCreate extends HiveDB {
         return obj.reader(FILENAME);
     }
 
-    public static Map createNoneTypeSearch(Map<String, SyaryoTemplate> syaryoTemplate) {
-        Map noneTypeSearch = new HashMap();
-        for (SyaryoTemplate syaryo : syaryoTemplate.values()) {
-            noneTypeSearch.put(syaryo.getName2(), syaryo.getName());
-        }
-        return noneTypeSearch;
-    }
-
     //KOMPAS車両に絞込み
     public static Map<String, SyaryoTemplate> merge(Map<String, SyaryoTemplate> eqp_syaryo, Map<String, SyaryoTemplate> kom_syaryo) {
         TreeMap<String, SyaryoTemplate> syaryoMap = new TreeMap();
 
         for (String name : eqp_syaryo.keySet()) {
             if (kom_syaryo.get(name) != null) {
-                syaryoMap.put(name, new SyaryoTemplate(name));
+                SyaryoTemplate s = kom_syaryo.get(name);
+                syaryoMap.put(name, new SyaryoTemplate(s.kisy, s.type, s.s_type, s.kiban));
             }
         }
 
@@ -103,10 +90,10 @@ public class SyaryoTemplateCreate extends HiveDB {
         return syaryoMap;
     }
 
-    public static Map<String, SyaryoTemplate> syaryo(Connection con, Map<String, SyaryoTemplate> syaryoTemplate, Map noneTypeSearch) {
+    public static Map<String, SyaryoTemplate> syaryo(Connection con, Map<String, SyaryoTemplate> syaryoTemplate) {
         //車両マスタ
         try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_syaryo_error.csv")))))) {
-            Map<String, SyaryoTemplate> syaryoMap = new SyaryoData().addSyaryoCategory(con, pw, syaryoTemplate, noneTypeSearch);
+            Map<String, SyaryoTemplate> syaryoMap = new SyaryoData().addSyaryoCategory(con, pw, syaryoTemplate);
             new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_syaryo.json"), syaryoMap);
 
             return syaryoMap;
@@ -117,9 +104,9 @@ public class SyaryoTemplateCreate extends HiveDB {
     }
 
     //EQP車両
-    public static void eqp_syaryo(Connection con, Map<String, SyaryoTemplate> syaryoTemplate, Map noneTypeSearch) {
+    public static void eqp_syaryo(Connection con, Map<String, SyaryoTemplate> syaryoTemplate) {
         try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_eqpsyaryo_error.csv")))))) {
-            Map<String, SyaryoTemplate> syaryoMap = new EQPSyaryoData().addEQPSyaryo(con, pw, syaryoTemplate, noneTypeSearch);
+            Map<String, SyaryoTemplate> syaryoMap = new EQPSyaryoData().addEQPSyaryo(con, pw, syaryoTemplate);
             new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_eqpsyaryo.json"), syaryoMap);
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -127,9 +114,9 @@ public class SyaryoTemplateCreate extends HiveDB {
     }
 
     //EQP仕様
-    public static void eqp_spec(Connection con, Map<String, SyaryoTemplate> syaryoTemplate, Map noneTypeSearch) {
+    public static void eqp_spec(Connection con, Map<String, SyaryoTemplate> syaryoTemplate) {
         try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_eqpspec_error.csv")))))) {
-            Map<String, SyaryoTemplate> syaryoMap = new EQPSpec().addEQPSpec(con, pw, syaryoTemplate, noneTypeSearch);
+            Map<String, SyaryoTemplate> syaryoMap = new EQPSpec().addEQPSpec(con, pw, syaryoTemplate);
             new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_eqpspec.json"), syaryoMap);
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -137,9 +124,9 @@ public class SyaryoTemplateCreate extends HiveDB {
     }
 
     //EQP経歴
-    public static void eqp_keireki(Connection con, Map<String, SyaryoTemplate> syaryoTemplate, Map noneTypeSearch) {
+    public static void eqp_keireki(Connection con, Map<String, SyaryoTemplate> syaryoTemplate) {
         try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_eqpkeireki_error.csv")))))) {
-            Map<String, SyaryoTemplate> syaryoMap = new EQPKeirekiData().addSyaryoKeireki(con, pw, syaryoTemplate, noneTypeSearch);
+            Map<String, SyaryoTemplate> syaryoMap = new EQPKeirekiData().addSyaryoKeireki(con, pw, syaryoTemplate);
             new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_eqpkeireki.json"), syaryoMap);
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -147,9 +134,9 @@ public class SyaryoTemplateCreate extends HiveDB {
     }
 
     //サービス経歴_単販
-    public static void service_t(Connection con, Map<String, SyaryoTemplate> syaryoTemplate, Map noneTypeSearch) {
+    public static void service_t(Connection con, Map<String, SyaryoTemplate> syaryoTemplate) {
         try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_service1123_error.csv")))))) {
-            Map<String, SyaryoTemplate> syaryoMap = new ServiceData().addService(con, pw, syaryoTemplate, noneTypeSearch, 1, 1, 1, 2, 3);
+            Map<String, SyaryoTemplate> syaryoMap = new ServiceData().addService(con, pw, syaryoTemplate, 1, 1, 1, 2, 3);
             new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_service1123.json"), syaryoMap);
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -157,10 +144,10 @@ public class SyaryoTemplateCreate extends HiveDB {
     }
 
     //サービス経歴_修販            
-    public static void service_s(Connection con, Map<String, SyaryoTemplate> syaryoTemplate, Map noneTypeSearch) {
+    public static void service_s(Connection con, Map<String, SyaryoTemplate> syaryoTemplate) {
         //一般請求
         try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_service2111_error.csv")))))) {
-            Map<String, SyaryoTemplate> syaryoMap = new ServiceData().addService(con, pw, syaryoTemplate, noneTypeSearch, 1, 2, 1, 1, 1);
+            Map<String, SyaryoTemplate> syaryoMap = new ServiceData().addService(con, pw, syaryoTemplate, 1, 2, 1, 1, 1);
             new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_service2111.json"), syaryoMap);
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -168,7 +155,7 @@ public class SyaryoTemplateCreate extends HiveDB {
         
         //コマツ請求
         try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_service2112_error.csv")))))) {
-            Map<String, SyaryoTemplate> syaryoMap = new ServiceData().addService(con, pw, syaryoTemplate, noneTypeSearch, 1, 2, 1, 1, 2);
+            Map<String, SyaryoTemplate> syaryoMap = new ServiceData().addService(con, pw, syaryoTemplate, 1, 2, 1, 1, 2);
             new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_service2112.json"), syaryoMap);
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -176,23 +163,23 @@ public class SyaryoTemplateCreate extends HiveDB {
     }
 
     //受注
-    public static void order(Connection con, Map<String, SyaryoTemplate> syaryoTemplate, Map noneTypeSearch) {
+    public static void order(Connection con, Map<String, SyaryoTemplate> syaryoTemplate) {
         try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_order111_error.csv")))))) {
-            Map<String, SyaryoTemplate> syaryoMap = new OrderData().addOrder(con, pw, syaryoTemplate, noneTypeSearch, 1, 1, 1);
+            Map<String, SyaryoTemplate> syaryoMap = new OrderData().addOrder(con, pw, syaryoTemplate, 1, 1, 1);
             new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_order111.json"), syaryoMap);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
         
         try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_order112_error.csv")))))) {
-            Map<String, SyaryoTemplate> syaryoMap = new OrderData().addOrder(con, pw, syaryoTemplate, noneTypeSearch, 1, 1, 2);
+            Map<String, SyaryoTemplate> syaryoMap = new OrderData().addOrder(con, pw, syaryoTemplate, 1, 1, 2);
             new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_order112.json"), syaryoMap);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
         
         try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_order123_error.csv")))))) {
-            Map<String, SyaryoTemplate> syaryoMap = new OrderData().addOrder(con, pw, syaryoTemplate, noneTypeSearch, 1, 2, 3);
+            Map<String, SyaryoTemplate> syaryoMap = new OrderData().addOrder(con, pw, syaryoTemplate, 1, 2, 3);
             new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_order123.json"), syaryoMap);
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -200,9 +187,9 @@ public class SyaryoTemplateCreate extends HiveDB {
     }
 
     //作業明細
-    public static void work(Connection con, Map<String, SyaryoTemplate> syaryoTemplate, Map noneTypeSearch) {
+    public static void work(Connection con, Map<String, SyaryoTemplate> syaryoTemplate) {
         try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_workinfo_error.csv")))))) {
-            Map<String, SyaryoTemplate> syaryoMap = new WorkData().addWork(con, pw, syaryoTemplate, noneTypeSearch);
+            Map<String, SyaryoTemplate> syaryoMap = new WorkData().addWork(con, pw, syaryoTemplate);
             new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_workinfo.json"), syaryoMap);
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -210,9 +197,9 @@ public class SyaryoTemplateCreate extends HiveDB {
     }
 
     //部品明細
-    public static void parts(Connection con, Map<String, SyaryoTemplate> syaryoTemplate, Map noneTypeSearch) {
+    public static void parts(Connection con, Map<String, SyaryoTemplate> syaryoTemplate) {
         try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_parts_error.csv")))))) {
-            Map<String, SyaryoTemplate> syaryoMap = new PartsData().addParts(con, pw, syaryoTemplate, noneTypeSearch);
+            Map<String, SyaryoTemplate> syaryoMap = new PartsData().addParts(con, pw, syaryoTemplate);
             new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_parts.json"), syaryoMap);
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -220,9 +207,9 @@ public class SyaryoTemplateCreate extends HiveDB {
     }
 
     //本体売上
-    public static void sell(Connection con, Map<String, SyaryoTemplate> syaryoTemplate, Map noneTypeSearch) {
+    public static void sell(Connection con, Map<String, SyaryoTemplate> syaryoTemplate) {
         try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_sell_error.csv")))))) {
-            Map<String, SyaryoTemplate> syaryoMap = new SellsData().addSell(con, pw, syaryoTemplate, noneTypeSearch);
+            Map<String, SyaryoTemplate> syaryoMap = new SellsData().addSell(con, pw, syaryoTemplate);
             new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_sell.json"), syaryoMap);
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -230,9 +217,9 @@ public class SyaryoTemplateCreate extends HiveDB {
     }
 
     //中古売上
-    public static void sell_used(Connection con, Map<String, SyaryoTemplate> syaryoTemplate, Map noneTypeSearch) {
+    public static void sell_used(Connection con, Map<String, SyaryoTemplate> syaryoTemplate) {
         try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_sell_used_error.csv")))))) {
-            Map<String, SyaryoTemplate> syaryoMap = new SellsData().addUsed(con, pw, syaryoTemplate, noneTypeSearch);
+            Map<String, SyaryoTemplate> syaryoMap = new SellsData().addUsed(con, pw, syaryoTemplate);
             new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_sell_used.json"), syaryoMap);
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -240,9 +227,9 @@ public class SyaryoTemplateCreate extends HiveDB {
     }
 
     //本体売上(OLD)
-    public static void sell_old(Connection con, Map<String, SyaryoTemplate> syaryoTemplate, Map noneTypeSearch) {
+    public static void sell_old(Connection con, Map<String, SyaryoTemplate> syaryoTemplate) {
         try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_sell_old_error.csv")))))) {
-            Map<String, SyaryoTemplate> syaryoMap = new SellsData().addOld(con, pw, syaryoTemplate, noneTypeSearch);
+            Map<String, SyaryoTemplate> syaryoMap = new SellsData().addOld(con, pw, syaryoTemplate);
             new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_sell_old.json"), syaryoMap);
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -250,7 +237,7 @@ public class SyaryoTemplateCreate extends HiveDB {
     }
     
     //Komtrax
-    public static void komtrax(Connection con, Map<String, SyaryoTemplate> syaryoTemplate, Map noneTypeSearch) {
-        new KomtraxData().addKomtrax(FILENAME, con, syaryoTemplate, noneTypeSearch);
+    public static void komtrax(Connection con, Map<String, SyaryoTemplate> syaryoTemplate) {
+        new KomtraxData().addKomtrax(FILENAME, con, syaryoTemplate);
     }
 }

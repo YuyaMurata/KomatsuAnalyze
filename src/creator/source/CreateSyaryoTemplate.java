@@ -28,8 +28,8 @@ public class CreateSyaryoTemplate {
             Statement stmt = con.createStatement();
 
             //EQP_Syaryo
-            String sql = String.format("select %s, %s, %s from %s",
-                    EQP.Syaryo.KISY, EQP.Syaryo.TYP, EQP.Syaryo.KIBAN, //Unique ID
+            String sql = String.format("select %s, %s, %s, %s from %s",
+                    EQP.Syaryo.KISY, EQP.Syaryo.TYP, EQP.Syaryo.SYHK, EQP.Syaryo.KIBAN, //Unique ID
                     HiveDB.TABLE.EQP_SYARYO
             );
             System.out.println("Running: " + sql);
@@ -42,10 +42,11 @@ public class CreateSyaryoTemplate {
                 //Name
                 String kisy = res.getString(EQP.Syaryo.KISY.get());
                 String type = res.getString(EQP.Syaryo.TYP.get());
+                String s_type = res.getString(EQP.Syaryo.SYHK.get());
                 String kiban = res.getString(EQP.Syaryo.KIBAN.get());
 
                 //Syaryo Template
-                SyaryoTemplate syaryo = new SyaryoTemplate(kisy, type, kiban);
+                SyaryoTemplate syaryo = new SyaryoTemplate(kisy, type, s_type, kiban);
                 
                 syaryoMap.put(syaryo.getName(), syaryo);
 
