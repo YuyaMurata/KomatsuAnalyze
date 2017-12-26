@@ -16,12 +16,16 @@ import java.sql.Statement;
 import java.util.Map;
 import java.util.TreeMap;
 import creator.template.SyaryoTemplate;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author ZZ17390
  */
 public class EQPKeirekiData {
+    private static List nonUpdateSyaryoList = new ArrayList();
+    
     //EQP_KEIREKI DATA
     public Map<String, SyaryoTemplate> addSyaryoKeireki(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap) throws IOException {
         Map<String, SyaryoTemplate> map = new TreeMap<>();
@@ -83,7 +87,7 @@ public class EQPKeirekiData {
 
                 //車両チェック
                 String name = SyaryoTemplate.check(kisy, type, s_type, kiban);
-                if (name == null) {
+                if (name == null || SyaryoTemplate.errorCheck(date)) {
                     errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + date + "," + db + "," + company + "," + cid + "," + cname + "," + country + "," + id + "," + smr);
                     continue;
                 }
@@ -107,13 +111,21 @@ public class EQPKeirekiData {
             }
 
             System.out.println("Total Processed Syaryo = "+  m + "/" + n);
-            System.out.println("Total Update Syaryo = " + map.size());
-
+            System.out.println("Total Created SyaryoTemplate = " + map.size() + "/" + syaryoMap.size());
+            
+            for(String name : syaryoMap.keySet())
+                if(map.get(name) == null)
+                    nonUpdateSyaryoList.add(name);
+            
             return map;
 
         } catch (SQLException sqle) {
             sqle.printStackTrace();
             return null;
         }
+    }
+    
+    public static List dataCheck(){
+        return nonUpdateSyaryoList;
     }
 }

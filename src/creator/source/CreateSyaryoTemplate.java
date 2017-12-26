@@ -14,6 +14,7 @@ import java.sql.Statement;
 import java.util.Map;
 import java.util.TreeMap;
 import creator.template.SyaryoTemplate;
+import db.field.Syaryo;
 
 /**
  *
@@ -21,17 +22,29 @@ import creator.template.SyaryoTemplate;
  */
 public class CreateSyaryoTemplate {
     //EQP_SYARYO DATA
-    public Map<String, SyaryoTemplate> createTemplate(Connection con) {
+    public Map<String, SyaryoTemplate> createTemplate(Connection con, Boolean filter) {
         TreeMap<String, SyaryoTemplate> syaryoMap = new TreeMap();
         
         try {
             Statement stmt = con.createStatement();
 
             //EQP_Syaryo
-            String sql = String.format("select %s, %s, %s, %s from %s",
+            String sql = "";
+            if(filter)
+                sql = String.format("select e.%s, e.%s, e.%s, e.%s from %s e join %s s on e.%s=s.%s and e.%s=s.%s",
+                    EQP.Syaryo.KISY, EQP.Syaryo.TYP, EQP.Syaryo.SYHK, EQP.Syaryo.KIBAN, //Unique ID
+                    HiveDB.TABLE.EQP_SYARYO,
+                    HiveDB.TABLE.SYARYO,
+                    EQP.Syaryo.KISY,
+                    Syaryo._Syaryo.KISY,
+                    EQP.Syaryo.KIBAN,
+                    Syaryo._Syaryo.KIBAN
+                );
+            else
+                sql = String.format("select %s, %s, %s, %s from %s",
                     EQP.Syaryo.KISY, EQP.Syaryo.TYP, EQP.Syaryo.SYHK, EQP.Syaryo.KIBAN, //Unique ID
                     HiveDB.TABLE.EQP_SYARYO
-            );
+                );
             System.out.println("Running: " + sql);
 
             ResultSet res = stmt.executeQuery(sql);
@@ -48,10 +61,14 @@ public class CreateSyaryoTemplate {
                 //Syaryo Template
                 SyaryoTemplate syaryo = new SyaryoTemplate(kisy, type, s_type, kiban);
                 
+                //Duplicate
+                if(syaryoMap.get(syaryo.getName()) != null)
+                    System.out.println(syaryo.getName());
+                
                 syaryoMap.put(syaryo.getName(), syaryo);
 
                 if (n % 10000 == 0) {
-                    System.out.println("Syaryo Processed : " + n);
+                    //System.out.println("Syaryo Processed : " + n);
                 }
             }
 

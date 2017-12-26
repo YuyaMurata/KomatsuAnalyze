@@ -31,13 +31,16 @@ public class JsonToSyaryoTemplate {
 
 			Gson gson = new Gson();
 			syaryoMap = gson.fromJson(reader, type);
+            
+            //setting
+            syaryoMap.values().stream().forEach(s -> s.setting());
 		} catch (IOException e) {
 			return null;
 		}
         
         return syaryoMap;
 	}
-
+    
 	public Map<String, SyaryoTemplate> reader2(String filename) {
 		Map<String, SyaryoTemplate> syaryoMap;
         
@@ -48,6 +51,10 @@ public class JsonToSyaryoTemplate {
 			Gson gson = new Gson();
 			syaryoMap = gson.fromJson(new ZipFile().unzip(filename), type);
 			syaryoMap.remove("_summary");
+            
+            //setting
+            syaryoMap.values().stream().forEach(s -> s.setting());
+            
 		} catch (IOException e) {
 			return null;
 		}

@@ -16,13 +16,16 @@ import java.sql.Statement;
 import java.util.Map;
 import java.util.TreeMap;
 import creator.template.SyaryoTemplate;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author ZZ17390
  */
 public class OrderData {
-
+    private static List nonUpdateSyaryoList;
+    
     //ORDER DATA
     public Map<String, SyaryoTemplate> addOrder(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap, int uag1, int uag2, int uag3) {
         Map map = new TreeMap();
@@ -31,7 +34,7 @@ public class OrderData {
             Statement stmt = con.createStatement();
 
             //Syaryo
-            String sql = String.format("select %s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s from %s where %s and %s and %s",
+            String sql = String.format("select %s,%s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s from %s where %s and %s and %s",
                     Order._Order.KISY, Order._Order.TYP, Order._Order.SYHK, Order._Order.KIBAN, //Unique ID
                     Order._Order.KSYCD, //会社コード
                     Order._Order.SBN, //作番
@@ -114,7 +117,7 @@ public class OrderData {
                 
                 //車両チェック
                 String name = SyaryoTemplate.check(kisy, type, s_type, kiban);
-                if (name == null) {
+                if (name == null || SyaryoTemplate.errorCheck(date)) {
                     errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + last_date + "," + db + "," + company + "," + cid + "," + cname 
                                     + "," + date + "," + id + "," + sbn_date + "," + sbn_status + "," + odr_kbn
                                     + "," + price + "," + sg_date + "," + sg_fin_flg + "," + sg_fin_date + "," + j_kosu + "," + s_kosu
@@ -149,12 +152,21 @@ public class OrderData {
             }
 
             System.out.println("Total Processed Syaryo = "+  m + "/" + n);
-            System.out.println("Total Update Syaryo = " + map.size());
+            System.out.println("Total Created SyaryoTemplate = " + map.size() + "/" + syaryoMap.size());
+            
+            nonUpdateSyaryoList = new ArrayList();
+            for(String name : syaryoMap.keySet())
+                if(map.get(name) == null)
+                    nonUpdateSyaryoList.add(name);
 
             return map;
         } catch (SQLException sqlex) {
             sqlex.printStackTrace();
             return null;
         }
+    }
+    
+    public static List dataCheck(){
+        return nonUpdateSyaryoList;
     }
 }

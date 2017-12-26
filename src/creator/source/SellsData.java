@@ -15,13 +15,16 @@ import java.sql.Statement;
 import java.util.Map;
 import java.util.TreeMap;
 import creator.template.SyaryoTemplate;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author ZZ17390
  */
 public class SellsData {
-
+    private static List nonUpdateSyaryoList;
+    
     //SELL DATA
     public Map<String, SyaryoTemplate> addSell(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap) {
         Map map = new TreeMap();
@@ -118,8 +121,13 @@ public class SellsData {
             }
 
             System.out.println("Total Processed Syaryo = " + m + "/" + n);
-            System.out.println("Total Update Syaryo = " + map.size());
-
+            System.out.println("Total Created SyaryoTemplate = " + map.size() + "/" + syaryoMap.size());
+            
+            nonUpdateSyaryoList = new ArrayList();
+            for(String name : syaryoMap.keySet())
+                if(map.get(name) == null)
+                    nonUpdateSyaryoList.add(name);
+            
             return map;
         } catch (SQLException sqlex) {
             sqlex.printStackTrace();
@@ -199,7 +207,12 @@ public class SellsData {
             }
 
             System.out.println("Total Processed Syaryo = " + m + "/" + n);
-            System.out.println("Total Update Syaryo = " + map.size());
+            System.out.println("Total Created SyaryoTemplate = " + map.size() + "/" + syaryoMap.size());
+            
+            nonUpdateSyaryoList = new ArrayList();
+            for(String name : syaryoMap.keySet())
+                if(map.get(name) == null)
+                    nonUpdateSyaryoList.add(name);
 
             return map;
         } catch (SQLException sqlex) {
@@ -290,7 +303,7 @@ public class SellsData {
 
                 //車両チェック
                 String name = SyaryoTemplate.check(kisy, type, s_type, kiban);
-                if (name == null) {
+                if (name == null || SyaryoTemplate.errorCheck(date)) {
                     errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + reg_date + "," + db + "," + company + "," + "?-?-" + nctry_name + "," + "-1" + "," + nname
                             + "," + jid + "," + jname + "," + shire_date + "," + sname + "," + satei_date + "," + satei_price + "," + date + "," + price + "," + cost
                             + "," + smr);
@@ -324,12 +337,21 @@ public class SellsData {
             }
 
             System.out.println("Total Processed Syaryo = " + m + "/" + n);
-            System.out.println("Total Update Syaryo = " + map.size());
+            System.out.println("Total Created SyaryoTemplate = " + map.size() + "/" + syaryoMap.size());
+            
+            nonUpdateSyaryoList = new ArrayList();
+            for(String name : syaryoMap.keySet())
+                if(map.get(name) == null)
+                    nonUpdateSyaryoList.add(name);
 
             return map;
         } catch (SQLException sqlex) {
             sqlex.printStackTrace();
             return null;
         }
+    }
+    
+    public static List dataCheck(){
+        return nonUpdateSyaryoList;
     }
 }

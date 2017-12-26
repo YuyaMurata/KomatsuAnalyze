@@ -17,13 +17,16 @@ import java.util.Map;
 import java.util.TreeMap;
 import creator.template.SyaryoTemplate;
 import db.field.Order;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author ZZ17390
  */
 public class ServiceData {
-
+    private static List nonUpdateSyaryoList = new ArrayList();
+    
     //SERVICE DATA
     public Map<String, SyaryoTemplate> addService(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap, int sp1, int sp2, int uag1, int uag2, int uag3) {
         Map map = new TreeMap();
@@ -128,7 +131,7 @@ public class ServiceData {
                 //車両チェック
                 String comment = res.getString(Service._Service.KISY_CMT.get());
                 String name = SyaryoTemplate.check(kisy, type, s_type, kiban);
-                if (name == null) {
+                if (name == null || SyaryoTemplate.errorCheck(date)) {
                     errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + last_date + "," + db + "," + company + "," + cid + "," + gyosyu + "," + cname
                             + "," + date + "," + id + "," + odr_kbn + "," + price + "," + sg_mid + "," + sg_add_id
                             + "," + sg_keitai_id + "," + sg_id + "," + sg_name + "," + kosu + "," + suryo + "," + parts_id + "," + parts_name
@@ -175,12 +178,21 @@ public class ServiceData {
             }
 
             System.out.println("Total Processed Syaryo = " + m + "/" + n);
-            System.out.println("Total Update Syaryo = " + map.size());
+            System.out.println("Total Created SyaryoTemplate = " + map.size() + "/" + syaryoMap.size());
+            
+            nonUpdateSyaryoList = new ArrayList();
+            for(String name : syaryoMap.keySet())
+                if(map.get(name) == null)
+                    nonUpdateSyaryoList.add(name);
 
             return map;
         } catch (SQLException sqlex) {
             sqlex.printStackTrace();
             return null;
         }
+    }
+    
+    public static List dataCheck(){
+        return nonUpdateSyaryoList;
     }
 }

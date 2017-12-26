@@ -19,34 +19,43 @@ import java.util.Map;
 import java.util.TreeMap;
 import json.SyaryoTemplateToJson;
 import creator.template.SyaryoTemplate;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author ZZ17390
  */
 public class KomtraxData {
+    private static List nonUpdateSyaryoList;
     private Connection con;
-    private Map<String, SyaryoTemplate> noneType;
     private String FILENAME;
     
     //KOMTRAX DATA
     public void addKomtrax(String FILENAME, Connection con, Map<String, SyaryoTemplate> syaryoMap) {
         this.FILENAME = FILENAME;
         this.con = con;
-        this.noneType = noneType;
         
         //JSON Writer
         
         //addGPS(syaryoMap);
+        //System.out.println("Komtrax GPS not update List:"+dataCheck());
         //addSMR(syaryoMap);
+        //System.out.println("Komtrax SMR not update List:"+dataCheck());
         //addEngine(syaryoMap);
-        addError(syaryoMap);
+        //System.out.println("Komtrax Engine not update List:"+dataCheck());
+        //addError(syaryoMap);
+        //System.out.println("Komtrax Error not update List:"+dataCheck());
         //addCaution(syaryoMap);
+        //System.out.println("Komtrax Caution not update List:"+dataCheck());
+        addFuel(syaryoMap);
+        System.out.println("Komtrax Fuel not update List:"+dataCheck());
         
     }
     
     //GPS
     public void addGPS(Map<String, SyaryoTemplate> syaryoMap){       
+        nonUpdateSyaryoList = new ArrayList();
         Map map = new TreeMap();
         
         try {
@@ -88,7 +97,7 @@ public class KomtraxData {
 
                 //車両チェック
                 String name = SyaryoTemplate.check(kisy, type, s_type, kiban);
-                if (name == null) {
+                if (name == null || SyaryoTemplate.errorCheck(date)) {
                     errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + date + "," + db + "," + company + "," + latitude + "," + longitude);
                     continue;
                 }
@@ -111,7 +120,11 @@ public class KomtraxData {
             }
 
             System.out.println("Total Processed Syaryo = "+  m + "/" + n);
-            System.out.println("Total Update Syaryo = " + map.size());
+            System.out.println("Total Created SyaryoTemplate = " + map.size() + "/" + syaryoMap.size());
+            
+            for(String name : syaryoMap.keySet())
+                if(map.get(name) == null)
+                    nonUpdateSyaryoList.add(name);
             
             errpw.close();
             new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_komtrax_gps.json"), map);
@@ -123,7 +136,8 @@ public class KomtraxData {
     }
     
     //SMR
-    public void addSMR(Map<String, SyaryoTemplate> syaryoMap){       
+    public void addSMR(Map<String, SyaryoTemplate> syaryoMap){      
+        nonUpdateSyaryoList = new ArrayList();
         Map map = new TreeMap();
         
         try {
@@ -163,7 +177,7 @@ public class KomtraxData {
 
                 //車両チェック
                 String name = SyaryoTemplate.check(kisy, type, s_type, kiban);
-                if (name == null) {
+                if (name == null || SyaryoTemplate.errorCheck(date)) {
                     errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + date + "," + db + "," + company + "," + smr);
                     continue;
                 }
@@ -185,7 +199,11 @@ public class KomtraxData {
             }
 
             System.out.println("Total Processed Syaryo = "+  m + "/" + n);
-            System.out.println("Total Update Syaryo = " + map.size());
+            System.out.println("Total Created SyaryoTemplate = " + map.size() + "/" + syaryoMap.size());
+            
+            for(String name : syaryoMap.keySet())
+                if(map.get(name) == null)
+                    nonUpdateSyaryoList.add(name);
             
             errpw.close();
             new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_komtrax_smr.json"), map);
@@ -196,7 +214,8 @@ public class KomtraxData {
     }
     
     //Engine
-    public void addEngine(Map<String, SyaryoTemplate> syaryoMap){       
+    public void addEngine(Map<String, SyaryoTemplate> syaryoMap){
+        nonUpdateSyaryoList = new ArrayList();
         Map map = new TreeMap();
         
         try {
@@ -236,7 +255,7 @@ public class KomtraxData {
 
                 //車両チェック
                 String name = SyaryoTemplate.check(kisy, type, s_type, kiban);
-                if (name == null) {
+                if (name == null || SyaryoTemplate.errorCheck(date)) {
                     errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + date + "," + db + "," + company + "," + engine_th);
                     continue;
                 }
@@ -259,7 +278,11 @@ public class KomtraxData {
             }
 
             System.out.println("Total Processed Syaryo = "+  m + "/" + n);
-            System.out.println("Total Update Syaryo = " + map.size());
+            System.out.println("Total Created SyaryoTemplate = " + map.size() + "/" + syaryoMap.size());
+            
+            for(String name : syaryoMap.keySet())
+                if(map.get(name) == null)
+                    nonUpdateSyaryoList.add(name);
             
             errpw.close();
             
@@ -271,7 +294,8 @@ public class KomtraxData {
     }
     
     //Error
-    public void addError(Map<String, SyaryoTemplate> syaryoMap){       
+    public void addError(Map<String, SyaryoTemplate> syaryoMap){
+        nonUpdateSyaryoList = new ArrayList();
         Map map = new TreeMap();
 
         try {
@@ -315,7 +339,7 @@ public class KomtraxData {
 
                 //車両チェック
                 String name = SyaryoTemplate.check(kisy, type, s_type, kiban);
-                if (name == null) {
+                if (name == null || SyaryoTemplate.errorCheck(date)) {
                     errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + date + "," + db + "," + company + "," 
                                     + error_code + "," + error_kind + "," + error_cnt);
                     continue;
@@ -339,7 +363,11 @@ public class KomtraxData {
             }
 
             System.out.println("Total Processed Syaryo = "+  m + "/" + n);
-            System.out.println("Total Update Syaryo = " + map.size());
+            System.out.println("Total Created SyaryoTemplate = " + map.size() + "/" + syaryoMap.size());
+            
+            for(String name : syaryoMap.keySet())
+                if(map.get(name) == null)
+                    nonUpdateSyaryoList.add(name);
             
             errpw.close();
             
@@ -351,7 +379,8 @@ public class KomtraxData {
     }
     
     //Caution
-    public void addCaution(Map<String, SyaryoTemplate> syaryoMap){       
+    public void addCaution(Map<String, SyaryoTemplate> syaryoMap){
+        nonUpdateSyaryoList = new ArrayList();
         Map map = new TreeMap();
 
         try {
@@ -393,7 +422,7 @@ public class KomtraxData {
 
                 //車両チェック
                 String name = SyaryoTemplate.check(kisy, type, s_type, kiban);
-                if (name == null) {
+                if (name == null || SyaryoTemplate.errorCheck(date)) {
                     errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + date + "," + db + "," + company + "," + caution_icon + "," + caution_cnt);
                     continue;
                 }
@@ -416,7 +445,11 @@ public class KomtraxData {
             }
 
             System.out.println("Total Processed Syaryo = "+  m + "/" + n);
-            System.out.println("Total Update Syaryo = " + map.size());
+            System.out.println("Total Created SyaryoTemplate = " + map.size() + "/" + syaryoMap.size());
+            
+            for(String name : syaryoMap.keySet())
+                if(map.get(name) == null)
+                    nonUpdateSyaryoList.add(name);
             
             errpw.close();
             
@@ -428,7 +461,8 @@ public class KomtraxData {
     }
     
     //Fuel
-    public void addFuel(Map<String, SyaryoTemplate> syaryoMap){       
+    public void addFuel(Map<String, SyaryoTemplate> syaryoMap){
+        nonUpdateSyaryoList = new ArrayList();
         Map map = new TreeMap();
 
         try {
@@ -468,7 +502,7 @@ public class KomtraxData {
 
                 //車両チェック
                 String name = SyaryoTemplate.check(kisy, type, s_type, kiban);
-                if (name == null) {
+                if (name == null || SyaryoTemplate.errorCheck(date)) {
                     errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + date + "," + db + "," + company + "," + consume_cnt);
                     continue;
                 }
@@ -491,7 +525,11 @@ public class KomtraxData {
             }
 
             System.out.println("Total Processed Syaryo = "+  m + "/" + n);
-            System.out.println("Total Update Syaryo = " + map.size());
+            System.out.println("Total Created SyaryoTemplate = " + map.size() + "/" + syaryoMap.size());
+            
+            for(String name : syaryoMap.keySet())
+                if(map.get(name) == null)
+                    nonUpdateSyaryoList.add(name);
             
             errpw.close();
             
@@ -500,5 +538,9 @@ public class KomtraxData {
             sqlex.printStackTrace();
         } catch (IOException ex) {
         }
+    }
+    
+    public static List dataCheck(){
+        return nonUpdateSyaryoList;
     }
 }

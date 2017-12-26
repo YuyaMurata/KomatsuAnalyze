@@ -16,27 +16,28 @@ import java.util.Map;
 public class SyaryoTemplate {
     private static Map<String, String> validate = new HashMap();
     
-	public Map<String, String> map = new LinkedHashMap();
     public String kisy, type, s_type, kiban;
-
+	public Map<String, String> map = new LinkedHashMap();
+    
 	public SyaryoTemplate(String kisy, String type, String s_type, String kiban) {
-		String name = kisy + "-" + type + s_type + "-" + kiban;
-        
-        this.kisy = kisy;
+		this.kisy = kisy;
         this.type = type;
         this.s_type = s_type;
         this.kiban = kiban;
         
         //Setting Map
-        validate.put(name, name);
-        validate.put(kisy+"-"+type+"-"+kiban, name);
-        validate.put(kisy+"--"+kiban, name);
+        setting();
 	}
 
-	private Boolean errorCheck(String date) {
-		if (date.equals("")) {
+	public static Boolean errorCheck(String date) {
+        String d = date;
+        if(d.contains("/")){
+            d = d.replace("/", "").substring(0, 8);
+        }
+        
+		if (d.equals("")) {
 			return true;
-		} else if (Integer.valueOf(date.replace(" ", "")) <= 1950000) {
+		} else if (Integer.valueOf(d.replace(" ", "")) <= 1950000) {
 			return true;
 		}
 		return false;
@@ -515,6 +516,13 @@ public class SyaryoTemplate {
     
     public static String getName(String kisy, String type, String s_type, String kiban){
         return kisy+"-"+type+s_type+"-"+kiban;
+    }
+    
+    public void setting(){
+        String name = kisy + "-" + type + s_type + "-" + kiban;
+        validate.put(name, name);
+        validate.put(kisy+"-"+type+"-"+kiban, name);
+        validate.put(kisy+"--"+kiban, name);
     }
     
     public static String check(String kisy, String type, String s_type, String kiban){

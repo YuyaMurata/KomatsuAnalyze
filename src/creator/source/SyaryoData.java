@@ -16,13 +16,16 @@ import java.sql.Statement;
 import java.util.Map;
 import java.util.TreeMap;
 import creator.template.SyaryoTemplate;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author ZZ17390
  */
 public class SyaryoData {
-
+    private static List nonUpdateSyaryoList = new ArrayList();
+    
     //SYARYO DATA
     public Map<String, SyaryoTemplate> addSyaryoCategory(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap) {
         Map<String, SyaryoTemplate> map = new TreeMap<>();
@@ -121,12 +124,20 @@ public class SyaryoData {
             }
 
             System.out.println("Total Processed Syaryo = " + m + "/" + n);
-            System.out.println("Total Update Syaryo = " + map.size());
+            System.out.println("Total Created SyaryoTemplate = " + map.size() + "/" + syaryoMap.size());
+            
+            for(String name : syaryoMap.keySet())
+                if(map.get(name) == null)
+                    nonUpdateSyaryoList.add(name);
 
             return map;
         } catch (SQLException sqlex) {
             sqlex.printStackTrace();
             return null;
         }
+    }
+    
+    public static List dataCheck(){
+        return nonUpdateSyaryoList;
     }
 }

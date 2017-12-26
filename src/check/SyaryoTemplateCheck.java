@@ -20,12 +20,12 @@ import creator.template.SyaryoTemplate;
  * @author ZZ17390
  */
 public class SyaryoTemplateCheck {
-    private static final String kisy = "PC200";
+    private static final String path = "C:\\Users\\zz17390\\Documents\\NetBeansProjects\\KomatsuData\\車両テンプレート";
     private static Map<String, SyaryoTemplate> syaryoMap;
     
     public static void main(String[] args) {
         JsonToSyaryoTemplate temp = new JsonToSyaryoTemplate();
-        syaryoMap = temp.reader2("中間データ\\syaryo_mid_"+kisy+".zip");
+        syaryoMap = temp.reader(path+"\\syaryo_history_template_service1123.json");
         
         count();
         
@@ -34,22 +34,15 @@ public class SyaryoTemplateCheck {
     }
     
     public static void count(){
-        List<String> typs = syaryoMap.values().stream()
-                                        .map(s -> s.getName().split("-")[1])
-                                        .distinct()
-                                        .collect(Collectors.toList());
-        
-        for(String typ : typs){
-            long cnt = 0L;//syaryoMap.keySet().stream().filter(s -> s.split("-")[1].contains(typ)).filter(s -> syaryoMap.get(s).getKomtrax()).count();
-            for(SyaryoTemplate syaryo : syaryoMap.values()){
-                if(!syaryo.getName().split("-")[1].equals(typ) || syaryo.get("KMSMR")==null) continue;
-                if(syaryo.get("KMSMR").contains("komtrax")){
-                    cnt = cnt + 1;
-                }
-            }
-            
-            System.out.println(typ+"="+cnt);
+        System.out.println("車両数:"+syaryoMap.size());
+        int n=0;
+        for(SyaryoTemplate temp : syaryoMap.values()){
+            if(temp.get("受注") == null)
+                System.out.println(temp);
+            else
+                n += temp.get("受注").split("\n").length;
         }
+        System.out.println("受注数:"+n);
     }
     
     public static void randomSampling(int size, Map<String, SyaryoTemplate> map){
