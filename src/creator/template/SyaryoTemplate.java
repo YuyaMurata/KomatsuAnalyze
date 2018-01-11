@@ -501,6 +501,26 @@ public class SyaryoTemplate {
 		str += db + "," + company + "," + date + "," + consume_cnt;
 		map.put("KMFUELCONSUME", str);
 	}
+    
+    //ACT DATA
+	public void addKMAct(String db, String company, String date, String act_cnt) {
+		String check_date = date.replace("/", "").substring(0, 8);
+		if (errorCheck(check_date)) {
+			return;
+		}
+
+		date = date.substring(0, 10) + " " + date.substring(11, date.length());
+
+		String str = "";
+		if (map.get("KMACT") == null) {
+			str = "DB, 会社コード, 日付, カウント \n ";
+		} else {
+			str = map.get("KMACT") + " \n ";
+		}
+
+		str += db + "," + company + "," + date + "," + act_cnt;
+		map.put("KMACT", str);
+	}
 
 	public String get(String id) {
 		return map.get(id);
@@ -542,4 +562,15 @@ public class SyaryoTemplate {
 		}
 		return sb.toString();
 	}
+    
+    //test
+    public void add(String table, String header, String record){
+        StringBuilder sb = new StringBuilder();
+        if(map.get(table) == null)
+            sb.append(header);
+        sb.append("\n");
+        sb.append(record);
+        
+        map.put(table, sb.toString());
+    }
 }

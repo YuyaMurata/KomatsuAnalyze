@@ -48,9 +48,10 @@ public class KomtraxData {
         //System.out.println("Komtrax Error not update List:"+dataCheck());
         //addCaution(syaryoMap);
         //System.out.println("Komtrax Caution not update List:"+dataCheck());
-        addFuel(syaryoMap);
-        System.out.println("Komtrax Fuel not update List:"+dataCheck());
-        
+        //addFuel(syaryoMap);
+        //System.out.println("Komtrax Fuel not update List:"+dataCheck());
+        //addAct(syaryoMap);
+        //System.out.println("Komtrax Act not update List:"+dataCheck());
     }
     
     //GPS
@@ -534,6 +535,89 @@ public class KomtraxData {
             errpw.close();
             
             new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_komtrax_fuelconsume.json"), map);
+        } catch (SQLException sqlex) {
+            sqlex.printStackTrace();
+        } catch (IOException ex) {
+        }
+    }
+    
+    //Act
+    public void addAct(Map<String, SyaryoTemplate> syaryoMap){
+        nonUpdateSyaryoList = new ArrayList();
+        Map map = new TreeMap();
+
+        try {
+            PrintWriter errpw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_komtrax_actdata_error.csv")))));
+            
+            Statement stmt = con.createStatement();
+
+            //CW_CAUTION
+            String sql = String.format("select %s,%s,%s, %s, %s, %s from %s",
+                    Komtrax.CW_ACT_DATA.KIND, Komtrax.CW_ACT_DATA.TYPE, Komtrax.CW_ACT_DATA.MACHINE_NUMBER, //Unique ID
+                    Komtrax.CW_ACT_DATA.ACT_DATE,    //Caution Date
+                    Komtrax.CW_ACT_DATA.ACT_COUNT,
+                    Komtrax.CW_ACT_DATA.DAILY_UNIT,
+                    Komtrax.TABLE.CW_ACT_DATA.get()
+            );
+            System.out.println("Running: " + sql);
+
+            ResultSet res = stmt.executeQuery(sql);
+
+            int n = 0;
+            int m = 0;
+            while (res.next()) {
+                n++;
+
+                //Name
+                String kisy = res.getString(Komtrax.CW_ACT_DATA.KIND.get());
+                String type = res.getString(Komtrax.CW_ACT_DATA.TYPE.get());
+                String s_type = "";
+                String kiban = res.getString(Komtrax.CW_ACT_DATA.MACHINE_NUMBER.get());
+
+                //Act Data
+                String date = res.getString(Komtrax.CW_ACT_DATA.ACT_DATE.get());    //Act Date
+                String act_cnt = res.getString(Komtrax.CW_ACT_DATA.ACT_COUNT.get());    //Act Count
+                String unit = res.getString(Komtrax.CW_ACT_DATA.DAILY_UNIT.get());    //Daily Unit
+                
+                //DB
+                String db = "komtrax_actdata";
+                String company = "?"; //会社コード
+
+                //車両チェック
+                String name = SyaryoTemplate.check(kisy, type, s_type, kiban);
+                if (name == null || SyaryoTemplate.errorCheck(date)) {
+                    errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + date + "," + db + "," + company + "," + act_cnt + "," + unit);
+                    continue;
+                }
+                
+                //車両
+                SyaryoTemplate syaryo = syaryoMap.get(name);
+                
+                m++;
+                
+                //Act
+                act_cnt = String.valueOf(Integer.parseInt(act_cnt) / Integer.parseInt(unit));
+                syaryo.addKMAct(db, company, date, act_cnt);
+                
+                
+                //AddSyaryo
+                map.put(syaryo.getName(), syaryo);
+
+                if (n % 10000 == 0) {
+                    System.out.println("Syaryo Processed : " + n);
+                }
+            }
+
+            System.out.println("Total Processed Syaryo = "+  m + "/" + n);
+            System.out.println("Total Created SyaryoTemplate = " + map.size() + "/" + syaryoMap.size());
+            
+            for(String name : syaryoMap.keySet())
+                if(map.get(name) == null)
+                    nonUpdateSyaryoList.add(name);
+            
+            errpw.close();
+            
+            new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_komtrax_actdata.json"), map);
         } catch (SQLException sqlex) {
             sqlex.printStackTrace();
         } catch (IOException ex) {
