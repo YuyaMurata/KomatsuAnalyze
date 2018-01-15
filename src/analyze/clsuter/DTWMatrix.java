@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package analyze;
+package analyze.clsuter;
 
 import file.CSVFileReadWrite;
 import java.io.PrintWriter;
@@ -15,9 +15,9 @@ import java.util.stream.Collectors;
  *
  * @author ZZ17390
  */
-public class DTWRanking {
+public class DTWMatrix {
     public static void main(String[] args) {
-        Object[][] mat = SMRMatrix.create("json\\syaryo_obj_WA470_form.json");
+        Object[][] mat = SMRMatrix.create("json\\syaryo_obj_WA470_7.json");
         
         int dtwsize = mat[0].length;
         Object[][] dtw_mat = new Object[dtwsize][dtwsize];
@@ -59,7 +59,7 @@ public class DTWRanking {
     }
     
     public static void printMat(Object[][] mat) {
-        try (PrintWriter pw = CSVFileReadWrite.writer("test_dtwmat.csv")) {
+        try (PrintWriter pw = CSVFileReadWrite.writer("wa470_7_dtwmat.csv")) {
             for (int i = 0; i < mat.length; i++) {
                 List str = new ArrayList();
                 for (int j = 0; j < mat[i].length; j++) {

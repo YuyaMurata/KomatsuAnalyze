@@ -16,8 +16,10 @@ import java.util.Date;
 public class DateTest {
     public static void main(String[] args) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-        String date = "2010/10/10";
+        String date = "2010/10/10 5:00:21";
         
+		System.out.println(sdf.parse(date).getTime());
+		
         System.out.println(date.compareTo("2017/01/01"));
         System.out.println(date.compareTo("2010/10/11"));
         System.out.println(date.compareTo("2010/10/10"));

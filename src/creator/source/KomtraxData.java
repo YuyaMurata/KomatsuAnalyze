@@ -66,7 +66,7 @@ public class KomtraxData {
 
             //CW_GPS
             String sql = String.format("select %s,%s,%s, %s, %s, %s from %s",
-                    Komtrax.CW_GPS.KIND, Komtrax.CW_GPS.TYPE, Komtrax.CW_GPS.MACHINE_NUMBER, //Unique ID
+                    Komtrax.CW_GPS.KISY, Komtrax.CW_GPS.TYP, Komtrax.CW_GPS.KIBAN, //Unique ID
                     Komtrax.CW_GPS.GPS_TIME,    //GPS Date
                     Komtrax.CW_GPS.LATITUDE,    //緯度
                     Komtrax.CW_GPS.LONGITUDE,   //経度
@@ -82,10 +82,10 @@ public class KomtraxData {
                 n++;
                 
                 //Name
-                String kisy = res.getString(Komtrax.CW_GPS.KIND.get());
-                String type = res.getString(Komtrax.CW_GPS.TYPE.get());
+                String kisy = res.getString(Komtrax.CW_GPS.KISY.get());
+                String type = res.getString(Komtrax.CW_GPS.TYP.get());
                 String s_type = "";
-                String kiban = res.getString(Komtrax.CW_GPS.MACHINE_NUMBER.get());
+                String kiban = res.getString(Komtrax.CW_GPS.KIBAN.get());
 
                 //GPS
                 String date = res.getString(Komtrax.CW_GPS.GPS_TIME.get());    //GPS Date
@@ -148,7 +148,7 @@ public class KomtraxData {
 
             //CW_SERVICE_METER
             String sql = String.format("select %s,%s,%s, %s, %s from %s",
-                    Komtrax.CW_SERVICE_METER.KIND, Komtrax.CW_SERVICE_METER.TYPE, Komtrax.CW_SERVICE_METER.MACHINE_NUMBER, //Unique ID
+                    Komtrax.CW_SERVICE_METER.KISY, Komtrax.CW_SERVICE_METER.TYP, Komtrax.CW_SERVICE_METER.KIBAN, //Unique ID
                     Komtrax.CW_SERVICE_METER.SMR_TIME,    //SMR Date
                     Komtrax.CW_SERVICE_METER.SMR_VALUE,    //SMR
                     Komtrax.TABLE.CW_SERVICE_METER.get()
@@ -163,10 +163,10 @@ public class KomtraxData {
                 n++;
 
                 //Name
-                String kisy = res.getString(Komtrax.CW_SERVICE_METER.KIND.get());
-                String type = res.getString(Komtrax.CW_SERVICE_METER.TYPE.get());
+                String kisy = res.getString(Komtrax.CW_SERVICE_METER.KISY.get());
+                String type = res.getString(Komtrax.CW_SERVICE_METER.TYP.get());
                 String s_type = "";
-                String kiban = res.getString(Komtrax.CW_SERVICE_METER.MACHINE_NUMBER.get());
+                String kiban = res.getString(Komtrax.CW_SERVICE_METER.KIBAN.get());
 
                 //SMR
                 String date = res.getString(Komtrax.CW_SERVICE_METER.SMR_TIME.get());        //SMR Date
@@ -226,7 +226,7 @@ public class KomtraxData {
 
             //CW_DAILY_THROTTLE
             String sql = String.format("select %s,%s,%s, %s, %s from %s",
-                    Komtrax.CW_DAILY_THROTTLE.KIND, Komtrax.CW_DAILY_THROTTLE.TYPE, Komtrax.CW_DAILY_THROTTLE.MACHINE_NUMBER, //Unique ID
+                    Komtrax.CW_DAILY_THROTTLE.KISY, Komtrax.CW_DAILY_THROTTLE.TYP, Komtrax.CW_DAILY_THROTTLE.KIBAN, //Unique ID
                     Komtrax.CW_DAILY_THROTTLE.THROTTLE_DATE,    //Engine Date
                     Komtrax.CW_DAILY_THROTTLE.AVE_THROTTLE_RATE,    //Engine
                     Komtrax.TABLE.CW_DAILY_THROTTLE.get()
@@ -241,10 +241,10 @@ public class KomtraxData {
                 n++;
 
                 //Name
-                String kisy = res.getString(Komtrax.CW_DAILY_THROTTLE.KIND.get());
-                String type = res.getString(Komtrax.CW_DAILY_THROTTLE.TYPE.get());
+                String kisy = res.getString(Komtrax.CW_DAILY_THROTTLE.KISY.get());
+                String type = res.getString(Komtrax.CW_DAILY_THROTTLE.TYP.get());
                 String s_type = "";
-                String kiban = res.getString(Komtrax.CW_DAILY_THROTTLE.MACHINE_NUMBER.get());
+                String kiban = res.getString(Komtrax.CW_DAILY_THROTTLE.KIBAN.get());
 
                 //Engine
                 String date = res.getString(Komtrax.CW_DAILY_THROTTLE.THROTTLE_DATE.get());    //Engine Date
@@ -306,7 +306,7 @@ public class KomtraxData {
 
             //CW_ERROR
             String sql = String.format("select %s,%s,%s, %s, %s, %s, %s from %s",
-                    Komtrax.CW_ERROR.KIND, Komtrax.CW_ERROR.TYPE, Komtrax.CW_ERROR.MACHINE_NUMBER, //Unique ID
+                    Komtrax.CW_ERROR.KISY, Komtrax.CW_ERROR.TYP, Komtrax.CW_ERROR.KIBAN, //Unique ID
                     Komtrax.CW_ERROR.ERROR_TIME,    //Error Date
                     Komtrax.CW_ERROR.ERROR_CODE,    //Error code
                     Komtrax.CW_ERROR.ERROR_KIND,    //Error Kind
@@ -323,10 +323,10 @@ public class KomtraxData {
                 n++;
 
                 //Name
-                String kisy = res.getString(Komtrax.CW_ERROR.KIND.get());
-                String type = res.getString(Komtrax.CW_ERROR.TYPE.get());
+                String kisy = res.getString(Komtrax.CW_ERROR.KISY.get());
+                String type = res.getString(Komtrax.CW_ERROR.TYP.get());
                 String s_type = "";
-                String kiban = res.getString(Komtrax.CW_ERROR.MACHINE_NUMBER.get());
+                String kiban = res.getString(Komtrax.CW_ERROR.KIBAN.get());
 
                 //Error
                 String date = res.getString(Komtrax.CW_ERROR.ERROR_TIME.get());    //Error Date
@@ -391,7 +391,7 @@ public class KomtraxData {
 
             //CW_CAUTION
             String sql = String.format("select %s,%s,%s, %s, %s, %s from %s",
-                    Komtrax.CW_CAUTION_DATA.KIND, Komtrax.CW_CAUTION_DATA.TYPE, Komtrax.CW_CAUTION_DATA.MACHINE_NUMBER, //Unique ID
+                    Komtrax.CW_CAUTION_DATA.KISY, Komtrax.CW_CAUTION_DATA.TYP, Komtrax.CW_CAUTION_DATA.KIBAN, //Unique ID
                     Komtrax.CW_CAUTION_DATA.CAUTION_DATE,    //Caution Date
                     Komtrax.CW_CAUTION_DATA.ICON_CODE,  //Caution Icon code
                     Komtrax.CW_CAUTION_DATA.CAUTION_COUNT,
@@ -407,10 +407,10 @@ public class KomtraxData {
                 n++;
 
                 //Name
-                String kisy = res.getString(Komtrax.CW_CAUTION_DATA.KIND.get());
-                String type = res.getString(Komtrax.CW_CAUTION_DATA.TYPE.get());
+                String kisy = res.getString(Komtrax.CW_CAUTION_DATA.KISY.get());
+                String type = res.getString(Komtrax.CW_CAUTION_DATA.TYP.get());
                 String s_type = "";
-                String kiban = res.getString(Komtrax.CW_CAUTION_DATA.MACHINE_NUMBER.get());
+                String kiban = res.getString(Komtrax.CW_CAUTION_DATA.KIBAN.get());
 
                 //Caution
                 String date = res.getString(Komtrax.CW_CAUTION_DATA.CAUTION_DATE.get());    //Caution Date
@@ -473,7 +473,7 @@ public class KomtraxData {
 
             //CW_CAUTION
             String sql = String.format("select %s,%s,%s, %s, %s from %s",
-                    Komtrax.CW_DAILY_FUEL_CONSUME.KIND, Komtrax.CW_DAILY_FUEL_CONSUME.TYPE, Komtrax.CW_DAILY_FUEL_CONSUME.MACHINE_NUMBER, //Unique ID
+                    Komtrax.CW_DAILY_FUEL_CONSUME.KISY, Komtrax.CW_DAILY_FUEL_CONSUME.TYP, Komtrax.CW_DAILY_FUEL_CONSUME.KIBAN, //Unique ID
                     Komtrax.CW_DAILY_FUEL_CONSUME.CONSUME_DATE,    //Caution Date
                     Komtrax.CW_DAILY_FUEL_CONSUME.CONSUME_COUNT,
                     Komtrax.TABLE.CW_DAILY_FUEL_CONSUME.get()
@@ -488,10 +488,10 @@ public class KomtraxData {
                 n++;
 
                 //Name
-                String kisy = res.getString(Komtrax.CW_DAILY_FUEL_CONSUME.KIND.get());
-                String type = res.getString(Komtrax.CW_DAILY_FUEL_CONSUME.TYPE.get());
+                String kisy = res.getString(Komtrax.CW_DAILY_FUEL_CONSUME.KISY.get());
+                String type = res.getString(Komtrax.CW_DAILY_FUEL_CONSUME.TYP.get());
                 String s_type = "";
-                String kiban = res.getString(Komtrax.CW_DAILY_FUEL_CONSUME.MACHINE_NUMBER.get());
+                String kiban = res.getString(Komtrax.CW_DAILY_FUEL_CONSUME.KIBAN.get());
 
                 //Fuel Consume
                 String date = res.getString(Komtrax.CW_DAILY_FUEL_CONSUME.CONSUME_DATE.get());    //Consume Date
@@ -553,7 +553,7 @@ public class KomtraxData {
 
             //CW_CAUTION
             String sql = String.format("select %s,%s,%s, %s, %s, %s from %s",
-                    Komtrax.CW_ACT_DATA.KIND, Komtrax.CW_ACT_DATA.TYPE, Komtrax.CW_ACT_DATA.MACHINE_NUMBER, //Unique ID
+                    Komtrax.CW_ACT_DATA.KISY, Komtrax.CW_ACT_DATA.TYP, Komtrax.CW_ACT_DATA.KIBAN, //Unique ID
                     Komtrax.CW_ACT_DATA.ACT_DATE,    //Caution Date
                     Komtrax.CW_ACT_DATA.ACT_COUNT,
                     Komtrax.CW_ACT_DATA.DAILY_UNIT,
@@ -569,10 +569,10 @@ public class KomtraxData {
                 n++;
 
                 //Name
-                String kisy = res.getString(Komtrax.CW_ACT_DATA.KIND.get());
-                String type = res.getString(Komtrax.CW_ACT_DATA.TYPE.get());
+                String kisy = res.getString(Komtrax.CW_ACT_DATA.KISY.get());
+                String type = res.getString(Komtrax.CW_ACT_DATA.TYP.get());
                 String s_type = "";
-                String kiban = res.getString(Komtrax.CW_ACT_DATA.MACHINE_NUMBER.get());
+                String kiban = res.getString(Komtrax.CW_ACT_DATA.KIBAN.get());
 
                 //Act Data
                 String date = res.getString(Komtrax.CW_ACT_DATA.ACT_DATE.get());    //Act Date

@@ -21,7 +21,9 @@ public class SyaryoTemplateAggregate {
 
 	public static void main(String[] args) {
 		String path = "..\\KomatsuData\\車両テンプレート\\";
-        String outpath = "..\\KomatsuData\\中間データ\\";
+		//String path = "template\\車両テンプレート\\";
+		String outpath = "..\\KomatsuData\\中間データ\\";
+		//String outpath = "中間データ\\";
 		String kisy = "WA470";
 		String FILENAME = outpath+"syaryo_mid_" + kisy + ".json";
 		File[] flist = (new File(path)).listFiles();

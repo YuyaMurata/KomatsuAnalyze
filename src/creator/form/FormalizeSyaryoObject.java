@@ -39,7 +39,7 @@ public class FormalizeSyaryoObject {
         map = null;
         syaryoMap = null;
 
-        //2次処理 古いデータの除去
+        //2次処理 データの分離(2009)
         map = new JsonToSyaryoObj().reader(output);
         syaryoMap = new FormalizeSyaryoObject().split(map);
         new SyaryoObjToJson().write(output, syaryoMap);
@@ -57,7 +57,7 @@ public class FormalizeSyaryoObject {
         //System.out.println("Finish joining & compressing json data!");
     }
 
-    //古い型を除去
+    //2009年以前の車両を分離
     public Map<String, SyaryoObject> split(Map<String, SyaryoObject> syaryoMap) {
         //Type
         Map map = new TreeMap();
@@ -120,9 +120,6 @@ public class FormalizeSyaryoObject {
 
             //Country
             formCountry(syaryoMap.get(name).getCountry());
-
-            //2009年以降のサービス経歴を作業，部品から削除
-            formWorkParts(syaryoMap.get(name).getWork(), syaryoMap.get(name).getParts());
 
             map.put(name, syaryoMap.get(name));
         }
@@ -407,7 +404,7 @@ public class FormalizeSyaryoObject {
 
             //komtraxSMR 分→時間 変換
             if (obj.get(source).toString().contains("komtrax")) {
-                obj.set(smr, String.valueOf(Integer.valueOf(obj.get(smr).toString()) / 60));
+                obj.set(smr, String.valueOf((Integer)(Integer.valueOf(obj.get(smr).toString()) / 60)));
             }
 
             update.put(date, obj);
