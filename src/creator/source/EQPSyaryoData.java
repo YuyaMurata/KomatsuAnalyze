@@ -140,7 +140,7 @@ public class EQPSyaryoData {
                 }
                 
                 //Spec
-                syaryo.addSpec(komtrax, s_type, category);
+                syaryo.addSpec(komtrax, category);
                 
                 //SMR
                 syaryo.addSMR(db, company, smr_date, smr);
