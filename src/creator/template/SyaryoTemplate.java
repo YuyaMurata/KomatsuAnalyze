@@ -13,7 +13,7 @@ import java.util.Map;
  *
  * @author ZZ17390
  */
-public class SyaryoTemplate {
+public class SyaryoTemplate{
     private static Map<String, String> validate = new HashMap();
     
     public String kisy, type, s_type, kiban;
@@ -24,9 +24,6 @@ public class SyaryoTemplate {
         this.type = type;
         this.s_type = s_type;
         this.kiban = kiban;
-        
-        //Setting Map
-        setting();
 	}
 
 	public static Boolean errorCheck(String date) {
@@ -561,6 +558,10 @@ public class SyaryoTemplate {
 			sb.append(map.get(key));
 		}
 		return sb.toString();
+	}
+    
+	public SyaryoTemplate clone() {	
+		return new SyaryoTemplate(kisy, type, s_type, kiban);
 	}
     
     //test

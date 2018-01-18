@@ -26,33 +26,39 @@ public class SyaryoTemplateCreate extends HiveDB {
     private static final String FILENAME = "..\\KomatsuData\\車両テンプレート\\syaryo_history_template.json";
 
     public static void main(String[] args) throws IOException {
+        long start = System.currentTimeMillis();
+
         //DB接続
         Connection con = getConnection(); //HiveDB
 
         //テンプレート生成 true=KOMPAS車両 false=EQP車両
-        //template(con, true);
+        template(con, true);
         Map<String, SyaryoTemplate> syaryoTemplate = readTempate();
         
         //EQP
-        //eqp_syaryo(con, syaryoTemplate);
-        //eqp_spec(con, syaryoTemplate);
-        //eqp_keireki(con, syaryoTemplate);
+        eqp_syaryo(con, syaryoTemplate);
+        eqp_spec(con, syaryoTemplate);
+        eqp_keireki(con, syaryoTemplate);
         
         //KOMPAS
-        //syaryo(con, syaryoTemplate);
-        //service_s(con, syaryoTemplate);
-        //service_t(con, syaryoTemplate);
-        //order(con, syaryoTemplate);
-        //work(con, syaryoTemplate);
-        //parts(con, syaryoTemplate);
-        //sell(con, syaryoTemplate);
-        //sell_used(con, syaryoTemplate);
+        syaryo(con, new HashMap(syaryoTemplate));
+        service_s(con, syaryoTemplate);
+        service_t(con, syaryoTemplate);
+        order(con, syaryoTemplate);
+        work(con, syaryoTemplate);
+        parts(con, syaryoTemplate);
+        sell(con, syaryoTemplate);
+        sell_used(con, syaryoTemplate);
         
         //KOSMIC
-        //sell_old(con, syaryoTemplate);
+        sell_old(con, syaryoTemplate);
         
         //KOMTRAX
         komtrax(con, syaryoTemplate);
+        
+        long stop = System.currentTimeMillis();
+        
+        System.out.println((stop-start)+"ms");
     }
 
     public static void template(Connection con, Boolean syaryoFilter) {

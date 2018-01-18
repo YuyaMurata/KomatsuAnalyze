@@ -126,7 +126,7 @@ public class OrderData {
                 }
                 
                 //車両
-                SyaryoTemplate syaryo = syaryoMap.get(name);
+                SyaryoTemplate syaryo = syaryoMap.get(name).clone();
                 
                 m++;
                 

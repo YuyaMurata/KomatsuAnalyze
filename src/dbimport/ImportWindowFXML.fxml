@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="460.0" prefWidth="349.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dbimport.ImportWindowFXMLController">
+   <children>
+      <TextField fx:id="key_setting" layoutX="14.0" layoutY="14.0" prefHeight="23.0" prefWidth="321.0" promptText="Main Key" />
+      <CheckBox fx:id="all_checkd" layoutX="14.0" layoutY="83.0" mnemonicParsing="false" onAction="#onChecked" text="All" />
+      <TableView layoutX="14.0" layoutY="111.0" prefHeight="200.0" prefWidth="321.0">
+        <columns>
+          <TableColumn fx:id="table_field_list" editable="false" prefWidth="160.0" sortable="false" text="Field" />
+          <TableColumn fx:id="table_name_list" editable="false" prefWidth="160.0" sortable="false" text="Name" />
+        </columns>
+      </TableView>
+      <Label layoutX="17.0" layoutY="324.0" prefHeight="15.0" prefWidth="80.0" text="Key Check =" />
+      <TextField fx:id="join_text" layoutX="17.0" layoutY="348.0" prefHeight="23.0" prefWidth="321.0" promptText="Join Table and Key" />
+      <Button fx:id="sql_check_button" layoutX="17.0" layoutY="392.0" mnemonicParsing="false" onAction="#onSQLCheckButton" prefHeight="23.0" prefWidth="116.0" text="SQL Check" />
+      <Button fx:id="start_button" layoutX="248.0" layoutY="392.0" mnemonicParsing="false" onAction="#onStartButton" prefHeight="23.0" prefWidth="87.0" text="Start" />
+      <ProgressBar fx:id="start_progress" layoutX="17.0" layoutY="428.0" prefHeight="18.0" prefWidth="321.0" progress="0.0" />
+      <Label fx:id="key_check_boolean" layoutX="97.0" layoutY="324.0" text="False" />
+      <ChoiceBox fx:id="table_select" layoutX="14.0" layoutY="49.0" prefHeight="23.0" prefWidth="321.0" />
+   </children>
+</AnchorPane>

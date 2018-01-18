@@ -38,20 +38,20 @@ public class KomtraxData {
         
         //JSON Writer
         
-        //addGPS(syaryoMap);
-        //System.out.println("Komtrax GPS not update List:"+dataCheck());
-        //addSMR(syaryoMap);
-        //System.out.println("Komtrax SMR not update List:"+dataCheck());
-        //addEngine(syaryoMap);
-        //System.out.println("Komtrax Engine not update List:"+dataCheck());
-        //addError(syaryoMap);
-        //System.out.println("Komtrax Error not update List:"+dataCheck());
-        //addCaution(syaryoMap);
-        //System.out.println("Komtrax Caution not update List:"+dataCheck());
-        //addFuel(syaryoMap);
-        //System.out.println("Komtrax Fuel not update List:"+dataCheck());
-        //addAct(syaryoMap);
-        //System.out.println("Komtrax Act not update List:"+dataCheck());
+        addGPS(syaryoMap);
+        System.out.println("Komtrax GPS not update List:"+dataCheck());
+        addSMR(syaryoMap);
+        System.out.println("Komtrax SMR not update List:"+dataCheck());
+        addEngine(syaryoMap);
+        System.out.println("Komtrax Engine not update List:"+dataCheck());
+        addError(syaryoMap);
+        System.out.println("Komtrax Error not update List:"+dataCheck());
+        addCaution(syaryoMap);
+        System.out.println("Komtrax Caution not update List:"+dataCheck());
+        addFuel(syaryoMap);
+        System.out.println("Komtrax Fuel not update List:"+dataCheck());
+        addAct(syaryoMap);
+        System.out.println("Komtrax Act not update List:"+dataCheck());
     }
     
     //GPS
@@ -104,7 +104,7 @@ public class KomtraxData {
                 }
                 
                 //車両
-                SyaryoTemplate syaryo = syaryoMap.get(name);
+                SyaryoTemplate syaryo = syaryoMap.get(name).clone();
                 
                 m++;
                 
@@ -184,7 +184,7 @@ public class KomtraxData {
                 }
                 
                 //車両
-                SyaryoTemplate syaryo = syaryoMap.get(name);
+                SyaryoTemplate syaryo = syaryoMap.get(name).clone();
                 
                 m++;
                 
@@ -262,7 +262,7 @@ public class KomtraxData {
                 }
                 
                 //車両
-                SyaryoTemplate syaryo = syaryoMap.get(name);
+                SyaryoTemplate syaryo = syaryoMap.get(name).clone();
                 
                 m++;
                 
@@ -347,7 +347,7 @@ public class KomtraxData {
                 }
                 
                 //車両
-                SyaryoTemplate syaryo = syaryoMap.get(name);
+                SyaryoTemplate syaryo = syaryoMap.get(name).clone();
                 
                 m++;
                 
@@ -429,7 +429,7 @@ public class KomtraxData {
                 }
                 
                 //車両
-                SyaryoTemplate syaryo = syaryoMap.get(name);
+                SyaryoTemplate syaryo = syaryoMap.get(name).clone();
                 
                 m++;
                 
@@ -509,7 +509,7 @@ public class KomtraxData {
                 }
                 
                 //車両
-                SyaryoTemplate syaryo = syaryoMap.get(name);
+                SyaryoTemplate syaryo = syaryoMap.get(name).clone();
                 
                 m++;
                 
@@ -591,7 +591,7 @@ public class KomtraxData {
                 }
                 
                 //車両
-                SyaryoTemplate syaryo = syaryoMap.get(name);
+                SyaryoTemplate syaryo = syaryoMap.get(name).clone();
                 
                 m++;
                 
