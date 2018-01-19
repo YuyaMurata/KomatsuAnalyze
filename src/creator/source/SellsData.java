@@ -27,7 +27,7 @@ public class SellsData {
     
     //SELL DATA
     public Map<String, SyaryoTemplate> addSell(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap) {
-        Map map = new TreeMap();
+        Map<String, SyaryoTemplate> map = new TreeMap();
 
         try {
             Statement stmt = con.createStatement();
@@ -94,7 +94,11 @@ public class SellsData {
                 }
                 
                 //車両
-                SyaryoTemplate syaryo = syaryoMap.get(name).clone();
+                SyaryoTemplate syaryo;
+                if(map.get(name) == null)
+                    syaryo = syaryoMap.get(name).clone();
+                else
+                    syaryo = map.get(name);
 
                 m++;
 
@@ -137,7 +141,7 @@ public class SellsData {
 
     //SELL DATA
     public Map<String, SyaryoTemplate> addOld(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap) {
-        Map map = new TreeMap();
+        Map<String, SyaryoTemplate> map = new TreeMap();
 
         try {
             Statement stmt = con.createStatement();
@@ -188,7 +192,11 @@ public class SellsData {
                 }
 
                 //車両
-                SyaryoTemplate syaryo = syaryoMap.get(name).clone();
+                SyaryoTemplate syaryo;
+                if(map.get(name) == null)
+                    syaryo = syaryoMap.get(name).clone();
+                else
+                    syaryo = map.get(name);
                 
                 m++;
 
@@ -223,7 +231,7 @@ public class SellsData {
 
     //SELL_USED DATA
     public Map<String, SyaryoTemplate> addUsed(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap) {
-        Map map = new TreeMap();
+        Map<String, SyaryoTemplate> map = new TreeMap();
 
         try {
             Statement stmt = con.createStatement();
@@ -311,7 +319,11 @@ public class SellsData {
                 }
 
                 //車両
-                SyaryoTemplate syaryo = syaryoMap.get(name).clone();
+                SyaryoTemplate syaryo;
+                if(map.get(name) == null)
+                    syaryo = syaryoMap.get(name).clone();
+                else
+                    syaryo = map.get(name);
                 
                 m++;
 

@@ -98,7 +98,11 @@ public class SyaryoData {
                 }
                 
                 //車両
-                SyaryoTemplate syaryo = syaryoMap.get(name).clone();
+                SyaryoTemplate syaryo;
+                if(map.get(name) == null)
+                    syaryo = syaryoMap.get(name).clone();
+                else
+                    syaryo = map.get(name);
                 
                 m++;
 

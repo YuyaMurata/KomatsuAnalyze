@@ -27,7 +27,7 @@ public class PartsData {
     
     //PARTS DATA
     public Map<String, SyaryoTemplate> addParts(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap) {
-        Map map = new TreeMap();
+        Map<String, SyaryoTemplate> map = new TreeMap();
 
         try {
             Statement stmt = con.createStatement();
@@ -93,7 +93,11 @@ public class PartsData {
                 }
                 
                 //車両
-                SyaryoTemplate syaryo = syaryoMap.get(name).clone();
+                SyaryoTemplate syaryo;
+                if(map.get(name) == null)
+                    syaryo = syaryoMap.get(name).clone();
+                else
+                    syaryo = map.get(name);
                 
                 m++;
 

@@ -38,7 +38,7 @@ public class KomtraxData {
         
         //JSON Writer
         
-        addGPS(syaryoMap);
+        /*addGPS(syaryoMap);
         System.out.println("Komtrax GPS not update List:"+dataCheck());
         addSMR(syaryoMap);
         System.out.println("Komtrax SMR not update List:"+dataCheck());
@@ -49,15 +49,15 @@ public class KomtraxData {
         addCaution(syaryoMap);
         System.out.println("Komtrax Caution not update List:"+dataCheck());
         addFuel(syaryoMap);
-        System.out.println("Komtrax Fuel not update List:"+dataCheck());
+        System.out.println("Komtrax Fuel not update List:"+dataCheck());*/
         addAct(syaryoMap);
-        System.out.println("Komtrax Act not update List:"+dataCheck());
+        //System.out.println("Komtrax Act not update List:"+dataCheck());
     }
     
     //GPS
     public void addGPS(Map<String, SyaryoTemplate> syaryoMap){       
         nonUpdateSyaryoList = new ArrayList();
-        Map map = new TreeMap();
+        Map<String, SyaryoTemplate> map = new TreeMap();
         
         try {
             PrintWriter errpw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_komtrax_gps_error.csv")))));
@@ -104,7 +104,11 @@ public class KomtraxData {
                 }
                 
                 //車両
-                SyaryoTemplate syaryo = syaryoMap.get(name).clone();
+                SyaryoTemplate syaryo;
+                if(map.get(name) == null)
+                    syaryo = syaryoMap.get(name).clone();
+                else
+                    syaryo = map.get(name);
                 
                 m++;
                 
@@ -139,7 +143,7 @@ public class KomtraxData {
     //SMR
     public void addSMR(Map<String, SyaryoTemplate> syaryoMap){      
         nonUpdateSyaryoList = new ArrayList();
-        Map map = new TreeMap();
+        Map<String, SyaryoTemplate> map = new TreeMap();
         
         try {
             PrintWriter errpw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_komtrax_smr_error.csv")))));
@@ -184,7 +188,11 @@ public class KomtraxData {
                 }
                 
                 //車両
-                SyaryoTemplate syaryo = syaryoMap.get(name).clone();
+                SyaryoTemplate syaryo;
+                if(map.get(name) == null)
+                    syaryo = syaryoMap.get(name).clone();
+                else
+                    syaryo = map.get(name);
                 
                 m++;
                 
@@ -217,7 +225,7 @@ public class KomtraxData {
     //Engine
     public void addEngine(Map<String, SyaryoTemplate> syaryoMap){
         nonUpdateSyaryoList = new ArrayList();
-        Map map = new TreeMap();
+        Map<String, SyaryoTemplate> map = new TreeMap();
         
         try {
             PrintWriter errpw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_komtrax_engine_error.csv")))));
@@ -262,7 +270,11 @@ public class KomtraxData {
                 }
                 
                 //車両
-                SyaryoTemplate syaryo = syaryoMap.get(name).clone();
+                SyaryoTemplate syaryo;
+                if(map.get(name) == null)
+                    syaryo = syaryoMap.get(name).clone();
+                else
+                    syaryo = map.get(name);
                 
                 m++;
                 
@@ -297,7 +309,7 @@ public class KomtraxData {
     //Error
     public void addError(Map<String, SyaryoTemplate> syaryoMap){
         nonUpdateSyaryoList = new ArrayList();
-        Map map = new TreeMap();
+        Map<String, SyaryoTemplate> map = new TreeMap();
 
         try {
             PrintWriter errpw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_komtrax_error_error.csv")))));
@@ -347,7 +359,11 @@ public class KomtraxData {
                 }
                 
                 //車両
-                SyaryoTemplate syaryo = syaryoMap.get(name).clone();
+                SyaryoTemplate syaryo;
+                if(map.get(name) == null)
+                    syaryo = syaryoMap.get(name).clone();
+                else
+                    syaryo = map.get(name);
                 
                 m++;
                 
@@ -382,7 +398,7 @@ public class KomtraxData {
     //Caution
     public void addCaution(Map<String, SyaryoTemplate> syaryoMap){
         nonUpdateSyaryoList = new ArrayList();
-        Map map = new TreeMap();
+        Map<String, SyaryoTemplate> map = new TreeMap();
 
         try {
             PrintWriter errpw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_komtrax_caution_error.csv")))));
@@ -429,7 +445,11 @@ public class KomtraxData {
                 }
                 
                 //車両
-                SyaryoTemplate syaryo = syaryoMap.get(name).clone();
+                SyaryoTemplate syaryo;
+                if(map.get(name) == null)
+                    syaryo = syaryoMap.get(name).clone();
+                else
+                    syaryo = map.get(name);
                 
                 m++;
                 
@@ -464,7 +484,7 @@ public class KomtraxData {
     //Fuel
     public void addFuel(Map<String, SyaryoTemplate> syaryoMap){
         nonUpdateSyaryoList = new ArrayList();
-        Map map = new TreeMap();
+        Map<String, SyaryoTemplate> map = new TreeMap();
 
         try {
             PrintWriter errpw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_komtrax_fuelconsume_error.csv")))));
@@ -509,7 +529,11 @@ public class KomtraxData {
                 }
                 
                 //車両
-                SyaryoTemplate syaryo = syaryoMap.get(name).clone();
+                SyaryoTemplate syaryo;
+                if(map.get(name) == null)
+                    syaryo = syaryoMap.get(name).clone();
+                else
+                    syaryo = map.get(name);
                 
                 m++;
                 
@@ -544,7 +568,7 @@ public class KomtraxData {
     //Act
     public void addAct(Map<String, SyaryoTemplate> syaryoMap){
         nonUpdateSyaryoList = new ArrayList();
-        Map map = new TreeMap();
+        Map<String, SyaryoTemplate> map = new TreeMap();
 
         try {
             PrintWriter errpw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_komtrax_actdata_error.csv")))));
@@ -591,7 +615,11 @@ public class KomtraxData {
                 }
                 
                 //車両
-                SyaryoTemplate syaryo = syaryoMap.get(name).clone();
+                SyaryoTemplate syaryo;
+                if(map.get(name) == null)
+                    syaryo = syaryoMap.get(name).clone();
+                else
+                    syaryo = map.get(name);
                 
                 m++;
                 

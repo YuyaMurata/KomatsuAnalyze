@@ -29,7 +29,7 @@ public class ServiceData {
     
     //SERVICE DATA
     public Map<String, SyaryoTemplate> addService(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap, int sp1, int sp2, int uag1, int uag2, int uag3) {
-        Map map = new TreeMap();
+        Map<String, SyaryoTemplate> map = new TreeMap();
 
         try {
             Statement stmt = con.createStatement();
@@ -140,7 +140,11 @@ public class ServiceData {
                 }
                 
                 //車両
-                SyaryoTemplate syaryo = syaryoMap.get(name).clone();
+                SyaryoTemplate syaryo;
+                if(map.get(name) == null)
+                    syaryo = syaryoMap.get(name).clone();
+                else
+                    syaryo = map.get(name);
 
                 m++;
 
