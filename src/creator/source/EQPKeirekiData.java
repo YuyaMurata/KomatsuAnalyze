@@ -27,14 +27,14 @@ public class EQPKeirekiData {
     private static List nonUpdateSyaryoList = new ArrayList();
     
     //EQP_KEIREKI DATA
-    public Map<String, SyaryoTemplate> addSyaryoKeireki(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap) throws IOException {
+    public Map<String, SyaryoTemplate> addSyaryoKeireki(Connection con, PrintWriter errpw, String machine, Map<String, SyaryoTemplate> syaryoMap) throws IOException {
         Map<String, SyaryoTemplate> map = new TreeMap<>();
         
         try {
             Statement stmt = con.createStatement();
 
             //EQP_Syaryo
-            String sql = String.format("select %s,%s,%s,%s, %s, %s, %s, %s, %s, %s, %s from %s",
+            String sql = String.format("select %s,%s,%s,%s, %s, %s, %s, %s, %s, %s, %s from %s where kisy='%s'",
                     EQP.Keireki.KISY, EQP.Keireki.TYP, EQP.Keireki.SYHK, EQP.Keireki.KIBAN, //Unique ID
                     EQP.Keireki.HIS_DATE, //経歴日
                     EQP.Keireki.HIS_INFO_CD, //経歴コード
@@ -43,7 +43,8 @@ public class EQPKeirekiData {
                     EQP.Keireki.CUST_CD, //顧客コード
                     EQP.Keireki.CUST_NM, //顧客名
                     EQP.Keireki.DB, //代理店
-                    HiveDB.TABLE.EQP_KEIREKI
+                    HiveDB.TABLE.EQP_KEIREKI,
+                    machine
             );
             System.out.println("Running: " + sql);
 

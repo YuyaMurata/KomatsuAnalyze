@@ -26,14 +26,14 @@ public class SellsData {
     private static List nonUpdateSyaryoList;
     
     //SELL DATA
-    public Map<String, SyaryoTemplate> addSell(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap) {
+    public Map<String, SyaryoTemplate> addSell(Connection con, PrintWriter errpw, String machine, Map<String, SyaryoTemplate> syaryoMap) {
         Map<String, SyaryoTemplate> map = new TreeMap();
 
         try {
             Statement stmt = con.createStatement();
 
             //Syaryo
-            String sql = String.format("select %s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s from %s where %s and %s and %s and %s",
+            String sql = String.format("select %s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s from %s where %s and %s and %s and %s and kisy='%s'",
                     Sell._Sell.KISY, Sell._Sell.TYP, Sell._Sell.SYHK, Sell._Sell.KIBAN, //Unique ID
                     Sell._Sell.KSYCD, //会社コード
                     Sell._Sell.NOU_YTI_DAY, //納入年月
@@ -49,7 +49,8 @@ public class SellsData {
                     Sell._Sell.CO_URI_ACT_KBN + "=2",
                     Sell._Sell.MKM_ACT_KBN + "=2",
                     Sell._Sell.SP_MTO_SK_KBN + "=1",
-                    Sell._Sell.CO_URI_LA_FLG + "=1"
+                    Sell._Sell.CO_URI_LA_FLG + "=1",
+                    machine
             );
             System.out.println("Running: " + sql);
 
@@ -140,19 +141,20 @@ public class SellsData {
     }
 
     //SELL DATA
-    public Map<String, SyaryoTemplate> addOld(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap) {
+    public Map<String, SyaryoTemplate> addOld(Connection con, PrintWriter errpw, String machine, Map<String, SyaryoTemplate> syaryoMap) {
         Map<String, SyaryoTemplate> map = new TreeMap();
 
         try {
             Statement stmt = con.createStatement();
 
             //Syaryo
-            String sql = String.format("select %s,%s,%s,%s, %s, %s, %s from %s",
+            String sql = String.format("select %s,%s,%s,%s, %s, %s, %s from %s where kisy='%s'",
                     Sell.Old.KISY, Sell.Old.TYP, Sell.Old.SYHK, Sell.Old.KIBAN, //Unique ID
                     Sell.Old.KSYCD, //会社コード
                     Sell.Old.URI_DAY, //売上年月
                     Sell.Old.URI_KNGK, //実質価
-                    HiveDB.TABLE.SELL_OLD
+                    HiveDB.TABLE.SELL_OLD,
+                    machine
             );
             System.out.println("Running: " + sql);
 
@@ -230,14 +232,14 @@ public class SellsData {
     }
 
     //SELL_USED DATA
-    public Map<String, SyaryoTemplate> addUsed(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap) {
+    public Map<String, SyaryoTemplate> addUsed(Connection con, PrintWriter errpw, String machine, Map<String, SyaryoTemplate> syaryoMap) {
         Map<String, SyaryoTemplate> map = new TreeMap();
 
         try {
             Statement stmt = con.createStatement();
 
             //Syaryo
-            String sql = String.format("select %s,%s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s from %s",
+            String sql = String.format("select %s,%s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s from %s where kisy='%s'",
                     Sell.Used.KISY, Sell.Used.TYPE, Sell.Used.S_TYPE, Sell.Used.KIBAN, //Unique ID
                     Sell.Used.URI_DAY, //売上日
                     Sell.Used.CO_CODE, //受注コード
@@ -252,7 +254,8 @@ public class SellsData {
                     Sell.Used.PO_TO, //仕入先
                     Sell.Used.PO_SUM_DAY, //仕入計上日
                     Sell.Used.NO_CTRY, //納品先国名
-                    HiveDB.TABLE.SELL_USED
+                    HiveDB.TABLE.SELL_USED,
+                    machine
             );
             System.out.println("Running: " + sql);
 

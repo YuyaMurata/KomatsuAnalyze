@@ -27,14 +27,14 @@ public class OrderData {
     private static List nonUpdateSyaryoList;
     
     //ORDER DATA
-    public Map<String, SyaryoTemplate> addOrder(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap, int uag1, int uag2, int uag3) {
+    public Map<String, SyaryoTemplate> addOrder(Connection con, PrintWriter errpw, String machine, Map<String, SyaryoTemplate> syaryoMap, int uag1, int uag2, int uag3) {
         Map<String, SyaryoTemplate> map = new TreeMap();
         
         try {
             Statement stmt = con.createStatement();
 
             //Syaryo
-            String sql = String.format("select %s,%s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s from %s where %s and %s and %s",
+            String sql = String.format("select %s,%s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s from %s where %s and %s and %s and kisy='%s'",
                     Order._Order.KISY, Order._Order.TYP, Order._Order.SYHK, Order._Order.KIBAN, //Unique ID
                     Order._Order.KSYCD, //会社コード
                     Order._Order.SBN, //作番
@@ -58,7 +58,8 @@ public class OrderData {
                     HiveDB.TABLE.ORDER.get(),
                     Order._Order.UAGE_KBN_1 + "=" + uag1, //売上区分1
                     Order._Order.UAGE_KBN_2 + "=" + uag2, //売上区分2
-                    Order._Order.UAGE_KBN_3 + "=" + uag3  //売上区分3
+                    Order._Order.UAGE_KBN_3 + "=" + uag3,  //売上区分3
+                    machine
             );
             System.out.println("Running: " + sql);
 

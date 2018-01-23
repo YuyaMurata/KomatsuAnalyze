@@ -28,14 +28,14 @@ public class ServiceData {
     private static List nonUpdateSyaryoList = new ArrayList();
     
     //SERVICE DATA
-    public Map<String, SyaryoTemplate> addService(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap, int sp1, int sp2, int uag1, int uag2, int uag3) {
+    public Map<String, SyaryoTemplate> addService(Connection con, PrintWriter errpw, String machine, Map<String, SyaryoTemplate> syaryoMap, int sp1, int sp2, int uag1, int uag2, int uag3) {
         Map<String, SyaryoTemplate> map = new TreeMap();
 
         try {
             Statement stmt = con.createStatement();
 
             //Syaryo
-            String sql = String.format("select s.%s,s.%s,s.%s,s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s from %s s left outer join %s k on (s.%s=k.%s and s.%s=k.%s) where s.%s and s.%s and s.%s and s.%s and s.%s and k.%s is NULL",
+            String sql = String.format("select s.%s,s.%s,s.%s,s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s from %s s left outer join %s k on (s.%s=k.%s and s.%s=k.%s) where s.%s and s.%s and s.%s and s.%s and s.%s and k.%s is NULL and s.kisy='%s'",
                     Service._Service.KISY, Service._Service.TYP, Service._Service.SYHK, Service._Service.KIBAN, //Unique ID
                     Service._Service.KSYCD, //会社コード
                     Service._Service.JSDAY, //実施日
@@ -68,7 +68,8 @@ public class ServiceData {
                     Service._Service.UAGE_KBN_1 + "=" + uag1, //売上区分1
                     Service._Service.UAGE_KBN_2 + "=" + uag2, //売上区分2
                     Service._Service.UAGE_KBN_3 + "=" + uag3, //売上区分3
-                    Order._Order.SBN
+                    Order._Order.SBN,
+                    machine
             );
             System.out.println("Running: " + sql);
 

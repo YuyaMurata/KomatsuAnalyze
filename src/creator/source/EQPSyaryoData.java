@@ -28,14 +28,14 @@ public class EQPSyaryoData {
     private static List nonUpdateSyaryoList = new ArrayList();
     
     //EQP_SYARYO DATA
-    public Map<String, SyaryoTemplate> addEQPSyaryo(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap) {
+    public Map<String, SyaryoTemplate> addEQPSyaryo(Connection con, PrintWriter errpw, String machine, Map<String, SyaryoTemplate> syaryoMap) {
         Map<String, SyaryoTemplate> map = new TreeMap<>();
         
         try {
             Statement stmt = con.createStatement();
 
             //EQP_Syaryo
-            String sql = String.format("select e.%s,e.%s,e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, s.%s from %s e join %s s on (e.kisy=s.kisy and e.kiban=s.kiban)",
+            String sql = String.format("select e.%s,e.%s,e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, s.%s from %s e join %s s on (e.kisy=s.kisy and e.kiban=s.kiban) where e.kisy='%s'",
                     EQP.Syaryo.KISY, EQP.Syaryo.TYP, EQP.Syaryo.SYHK, EQP.Syaryo.KIBAN, //Unique ID
                     EQP.Syaryo.MNF_DATE, //生産日
                     EQP.Syaryo.PLANT, //生産工場(catalog)
@@ -53,7 +53,8 @@ public class EQPSyaryoData {
                     EQP.Syaryo.VHMS_APP_CTG, //Komtrax plus
                     Syaryo._Syaryo.SEHN_BNR_CD_B, //製品分類コード B
                     HiveDB.TABLE.EQP_SYARYO,
-                    HiveDB.TABLE.SYARYO
+                    HiveDB.TABLE.SYARYO,
+                    machine
             );
             System.out.println("Running: " + sql);
 

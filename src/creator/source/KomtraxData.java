@@ -30,26 +30,28 @@ public class KomtraxData {
     private static List nonUpdateSyaryoList;
     private Connection con;
     private String FILENAME;
+    private String machine;
     
     //KOMTRAX DATA
-    public void addKomtrax(String FILENAME, Connection con, Map<String, SyaryoTemplate> syaryoMap) {
+    public void addKomtrax(String FILENAME, Connection con, String machine, Map<String, SyaryoTemplate> syaryoMap) {
         this.FILENAME = FILENAME;
         this.con = con;
+        this.machine = machine;
         
         //JSON Writer
         
-        /*addGPS(syaryoMap);
-        System.out.println("Komtrax GPS not update List:"+dataCheck());
+        addGPS(syaryoMap);
+        //System.out.println("Komtrax GPS not update List:"+dataCheck());
         addSMR(syaryoMap);
-        System.out.println("Komtrax SMR not update List:"+dataCheck());
+        //System.out.println("Komtrax SMR not update List:"+dataCheck());
         addEngine(syaryoMap);
-        System.out.println("Komtrax Engine not update List:"+dataCheck());
+        //System.out.println("Komtrax Engine not update List:"+dataCheck());
         addError(syaryoMap);
-        System.out.println("Komtrax Error not update List:"+dataCheck());
+        //System.out.println("Komtrax Error not update List:"+dataCheck());
         addCaution(syaryoMap);
-        System.out.println("Komtrax Caution not update List:"+dataCheck());
+        //System.out.println("Komtrax Caution not update List:"+dataCheck());
         addFuel(syaryoMap);
-        System.out.println("Komtrax Fuel not update List:"+dataCheck());*/
+        //System.out.println("Komtrax Fuel not update List:"+dataCheck());
         addAct(syaryoMap);
         //System.out.println("Komtrax Act not update List:"+dataCheck());
     }
@@ -65,12 +67,13 @@ public class KomtraxData {
             Statement stmt = con.createStatement();
 
             //CW_GPS
-            String sql = String.format("select %s,%s,%s, %s, %s, %s from %s",
+            String sql = String.format("select %s,%s,%s, %s, %s, %s from %s where kisy='%s'",
                     Komtrax.CW_GPS.KISY, Komtrax.CW_GPS.TYP, Komtrax.CW_GPS.KIBAN, //Unique ID
                     Komtrax.CW_GPS.GPS_TIME,    //GPS Date
                     Komtrax.CW_GPS.LATITUDE,    //緯度
                     Komtrax.CW_GPS.LONGITUDE,   //経度
-                    Komtrax.TABLE.CW_GPS.get()
+                    Komtrax.TABLE.CW_GPS.get(),
+                    machine
             );
             System.out.println("Running: " + sql);
 
@@ -151,11 +154,12 @@ public class KomtraxData {
             Statement stmt = con.createStatement();
 
             //CW_SERVICE_METER
-            String sql = String.format("select %s,%s,%s, %s, %s from %s",
+            String sql = String.format("select %s,%s,%s, %s, %s from %s where kisy='%s'",
                     Komtrax.CW_SERVICE_METER.KISY, Komtrax.CW_SERVICE_METER.TYP, Komtrax.CW_SERVICE_METER.KIBAN, //Unique ID
                     Komtrax.CW_SERVICE_METER.SMR_TIME,    //SMR Date
                     Komtrax.CW_SERVICE_METER.SMR_VALUE,    //SMR
-                    Komtrax.TABLE.CW_SERVICE_METER.get()
+                    Komtrax.TABLE.CW_SERVICE_METER.get(),
+                    machine
             );
             System.out.println("Running: " + sql);
 
@@ -233,11 +237,12 @@ public class KomtraxData {
             Statement stmt = con.createStatement();
 
             //CW_DAILY_THROTTLE
-            String sql = String.format("select %s,%s,%s, %s, %s from %s",
+            String sql = String.format("select %s,%s,%s, %s, %s from %s where kisy='%s'",
                     Komtrax.CW_DAILY_THROTTLE.KISY, Komtrax.CW_DAILY_THROTTLE.TYP, Komtrax.CW_DAILY_THROTTLE.KIBAN, //Unique ID
                     Komtrax.CW_DAILY_THROTTLE.THROTTLE_DATE,    //Engine Date
                     Komtrax.CW_DAILY_THROTTLE.AVE_THROTTLE_RATE,    //Engine
-                    Komtrax.TABLE.CW_DAILY_THROTTLE.get()
+                    Komtrax.TABLE.CW_DAILY_THROTTLE.get(),
+                    machine
             );
             System.out.println("Running: " + sql);
 
@@ -317,13 +322,14 @@ public class KomtraxData {
             Statement stmt = con.createStatement();
 
             //CW_ERROR
-            String sql = String.format("select %s,%s,%s, %s, %s, %s, %s from %s",
+            String sql = String.format("select %s,%s,%s, %s, %s, %s, %s from %s where kisy='%s'",
                     Komtrax.CW_ERROR.KISY, Komtrax.CW_ERROR.TYP, Komtrax.CW_ERROR.KIBAN, //Unique ID
                     Komtrax.CW_ERROR.ERROR_TIME,    //Error Date
                     Komtrax.CW_ERROR.ERROR_CODE,    //Error code
                     Komtrax.CW_ERROR.ERROR_KIND,    //Error Kind
                     Komtrax.CW_ERROR.COUNT,
-                    Komtrax.TABLE.CW_ERROR.get()
+                    Komtrax.TABLE.CW_ERROR.get(),
+                    machine
             );
             System.out.println("Running: " + sql);
 
@@ -406,12 +412,13 @@ public class KomtraxData {
             Statement stmt = con.createStatement();
 
             //CW_CAUTION
-            String sql = String.format("select %s,%s,%s, %s, %s, %s from %s",
+            String sql = String.format("select %s,%s,%s, %s, %s, %s from %s where kisy='%s'",
                     Komtrax.CW_CAUTION_DATA.KISY, Komtrax.CW_CAUTION_DATA.TYP, Komtrax.CW_CAUTION_DATA.KIBAN, //Unique ID
                     Komtrax.CW_CAUTION_DATA.CAUTION_DATE,    //Caution Date
                     Komtrax.CW_CAUTION_DATA.ICON_CODE,  //Caution Icon code
                     Komtrax.CW_CAUTION_DATA.CAUTION_COUNT,
-                    Komtrax.TABLE.CW_CAUTION_DATA.get()
+                    Komtrax.TABLE.CW_CAUTION_DATA.get(),
+                    machine
             );
             System.out.println("Running: " + sql);
 
@@ -492,11 +499,12 @@ public class KomtraxData {
             Statement stmt = con.createStatement();
 
             //CW_CAUTION
-            String sql = String.format("select %s,%s,%s, %s, %s from %s",
+            String sql = String.format("select %s,%s,%s, %s, %s from %s where kisy='%s'",
                     Komtrax.CW_DAILY_FUEL_CONSUME.KISY, Komtrax.CW_DAILY_FUEL_CONSUME.TYP, Komtrax.CW_DAILY_FUEL_CONSUME.KIBAN, //Unique ID
                     Komtrax.CW_DAILY_FUEL_CONSUME.CONSUME_DATE,    //Caution Date
                     Komtrax.CW_DAILY_FUEL_CONSUME.CONSUME_COUNT,
-                    Komtrax.TABLE.CW_DAILY_FUEL_CONSUME.get()
+                    Komtrax.TABLE.CW_DAILY_FUEL_CONSUME.get(),
+                    machine
             );
             System.out.println("Running: " + sql);
 
@@ -576,12 +584,13 @@ public class KomtraxData {
             Statement stmt = con.createStatement();
 
             //CW_CAUTION
-            String sql = String.format("select %s,%s,%s, %s, %s, %s from %s",
+            String sql = String.format("select %s,%s,%s, %s, %s, %s from %s where kisy='%s'",
                     Komtrax.CW_ACT_DATA.KISY, Komtrax.CW_ACT_DATA.TYP, Komtrax.CW_ACT_DATA.KIBAN, //Unique ID
                     Komtrax.CW_ACT_DATA.ACT_DATE,    //Caution Date
                     Komtrax.CW_ACT_DATA.ACT_COUNT,
                     Komtrax.CW_ACT_DATA.DAILY_UNIT,
-                    Komtrax.TABLE.CW_ACT_DATA.get()
+                    Komtrax.TABLE.CW_ACT_DATA.get(),
+                    machine
             );
             System.out.println("Running: " + sql);
 

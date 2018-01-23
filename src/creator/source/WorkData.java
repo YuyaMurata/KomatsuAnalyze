@@ -27,14 +27,14 @@ public class WorkData {
     private static List nonUpdateSyaryoList = new ArrayList();
     
     //WORK_INFO DATA
-    public Map<String, SyaryoTemplate> addWork(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap) {
+    public Map<String, SyaryoTemplate> addWork(Connection con, PrintWriter errpw, String machine, Map<String, SyaryoTemplate> syaryoMap) {
         Map<String, SyaryoTemplate> map = new TreeMap();
 
         try {
             Statement stmt = con.createStatement();
 
             //Syaryo
-            String sql = String.format("select o.%s,o.%s,o.%s,o.%s, w.%s, w.%s, w.%s, o.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, o.%s, o.%s, w.%s from %s w join %s o on (w.%s=o.%s and w.%s=o.%s)",
+            String sql = String.format("select o.%s,o.%s,o.%s,o.%s, w.%s, w.%s, w.%s, o.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, o.%s, o.%s, w.%s from %s w join %s o on (w.%s=o.%s and w.%s=o.%s) where o.kisy='%s'",
                     Order._Order.KISY, Order._Order.TYP, Order._Order.SYHK, Order._Order.KIBAN, //Unique ID
                     Work.Info.KSYCD, //会社コード
                     Work.Info.SBN, //作番
@@ -57,7 +57,8 @@ public class WorkData {
                     HiveDB.TABLE.WORK_INFO,
                     HiveDB.TABLE.ORDER.get(),
                     Work.Info.KSYCD, Order._Order.KSYCD,
-                    Work.Info.SBN, Order._Order.SBN
+                    Work.Info.SBN, Order._Order.SBN,
+                    machine
             );
             System.out.println("Running: " + sql);
 

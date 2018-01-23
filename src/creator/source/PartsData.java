@@ -26,14 +26,14 @@ public class PartsData {
     private static List nonUpdateSyaryoList = new ArrayList();
     
     //PARTS DATA
-    public Map<String, SyaryoTemplate> addParts(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap) {
+    public Map<String, SyaryoTemplate> addParts(Connection con, PrintWriter errpw, String machine, Map<String, SyaryoTemplate> syaryoMap) {
         Map<String, SyaryoTemplate> map = new TreeMap();
 
         try {
             Statement stmt = con.createStatement();
 
             //Syaryo
-            String sql = String.format("select o.%s,o.%s,o.%s,o.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s from %s p join %s o on (p.%s=o.%s and p.%s=o.%s)",
+            String sql = String.format("select o.%s,o.%s,o.%s,o.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s from %s p join %s o on (p.%s=o.%s and p.%s=o.%s) where o.kisy='%s'",
                     Order._Order.KISY, Order._Order.TYP, Order._Order.SYHK, Order._Order.KIBAN, //Unique ID
                     Order.Parts.KSYCD, //会社コード
                     Order.Parts.SBN, //作番
@@ -49,7 +49,8 @@ public class PartsData {
                     HiveDB.TABLE.PARTS,
                     HiveDB.TABLE.ORDER.get(),
                     Order.Parts.KSYCD, Order._Order.KSYCD,
-                    Order.Parts.SBN, Order._Order.SBN
+                    Order.Parts.SBN, Order._Order.SBN,
+                    machine
             );
             System.out.println("Running: " + sql);
 

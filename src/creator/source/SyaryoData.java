@@ -27,14 +27,14 @@ public class SyaryoData {
     private static List nonUpdateSyaryoList = new ArrayList();
     
     //SYARYO DATA
-    public Map<String, SyaryoTemplate> addSyaryoCategory(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap) {
+    public Map<String, SyaryoTemplate> addSyaryoCategory(Connection con, PrintWriter errpw, String machine, Map<String, SyaryoTemplate> syaryoMap) {
         Map<String, SyaryoTemplate> map = new TreeMap<>();
 
         try {
             Statement stmt = con.createStatement();
 
             //Syaryo
-            String sql = String.format("select s.%s,s.%s,s.%s,s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, c.%s, c.%s, c.%s from %s s join %s c on (s.%s=c.%s and s.%s=c.%s) ",
+            String sql = String.format("select s.%s,s.%s,s.%s,s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, c.%s, c.%s, c.%s from %s s join %s c on (s.%s=c.%s and s.%s=c.%s) where s.kisy='%s'",
                     Syaryo._Syaryo.KISY, Syaryo._Syaryo.TYP, Syaryo._Syaryo.SYHK, Syaryo._Syaryo.KIBAN, //Unique ID
                     Syaryo._Syaryo.KSYCD, //会社コード
                     Syaryo._Syaryo.NU_KBN, //NU区分
@@ -50,7 +50,8 @@ public class SyaryoData {
                     HiveDB.TABLE.SYARYO,
                     HiveDB.TABLE.CUSTOMER_COMMON,
                     Syaryo._Syaryo.KSYCD, Customer.Common.KSYCD,
-                    Syaryo._Syaryo.HY_KKYKCD, Customer.Common.KKYKCD
+                    Syaryo._Syaryo.HY_KKYKCD, Customer.Common.KKYKCD,
+                    machine
             );
             System.out.println("Running: " + sql);
 

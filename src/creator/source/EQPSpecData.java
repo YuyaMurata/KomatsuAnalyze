@@ -26,20 +26,21 @@ public class EQPSpecData {
     private static List nonUpdateSyaryoList = new ArrayList();
     
     //EQP_SPEC DATA
-    public Map<String, SyaryoTemplate> addEQPSpec(Connection con, PrintWriter errpw, Map<String, SyaryoTemplate> syaryoMap) {
+    public Map<String, SyaryoTemplate> addEQPSpec(Connection con, PrintWriter errpw, String machine, Map<String, SyaryoTemplate> syaryoMap) {
         Map<String, SyaryoTemplate> map = new TreeMap<>();
         
         try {
             Statement stmt = con.createStatement();
 
             //EQP_Spec
-            String sql = String.format("select s.%s,s.%s,s.%s,s.%s, s.%s, u.%s, u.%s from %s s join %s u on (s.kisy=u.kisy and s.typ=u.typ and s.SALES_UNIT_CD=u.SALES_UNIT_CD)",
+            String sql = String.format("select s.%s,s.%s,s.%s,s.%s, s.%s, u.%s, u.%s from %s s join %s u on (s.kisy=u.kisy and s.typ=u.typ and s.SALES_UNIT_CD=u.SALES_UNIT_CD) where s.kisy='%s'",
                     EQP.Spec.KISY, EQP.Spec.TYP, EQP.Spec.SYHK, EQP.Spec.KIBAN, //Unique ID
                     EQP.Spec.SALES_UNIT_CD,
                     EQP.Hanbai.CTG_M_NM,
                     EQP.Hanbai.CTG_S_NM,
                     HiveDB.TABLE.EQP_SPEC,
-                    HiveDB.TABLE.EQP_HANBAI
+                    HiveDB.TABLE.EQP_HANBAI,
+                    machine
             );
             System.out.println("Running: " + sql);
 
