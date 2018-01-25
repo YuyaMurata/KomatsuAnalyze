@@ -27,7 +27,7 @@ import json.SyaryoTemplateToJson;
  * @author ZZ17390
  */
 public class GeneralizeAggregateCreator extends HiveDB {
-
+    private static final String KISY="";
     private static final String INDEX = "..\\KomatsuData\\テスト\\syaryo_index.json";
     private static final String FILENAME = "..\\KomatsuData\\テスト\\syaryo_template.json";
 
@@ -45,7 +45,7 @@ public class GeneralizeAggregateCreator extends HiveDB {
 
     private static void createIndex(Connection con) {
         //テンプレート作成
-        Map<String, SyaryoTemplate> syaryoTemplate = new CreateSyaryoTemplate().createTemplate(con, true);
+        Map<String, SyaryoTemplate> syaryoTemplate = new CreateSyaryoTemplate().createTemplate(con, KISY, true);
         new SyaryoTemplateToJson().write(INDEX, syaryoTemplate);
     }
 

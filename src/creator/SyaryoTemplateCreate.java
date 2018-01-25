@@ -21,7 +21,7 @@ import creator.template.SyaryoTemplate;
  * @author ZZ17390
  */
 public class SyaryoTemplateCreate extends HiveDB {
-    private static final String KISY = "";
+    private static final String KISY = "PC200";
     private static final String FILENAME = "..\\KomatsuData\\車両テンプレート\\"+KISY+"\\syaryo_"+KISY+"_template.json";
     
     public static void main(String[] args) throws IOException {
@@ -45,7 +45,7 @@ public class SyaryoTemplateCreate extends HiveDB {
         Map<String, SyaryoTemplate> syaryoTemplate = readTempate();
         
         //EQP
-        eqp_syaryo(con, syaryoTemplate);
+        /*eqp_syaryo(con, syaryoTemplate);
         eqp_spec(con, syaryoTemplate);
         eqp_keireki(con, syaryoTemplate);
         
@@ -53,7 +53,7 @@ public class SyaryoTemplateCreate extends HiveDB {
         syaryo(con, new HashMap(syaryoTemplate));
         service_s(con, syaryoTemplate);
         service_t(con, syaryoTemplate);
-        order(con, syaryoTemplate);
+        order(con, syaryoTemplate);*/
         work(con, syaryoTemplate);
         parts(con, syaryoTemplate);
         sell(con, syaryoTemplate);
@@ -72,7 +72,7 @@ public class SyaryoTemplateCreate extends HiveDB {
 
     public static void template(Connection con, Boolean syaryoFilter) {
         //テンプレート作成
-        Map<String, SyaryoTemplate> syaryoTemplate = new CreateSyaryoTemplate().createTemplate(con, syaryoFilter);
+        Map<String, SyaryoTemplate> syaryoTemplate = new CreateSyaryoTemplate().createTemplate(con, KISY, syaryoFilter);
         new SyaryoTemplateToJson().write(FILENAME, syaryoTemplate);
     }
 
