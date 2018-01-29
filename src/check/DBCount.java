@@ -26,17 +26,18 @@ public class DBCount {
         //DB接続
         Connection con = getConnection(); //HiveDB
 
-        try {
-            Statement stmt = con.createStatement();
-            List countlist = new ArrayList();
+        List countlist = new ArrayList();
 
-            for (String table : tableList()) {
-                System.out.println(table);
+        for (String table : tableList()) {
+            System.out.println(table);
 
-                String sql = "select count(*) from " + table + "";
-                
-                System.out.println("Running:"+sql);
-                
+            try {
+                Statement stmt = con.createStatement();
+
+                String sql = "select count(*) from " + table + " where kisy='PC200' and typ like '10%'";
+
+                System.out.println("Running:" + sql);
+
                 //exec SQL
                 ResultSet rs = stmt.executeQuery(sql);
 
@@ -44,19 +45,22 @@ public class DBCount {
                 ResultSetMetaData rsmd = rs.getMetaData();
 
                 List list = new ArrayList();
+                list.add(table);
                 while (rs.next()) {
                     list.add(String.valueOf(rs.getInt(rsmd.getColumnName(1))));
                 }
-                
+
                 String cnt = String.join(",", list);
                 System.out.println(cnt);
                 countlist.add(cnt);
-            }
 
-            countlist.stream().forEach(System.out::println);
-        } catch (SQLException ex) {
-            ex.printStackTrace();
+            } catch (SQLException ex) {
+                System.out.println("Not kisy and type !");
+                //ex.printStackTrace();
+            }
         }
+
+        countlist.stream().forEach(System.out::println);
     }
 
     private static List<String> tableList() {
