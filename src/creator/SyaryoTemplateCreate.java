@@ -21,10 +21,20 @@ import creator.template.SyaryoTemplate;
  * @author ZZ17390
  */
 public class SyaryoTemplateCreate extends HiveDB {
-    private static final String KISY = "PC200";
-    private static final String FILENAME = "..\\KomatsuData\\車両テンプレート\\"+KISY+"\\syaryo_"+KISY+"_template.json";
+    private static String KISY;
+    private static String FILENAME;
     
     public static void main(String[] args) throws IOException {
+        SyaryoTemplateCreate.execute("WA470");
+        SyaryoTemplateCreate.execute("PC210");
+        SyaryoTemplateCreate.execute("HB205");
+        SyaryoTemplateCreate.execute("HB215");
+    }
+    
+    public static void execute(String KISY){
+        SyaryoTemplateCreate.KISY = KISY;
+        SyaryoTemplateCreate.FILENAME = "..\\KomatsuData\\車両テンプレート\\"+KISY+"\\syaryo_"+KISY+"_template.json";
+        
         long start = System.currentTimeMillis();
         
         //Folder
