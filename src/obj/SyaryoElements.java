@@ -16,9 +16,9 @@ import java.util.Map;
 public class SyaryoElements {
 	//"経歴","最終更新日" は除く
 	public static final String[] list = {
-			"仕様", "詳細", "生産", "出荷", "廃車", "新車",
-			"中古車", "顧客", "国", "受注", "作業", "部品",
-			 "警告", "エラー", "エンジン", "SMR", "GPS"
+			"仕様", "詳細", "生産", "出荷", "廃車", "新車"
+			, "中古車", "顧客", "国", "受注", "作業", "部品"
+			/*, "警告", "エラー", "エンジン", "SMR", "GPS"*/
 	};
 	
 	public static final Map<String, Element[]> map = new HashMap(){{
@@ -53,11 +53,8 @@ public class SyaryoElements {
     //-1 = key, -2 = value, -3 = keyとの複合でしか利用不可, 0~N = index
 	//Spec
 	public enum Spec implements Element{
-        SType("小変形", 0),
-        Category("製品分類B", 1),
-		Komtrax("Komtrax", 2),
-		Company("会社",3),
-        DB("DB", 4);
+        SType("Komtrax", 0),
+        Category("製品分類B", 1);
 		
 		final String name;
 		final Integer index;
@@ -77,12 +74,9 @@ public class SyaryoElements {
 	
 	//Detail
 	public enum Detail implements Element{
-		No("ナンバー", -1),
 		Unit("販売ユニットコード", 0),
 		MCategory("中分類名", 1),
-		SCategory("小分類名",2),
-		Company("会社",3),
-        DB("DB", 4);
+		SCategory("小分類名",2);
 		
 		final String name;
 		final Integer index;
@@ -102,8 +96,8 @@ public class SyaryoElements {
 	
 	//Product
 	public enum Product implements Element{
-		Date("生産日", -2),
-		Format("format:yyyy/MM/dd", 0);
+		Date("生産日", 0),
+		Plant("工場コード", 1);
 		
 		final String name;
 		final Integer index;
@@ -123,8 +117,7 @@ public class SyaryoElements {
 	
 	//Deploy
 	public enum Deploy implements Element{
-		Date("出荷日", -2),
-		Format("format:yyyy/MM/dd", 0);
+		Date("出荷日", 0);
 		
 		final String name;
 		final Integer index;
@@ -144,9 +137,9 @@ public class SyaryoElements {
 	
 	//Dead
 	public enum Dead implements Element{
-		Date("廃車日", -2),
-        Age("経過日", -3),
-		Format("format:yyyy/MM/dd", 0);
+		DB("DB", 0),
+        Company("会社コード", 1),
+		Date("日付", 2);
 		
 		final String name;
 		final Integer index;
@@ -166,14 +159,12 @@ public class SyaryoElements {
 	
 	//New
 	public enum New implements Element{
-		Date("日付", -1),
-		SPrice("標準価格", 0),
-		HPrice("表面価格", 1),
-		RPrice("実質価格", 2),
-		Company("会社",3),
-        DB("DB", 4),
-        Age("経過日", -3),
-		Format("format:yyyy/MM/dd", 0);
+		DB("DB", 0),
+        Company("会社",1),
+        Date("日付", 2),
+		SPrice("標準価格", 3),
+		HPrice("表面価格", 4),
+		RPrice("実質価格", 5);
 		
 		final String name;
 		final Integer index;
@@ -193,14 +184,12 @@ public class SyaryoElements {
 	
 	//Used
 	public enum Used implements Element{
-		Date("日付", -1),
-		SPrice("標準価格", 0),
-		HPrice("表面価格", 1),
-		RPrice("実質価格", 2),
-		Company("会社",3),
-        DB("DB", 4),
-        Age("経過日", -3),
-		Format("format:yyyy/MM/dd", 0);
+		DB("DB", 0),
+        Company("会社",1),
+        Date("日付", 2),
+		SPrice("標準価格", 3),
+		HPrice("表面価格", 4),
+		RPrice("実質価格", 5);
 		
 		final String name;
 		final Integer index;
@@ -220,14 +209,12 @@ public class SyaryoElements {
 	
 	//Customer
 	public enum Customer implements Element{
-		Date("日付", -1),
-		Customer("顧客ID", 0),
-		Code("業種コード", 1),
-		Name("顧客名", 2),
-		Company("会社",3),
-        DB("DB", 4),
-        Age("経過日", -3),
-		Format("format:yyyy/MM/dd", 0);
+		DB("DB", 0),
+        Company("会社", 1),
+        Date("日付", 2),
+		Code("業種コード", 3),
+        Customer("顧客ID", 4),
+		Name("顧客名", 5);
 		
 		final String name;
 		final Integer index;
@@ -247,10 +234,10 @@ public class SyaryoElements {
 	
 	//Country
 	public enum Country implements Element{
-		Date("登録日", -1),
-		Code("国", 0),
-        Age("経過日", -3),
-		Format("format:yyyy/MM/dd", 0);
+        DB("DB", 0),
+        Company("会社", 1),
+		Date("登録日", 2),
+		Code("国", 3);
 		
 		final String name;
 		final Integer index;
@@ -269,29 +256,27 @@ public class SyaryoElements {
 	}
 	
 	//Order
+    //"受注":DB, 会社コード, 日付, 作番登録日, 実施予定日, 完了日, 作番, 修・単, 作番ステータス, 顧客ID, 顧客名, 保有顧客ID, 保有顧客名, 工数, 指示工数, 売上区分, 一般請求, コマツ請求, 概要
 	public enum Order implements Element{
-		Date("日付", -1),
-		RDate("作番登録日", 0),
-		PDate("実施予定日", 1),
-		FDate("完了日", 2),
-		ID("作番", 3),
-		Sell("単・修", 4),
-		Status("作番ステータス", 5),
-		Customer("顧客ID", 10),
-		Name("顧客名", 11),
-		ContractNo("契約管理番号", 12),
-		ContractCode("契約種別コード", 13),
-		ContractFlg("契約適用フラグ", 14),
-		Step("工数", 15),
-		DStep("指示工数", 16),
+		DB("DB", 0),
+        Company("会社", 1),
+        Date("日付", 2),
+		RDate("作番登録日", 3),
+		PDate("実施予定日", 4),
+		FDate("完了日", 5),
+		ID("作番", 6),
+		Sell("単・修", 7),
+		Status("作番ステータス", 8),
+		SCustomer("顧客ID", 9),
+		SName("顧客名", 10),
+        Customer("顧客ID", 11),
+		Name("顧客名", 12),
+		Step("工数", 13),
+		DStep("指示工数", 14),
+        FLAG("売上区分", 15),
 		Invoice("一般請求", 17),
 		KInvoice("コマツ請求", 18),
-		CInvoice("社内請求", 19),
-		Summary("概要", 20),
-		Company("会社",21),
-        DB("DB", 22),
-        Age("経過日", -3),
-		Format("format:yyyy/MM/dd", 0);
+		Summary("概要", 19);
 		
 		final String name;
 		final Integer index;
@@ -310,27 +295,26 @@ public class SyaryoElements {
 	}
 	
 	//Work
+    //"作業": "DB, 会社コード, 受注日, 作番, 作業明細番号, 作業形態コード, 作業形態名, 作業コード, 作業名, 完了フラグ, 数量, 標準金額, 外注フラグ, 外注原価, 標準工数, 請求工数, 指示工数, 実績累計工数
 	public enum Work implements Element{
-		Date("日付", -1),
-		ID("作番", 0),
-		SID("作業明細番号", 1),
-		SFCode("作業形態コード", 2),
-		SFName("作業形態名", 3),
-		SCode("作業コード", 4),
-		SName("作業名", 5),
-		Finish("完了フラグ", 6),
-		Quant("数量", 7),
-		Price("標準金額", 8),
-		Outsorce("外注フラグ", 9),
-		OPrice("外注原価", 10),
-		SStep("標準工数", 11),
-		RStep("請求工数", 12),
-		DStep("指示工数", 13),
-		RTStep("実質累計工数", 14),
-		Company("会社",15),
-        DB("DB", 16),
-        Age("経過日", -3),
-		Format("format:yyyy/MM/dd", 0);
+		DB("DB", 0),
+        Company("会社",1),
+        Date("日付", 2),
+		ID("作番", 3),
+		SID("作業明細番号", 4),
+		SFCode("作業形態コード", 5),
+		SFName("作業形態名", 6),
+		SCode("作業コード", 7),
+		SName("作業名", 8),
+		Finish("完了フラグ", 9),
+		Quant("数量", 10),
+		Price("標準金額", 11),
+		Outsorce("外注フラグ", 12),
+		OPrice("外注原価", 13),
+		SStep("標準工数", 14),
+		RStep("請求工数", 15),
+		DStep("指示工数", 16),
+		RTStep("実質累計工数", 17);
 		
 		final String name;
 		final Integer index;
@@ -349,20 +333,19 @@ public class SyaryoElements {
 	}
 	
 	//Parts
+    //"部品": "DB, 会社コード, 日付, 作番, 部品明細番号, 部品メーカ区分, 品番, 品名, 受注数量, キャンセル数量, 標準金額
 	public enum Parts implements Element{
-		Date("日付", -1),
-		ID("作番", 0),
-		PID("部品明細番号", 1),
-        MAKER("部品メーカー区分", 2),
-		HID("品番", 3),
-		HNmae("品名", 4),
-		Quant("数量", 5),
-		Cancel("キャンセル数量", 6),
-		Price("標準金額", 7),
-		Company("会社",8),
-        DB("DB", 9),
-        Age("経過日", -3),
-		Format("format:yyyy/MM/dd", 0);
+		DB("DB", 0),
+        Company("会社",1),
+        Date("日付", 2),
+		ID("作番", 3),
+		PID("部品明細番号", 4),
+        MAKER("部品メーカー区分", 5),
+		HID("品番", 6),
+		HNmae("品名", 7),
+		Quant("数量", 8),
+		Cancel("キャンセル数量", 9),
+		Price("標準金額", 10);
 		
 		final String name;
 		final Integer index;

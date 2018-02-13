@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import json.JsonToSyaryoTemplate;
 import json.SyaryoObjToJson;
-import obj.SyaryoObject;
 import creator.template.SyaryoTemplate;
+import obj.SyaryoObject2;
 
 /**
  * 車両テンプレートから車両オブジェクトを作成
@@ -29,7 +29,7 @@ public class SyaryoObjectCreate {
 		String FILENAME = "json\\syaryo_obj_" + kisy + ".json";
 
 		Map<String, SyaryoTemplate> syaryoTemplates = new JsonToSyaryoTemplate().reader2(midtemp);
-		TreeMap<String, SyaryoObject> syaryoMap = new TreeMap();
+		TreeMap<String, SyaryoObject2> syaryoMap = new TreeMap();
 
 		int n = 0;
 		//車両のオブジェクト化
@@ -39,7 +39,7 @@ public class SyaryoObjectCreate {
 
 			Map<String, String> template = syaryo.getAll();
 
-			SyaryoObject syaryoObj = new SyaryoObject(syaryo.getName());
+			SyaryoObject2 syaryoObj = new SyaryoObject2(syaryo.getName());
 
 			//Summary
 			if (syaryoName.equals("_summary")) {

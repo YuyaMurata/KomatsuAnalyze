@@ -14,6 +14,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Map;
+import obj.SyaryoObject2;
 import zip.ZipFile;
 
 /**
@@ -49,6 +50,22 @@ public class JsonToSyaryoObj {
             /*for(SyaryoObject obj : syaryoMap.values()){
                 System.out.println(obj.dump());
             }*/
+        }catch(IOException e){
+            return null;
+        }
+        
+        return syaryoMap;
+    }
+    
+    public Map<String, SyaryoObject2> reader3(String filename){
+        Map<String, SyaryoObject2> syaryoMap;
+        
+        try(JsonReader reader = new JsonReader(new BufferedReader(new FileReader(filename)))){
+            Type type = new TypeToken<Map<String, SyaryoObject2>>(){}.getType();
+
+            Gson gson = new Gson();
+            syaryoMap = gson.fromJson(reader, type);
+            syaryoMap.remove("_summary");
         }catch(IOException e){
             return null;
         }

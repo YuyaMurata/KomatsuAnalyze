@@ -35,7 +35,7 @@ public class SyaryoTemplateAggregate {
 		//System.exit(0);
 		int n = 0;
 		for (File f : flist) {
-			if (f.getName().contains("error.csv")) {
+			if (f.getName().contains("error.csv") || f.getName().contains("komtrax")) {
 				continue;
 			}
 			System.out.println(f.getName());
