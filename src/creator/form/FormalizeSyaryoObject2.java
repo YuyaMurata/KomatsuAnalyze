@@ -8,6 +8,7 @@ package creator.form;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,21 +28,27 @@ import obj.SyaryoObject2;
  * @author ZZ17390
  */
 public class FormalizeSyaryoObject2 {
-
+    private static String kisy = "PC200";
+    private static List extract = Arrays.asList(new String[]{"8", "10"});
+    
+    private static String filename = "json\\syaryo_obj_" + kisy + ".json";
+    private static String output = "json\\syaryo_obj_" + kisy + "_form.json";
+    private static String output2 = "json\\syaryo_obj_" + kisy + "_reject.json";
+        
     public static void main(String[] args) {
-        String kisy = "WA470";
-        String filename = "json\\syaryo_obj_" + kisy + ".json";
-        String output = "json\\syaryo_obj_" + kisy + "_form.json";
+        
 
         Map map = new JsonToSyaryoObj().reader3(filename);
 
         //1次処理 データ削減
         Map formMap = firstForming(map);
-        
+
         //2次処理 重複除去
         formMap = secondForming(formMap);
+
+        //3次処理 データの分離
+        formMap = thirdForming(formMap);
         
-        //2次処理 データの分離(2009)
         /*map = new JsonToSyaryoObj().reader(output);
         syaryoMap = new FormalizeSyaryoObject2().split(map);
         new SyaryoObjToJson().write(output, syaryoMap);
@@ -52,12 +59,10 @@ public class FormalizeSyaryoObject2 {
         syaryoMap = new FormalizeSyaryoObject2().interFormalize(map);
         new SyaryoObjToJson().write(output, syaryoMap);
         System.out.println("Finish interpolation date!");*/
-        
         //3次処理　結合・圧縮
         //Map syaryoMap = new FormalizeSyaryoObject().join(new String[]{"PC200", "PC210", "HB205", "HB215"});
         //new SyaryoObjToJson().write2("syaryo_obj_"+kisy+"_form.json", syaryoMap);
         //System.out.println("Finish joining & compressing json data!");
-        
         new SyaryoObjToJson().write(output, formMap);
         System.out.println("Finish forming json data!");
 
@@ -65,67 +70,95 @@ public class FormalizeSyaryoObject2 {
 
     public static Map firstForming(Map<String, SyaryoObject2> map) {
         Map newMap = new TreeMap();
-        
+        //Before Count
+        System.out.println("Before:" + map.size());
+
         for (SyaryoObject2 syaryo : map.values()) {
             //Delete Company
             Optional check = syaryo.get("最終更新日").values().stream()
                 .filter(list -> list.contains("UR")
                 || list.contains("GC"))
                 .findFirst();
-            if(check.isPresent()){
+            if (check.isPresent()) {
                 continue;
             }
-                
+
+            //Delete Country
+            /*check = syaryo.get("国").values().stream()
+                .filter(list -> !list.contains("JP"))
+                .findFirst();
+            if(check.isPresent()){
+                continue;
+            }*/
+            
             //Delete Field
             syaryo.remove("経歴");
             syaryo.remove("最終更新日");
             syaryo.remove("国");
-            
+
             newMap.put(syaryo.getName(), syaryo);
         }
-        
+
+        //After Count
+        System.out.println("After:" + newMap.size());
+
         return newMap;
     }
-    
-    public static Map secondForming(Map<String, SyaryoObject2> map){
+
+    public static Map secondForming(Map<String, SyaryoObject2> map) {
         Map newMap = new TreeMap();
-        
+
         for (SyaryoObject2 syaryo : map.values()) {
             formNew(syaryo.get("新車"));
             int numOwners = formUsed(syaryo.get("中古"));
             formOwner(syaryo.get("顧客"), numOwners);
             formOrder(syaryo.get("受注"));
-            
+
             newMap.put(syaryo.getName(), syaryo);
         }
-        
+
         return newMap;
     }
 
-    //2009年以前の車両を分離
-    public Map<String, SyaryoObject> split(Map<String, SyaryoObject> syaryoMap) {
+    public static Map thirdForming(Map<String, SyaryoObject2> map) {
+        Map newMap = new TreeMap();
+        
+        List formList = split(map, extract);
+        newMap = (Map) formList.get(0);
+        System.out.println("Extract:"+newMap.size());
+        
+        //除外データ
+        Map rejectMap = (Map) formList.get(1);
+        new SyaryoObjToJson().write(output2, rejectMap);
+        System.out.println("Reject:"+rejectMap.size());
+        
+        return newMap;
+    }
+    
+    public static List<Map<String, SyaryoObject2>> split(Map<String, SyaryoObject2> syaryoMap, List extract) {
         //Type
-        Map map = new TreeMap();
-        for (SyaryoObject syaryo : syaryoMap.values()) {
-            if (Integer.valueOf(syaryo.getType()) > 6) {
-                map.put(syaryo.getName(), syaryo);
+        Map map1 = new TreeMap();
+        Map map2 = new TreeMap();
+        
+        for (SyaryoObject2 syaryo : syaryoMap.values()) {
+            if (extract.stream()
+                        .filter(type -> syaryo.getType().contains(type.toString()))
+                        .findFirst().isPresent()
+                ) {
+                map1.put(syaryo.getName(), syaryo);
+            } else{
+                //System.out.println(syaryo.getName());
+                map2.put(syaryo.getName(), syaryo);
             }
         }
-
-        return map;
+        
+        List list = new ArrayList();
+        list.add(map1);
+        list.add(map2);
+        
+        return list;
     }
-
-    public Map<String, SyaryoObject> join(String[] kisy) {
-        //Type
-        Map map = new TreeMap();
-        for (String s : kisy) {
-            Map map1 = new JsonToSyaryoObj().reader("syaryo_obj_" + s + "_form.json");
-            map.putAll(map1);
-        }
-
-        return map;
-    }
-
+    
     private static void formNew(Map<String, List> news) {
         Map<String, List<String>> update = new TreeMap();
 
@@ -174,20 +207,25 @@ public class FormalizeSyaryoObject2 {
 
         for (String date : used.keySet()) {
             List obj = used.get(date);
-            if (!obj.get(0).equals("-1") || !obj.get(1).equals("-1") || !obj.get(2).equals("-1")) {
-                obj.set(0, String.valueOf(Float.valueOf(obj.get(0).toString()).intValue()));
-                if (obj.get(1).equals("")) {
-                    obj.set(1, "-1");
-                }
-                obj.set(1, String.valueOf(Float.valueOf(obj.get(1).toString()).intValue()));
-                obj.set(2, String.valueOf(Float.valueOf(obj.get(2).toString()).intValue()));
+            if (!obj.get(SyaryoElements.Used.SPrice.getNo()).equals("-1")) {
+                obj.set(SyaryoElements.Used.SPrice.getNo(), String.valueOf(Float.valueOf(obj.get(SyaryoElements.Used.SPrice.getNo()).toString()).intValue()));
+            }
+
+            if (!obj.get(SyaryoElements.Used.HPrice.getNo()).equals("-1")) {
+                obj.set(SyaryoElements.Used.HPrice.getNo(), String.valueOf(Float.valueOf(obj.get(SyaryoElements.Used.HPrice.getNo()).toString()).intValue()));
+            }
+
+            if (!obj.get(SyaryoElements.Used.RPrice.getNo()).equals("-1")) {
+                obj.set(SyaryoElements.Used.RPrice.getNo(), String.valueOf(Float.valueOf(obj.get(SyaryoElements.Used.RPrice.getNo()).toString()).intValue()));
             }
 
             //System.out.println(date+":"+obj);
             if (date.contains("#")) {
                 date = date.split("#")[0];
                 if (update.get(date) != null) {
-                    if (!update.get(date).get(0).equals("-1") || !update.get(date).get(1).equals("-1") || !update.get(date).get(2).equals("-1")) {
+                    if (!update.get(date).get(SyaryoElements.Used.SPrice.getNo()).equals("-1")
+                        || !update.get(date).get(SyaryoElements.Used.HPrice.getNo()).equals("-1")
+                        || !update.get(date).get(SyaryoElements.Used.RPrice.getNo()).equals("-1")) {
                         obj = update.get(date);
                     }
                 }
@@ -197,7 +235,7 @@ public class FormalizeSyaryoObject2 {
 
         used.clear();
         used.putAll(update);
-        
+
         return used.size();
     }
 
@@ -214,9 +252,10 @@ public class FormalizeSyaryoObject2 {
             List obj = owner.get(date);
 
             //System.out.println(date+":"+obj);
-            if (obj.get(0).toString().contains("##") || obj.get(0).toString().equals("")) {
+            if (obj.get(SyaryoElements.Customer.ID.getNo()).toString().contains("##")
+                || obj.get(SyaryoElements.Customer.ID.getNo()).toString().equals("")) {
                 continue;
-            } else if (obj.get(0).toString().length() < 6) {
+            } else if (obj.get(SyaryoElements.Customer.ID.getNo()).toString().length() < 6) {
                 continue;
             } else if (obj.get(SyaryoElements.Customer.Name.getNo()).toString().contains("コマツ")
                 || obj.get(SyaryoElements.Customer.Name.getNo()).toString().contains("小松")) {
@@ -224,8 +263,10 @@ public class FormalizeSyaryoObject2 {
             }
 
             if (temp[0] != null) {
-                if (obj.get(0).equals(temp[0]) || obj.get(2).toString().contains(temp[2])) {
-                    if (!obj.get(1).toString().contains("?") && !obj.get(1).toString().equals("-1")) {
+                if (obj.get(SyaryoElements.Customer.ID.getNo()).equals(temp[0])
+                    || obj.get(SyaryoElements.Customer.Name.getNo()).toString().contains(temp[2])) {
+                    if (!obj.get(SyaryoElements.Customer.Code.getNo()).toString().contains("?")
+                        && !obj.get(SyaryoElements.Customer.Code.getNo()).toString().equals("-1")) {
                         update.put(temp[3], obj);
                     }
                     continue;
@@ -240,7 +281,6 @@ public class FormalizeSyaryoObject2 {
             temp[1] = (String) obj.get(1);
             temp[2] = (String) obj.get(2);
             temp[3] = date;
-
         }
 
         if (update.isEmpty()) {
@@ -248,13 +288,16 @@ public class FormalizeSyaryoObject2 {
                 List obj = owner.get(date);
 
                 //System.out.println(date+":"+obj);
-                if (obj.get(0).toString().contains("##") || obj.get(0).toString().equals("")) {
+                if (obj.get(SyaryoElements.Customer.ID.getNo()).toString().contains("##")
+                    || obj.get(SyaryoElements.Customer.ID.getNo()).toString().equals("")) {
                     continue;
                 }
 
                 if (temp[0] != null) {
-                    if (obj.get(0).equals(temp[0]) || obj.get(2).toString().contains(temp[2])) {
-                        if (!obj.get(1).toString().contains("?") && !obj.get(1).toString().equals("-1")) {
+                    if (obj.get(SyaryoElements.Customer.ID.getNo()).equals(temp[0])
+                        || obj.get(SyaryoElements.Customer.Name.getNo()).toString().contains(temp[2])) {
+                        if (!obj.get(SyaryoElements.Customer.Code.getNo()).toString().contains("?")
+                            && !obj.get(SyaryoElements.Customer.Code.getNo()).toString().equals("-1")) {
                             update.put(temp[3], obj);
                         }
                         continue;
@@ -292,11 +335,6 @@ public class FormalizeSyaryoObject2 {
         owner.putAll(update);
     }
 
-    private static Boolean serviceYearCheck(String date) {
-        int diff = diffDate(date, "2009/01/01");
-        return diff > 0;
-    }
-
     private static void formOrder(Map<String, List> order) {
         Map update = new TreeMap();
 
@@ -305,27 +343,28 @@ public class FormalizeSyaryoObject2 {
         }
 
         for (String date : order.keySet()) {
-            if (serviceYearCheck(date.split("#")[0])) {
-                if (order.get(date).get(SyaryoElements.Order.DB.getNo()).toString().contains("service")) {
-                    continue;
-                }
-            }
-
             List list = order.get(date);
-            if (!list.get(15).equals("-1")) {
-                list.set(15, Float.valueOf(list.get(15).toString()).toString());
-            }
-            if (!list.get(16).equals("-1")) {
-                list.set(16, Float.valueOf(list.get(16).toString()).toString());
-            }
-            list.set(17, String.valueOf(Float.valueOf(list.get(17).toString()).intValue()));
-            list.set(18, String.valueOf(Float.valueOf(list.get(18).toString()).intValue()));
-            list.set(19, String.valueOf(Float.valueOf(list.get(19).toString()).intValue()));
+            
+            setValue(SyaryoElements.Order.Step.getNo(), list);
+            setValue(SyaryoElements.Order.DStep.getNo(), list);
+            setValue(SyaryoElements.Order.Step.getNo(), list);
+            setValue(SyaryoElements.Order.Invoice.getNo(), list);
+            setValue(SyaryoElements.Order.KInvoice.getNo(), list);
+
             update.put(date, list);
         }
 
         order.clear();
         order.putAll(update);
+    }
+    //Form Order SetList
+    private static void setValue(int index, List list){
+        try {
+            if (!list.get(index).equals("-1"))
+                list.set(index, Float.valueOf(list.get(index).toString()).toString());
+        } catch (NumberFormatException e) {
+            list.set(index, "-1");
+        }
     }
 
     private void formLastUpdate(Map<String, List> last) {
@@ -427,11 +466,7 @@ public class FormalizeSyaryoObject2 {
         if (work != null) {
             Map update1 = new TreeMap();
             for (String date : work.keySet()) {
-                if (serviceYearCheck(date.split("#")[0])) {
-                    if (work.get(date).get(SyaryoElements.Work.DB.getNo()).toString().contains("service")) {
-                        continue;
-                    }
-                }
+
                 List list = work.get(date);
                 if (list.get(8).equals("")) {
                     list.set(8, "-1");
@@ -462,11 +497,6 @@ public class FormalizeSyaryoObject2 {
 
             //Parts
             for (String date : parts.keySet()) {
-                if (serviceYearCheck(date.split("#")[0])) {
-                    if (parts.get(date).get(SyaryoElements.Parts.DB.getNo()).toString().contains("service")) {
-                        continue;
-                    }
-                }
 
                 List list = parts.get(date);
                 list.set(SyaryoElements.Parts.Price.getNo(), String.valueOf(Float.valueOf(list.get(SyaryoElements.Parts.Price.getNo()).toString()).intValue()));

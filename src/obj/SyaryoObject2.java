@@ -22,11 +22,8 @@ import java.util.stream.Collectors;
  * @author ZZ17390
  */
 public class SyaryoObject2 {
-
-	public String name;
+    public String name;
 	public Map map = new LinkedHashMap();
-
-	private transient int deteilno = 0;
 	private transient DecimalFormat dformat = new DecimalFormat("000");
 
 	public SyaryoObject2(String name) {
@@ -40,7 +37,7 @@ public class SyaryoObject2 {
 			sdf1 = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		} else {
 			sdf1 = new SimpleDateFormat("yyyyMMdd");
-		} 
+		}
 
 		Date date = null;
 		try {

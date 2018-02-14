@@ -112,7 +112,7 @@ public class SyaryoCheck {
             else{
                 for(String date : owner.keySet()){
                     List list = owner.get(date);
-                    if(list.get(SyaryoElements.Customer.Customer.getNo()).toString().length() < 8)
+                    if(list.get(SyaryoElements.Customer.ID.getNo()).toString().length() < 8)
                         System.out.println("id:"+list);
                     else if(list.get(SyaryoElements.Customer.Name.getNo()).toString().contains("コマツ")){
                         System.out.println("name1:"+list);

@@ -53,7 +53,7 @@ public class SyaryoElements {
     //-1 = key, -2 = value, -3 = keyとの複合でしか利用不可, 0~N = index
 	//Spec
 	public enum Spec implements Element{
-        SType("Komtrax", 0),
+        Komtrax("Komtrax", 0),
         Category("製品分類B", 1);
 		
 		final String name;
@@ -213,7 +213,7 @@ public class SyaryoElements {
         Company("会社", 1),
         Date("日付", 2),
 		Code("業種コード", 3),
-        Customer("顧客ID", 4),
+        ID("顧客ID", 4),
 		Name("顧客名", 5);
 		
 		final String name;
@@ -274,9 +274,9 @@ public class SyaryoElements {
 		Step("工数", 13),
 		DStep("指示工数", 14),
         FLAG("売上区分", 15),
-		Invoice("一般請求", 17),
-		KInvoice("コマツ請求", 18),
-		Summary("概要", 19);
+		Invoice("一般請求", 16),
+		KInvoice("コマツ請求", 17),
+		Summary("概要", 18);
 		
 		final String name;
 		final Integer index;
