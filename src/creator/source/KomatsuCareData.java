@@ -8,12 +8,12 @@ package creator.source;
 import creator.template.SyaryoTemplate;
 import db.HiveDB;
 import db.field.Care;
-import db.field.EQP;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -28,6 +28,8 @@ public class KomatsuCareData {
 
     //CARE DATA
     public Map<String, SyaryoTemplate> addCare(Connection con, PrintWriter errpw, String machine, Map<String, SyaryoTemplate> syaryoMap) {
+        nonUpdateSyaryoList = new ArrayList();
+        
         Map<String, SyaryoTemplate> map = new TreeMap();
         try {
             Statement stmt = con.createStatement();
@@ -41,7 +43,7 @@ public class KomatsuCareData {
                 Care._Care.CRM_NO, //クレーム番号
                 Care._Care.PRICE, //金額
                 Care._Care.SMR,   //SMR
-                HiveDB.TABLE.CARE,
+                HiveDB.TABLE.CARE.get(),
                 machine
             );
             System.out.println("Running: " + sql);
@@ -133,15 +135,18 @@ public class KomatsuCareData {
     
     //CARE PrePrice DATA
     public Map<String, SyaryoTemplate> addPreprice(Connection con, PrintWriter errpw, String machine, Map<String, SyaryoTemplate> syaryoMap) {
+        nonUpdateSyaryoList = new ArrayList();
+        
         Map<String, SyaryoTemplate> map = new TreeMap();
         try {
             Statement stmt = con.createStatement();
-
+            
+            System.out.println(HiveDB.TABLE.CARE_PRICE.get());
             //EQP_Syaryo
             String sql = String.format("select %s,%s,%s,%s, %s from %s where kisy='%s'",
                 Care.PrePrice.KISY, Care.PrePrice.TYP, Care.PrePrice.SYHK, Care.PrePrice.KIBAN, //Unique ID
                 Care.PrePrice.PRICE, //金額
-                HiveDB.TABLE.CARE_PRICE,
+                HiveDB.TABLE.CARE_PRICE.get(),
                 machine
             );
             System.out.println("Running: " + sql);
