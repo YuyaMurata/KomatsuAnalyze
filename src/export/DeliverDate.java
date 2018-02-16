@@ -63,7 +63,7 @@ public class DeliverDate {
             }
             sb.deleteCharAt(sb.lastIndexOf(","));
             
-            csv.println(sb.toString());
+            csv.write(sb.toString());
             
             if(cnt % 1000 == 0)
                 System.out.println(cnt+"台");
