@@ -90,6 +90,12 @@ public class SyaryoTemplate{
 		if (key.equals("国")) {
 			addCountry(s[0], s[1], s[2], s[3]);
 		}
+        if (key.equals("コマツケア")) {
+			addCare(s[0], s[1], s[2], s[3], s[4], s[5], s[6]);
+		}
+        if (key.equals("コマツケア前受け金")) {
+			addCarePrePrice(s[0], s[1], s[2]);
+		}
 		if (key.equals("GPS")) {
 			addGPS(s[0], s[1], s[2], s[3], s[4]);
 		}
@@ -392,6 +398,19 @@ public class SyaryoTemplate{
 
 		str += db + "," + company + "," + date + "," + id + "," + c_no + "," + kind + "," + price;
 		map.put("コマツケア", str);
+	}
+    
+    public void addCarePrePrice(String db, String company, String price) {
+
+		String str = "";
+		if (map.get("コマツケア") == null) {
+			str = "DB, 会社コード, 日付, 金額 \n ";
+		} else {
+			str = map.get("コマツケア前受け金") + " \n ";
+		}
+
+		str += db + "," + company + "," + price;
+		map.put("コマツケア前受け金", str);
 	}
 
 	//Komtrax

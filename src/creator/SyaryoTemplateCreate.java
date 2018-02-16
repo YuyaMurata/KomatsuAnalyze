@@ -263,6 +263,15 @@ public class SyaryoTemplateCreate extends HiveDB {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+        
+        //前受け金
+        try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_care_preprice_error.csv")))))) {
+            Map<String, SyaryoTemplate> syaryoMap = new KomatsuCareData().addPreprice(con, pw, KISY, syaryoTemplate);
+            new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_care_preprice.json"), syaryoMap);
+            System.out.println("Komatsu Care not update List:"+KomatsuCareData.dataCheck());
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
     
     //Komtrax
