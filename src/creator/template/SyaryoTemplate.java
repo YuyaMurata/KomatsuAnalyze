@@ -377,6 +377,22 @@ public class SyaryoTemplate{
 		str += db + "," + company + "," + date + "," + country;
 		map.put("国", str);
 	}
+    
+    public void addCare(String db, String company, String date, String id, String c_no, String kind, String price) {
+		if (errorCheck(date)) {
+			return;
+		}
+
+		String str = "";
+		if (map.get("コマツケア") == null) {
+			str = "DB, 会社コード, 日付, 代理店コード, クレーム番号, 保証種別, 金額 \n ";
+		} else {
+			str = map.get("コマツケア") + " \n ";
+		}
+
+		str += db + "," + company + "," + date + "," + id + "," + c_no + "," + kind + "," + price;
+		map.put("コマツケア", str);
+	}
 
 	//Komtrax
 	//GPS

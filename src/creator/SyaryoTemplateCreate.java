@@ -25,10 +25,11 @@ public class SyaryoTemplateCreate extends HiveDB {
     private static String FILENAME;
     
     public static void main(String[] args) throws IOException {
-        //SyaryoTemplateCreate.execute("WA470");
+        SyaryoTemplateCreate.execute("PC200");
+        SyaryoTemplateCreate.execute("WA470");
         SyaryoTemplateCreate.execute("PC210");
-        //SyaryoTemplateCreate.execute("HB205");
-        //SyaryoTemplateCreate.execute("HB215");
+        SyaryoTemplateCreate.execute("HB205");
+        SyaryoTemplateCreate.execute("HB215");
     }
     
     public static void execute(String KISY){
@@ -51,11 +52,11 @@ public class SyaryoTemplateCreate extends HiveDB {
         Connection con = getConnection(); //HiveDB
 
         //テンプレート生成 true=KOMPAS車両 false=EQP車両
-        template(con, true);
+        //template(con, true);
         Map<String, SyaryoTemplate> syaryoTemplate = readTempate();
         
         //EQP
-        eqp_syaryo(con, syaryoTemplate);
+        /*eqp_syaryo(con, syaryoTemplate);
         eqp_spec(con, syaryoTemplate);
         eqp_keireki(con, syaryoTemplate);
         
@@ -71,10 +72,14 @@ public class SyaryoTemplateCreate extends HiveDB {
         
         //KOSMIC
         sell_old(con, syaryoTemplate);
+        */
+        //GCPS
+        care(con, syaryoTemplate);
         
+        /*
         //KOMTRAX
         komtrax(con, syaryoTemplate);
-        
+        */
         long stop = System.currentTimeMillis();
         
         System.out.println((stop-start)+"ms");
@@ -244,6 +249,17 @@ public class SyaryoTemplateCreate extends HiveDB {
             Map<String, SyaryoTemplate> syaryoMap = new SellsData().addOld(con, pw, KISY, syaryoTemplate);
             new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_sell_old.json"), syaryoMap);
             System.out.println("Sell(Old) not update List:"+SellsData.dataCheck());
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+    //コマツケア
+    public static void care(Connection con, Map<String, SyaryoTemplate> syaryoTemplate) {
+        try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_care_error.csv")))))) {
+            Map<String, SyaryoTemplate> syaryoMap = new KomatsuCareData().addCare(con, pw, KISY, syaryoTemplate);
+            new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_care.json"), syaryoMap);
+            System.out.println("Komatsu Care not update List:"+KomatsuCareData.dataCheck());
         } catch (IOException ex) {
             ex.printStackTrace();
         }
