@@ -11,6 +11,7 @@ import java.util.TreeMap;
 import json.JsonToSyaryoTemplate;
 import json.SyaryoTemplateToJson;
 import creator.template.SyaryoTemplate;
+import java.util.stream.Collectors;
 
 /**
  * 作業明細を確認 WA470-7-10200など
@@ -21,17 +22,17 @@ public class SyaryoTemplateAggregate {
 
 	public static void main(String[] args) {
         String kisy = "WA470";
-		String path = "..\\KomatsuData\\車両テンプレート\\"+kisy+"\\";
-		//String path = "template\\車両テンプレート\\";
-		String outpath = "..\\KomatsuData\\中間データ\\";
-		//String outpath = "中間データ\\";
+		//String path = "..\\KomatsuData\\車両テンプレート\\"+kisy+"\\";
+		String path = "template\\"+kisy+"\\";
+		//String outpath = "..\\KomatsuData\\中間データ\\";
+		String outpath = "middle\\";
 		String FILENAME = outpath+"syaryo_mid_" + kisy + ".json";
 		File[] flist = (new File(path)).listFiles();
 
 		Map<String, SyaryoTemplate> syaryoBase = new JsonToSyaryoTemplate().reader(path + "syaryo_"+kisy+"_template.json");
 		TreeMap<String, SyaryoTemplate> syaryoMap = new TreeMap();
 
-		//System.out.println(syaryoBase.keySet().stream().map(s -> s.split("-")[0]).distinct().collect(Collectors.toList()));
+		System.out.println(syaryoBase.keySet().stream().map(s -> s.split("-")[0]).distinct().collect(Collectors.toList()));
 		//System.exit(0);
 		int n = 0;
 		for (File f : flist) {

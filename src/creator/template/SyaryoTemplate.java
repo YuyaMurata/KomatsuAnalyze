@@ -403,8 +403,8 @@ public class SyaryoTemplate{
     public void addCarePrePrice(String db, String company, String price) {
 
 		String str = "";
-		if (map.get("コマツケア") == null) {
-			str = "DB, 会社コード, 日付, 金額 \n ";
+		if (map.get("コマツケア前受け金") == null) {
+			str = "DB, 会社コード, 金額 \n ";
 		} else {
 			str = map.get("コマツケア前受け金") + " \n ";
 		}
