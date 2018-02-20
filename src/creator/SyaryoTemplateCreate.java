@@ -77,7 +77,7 @@ public class SyaryoTemplateCreate extends HiveDB {
         care(con, syaryoTemplate);
         
         //KOMTRAX
-        komtrax(con, syaryoTemplate);
+        //komtrax(con, syaryoTemplate);
         
         long stop = System.currentTimeMillis();
         
@@ -143,7 +143,7 @@ public class SyaryoTemplateCreate extends HiveDB {
     public static void service_t(Connection con, Map<String, SyaryoTemplate> syaryoTemplate) {
         try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_service1_error.csv")))))) {
             Map<String, SyaryoTemplate> syaryoMap = new ServiceData().addService(con, pw, KISY, syaryoTemplate, 1, 1);
-            new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_service1123.json"), syaryoMap);
+            new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_service1.json"), syaryoMap);
             System.out.println("Service_t not update List:"+ServiceData.dataCheck());
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -155,7 +155,7 @@ public class SyaryoTemplateCreate extends HiveDB {
         try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_service2_error.csv")))))) {
             Map<String, SyaryoTemplate> syaryoMap = new ServiceData().addService(con, pw, KISY, syaryoTemplate, 1, 2);
             new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_service2.json"), syaryoMap);
-            System.out.println("Service_s_2111 not update List:"+ServiceData.dataCheck());
+            System.out.println("Service_s not update List:"+ServiceData.dataCheck());
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -166,7 +166,7 @@ public class SyaryoTemplateCreate extends HiveDB {
         try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_order_error.csv")))))) {
             Map<String, SyaryoTemplate> syaryoMap = new OrderData().addOrder(con, pw, KISY, syaryoTemplate);
             new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_order.json"), syaryoMap);
-            System.out.println("Order_111 not update List:"+OrderData.dataCheck());
+            System.out.println("Order not update List:"+OrderData.dataCheck());
         } catch (IOException ex) {
             ex.printStackTrace();
         }
