@@ -22,7 +22,7 @@ import db.field.Syaryo;
  */
 public class CreateSyaryoTemplate {
     //EQP_SYARYO DATA
-    public Map<String, SyaryoTemplate> createTemplate(Connection con, String machine, Boolean filter) {
+    public Map<String, SyaryoTemplate> createTemplate(Connection con, String machine, String reject, Boolean filter) {
         TreeMap<String, SyaryoTemplate> syaryoMap = new TreeMap();
         
         try {
@@ -31,7 +31,7 @@ public class CreateSyaryoTemplate {
             //EQP_Syaryo
             String sql = "";
             if(filter)
-                sql = String.format("select e.%s, e.%s, e.%s, e.%s from %s e join %s s on e.%s=s.%s and e.%s=s.%s where e.kisy='%s'",
+                sql = String.format("select e.%s, e.%s, e.%s, e.%s from %s e join %s s on e.%s=s.%s and e.%s=s.%s where e.kisy like '%s' and e.kisy != '%s'",
                     EQP.Syaryo.KISY, EQP.Syaryo.TYP, EQP.Syaryo.SYHK, EQP.Syaryo.KIBAN, //Unique ID
                     HiveDB.TABLE.EQP_SYARYO,
                     HiveDB.TABLE.SYARYO,
@@ -39,13 +39,15 @@ public class CreateSyaryoTemplate {
                     Syaryo._Syaryo.KISY,
                     EQP.Syaryo.KIBAN,
                     Syaryo._Syaryo.KIBAN,
-                    machine
+                    machine,
+                    reject
                 );
             else
-                sql = String.format("select %s, %s, %s, %s from %s where kisy='%s'",
+                sql = String.format("select %s, %s, %s, %s from %s where kisy like '%s' and e.kisy != '%s'",
                     EQP.Syaryo.KISY, EQP.Syaryo.TYP, EQP.Syaryo.SYHK, EQP.Syaryo.KIBAN, //Unique ID
                     HiveDB.TABLE.EQP_SYARYO,
-                    machine
+                    machine,
+                    reject
                 );
             System.out.println("Running: " + sql);
 

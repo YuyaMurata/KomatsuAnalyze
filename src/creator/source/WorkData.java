@@ -34,7 +34,7 @@ public class WorkData {
             Statement stmt = con.createStatement();
 
             //Syaryo
-            String sql = String.format("select o.%s,o.%s,o.%s,o.%s, w.%s, w.%s, w.%s, o.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, o.%s, o.%s, w.%s from %s w join %s o on (w.%s=o.%s and w.%s=o.%s) where o.kisy='%s'",
+            String sql = String.format("select o.%s,o.%s,o.%s,o.%s, w.%s, w.%s, w.%s, o.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, o.%s, o.%s, w.%s from %s w join %s o on (w.%s=o.%s and w.%s=o.%s) where o.kisy like '%s'",
                     Order._Order.KISY, Order._Order.TYP, Order._Order.SYHK, Order._Order.KIBAN, //Unique ID
                     Work.Info.KSYCD, //会社コード
                     Work.Info.SBN, //作番

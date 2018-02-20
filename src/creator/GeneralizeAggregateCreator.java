@@ -45,7 +45,7 @@ public class GeneralizeAggregateCreator extends HiveDB {
 
     private static void createIndex(Connection con) {
         //テンプレート作成
-        Map<String, SyaryoTemplate> syaryoTemplate = new CreateSyaryoTemplate().createTemplate(con, KISY, true);
+        Map<String, SyaryoTemplate> syaryoTemplate = new CreateSyaryoTemplate().createTemplate(con, KISY, KISY.split("%")[0]+"0", true);
         new SyaryoTemplateToJson().write(INDEX, syaryoTemplate);
     }
 

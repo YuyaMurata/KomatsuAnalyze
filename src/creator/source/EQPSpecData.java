@@ -33,7 +33,7 @@ public class EQPSpecData {
             Statement stmt = con.createStatement();
 
             //EQP_Spec
-            String sql = String.format("select s.%s,s.%s,s.%s,s.%s, s.%s, u.%s, u.%s from %s s join %s u on (s.kisy=u.kisy and s.typ=u.typ and s.SALES_UNIT_CD=u.SALES_UNIT_CD) where s.kisy='%s'",
+            String sql = String.format("select s.%s,s.%s,s.%s,s.%s, s.%s, u.%s, u.%s from %s s join %s u on (s.kisy=u.kisy and s.typ=u.typ and s.SALES_UNIT_CD=u.SALES_UNIT_CD) where s.kisy like '%s'",
                     EQP.Spec.KISY, EQP.Spec.TYP, EQP.Spec.SYHK, EQP.Spec.KIBAN, //Unique ID
                     EQP.Spec.SALES_UNIT_CD,
                     EQP.Hanbai.CTG_M_NM,
