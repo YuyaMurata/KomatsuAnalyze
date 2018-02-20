@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import json.JsonToSyaryoObj;
 import obj.SyaryoElements;
 import obj.SyaryoObject2;
@@ -37,12 +38,23 @@ public class LifeOrderPrice {
 
     public static void extractMaxOrder(Map<String, SyaryoObject2> syaryoMap, PrintWriter csv) {
         int cnt = 0;
-
-        csv.println("ID,Kisy,Type,作番1123,,売上1123,,作番2111,,売上2111,,作番2112,,売上2112,");
+        
+        String[] kbns = new String[]{"123","111","112"}; 
+        csv.println("Company,ID,Kisy,Type,SBN1123,KSBN1123,SELL1123,KSELL1123,SBN2111,KSBN2111,SELL2111,KSELL2111,SBN2112,KSBN2112,SELL2112,KSELL2112");
         for (SyaryoObject2 syaryo : syaryoMap.values()) {
             cnt++;
 
             StringBuilder sb = new StringBuilder();
+            Optional company = syaryo.getSMR().values().stream()
+                                        .map(f -> f.get(SyaryoElements.SMR.Company.getNo()))
+                                        .filter(com -> !com.equals("??"))
+                                        .findFirst();
+            if(!company.isPresent()){
+                System.out.println(syaryo.getName());
+                continue;
+            }
+            sb.append(company.get());
+            sb.append(",");
             sb.append(syaryo.getName());
             sb.append(",");
             sb.append(syaryo.getMachine());
@@ -82,7 +94,7 @@ public class LifeOrderPrice {
                     }
                 }
 
-                for (String kbn : maxOrder.keySet()) {
+                for (String kbn : kbns) {
                     try {
                         sb.append(nullCheck(maxOrderSBN.get(kbn)));
                         sb.append(",");
@@ -111,7 +123,7 @@ public class LifeOrderPrice {
     
     private static String nullCheck(Object value){
         if(value == null){
-            return "";
+            return "0";
         }else
             return value.toString();
     }

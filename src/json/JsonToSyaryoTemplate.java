@@ -34,7 +34,7 @@ public class JsonToSyaryoTemplate {
             
             //setting
             syaryoMap.values().stream().forEach(s -> s.setting());
-		} catch (IOException e) {
+		} catch (Exception e) {
 			return null;
 		}
         

@@ -77,7 +77,7 @@ public class SyaryoTemplate{
 		if (key.equals("受注")) {
 			addOrder(s[0], s[1], s[2], s[3], s[4], s[5], s[6],
 				s[7], s[8], s[9], s[10], s[11], s[12], s[13],
-				s[14], s[15], s[16], s[17], s[18]);
+				s[14], s[15], s[16], s[17]);
 		}
 		if (key.equals("作業")) {
 			addWork(s[0], s[1], s[2], s[3], s[4], s[5], s[6],
@@ -295,7 +295,7 @@ public class SyaryoTemplate{
 		String sbn, String hanbai, String status,
 		String kokyakuId, String kokyakuName, String id, String name,
 		String step, String sijistep,
-		String uag_kbn, String ippan, String komatsu, String gaiyo
+		String uag_kbn, String price, String gaiyo
 	) {
 		if (errorCheck(date)) {
 			return;
@@ -307,7 +307,7 @@ public class SyaryoTemplate{
 				+ "作番, 修・単, 作番ステータス, "
 				+ "顧客ID, 顧客名, 保有顧客ID, 保有顧客名, "
 				+ "工数, 指示工数, "
-				+ "売上区分, 一般請求, コマツ請求,"
+				+ "売上区分, 請求,"
 				+ "概要 \n ";
 		} else {
 			str = map.get("受注") + " \n ";
@@ -316,7 +316,7 @@ public class SyaryoTemplate{
 		str += db + "," + company + "," + date + "," + sbnDate + "," + startDate + "," + finishDate + "," + sbn + "," + hanbai + "," + status + ","
 			+ kokyakuId + "," + kokyakuName + "," + id + "," + name + ","
 			+ step + "," + sijistep + ","
-			+ uag_kbn + "," + ippan + "," + komatsu + "," + gaiyo;
+			+ uag_kbn + "," + price + "," + gaiyo;
 		map.put("受注", str);
 	}
 

@@ -335,6 +335,11 @@ public class SyaryoObject2 {
 		return (Map) map.get(key);
 	}
     
+    //Get
+    public Map<String, Map> getAll() {
+		return map;
+	}
+    
 	//Remove
 	public void remove(String key) {
 		map.remove(key);

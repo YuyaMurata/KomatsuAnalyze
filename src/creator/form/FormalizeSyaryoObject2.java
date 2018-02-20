@@ -28,7 +28,7 @@ import obj.SyaryoObject2;
  * @author ZZ17390
  */
 public class FormalizeSyaryoObject2 {
-    private static String kisy = "WA470";
+    private static String kisy = "PC200";
     private static List extract = Arrays.asList(new String[]{"8", "10"});
     
     private static String filename = "json\\syaryo_obj_" + kisy + ".json";
@@ -273,9 +273,8 @@ public class FormalizeSyaryoObject2 {
                 }
             }
 
-            if (date.contains("#")) {
-                date = date.split("#")[0];
-            }
+            date = date.split("#")[0];
+            
             update.put(date, obj);
             temp[0] = (String) obj.get(0);
             temp[1] = (String) obj.get(1);
@@ -304,9 +303,8 @@ public class FormalizeSyaryoObject2 {
                     }
                 }
 
-                if (date.contains("#")) {
-                    date = date.split("#")[0];
-                }
+                date = date.split("#")[0];
+                
                 update.put(date, obj);
                 temp[0] = (String) obj.get(0);
                 temp[1] = (String) obj.get(1);

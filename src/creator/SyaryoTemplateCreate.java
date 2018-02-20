@@ -141,8 +141,8 @@ public class SyaryoTemplateCreate extends HiveDB {
 
     //サービス経歴_単販
     public static void service_t(Connection con, Map<String, SyaryoTemplate> syaryoTemplate) {
-        try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_service1123_error.csv")))))) {
-            Map<String, SyaryoTemplate> syaryoMap = new ServiceData().addService(con, pw, KISY, syaryoTemplate, 1, 1, 1, 2, 3);
+        try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_service1_error.csv")))))) {
+            Map<String, SyaryoTemplate> syaryoMap = new ServiceData().addService(con, pw, KISY, syaryoTemplate, 1, 1);
             new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_service1123.json"), syaryoMap);
             System.out.println("Service_t not update List:"+ServiceData.dataCheck());
         } catch (IOException ex) {
@@ -152,20 +152,10 @@ public class SyaryoTemplateCreate extends HiveDB {
 
     //サービス経歴_修販            
     public static void service_s(Connection con, Map<String, SyaryoTemplate> syaryoTemplate) {
-        //一般請求
-        try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_service2111_error.csv")))))) {
-            Map<String, SyaryoTemplate> syaryoMap = new ServiceData().addService(con, pw, KISY, syaryoTemplate, 1, 2, 1, 1, 1);
-            new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_service2111.json"), syaryoMap);
+        try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_service2_error.csv")))))) {
+            Map<String, SyaryoTemplate> syaryoMap = new ServiceData().addService(con, pw, KISY, syaryoTemplate, 1, 2);
+            new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_service2.json"), syaryoMap);
             System.out.println("Service_s_2111 not update List:"+ServiceData.dataCheck());
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        
-        //コマツ請求
-        try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_service2112_error.csv")))))) {
-            Map<String, SyaryoTemplate> syaryoMap = new ServiceData().addService(con, pw, KISY, syaryoTemplate, 1, 2, 1, 1, 2);
-            new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_service2112.json"), syaryoMap);
-            System.out.println("Service_s_2112 not update List:"+ServiceData.dataCheck());
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -173,26 +163,10 @@ public class SyaryoTemplateCreate extends HiveDB {
 
     //受注
     public static void order(Connection con, Map<String, SyaryoTemplate> syaryoTemplate) {
-        try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_order111_error.csv")))))) {
-            Map<String, SyaryoTemplate> syaryoMap = new OrderData().addOrder(con, pw, KISY, syaryoTemplate, 1, 1, 1);
-            new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_order111.json"), syaryoMap);
+        try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_order_error.csv")))))) {
+            Map<String, SyaryoTemplate> syaryoMap = new OrderData().addOrder(con, pw, KISY, syaryoTemplate);
+            new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_order.json"), syaryoMap);
             System.out.println("Order_111 not update List:"+OrderData.dataCheck());
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        
-        try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_order112_error.csv")))))) {
-            Map<String, SyaryoTemplate> syaryoMap = new OrderData().addOrder(con, pw, KISY, syaryoTemplate, 1, 1, 2);
-            new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_order112.json"), syaryoMap);
-            System.out.println("Order_112 not update List:"+OrderData.dataCheck());
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        
-        try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_order123_error.csv")))))) {
-            Map<String, SyaryoTemplate> syaryoMap = new OrderData().addOrder(con, pw, KISY, syaryoTemplate, 1, 2, 3);
-            new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_order123.json"), syaryoMap);
-            System.out.println("Order_123 not update List:"+OrderData.dataCheck());
         } catch (IOException ex) {
             ex.printStackTrace();
         }
