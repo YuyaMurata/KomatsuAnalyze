@@ -77,7 +77,7 @@ public class SyaryoTemplateCreate extends HiveDB {
         care(con, syaryoTemplate);
         
         //KOMTRAX
-        //komtrax(con, syaryoTemplate);
+        komtrax(con, syaryoTemplate);
         
         long stop = System.currentTimeMillis();
         
