@@ -20,18 +20,19 @@ import obj.SyaryoObject2;
 public class SyaryoObjectCreate {
 
 	public static void main(String[] args) {
-		new SyaryoObjectCreate().create("PC200");
+		new SyaryoObjectCreate().create("WA470");
 	}
 
 	public void create(String kisy) {
-		String midtemp = "..\\KomatsuData\\中間データ\\syaryo_mid_" + kisy + ".zip";
-		//String midtemp = "中間データ\\syaryo_mid_" + kisy + ".zip";
+		//String midtemp = "..\\KomatsuData\\中間データ\\syaryo_mid_" + kisy + ".zip";
+		String midtemp = "middle\\syaryo_mid_" + kisy + ".zip";
 		String FILENAME = "json\\syaryo_obj_" + kisy + ".json";
 
 		Map<String, SyaryoTemplate> syaryoTemplates = new JsonToSyaryoTemplate().reader2(midtemp);
 		TreeMap<String, SyaryoObject2> syaryoMap = new TreeMap();
 
 		int n = 0;
+        int en = 0;
 		//車両のオブジェクト化
 		for (String syaryoName : syaryoTemplates.keySet()) {
 			//
@@ -49,7 +50,7 @@ public class SyaryoObjectCreate {
 
 			n++;
 
-			syaryoObj.add(template);
+			en += syaryoObj.add(template);
 
 			//System.out.println(syaryoObj.dump());
 			syaryoMap.put(syaryoObj.getName(), syaryoObj);
@@ -59,6 +60,9 @@ public class SyaryoObjectCreate {
 
 			}
 		}
+        
+        if (en > 0) 
+			System.out.println("欠損データ=" + en);
 
 		SyaryoObjToJson json = new SyaryoObjToJson();
 		json.write(FILENAME, syaryoMap);

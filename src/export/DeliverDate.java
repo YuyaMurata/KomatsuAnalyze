@@ -35,12 +35,14 @@ public class DeliverDate {
     public static void extractDate(Map<String, SyaryoObject2> syaryoMap, PrintWriter csv){
         int cnt = 0;
         
-        csv.println("ID,Type,New,Used");
+        csv.println("ID,Kisy,Type,New,Used");
         for(SyaryoObject2 syaryo : syaryoMap.values()){
             cnt++;
             
             StringBuilder sb = new StringBuilder();
             sb.append(syaryo.getName());
+            sb.append(",");
+            sb.append(syaryo.getMachine());
             sb.append(",");
             sb.append(syaryo.getType());
             sb.append(",");
@@ -63,7 +65,7 @@ public class DeliverDate {
             }
             sb.deleteCharAt(sb.lastIndexOf(","));
             
-            csv.write(sb.toString());
+            csv.println(sb.toString());
             
             if(cnt % 1000 == 0)
                 System.out.println(cnt+"台");

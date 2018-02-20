@@ -72,7 +72,7 @@ public class SyaryoObject2 {
 	/**
 	 * Add Data
 	 */
-	public void add(Map template) {
+	public Integer add(Map template) {
 		int n = 0;
 		for (Object field : template.keySet()) {
 			if (template.get(field) == null) {
@@ -90,8 +90,8 @@ public class SyaryoObject2 {
                 if (header_flg) {
                     numHeaders = s.length;
                     if(s.length > 2)
-                    if(s[2].contains("日"))
-                        key = 2;
+                        if(s[2].contains("日"))
+                            key = 2;
                         
 					header_flg = false;
 					continue;
@@ -113,15 +113,14 @@ public class SyaryoObject2 {
                         ((List)newMap.get(date)).add(str);
                     
 				} catch (ArrayIndexOutOfBoundsException e) {
+                    System.out.println(numHeaders+", "+s.length+", "+line);
 					System.out.println(field + ":" + Arrays.asList(s));
 					n++;
 				}
 			}
 		}
-
-		if (n > 0) {
-			System.out.println("欠損データ=" + n);
-		}
+        
+        return n;
 	}
 
 	/**

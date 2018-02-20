@@ -28,7 +28,7 @@ import obj.SyaryoObject2;
  * @author ZZ17390
  */
 public class FormalizeSyaryoObject2 {
-    private static String kisy = "PC200";
+    private static String kisy = "WA470";
     private static List extract = Arrays.asList(new String[]{"8", "10"});
     
     private static String filename = "json\\syaryo_obj_" + kisy + ".json";
