@@ -25,7 +25,7 @@ import obj.SyaryoObject2;
  * @author ZZ17390
  */
 public class DataCheck {
-    private static String kisy = "PC200";
+    private static String kisy = "WA470";
     private static String path = "..\\KomatsuData\\車両テンプレート\\"+kisy+"系\\";
     
     public static void main(String[] args) throws IOException {
@@ -36,7 +36,7 @@ public class DataCheck {
         //errorCheck();
         
         //オブジェクトカウント
-        objCheck("json\\syaryo_obj_"+kisy+"_form.json");
+        objCheck("json\\syaryo_obj_"+kisy+".json");
         
         //2csv 比較
         //csvCheck();
@@ -95,6 +95,12 @@ public class DataCheck {
     public static void objCheck(String objpath) throws IOException{
         Map<String, SyaryoObject2> syaryoMap = new JsonToSyaryoObj().reader3(objpath);
         int total = 0;
+        
+        //Category
+        System.out.println(syaryoMap.keySet().stream()
+                                        .map(name -> name.split("-")[0]+"-"+name.split("-")[1])
+                                        .distinct()
+                                        .collect(Collectors.toList()));
         
         for(String syaryoName : syaryoMap.keySet()){
             SyaryoObject2 syaryo = syaryoMap.get(syaryoName);
