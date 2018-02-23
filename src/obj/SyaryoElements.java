@@ -274,9 +274,8 @@ public class SyaryoElements {
 		Step("工数", 13),
 		DStep("指示工数", 14),
         FLAG("売上区分", 15),
-		Invoice("一般請求", 16),
-		KInvoice("コマツ請求", 17),
-		Summary("概要", 18);
+		Invoice("請求", 16),
+		Summary("概要", 17);
 		
 		final String name;
 		final Integer index;

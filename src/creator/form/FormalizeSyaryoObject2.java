@@ -190,7 +190,7 @@ public class FormalizeSyaryoObject2 {
 
         if (news == null) {
             return;
-        }
+        } 
 
         Boolean flg = false;
         for (String date : news.keySet()) {
@@ -348,7 +348,6 @@ public class FormalizeSyaryoObject2 {
             setValue(SyaryoElements.Order.DStep.getNo(), list);
             setValue(SyaryoElements.Order.Step.getNo(), list);
             setValue(SyaryoElements.Order.Invoice.getNo(), list);
-            setValue(SyaryoElements.Order.KInvoice.getNo(), list);
 
             update.put(date, list);
         }

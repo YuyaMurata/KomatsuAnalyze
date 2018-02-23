@@ -7,10 +7,12 @@ package export;
 
 import file.CSVFileReadWrite;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import json.JsonToSyaryoObj;
 import obj.SyaryoElements;
 import obj.SyaryoObject2;
@@ -22,36 +24,71 @@ import obj.SyaryoObject2;
 public class LifeOrderPrice {
 
     private static String kisy = "PC200";
-    private static String[] kbn = new String[]{"123", "111", "112"};
-
+    private static String syaryoName = "PC200-8N1-315586";
+    
     public static void main(String[] args) {
         String filename = "json\\syaryo_obj_" + kisy + "_form.json";
         Map<String, SyaryoObject2> syaryoMap = new JsonToSyaryoObj().reader3(filename);
 
-        String outputname = "life_order_price_" + kisy + ".csv";
+        /* outputname = "life_order_price_" + kisy + ".csv";
         try (PrintWriter csv = CSVFileReadWrite.writer(outputname)) {
             extractMaxOrder(syaryoMap, csv);
+        }*/
+        
+        String outputname = "life_order_price_" + syaryoName + ".csv";
+        try (PrintWriter csv = CSVFileReadWrite.writer(outputname)) {
+            extractSyaryoLifeOrder(syaryoMap.get(syaryoName), csv);
         }
+    }
+
+    public static void extractSyaryoLifeOrder(SyaryoObject2 syaryo, PrintWriter csv) {
+        csv.println("日付,会社,区分,作番,金額,概要");
+
+        int numOrder = 0;
+        for (List order : syaryo.getOrder().values()) {
+            StringBuilder sb = new StringBuilder();
+            
+            numOrder++;
+            String date = (String) order.get(SyaryoElements.Order.Date.getNo());
+            String kbn = (String) order.get(SyaryoElements.Order.FLAG.getNo());
+            String comp = (String) order.get(SyaryoElements.Order.Company.getNo());
+            String sbn = (String) order.get(SyaryoElements.Order.ID.getNo());
+            Integer price = Double.valueOf((String) order.get(SyaryoElements.Order.Invoice.getNo())).intValue();
+            String summary = (String) order.get(SyaryoElements.Order.Summary.getNo());
+            
+            sb.append(date);
+            sb.append(",");
+            sb.append(comp);
+            sb.append(",UAG_");
+            sb.append(kbn);
+            sb.append(",");
+            sb.append(sbn);
+            sb.append(",");
+            sb.append(price);
+            sb.append(",");
+            sb.append(summary);
+
+            csv.println(sb.toString());
+        }
+        
+        System.out.println("車両,"+syaryo.name+" ,受注回数:"+numOrder);
     }
 
     public static void extractMaxOrder(Map<String, SyaryoObject2> syaryoMap, PrintWriter csv) {
         int cnt = 0;
-        
-        String[] kbns = new String[]{"123","111","112"}; 
-        csv.println("Company,ID,Kisy,Type,SBN1123,KSBN1123,SELL1123,KSELL1123,SBN2111,KSBN2111,SELL2111,KSELL2111,SBN2112,KSBN2112,SELL2112,KSELL2112");
+
+        csv.println("Company,ID,Kisy,Type,回数,合計,平均金額,中央値,会社_区分_作番,最大金額,会社_区分_作番,最小金額");
         for (SyaryoObject2 syaryo : syaryoMap.values()) {
             cnt++;
 
             StringBuilder sb = new StringBuilder();
-            Optional company = syaryo.getSMR().values().stream()
-                                        .map(f -> f.get(SyaryoElements.SMR.Company.getNo()))
-                                        .filter(com -> !com.equals("??"))
-                                        .findFirst();
-            if(!company.isPresent()){
-                System.out.println(syaryo.getName());
+            String company = ExportTool.extractCompany(syaryo);
+            if (company == null || syaryo.getOrder() == null) {
+                System.out.println(company + "," + syaryo.name);
                 continue;
             }
-            sb.append(company.get());
+
+            sb.append(company);
             sb.append(",");
             sb.append(syaryo.getName());
             sb.append(",");
@@ -60,56 +97,60 @@ public class LifeOrderPrice {
             sb.append(syaryo.getType());
             sb.append(",");
 
-            Map<String, Integer> maxOrder = new HashMap();
-            Map<String, Integer> maxKOrder = new HashMap();
-            Map<String, String> maxOrderSBN = new HashMap();
-            Map<String, String> maxKOrderSBN = new HashMap();
-            if (syaryo.getOrder() != null) {
-                for (List order : syaryo.getOrder().values()) {
-                    String kbn = (String) order.get(SyaryoElements.Order.FLAG.getNo());
+            Map orderPrice = initialize();
+            int numOrder = 0;
+            for (List order : syaryo.getOrder().values()) {
+                numOrder++;
+                String kbn = (String) order.get(SyaryoElements.Order.FLAG.getNo());
+                String comp = (String) order.get(SyaryoElements.Order.Company.getNo());
+                String sbn = (String) order.get(SyaryoElements.Order.ID.getNo());
+                Integer price = Double.valueOf((String) order.get(SyaryoElements.Order.Invoice.getNo())).intValue();
 
-                    if (maxOrder.get(kbn) == null) {
-                        maxOrder.put(kbn, 0);
-                    }
-
-                    if (maxKOrder.get(kbn) == null) {
-                        maxKOrder.put(kbn, 0);
-                    }
-
-                    Integer price = Double.valueOf((String) order.get(SyaryoElements.Order.Invoice.getNo())).intValue();
-                    String sbn = (String) order.get(SyaryoElements.Order.ID.getNo());
-                    Integer kprice = Double.valueOf((String) order.get(SyaryoElements.Order.KInvoice.getNo())).intValue();
-                    String ksbn = (String) order.get(SyaryoElements.Order.ID.getNo());
-
-                    if (maxOrder.get(kbn) <= price) {
-                        maxOrderSBN.put(kbn, sbn);
-                        maxOrder.put(kbn, price);
-                    }
-
-                    if (maxKOrder.get(kbn) <= kprice) {
-                        maxKOrderSBN.put(kbn, ksbn);
-                        maxKOrder.put(kbn, kprice);
-                    }
+                if ((int) orderPrice.get("max") < price) {
+                    orderPrice.put("max_sbn", comp + "_" + kbn + "_" + sbn);
+                    orderPrice.put("max", price);
                 }
-
-                for (String kbn : kbns) {
-                    try {
-                        sb.append(nullCheck(maxOrderSBN.get(kbn)));
-                        sb.append(",");
-                        sb.append(nullCheck(maxKOrderSBN.get(kbn)));
-                        sb.append(",");
-                        sb.append(nullCheck(maxOrder.get(kbn)));
-                        sb.append(",");
-                        sb.append(nullCheck(maxKOrder.get(kbn)));
-                        sb.append(",");
-                    } catch (NullPointerException e) {
-                        System.out.println(syaryo.getName());
-                        System.exit(0);
-                    }
+                if ((int) orderPrice.get("min") > price) {
+                    orderPrice.put("min_sbn", comp + "_" + kbn + "_" + sbn);
+                    orderPrice.put("min", price);
                 }
+                ((List) orderPrice.get("list")).add(price);
             }
 
-            sb.deleteCharAt(sb.lastIndexOf(","));
+            //Number of Order
+            sb.append(numOrder);
+            sb.append(",");
+
+            //Total
+            Integer total = ((List<Integer>) orderPrice.get("list")).stream().mapToInt(e -> e).sum();
+            sb.append(total);
+            sb.append(",");
+
+            //Average
+            Double average = ((List<Integer>) orderPrice.get("list")).stream().mapToInt(e -> e).average().getAsDouble();
+            sb.append(average);
+            sb.append(",");
+
+            //Median
+            int medianIndex = ((List) orderPrice.get("list")).size() / 2 - 1;
+            if (medianIndex < 0) {
+                medianIndex = 0;
+            }
+            Integer median = ((List<Integer>) orderPrice.get("list")).stream().mapToInt(e -> e)
+                .sorted().toArray()[medianIndex];
+            sb.append(median);
+            sb.append(",");
+
+            //Max
+            sb.append(orderPrice.get("max_sbn"));
+            sb.append(",");
+            sb.append(orderPrice.get("max"));
+            sb.append(",");
+
+            //Min
+            sb.append(orderPrice.get("min_sbn"));
+            sb.append(",");
+            sb.append(orderPrice.get("min"));
 
             csv.println(sb.toString());
 
@@ -118,11 +159,16 @@ public class LifeOrderPrice {
             }
         }
     }
-    
-    private static String nullCheck(Object value){
-        if(value == null){
-            return "0";
-        }else
-            return value.toString();
+
+    private static Map initialize() {
+        Map priceMap = new HashMap();
+
+        priceMap.put("max", 0);
+        priceMap.put("max_sbn", "");
+        priceMap.put("min", Integer.MAX_VALUE);
+        priceMap.put("min_sbn", "");
+        priceMap.put("list", new ArrayList());
+
+        return priceMap;
     }
 }

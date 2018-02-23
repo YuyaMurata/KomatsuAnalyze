@@ -46,7 +46,7 @@ public class OwnerTransition {
             cnt++;
 
             StringBuilder sb = new StringBuilder();
-            String company = extractCompany(syaryo);
+            String company = ExportTool.extractCompany(syaryo);
             if (company == null) {
                 continue;
             }
@@ -90,32 +90,4 @@ public class OwnerTransition {
         }
     }
 
-    private static String extractCompany(SyaryoObject2 syaryo) {
-        Optional company = syaryo.getSMR().values().stream()
-            .map(f -> f.get(SyaryoElements.SMR.Company.getNo()))
-            .filter(com -> !com.equals("??"))
-            .findFirst();
-
-        if (!company.isPresent()) {
-            company = syaryo.getOwner().values().stream()
-                .map(f -> f.get(SyaryoElements.SMR.Company.getNo()))
-                .filter(com -> !com.equals("??"))
-                .findFirst();
-
-            if (!company.isPresent()) {
-                System.out.println(syaryo.getName());
-                return null;
-            }
-        }
-
-        return company.get().toString();
-    }
-
-    private static String nullCheck(Object value) {
-        if (value == null) {
-            return "0";
-        } else {
-            return value.toString();
-        }
-    }
 }
