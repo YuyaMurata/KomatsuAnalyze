@@ -361,7 +361,55 @@ public class SyaryoElements {
 			return index;
 		}
 	}
-	
+    
+    //"コマツケア": "DB, 会社コード, 日付, 代理店コード, クレーム番号, 保証種別, 金額
+    public enum Care implements Element{
+		DB("DB", 0),
+        Company("会社",1),
+        Date("日付", 2),
+		ID("代理店コード", 3),
+		CID("クレーム番号", 4),
+        KIND("保証種別", 5),
+		Price("標準金額", 6);
+		
+		final String name;
+		final Integer index;
+		private Care(String name, Integer index){
+			this.name = name;
+			this.index = index;
+		}
+		
+		public String getText(){
+			return name;
+		}
+		
+		public Integer getNo(){
+			return index;
+		}
+	}
+    
+    //"コマツケア前受け金": "DB, 会社コード, 金額
+	public enum CarePrice implements Element{
+		DB("DB", 0),
+        Company("会社",1),
+		Price("標準金額", 2);
+		
+		final String name;
+		final Integer index;
+		private CarePrice(String name, Integer index){
+			this.name = name;
+			this.index = index;
+		}
+		
+		public String getText(){
+			return name;
+		}
+		
+		public Integer getNo(){
+			return index;
+		}
+	}
+    
 	//Caution
 	public enum Caution implements Element{
 		Date("日付", -1),

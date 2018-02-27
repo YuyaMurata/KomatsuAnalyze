@@ -41,39 +41,6 @@ public class LifeOrderPrice {
         }
     }
 
-    public static void extractSyaryoLifeOrder(SyaryoObject2 syaryo, PrintWriter csv) {
-        csv.println("日付,会社,区分,作番,金額,概要");
-
-        int numOrder = 0;
-        for (List order : syaryo.getOrder().values()) {
-            StringBuilder sb = new StringBuilder();
-            
-            numOrder++;
-            String date = (String) order.get(SyaryoElements.Order.Date.getNo());
-            String kbn = (String) order.get(SyaryoElements.Order.FLAG.getNo());
-            String comp = (String) order.get(SyaryoElements.Order.Company.getNo());
-            String sbn = (String) order.get(SyaryoElements.Order.ID.getNo());
-            Integer price = Double.valueOf((String) order.get(SyaryoElements.Order.Invoice.getNo())).intValue();
-            String summary = (String) order.get(SyaryoElements.Order.Summary.getNo());
-            
-            sb.append(date);
-            sb.append(",");
-            sb.append(comp);
-            sb.append(",UAG_");
-            sb.append(kbn);
-            sb.append(",");
-            sb.append(sbn);
-            sb.append(",");
-            sb.append(price);
-            sb.append(",");
-            sb.append(summary);
-
-            csv.println(sb.toString());
-        }
-        
-        System.out.println("車両,"+syaryo.name+" ,受注回数:"+numOrder);
-    }
-
     public static void extractMaxOrder(Map<String, SyaryoObject2> syaryoMap, PrintWriter csv) {
         int cnt = 0;
 
@@ -170,5 +137,63 @@ public class LifeOrderPrice {
         priceMap.put("list", new ArrayList());
 
         return priceMap;
+    }
+    
+    public static void extractSyaryoLifeOrder(SyaryoObject2 syaryo, PrintWriter csv) {
+        csv.println("日付,会社,区分,作番,金額,概要,,累積コマツ請求,累積社内請求,累積一般請求(単),累積一般請求(修)");
+        
+        Long general_s = 0L,general_p = 0L,komatsu = 0L,company = 0L;
+        
+        int numOrder = 0;
+        for (List order : syaryo.getOrder().values()) {
+            StringBuilder sb = new StringBuilder();
+            
+            numOrder++;
+            String date = (String) order.get(SyaryoElements.Order.Date.getNo());
+            String kbn = (String) order.get(SyaryoElements.Order.FLAG.getNo());
+            String comp = (String) order.get(SyaryoElements.Order.Company.getNo());
+            String sbn = (String) order.get(SyaryoElements.Order.ID.getNo());
+            Integer price = Double.valueOf((String) order.get(SyaryoElements.Order.Invoice.getNo())).intValue();
+            String summary = (String) order.get(SyaryoElements.Order.Summary.getNo());
+            
+            sb.append(date.substring(0, 4));
+            sb.append("/");
+            sb.append(date.substring(4, 6));
+            sb.append("/");
+            sb.append(date.substring(6, 8));
+            sb.append(",");
+            sb.append(comp);
+            sb.append(",UAG_");
+            sb.append(kbn);
+            sb.append(",");
+            sb.append(sbn);
+            sb.append(",");
+            sb.append(price);
+            sb.append(",");
+            sb.append(summary);
+            
+            //請求区分
+            if(kbn.equals("1-1-1"))
+                general_s += price;
+            else if(kbn.equals("1-2-3"))
+                general_p += price;
+            else if(kbn.equals("1-1-2"))
+                komatsu += price;
+            else
+                company += price;
+            
+            sb.append(",,");
+            sb.append(komatsu);
+            sb.append(",");
+            sb.append(company);
+            sb.append(",");
+            sb.append(general_p);
+            sb.append(",");
+            sb.append(general_s);
+            
+            csv.println(sb.toString());
+        }
+        
+        System.out.println("車両,"+syaryo.name+" ,受注回数:"+numOrder);
     }
 }

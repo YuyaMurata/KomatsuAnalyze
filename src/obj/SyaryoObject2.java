@@ -155,8 +155,16 @@ public class SyaryoObject2 {
 		return (Map) map.get("中古車");
 	}
 
-	public String getDead() {
-		return (String) map.get("廃車");
+	public Map<String, List> getDead() {
+		return (Map<String, List>) map.get("廃車");
+	}
+    
+    public Map<String, List> getCarePrice() {
+		return (Map<String, List>) map.get("コマツケア前受け金");
+	}
+    
+    public Map<String, List> getCare() {
+		return (Map<String, List>) map.get("コマツケア");
 	}
 
 	public Map getLast() {
