@@ -15,8 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import json.JsonToSyaryoObj;
 import json.MapIndexToJSON;
@@ -39,12 +37,13 @@ public class FormalizeSyaryoObject2 {
     //private static String kisy = "WA470";
     //private static List extract = Arrays.asList(new String[]{"WA470-7", "WA470-8"});
 
-    private static String filename = "json\\syaryo_obj_" + kisy + ".json";
+    //private static String filename = "json\\syaryo_obj_" + kisy + ".json";
+    private static String filename = "json\\syaryo_obj_" + kisy + "_extract.json";
     private static String output = "json\\syaryo_obj_" + kisy + "_form.json";
-    private static String output2 = "json\\syaryo_obj_" + kisy + "_reject.json";
 
     public static void main(String[] args) {
 
+        //filename = sprit(new JsonToSyaryoObj().reader3(filename));
         Map formMap = forming(new JsonToSyaryoObj().reader3(filename));
 
         //Map joinMap = joinData("PC200", "PC210");
@@ -62,20 +61,28 @@ public class FormalizeSyaryoObject2 {
         //Map syaryoMap = new FormalizeSyaryoObject().join(new String[]{"PC200", "PC210", "HB205", "HB215"});
         //new SyaryoObjToJson().write2("syaryo_obj_"+kisy+"_form.json", syaryoMap);
         //System.out.println("Finish joining & compressing json data!");
-        new SyaryoObjToJson().write(output, formMap);
+        new SyaryoObjToJson().write(output, (Map) formMap);
         System.out.println("Finish forming json data!");
 
     }
 
+    public static String sprit(Map map) {
+        //1次処理 データの分離
+        String splitFile = filename.replace(kisy, kisy + "_extract");
+        Map formMap = splitForming(map);
+        new SyaryoObjToJson().write(splitFile, (Map) formMap.get("extract"));
+        new SyaryoObjToJson().write(filename.replace(kisy, kisy + "_reject"), (Map) formMap.get("reject"));
+
+        return splitFile;
+    }
+
     public static Map forming(Map map) {
-        //1次処理 データ削減
+
+        //2次処理 データ削減
         Map formMap = firstForming(map);
 
-        //2次処理 重複除去
+        //3次処理 重複除去
         formMap = secondForming(formMap);
-
-        //3次処理 データの分離
-        formMap = thirdForming(formMap);
 
         return formMap;
     }
@@ -119,10 +126,11 @@ public class FormalizeSyaryoObject2 {
     public static Map secondForming(Map<String, SyaryoObject2> map) {
         //Customer Index
         Map index = new MapIndexToJSON().reader("index\\customer_index.json");
-        
+
         Map newMap = new TreeMap();
 
         for (SyaryoObject2 syaryo : map.values()) {
+            System.out.println(syaryo.getName());
             formNew(syaryo.get("新車"));
             int numOwners = formUsed(syaryo.get("中古"));
             formOwner(syaryo.get("顧客"), index);
@@ -134,19 +142,21 @@ public class FormalizeSyaryoObject2 {
         return newMap;
     }
 
-    public static Map thirdForming(Map<String, SyaryoObject2> map) {
-        Map newMap = new TreeMap();
+    public static Map splitForming(Map<String, SyaryoObject2> map) {
+        Map splitMap = new HashMap();
 
         List formList = split(map, extract);
-        newMap = (Map) formList.get(0);
+        Map newMap = (Map) formList.get(0);
         System.out.println("Extract:" + newMap.size());
 
         //除外データ
         Map rejectMap = (Map) formList.get(1);
-        new SyaryoObjToJson().write(output2, rejectMap);
         System.out.println("Reject:" + rejectMap.size());
 
-        return newMap;
+        splitMap.put("extract", newMap);
+        splitMap.put("reject", rejectMap);
+
+        return splitMap;
     }
 
     public static List<Map<String, SyaryoObject2>> split(Map<String, SyaryoObject2> syaryoMap, List extract) {
@@ -190,7 +200,7 @@ public class FormalizeSyaryoObject2 {
 
         if (news == null) {
             return;
-        } 
+        }
 
         Boolean flg = false;
         for (String date : news.keySet()) {
@@ -219,7 +229,7 @@ public class FormalizeSyaryoObject2 {
             String date = news.keySet().stream().findFirst().get();
             update.put(date, news.get(date));
         }
-        
+
         news.clear();
         news.putAll(update);
     }
@@ -267,8 +277,9 @@ public class FormalizeSyaryoObject2 {
 
     private static void formOwner(Map<String, List> owner, Map index) {
         Map update = new TreeMap();
-        
-        String newdate="???",id="???", name="???", code="???";
+
+        String newdate = "???", id = "???", name = "???";
+        String[] code = new String[]{"?","?"};
         List temp = null;
 
         if (owner == null) {
@@ -277,7 +288,7 @@ public class FormalizeSyaryoObject2 {
 
         for (String date : owner.keySet()) {
             List obj = owner.get(date);
-            
+
             //System.out.println(date+":"+obj);
             if (obj.get(SyaryoElements.Customer.ID.getNo()).toString().contains("##")
                 || obj.get(SyaryoElements.Customer.ID.getNo()).toString().equals("")) {
@@ -285,52 +296,72 @@ public class FormalizeSyaryoObject2 {
             } else if (obj.get(SyaryoElements.Customer.ID.getNo()).toString().length() < 6) {
                 continue;
             }
-            /*else if (obj.get(SyaryoElements.Customer.Name.getNo()).toString().contains("コマツ")
-                || obj.get(SyaryoElements.Customer.Name.getNo()).toString().contains("小松")) {
-                continue;
-            }*/
-
+            
+            //code formating
+            if(obj.get(SyaryoElements.Customer.Code.getNo()).toString().equals("-1") ||
+                obj.get(SyaryoElements.Customer.Code.getNo()).toString().split("-").length < 2)
+                obj.set(SyaryoElements.Customer.Code.getNo(), "?-?");
+            
             if (!obj.get(SyaryoElements.Customer.ID.getNo()).equals(id)
                 && !obj.get(SyaryoElements.Customer.Name.getNo()).toString().contains(name)) {
-                
+
                 newdate = date.split("#")[0];
-                code = (String) obj.get(SyaryoElements.Customer.Code.getNo());
+                code = obj.get(SyaryoElements.Customer.Code.getNo()).toString().split("-");
+
                 id = (String) obj.get(SyaryoElements.Customer.ID.getNo());
                 name = (String) obj.get(SyaryoElements.Customer.Name.getNo());
                 temp = obj;
-                
+
                 update.put(newdate, temp);
-                
+
                 //System.out.println(newdate);
             } else {
-                if(!obj.get(SyaryoElements.Customer.Code.getNo()).toString().contains("?")
-                    && !obj.get(SyaryoElements.Customer.Code.getNo()).toString().equals("-1")){
-                    temp.set(SyaryoElements.Customer.Code.getNo(), obj.get(SyaryoElements.Customer.Code.getNo()));
-                    temp.set(SyaryoElements.Customer.Name.getNo(), obj.get(SyaryoElements.Customer.Name.getNo())); 
+                String gyosyu = obj.get(SyaryoElements.Customer.Code.getNo()).toString();
+                //System.out.println("1:"+gyosyu);
+                if(!code[0].equals("?") && !code[1].equals("?"))
+                    continue;
+                if (!gyosyu.equals("-1")) {
+                    //System.out.println("2:"+gyosyu);
+                    if (!gyosyu.equals("?-?")) {
+                        code[0] = gyosyu.split("-")[0];
+                        code[1] = gyosyu.split("-")[1];
+                    } else if (!gyosyu.split("-")[0].equals("?")) {
+                        code[0] = gyosyu.split("-")[0];
+                    } else if (!gyosyu.split("-")[1].equals("?")) {
+                        code[1] = gyosyu.split("-")[1];
+                    }
+                    temp.set(SyaryoElements.Customer.Code.getNo(), code[0] + "-" + code[1]);
+                    //System.out.println("After:"+code[0] + "-" + code[1]);
+                    temp.set(SyaryoElements.Customer.Name.getNo(), obj.get(SyaryoElements.Customer.Name.getNo()));
                 }
             }
         }
         //System.out.println(update);
-        
+
         //index check
         String temp_id = "???";
         List removeDate = new ArrayList();
-        
-        for(Object date : update.keySet()){
-            String customer_id = ((List)update.get(date)).get(SyaryoElements.Customer.Company.getNo())
-                                        +"_"+((List)update.get(date)).get(SyaryoElements.Customer.ID.getNo());
-            
-            if(index.get(customer_id) != null)
-                if(index.get(temp_id) != null)
-                    if(index.get(temp_id).equals(index.get(customer_id)))
+
+        for (Object date : update.keySet()) {
+            String customer_id = ((List) update.get(date)).get(SyaryoElements.Customer.Company.getNo())
+                + "_" + ((List) update.get(date)).get(SyaryoElements.Customer.ID.getNo());
+
+            if (index.get(customer_id) != null) {
+                if (index.get(temp_id) != null) {
+                    if (index.get(temp_id).equals(index.get(customer_id))) {
                         removeDate.add(date);
-            
+                    }
+                }
+            }
+
             temp_id = customer_id;
         }
-        for(Object date : removeDate)
+        for (Object date : removeDate) {
             update.remove(date);
-        
+        }
+
         owner.clear();
+
         owner.putAll(update);
     }
 

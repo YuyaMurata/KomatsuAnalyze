@@ -5,7 +5,9 @@
  */
 package export;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import obj.SyaryoElements;
 import obj.SyaryoObject2;
 
@@ -41,5 +43,13 @@ public class ExportTool {
         }
 
         return company.get().toString();
+    }
+    
+    public static List<String> extractOwner(SyaryoObject2 syaryo){
+        List owner = syaryo.getOwner().values().stream()
+            .map(f -> f.get(SyaryoElements.Customer.Code.getNo()))
+            .collect(Collectors.toList());
+        
+        return owner;
     }
 }

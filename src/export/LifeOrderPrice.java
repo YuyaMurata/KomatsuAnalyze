@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import json.JsonToSyaryoObj;
 import obj.SyaryoElements;
 import obj.SyaryoObject2;
@@ -30,21 +28,21 @@ public class LifeOrderPrice {
         String filename = "json\\syaryo_obj_" + kisy + "_form.json";
         Map<String, SyaryoObject2> syaryoMap = new JsonToSyaryoObj().reader3(filename);
 
-        /* outputname = "life_order_price_" + kisy + ".csv";
+        String outputname = "life_order_price_" + kisy + ".csv";
         try (PrintWriter csv = CSVFileReadWrite.writer(outputname)) {
-            extractMaxOrder(syaryoMap, csv);
-        }*/
+            extractMaxOrder(syaryoMap, csv, 1); //0:ALL 1:NEW 2:USED
+        }
         
-        String outputname = "life_order_price_" + syaryoName + ".csv";
+        /*String outputname = "life_order_price_" + syaryoName + ".csv";
         try (PrintWriter csv = CSVFileReadWrite.writer(outputname)) {
             extractSyaryoLifeOrder(syaryoMap.get(syaryoName), csv);
-        }
+        }*/
     }
 
-    public static void extractMaxOrder(Map<String, SyaryoObject2> syaryoMap, PrintWriter csv) {
+    public static void extractMaxOrder(Map<String, SyaryoObject2> syaryoMap, PrintWriter csv, int newUsedFlg) {
         int cnt = 0;
 
-        csv.println("Company,ID,Kisy,Type,回数,合計,平均金額,中央値,会社_区分_作番,最大金額,会社_区分_作番,最小金額");
+        csv.println("Company,ID,Kisy,Type,業種コード,回数,合計,平均金額,中央値,会社_区分_作番,最大金額,会社_区分_作番,最小金額");
         for (SyaryoObject2 syaryo : syaryoMap.values()) {
             cnt++;
 
@@ -54,6 +52,13 @@ public class LifeOrderPrice {
                 System.out.println(company + "," + syaryo.name);
                 continue;
             }
+            
+            if(newUsedFlg == 1)
+                if(syaryo.getUsed() !=null)
+                    continue;
+            else if(newUsedFlg == 2)
+                if(syaryo.getUsed() ==null)
+                    continue;
 
             sb.append(company);
             sb.append(",");
@@ -62,8 +67,16 @@ public class LifeOrderPrice {
             sb.append(syaryo.getMachine());
             sb.append(",");
             sb.append(syaryo.getType());
+            sb.append(",'");
+            for(String customerCode : ExportTool.extractOwner(syaryo)){
+                sb.append(customerCode);
+                sb.append("_");
+            }
+            sb.deleteCharAt(sb.lastIndexOf("_"));
             sb.append(",");
-
+            
+                
+                
             Map orderPrice = initialize();
             int numOrder = 0;
             for (List order : syaryo.getOrder().values()) {
