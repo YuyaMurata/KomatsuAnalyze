@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class SyaryoTemplateAggregate {
 
 	public static void main(String[] args) {
-        String kisy = "WA470";
+        String kisy = "PC200";
 		String path = "..\\KomatsuData\\車両テンプレート\\"+kisy+"系\\";
 		//String path = "template\\"+kisy+"\\";
 		String outpath = "..\\KomatsuData\\中間データ\\";
@@ -36,7 +36,7 @@ public class SyaryoTemplateAggregate {
 		//System.exit(0);
 		int totalRecord = 0;
 		for (File f : flist) {
-			if (f.getName().contains("error.csv") || f.getName().contains("komtrax")) {
+			if (f.getName().contains("error.csv") || f.getName().equals("komtrax")) {
 				continue;
 			}
 			System.out.print(f.getName()+",");
