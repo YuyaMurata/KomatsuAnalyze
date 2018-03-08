@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Map;
 import creator.template.SyaryoTemplate;
+import creator.template.SyaryoTemplate1;
 import zip.ZipFile;
 
 /**
@@ -55,6 +56,23 @@ public class JsonToSyaryoTemplate {
             //setting
             syaryoMap.values().stream().forEach(s -> s.setting());
 		} catch (IOException e) {
+			return null;
+		}
+        
+        return syaryoMap;
+	}
+    
+    public Map<String, SyaryoTemplate1> reader3(String filename) {
+		Map<String, SyaryoTemplate1> syaryoMap;
+        try (JsonReader reader = new JsonReader(new BufferedReader(new FileReader(filename)))) {
+
+			Type type = new TypeToken<Map<String, SyaryoTemplate1>>() {
+			}.getType();
+
+			Gson gson = new Gson();
+			syaryoMap = gson.fromJson(reader, type);
+            
+		} catch (Exception e) {
 			return null;
 		}
         

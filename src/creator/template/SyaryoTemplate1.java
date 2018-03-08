@@ -15,26 +15,17 @@ import test.JSONToBSON;
  *
  * @author ZZ17390
  */
-public class SyaryoTemplate{
+public class SyaryoTemplate1{
     private static Map<String, String> validate = new HashMap();
     
     public String kisy, type, s_type, kiban;
-	transient public Map<String, String> map = new LinkedHashMap();
-    public byte[] mapData;
-    
-	public SyaryoTemplate(String kisy, String type, String s_type, String kiban) {
+	public Map<String, String> map = new LinkedHashMap();
+
+	public SyaryoTemplate1(String kisy, String type, String s_type, String kiban) {
 		this.kisy = kisy;
         this.type = type;
         this.s_type = s_type;
         this.kiban = kiban;
-	}
-    
-    public SyaryoTemplate(SyaryoTemplate1 template) {
-		this.kisy = template.kisy;
-        this.type = template.type;
-        this.s_type = template.s_type;
-        this.kiban = template.kiban;
-        this.map = template.map;
 	}
 
 	public static Boolean errorCheck(String date) {
@@ -399,7 +390,7 @@ public class SyaryoTemplate{
 		if (errorCheck(date)) {
 			return;
 		}
-        
+
 		String str = "";
 		if (map.get("コマツケア") == null) {
 			str = "DB, 会社コード, 日付, 代理店コード, クレーム番号, 保証種別, 金額 \n ";
@@ -606,28 +597,9 @@ public class SyaryoTemplate{
 		return sb.toString();
 	}
     
-	public SyaryoTemplate clone() {	
-		return new SyaryoTemplate(kisy, type, s_type, kiban);
+	public SyaryoTemplate1 clone() {	
+		return new SyaryoTemplate1(kisy, type, s_type, kiban);
 	}
-    
-    public void compress(){
-        try{
-            mapData = JSONToBSON.toBson(map);
-            if(map != null)
-                map.clear();
-        }catch(IOException e){
-            e.printStackTrace();
-        }
-    }
-    
-    public void decompress(){
-        try{
-            byte[] b = mapData;
-            this.map = JSONToBSON.toMap(b);
-        }catch(IOException e){
-            e.printStackTrace();
-        }
-    }
     
     //test
     public void add(String table, String header, String record){

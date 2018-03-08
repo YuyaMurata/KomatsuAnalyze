@@ -8,17 +8,15 @@ package creator;
 import java.io.File;
 import java.util.Map;
 import java.util.TreeMap;
-import json.JsonToSyaryoTemplate;
-import json.SyaryoTemplateToJson;
-import creator.template.SyaryoTemplate1;
+import creator.template.SyaryoTemplate;
 import java.util.stream.Collectors;
+import json.SyaryoToZip;
 
 /**
- * 作業明細を確認 WA470-7-10200など
  *
  * @author ZZ17390
  */
-public class SyaryoTemplateAggregate {
+public class SyaryoTemplateCompressAggregate {
 
 	public static void main(String[] args) {
         String kisy = "WA470";
@@ -26,39 +24,45 @@ public class SyaryoTemplateAggregate {
 		//String path = "template\\"+kisy+"\\";
 		String outpath = "..\\KomatsuData\\中間データ\\";
 		//String outpath = "middle\\";
-		String FILENAME = outpath+"syaryo_mid_" + kisy + ".json";
+		String FILENAME = outpath+"syaryo_mid_" + kisy;
 		File[] flist = (new File(path)).listFiles();
 
-		Map<String, SyaryoTemplate1> syaryoBase = new JsonToSyaryoTemplate().reader3(path + "syaryo_"+kisy+"_template.json");
-		TreeMap<String, SyaryoTemplate1> syaryoMap = new TreeMap();
+		Map<String, SyaryoTemplate> syaryoBase = new SyaryoToZip().readTemplate(path + "syaryo_"+kisy+"_template.gz");
+		TreeMap<String, SyaryoTemplate> syaryoMap = new TreeMap();
 
 		System.out.println(syaryoBase.keySet().stream().map(s -> s.split("-")[0]).distinct().collect(Collectors.toList()));
 		//System.exit(0);
 		int totalRecord = 0;
 		for (File f : flist) {
-			if (f.getName().contains("error.csv") || f.getName().contains(".gz")) {
+			if (!f.getName().contains(".gz")) {
 				continue;
 			}
 			System.out.print(f.getName()+",");
 
-			Map<String, SyaryoTemplate1> syaryoTemplates = new JsonToSyaryoTemplate().reader3(f.getPath());
-            if(syaryoTemplates == null)
+			Map<String, SyaryoTemplate> syaryoTemplates = new SyaryoToZip().readTemplate(f.getPath());
+            if(syaryoTemplates == null){
+                System.out.println("SyaryoTemplate is NULL!");
                 continue;
+            }
 
             int numRecord = 0;
             int numSyaryo = 0;
-			for (SyaryoTemplate1 template : syaryoTemplates.values()) {
+			for (SyaryoTemplate template : syaryoTemplates.values()) {
 				if (!template.getName().contains(kisy)) {
 					continue;
 				}
                 
                 numSyaryo++;
-				SyaryoTemplate1 syaryo = syaryoBase.get(template.getName());
-				for (String key : template.getAll().keySet()) {
+				SyaryoTemplate syaryo = syaryoBase.get(template.getName());
+                
+                //車両テンプレート展開
+                template.decompress();
+                syaryo.decompress();
+				
+                for (String key : template.getAll().keySet()) {
 					int index = 0;
 					Boolean header = true;
 					for (String str : template.getAll().get(key).split("\n")) {
-						//System.out.println(str);
 						if (header) {
 							index = str.split(",").length;
 							header = false;
@@ -74,6 +78,10 @@ public class SyaryoTemplateAggregate {
                         totalRecord++;
 					}
 				}
+                
+                //車両テンプレート圧縮
+                template.compress();
+                syaryo.compress();
 				syaryoMap.put(syaryo.getName(), syaryo);
                 
 				/*if (n % 10000 == 0) {
@@ -87,8 +95,8 @@ public class SyaryoTemplateAggregate {
 		System.out.println("データ件数, " + totalRecord);
 		System.out.println("車両数, " + syaryoMap.size());
 
-		syaryoMap.put("_summary", new SyaryoTemplate1("データ件数, " + totalRecord, ",車両数, " + syaryoMap.size(), "", ""));
+		syaryoMap.put("_summary", new SyaryoTemplate("データ件数, " + totalRecord, ",車両数, " + syaryoMap.size(), "", ""));
 
-		new SyaryoTemplateToJson().write(FILENAME, syaryoMap);
+		new SyaryoToZip().write(FILENAME, syaryoMap);
 	}
 }

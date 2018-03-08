@@ -12,38 +12,55 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 
 /**
  *
  * @author ZZ17390
  */
 public class JSONToBSON {
-    public static void main(String[] args) throws IOException {
+
+    public static void main(String[] args) throws IOException, DecoderException {
         Map map = new HashMap();
         map.put("name", "ABC");
-        map.put("age", 32);
-        map.put("tel", "0101-0002-3421");
-        
-        byte[] b = toBson(map);
+        map.put("age", 13);
+        System.out.println(map);
+        byte[] b = JSONToBSON.toBson(map);
         System.out.println(b);
         
-        Map deMap = toMap(b);
-        System.out.println(deMap);
+        //String str = new String(Hex.encodeHex(b));
+        //System.out.println(str);
+        
+        Map map2 = JSONToBSON.toMap(b);
+        System.out.println(map2);
     }
-    
-    public static byte[] toBson(Map map) throws IOException{
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectMapper mapper = new ObjectMapper(new BsonFactory());
-        mapper.writeValue(baos, map);
-        byte[] buffer = baos.toByteArray();
 
-        return buffer;
+    public static byte[] toBson(Map map) throws IOException {
+        ByteArrayOutputStream bos;
+        GZIPOutputStream gos;
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            ObjectMapper mapper = new ObjectMapper(new BsonFactory());
+            mapper.writeValue(baos, map);
+            //byte[] buffer = baos.toByteArray();
+            bos = new ByteArrayOutputStream();
+            gos = new GZIPOutputStream(bos);
+            gos.write(baos.toByteArray());
+        }
+        bos.close();
+        gos.finish();
+
+        return bos.toByteArray();
     }
-    
-    public static Map toMap(byte[] buffer) throws IOException{
+
+    public static Map toMap(byte[] buffer) throws IOException {
         ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
+        GZIPInputStream gis = new GZIPInputStream(bais);
+        
         ObjectMapper mapper = new ObjectMapper(new BsonFactory());
-        Map map = mapper.readValue(bais, Map.class);
+        Map map = mapper.readValue(gis, Map.class);
 
         return map;
     }
