@@ -34,7 +34,8 @@ public class SyaryoTemplateCompressAggregate {
 		//System.exit(0);
 		int totalRecord = 0;
 		for (File f : flist) {
-			if (!f.getName().contains(".gz")) {
+			if (!f.getName().contains(".gz") || f.getName().contains("_komtrax_actdata")
+                 || f.getName().contains("_komtrax_caution") || f.getName().contains("_komtrax_engine")) {
 				continue;
 			}
 			System.out.print(f.getName()+",");
