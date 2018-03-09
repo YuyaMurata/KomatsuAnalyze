@@ -42,7 +42,7 @@ public class TranslationSyaryoToBSON {
             System.out.println("origin:"+ObjectSizeCalculator.getObjectSize(syaryoTemplates));
             for (String name : syaryoTemplates.keySet()) {
                 SyaryoTemplate syaryo = new SyaryoTemplate(syaryoTemplates.get(name));
-                syaryo.compress();
+                syaryo.compress(true);
                 syaryoMap.put(name, syaryo);
             }
             System.out.println("compress:"+ObjectSizeCalculator.getObjectSize(syaryoMap));

@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import test.JSONToBSON;
+import json.JSONToBSON;
 
 /**
  *
@@ -596,6 +596,9 @@ public class SyaryoTemplate{
     }
 
 	public String toString() {
+        if(map == null)
+            System.err.println("Do not decompress!");
+        
 		StringBuilder sb = new StringBuilder(getName());
 		for (Object key : map.keySet()) {
 			sb.append("|");
@@ -610,9 +613,10 @@ public class SyaryoTemplate{
 		return new SyaryoTemplate(kisy, type, s_type, kiban);
 	}
     
-    public void compress(){
+    public void compress(Boolean flg){
         try{
-            mapData = JSONToBSON.toBson(map);
+            if(flg)
+                mapData = JSONToBSON.toBson(map);
             if(map != null)
                 map.clear();
         }catch(IOException e){

@@ -341,7 +341,7 @@ public class SyaryoElements {
 		PID("部品明細番号", 4),
         MAKER("部品メーカー区分", 5),
 		HID("品番", 6),
-		HNmae("品名", 7),
+		HName("品名", 7),
 		Quant("数量", 8),
 		Cancel("キャンセル数量", 9),
 		Price("標準金額", 10);

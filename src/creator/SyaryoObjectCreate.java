@@ -7,9 +7,9 @@ package creator;
 
 import java.util.Map;
 import java.util.TreeMap;
-import json.JsonToSyaryoTemplate;
 import json.SyaryoObjToJson;
 import creator.template.SyaryoTemplate;
+import json.SyaryoToZip;
 import obj.SyaryoObject2;
 
 /**
@@ -20,15 +20,15 @@ import obj.SyaryoObject2;
 public class SyaryoObjectCreate {
 
 	public static void main(String[] args) {
-		new SyaryoObjectCreate().create("PC200");
+		new SyaryoObjectCreate().create("WA470");
 	}
 
 	public void create(String kisy) {
-		String midtemp = "..\\KomatsuData\\中間データ\\syaryo_mid_" + kisy + ".zip";
+		String midtemp = "..\\KomatsuData\\中間データ\\syaryo_mid_" + kisy;
 		//String midtemp = "middle\\syaryo_mid_" + kisy + ".zip";
 		String FILENAME = "json\\syaryo_obj_" + kisy + ".json";
 
-		Map<String, SyaryoTemplate> syaryoTemplates = new JsonToSyaryoTemplate().reader2(midtemp);
+		Map<String, SyaryoTemplate> syaryoTemplates = new SyaryoToZip().readTemplate(midtemp);
 		TreeMap<String, SyaryoObject2> syaryoMap = new TreeMap();
 
 		int n = 0;
@@ -37,6 +37,7 @@ public class SyaryoObjectCreate {
 		for (String syaryoName : syaryoTemplates.keySet()) {
 			//
 			SyaryoTemplate syaryo = syaryoTemplates.get(syaryoName);
+            syaryo.decompress();
 
 			Map<String, String> template = syaryo.getAll();
 
@@ -57,8 +58,9 @@ public class SyaryoObjectCreate {
 
 			if (n % 10000 == 0) {
 				System.out.println(n + " 台");
-
 			}
+            
+            syaryo.compress(false);
 		}
         
         if (en > 0) 

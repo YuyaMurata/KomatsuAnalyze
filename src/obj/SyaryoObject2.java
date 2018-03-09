@@ -325,18 +325,6 @@ public class SyaryoObject2 {
 
 		return smr;
 	}
-
-	public String diffSMR(String date) {
-		TreeMap<String, List> map = new TreeMap(getSMR());
-		Integer smr = Integer.valueOf(map.get(date).get(SyaryoElements.SMR._SMR.getNo()).toString());
-		Integer smr2 = 0;
-		try {
-			smr2 = Integer.valueOf(map.lowerEntry(date).getValue().get(SyaryoElements.SMR._SMR.getNo()).toString());
-		} catch (NullPointerException e) {
-		}
-
-		return String.valueOf(smr - smr2);
-	}
     
     //Get
     public Map<String, List> get(String key) {

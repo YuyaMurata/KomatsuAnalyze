@@ -19,7 +19,7 @@ import json.SyaryoToZip;
 public class SyaryoTemplateCompressAggregate {
 
 	public static void main(String[] args) {
-        String kisy = "WA470";
+        String kisy = "PC200";
 		String path = "..\\KomatsuData\\車両テンプレート\\"+kisy+"系\\";
 		//String path = "template\\"+kisy+"\\";
 		String outpath = "..\\KomatsuData\\中間データ\\";
@@ -27,8 +27,8 @@ public class SyaryoTemplateCompressAggregate {
 		String FILENAME = outpath+"syaryo_mid_" + kisy;
 		File[] flist = (new File(path)).listFiles();
 
-		Map<String, SyaryoTemplate> syaryoBase = new SyaryoToZip().readTemplate(path + "syaryo_"+kisy+"_template.gz");
-		TreeMap<String, SyaryoTemplate> syaryoMap = new TreeMap();
+		TreeMap<String, SyaryoTemplate> syaryoBase = new TreeMap(new SyaryoToZip().readTemplate(path + "syaryo_"+kisy+"_template.gz"));
+		//TreeMap<String, SyaryoTemplate> syaryoMap = new TreeMap();
 
 		System.out.println(syaryoBase.keySet().stream().map(s -> s.split("-")[0]).distinct().collect(Collectors.toList()));
 		//System.exit(0);
@@ -48,10 +48,6 @@ public class SyaryoTemplateCompressAggregate {
             int numRecord = 0;
             int numSyaryo = 0;
 			for (SyaryoTemplate template : syaryoTemplates.values()) {
-				if (!template.getName().contains(kisy)) {
-					continue;
-				}
-                
                 numSyaryo++;
 				SyaryoTemplate syaryo = syaryoBase.get(template.getName());
                 
@@ -80,12 +76,12 @@ public class SyaryoTemplateCompressAggregate {
 				}
                 
                 //車両テンプレート圧縮
-                template.compress();
-                syaryo.compress();
-				syaryoMap.put(syaryo.getName(), syaryo);
+                template = null;
+                syaryo.compress(true);
+				//syaryoMap.put(syaryo.getName(), syaryo);
                 
-				/*if (n % 10000 == 0) {
-					System.out.println("n = " + n);
+				/*if (numSyaryo % 1000 == 0) {
+					System.out.println("n = " + numSyaryo);
 				}*/
 			}
             
@@ -93,10 +89,10 @@ public class SyaryoTemplateCompressAggregate {
 		}
 
 		System.out.println("データ件数, " + totalRecord);
-		System.out.println("車両数, " + syaryoMap.size());
+		System.out.println("車両数, " + syaryoBase.size());
 
-		syaryoMap.put("_summary", new SyaryoTemplate("データ件数, " + totalRecord, ",車両数, " + syaryoMap.size(), "", ""));
+		syaryoBase.put("_summary", new SyaryoTemplate("データ件数, " + totalRecord, ",車両数, " + syaryoBase.size(), "", ""));
 
-		new SyaryoToZip().write(FILENAME, syaryoMap);
+		new SyaryoToZip().write(FILENAME, syaryoBase);
 	}
 }

@@ -23,8 +23,6 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.lang.reflect.Type;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -45,6 +43,8 @@ public class SyaryoToZip {
     }
 
     public Map<String, SyaryoTemplate> readTemplate(String filename) {
+        filename = filename.replace(".gz", "") + ".gz";
+        
         Gson gson = new Gson();
         Type type = new TypeToken<Map<String, SyaryoTemplate>>() {
         }.getType();
@@ -57,7 +57,7 @@ public class SyaryoToZip {
         return null;
     }
 
-    public void writeGzipFile(String filename, String json) throws FileNotFoundException, IOException {
+    private void writeGzipFile(String filename, String json) throws FileNotFoundException, IOException {
         try (BufferedWriter bw = new BufferedWriter(
             new OutputStreamWriter(
                 new GZIPOutputStream(
@@ -68,14 +68,13 @@ public class SyaryoToZip {
         }
     }
 
-    public String readGzipFile(String filename) throws FileNotFoundException, IOException {
+    private String readGzipFile(String filename) throws FileNotFoundException, IOException {
         try (BufferedReader br = new BufferedReader(
             new InputStreamReader(
                 new GZIPInputStream(
                     new BufferedInputStream(
                         new FileInputStream(
                             new File(filename))))))) {
-
             return br.readLine();
         }
     }
