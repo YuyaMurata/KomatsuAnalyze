@@ -25,8 +25,8 @@ public class SyaryoTemplateCreate extends HiveDB {
     private static String FILENAME;
     
     public static void main(String[] args) throws IOException {
-        SyaryoTemplateCreate.execute("WA100%");
         SyaryoTemplateCreate.execute("WA470%");
+        SyaryoTemplateCreate.execute("WA100%");
         SyaryoTemplateCreate.execute("HB205%");
         SyaryoTemplateCreate.execute("HB215%");
         SyaryoTemplateCreate.execute("PC200%");
