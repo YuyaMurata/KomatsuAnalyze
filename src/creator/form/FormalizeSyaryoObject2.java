@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import json.JsonToSyaryoObj;
 import json.MapIndexToJSON;
 import json.SyaryoObjToJson;
+import json.SyaryoToZip;
 import obj.SyaryoElements;
 import obj.SyaryoObject;
 import obj.SyaryoObject2;
@@ -37,13 +38,13 @@ public class FormalizeSyaryoObject2 {
     private static String kisy = "WA470";
     private static List extract = Arrays.asList(new String[]{"WA470-7", "WA470-8"});
 
-    private static String filename = "json\\syaryo_obj_" + kisy + ".json";
-    private static String spritfilename = "json\\syaryo_obj_" + kisy + "_extract.json";
-    private static String output = "json\\syaryo_obj_" + kisy + "_form.json";
+    private static String filename = "json\\syaryo_obj_" + kisy + ".gz";
+    private static String spritfilename = "json\\syaryo_obj_" + kisy + "_extract.gz";
+    private static String output = "json\\syaryo_obj_" + kisy + "_form.gz";
 
     public static void main(String[] args) {
 
-        sprit(new JsonToSyaryoObj().reader3(filename));
+        sprit(new SyaryoToZip().readObject(filename));
         //Map formMap = forming(new JsonToSyaryoObj().reader3(spritfilename));
 
         //Map joinMap = joinData("PC200", "PC210");
@@ -69,8 +70,8 @@ public class FormalizeSyaryoObject2 {
     public static void sprit(Map map) {
         //1次処理 データの分離
         Map formMap = splitForming(map);
-        new SyaryoObjToJson().write(spritfilename, (Map) formMap.get("extract"));
-        new SyaryoObjToJson().write(filename.replace(kisy, kisy + "_reject"), (Map) formMap.get("reject"));
+        new SyaryoToZip().write(spritfilename, (Map) formMap.get("extract"));
+        new SyaryoToZip().write(filename.replace(kisy, kisy + "_reject"), (Map) formMap.get("reject"));
     }
 
     public static Map forming(Map map) {

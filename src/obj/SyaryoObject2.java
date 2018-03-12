@@ -25,7 +25,7 @@ import json.JSONToBSON;
  */
 public class SyaryoObject2 {
     public String name;
-	public transient Map map = new LinkedHashMap();
+	public Map map = new LinkedHashMap();
 	public byte[] mapData;	
     private transient DecimalFormat dformat = new DecimalFormat("000");
 
@@ -353,9 +353,8 @@ public class SyaryoObject2 {
     public void decompress(){
         try{
             byte[] b = mapData;
-            if(this.map == null)
-                this.map = new TreeMap<>();
             this.map = JSONToBSON.toMap(b);
+            mapData = null;
         }catch(IOException e){
             e.printStackTrace();
         }

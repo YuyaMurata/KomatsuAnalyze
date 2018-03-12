@@ -18,15 +18,16 @@ import json.SyaryoToZip;
  */
 public class SyaryoTemplateCompressAggregate {
     public static void main(String[] args) {
-        SyaryoTemplateCompressAggregate.agrregate("PC200");
-        SyaryoTemplateCompressAggregate.agrregate("PC200");
-        SyaryoTemplateCompressAggregate.agrregate("PC200");
-        SyaryoTemplateCompressAggregate.agrregate("PC200");
+        SyaryoTemplateCompressAggregate.agrregate("WA470");
+        //SyaryoTemplateCompressAggregate.agrregate("PC200");
+        //SyaryoTemplateCompressAggregate.agrregate("PC200");
+        //SyaryoTemplateCompressAggregate.agrregate("PC200");
     }
+    
 	public static void agrregate(String kisy) {
 		String path = "..\\KomatsuData\\車両テンプレート\\"+kisy+"系\\";
-		//String path = "template\\"+kisy+"\\";
 		String outpath = "..\\KomatsuData\\中間データ\\";
+        //String path = "template\\"+kisy+"\\";
 		//String outpath = "middle\\";
 		String FILENAME = outpath+"syaryo_mid_" + kisy;
 		File[] flist = (new File(path)).listFiles();

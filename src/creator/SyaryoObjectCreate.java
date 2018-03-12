@@ -7,7 +7,6 @@ package creator;
 
 import java.util.Map;
 import java.util.TreeMap;
-import json.SyaryoObjToJson;
 import creator.template.SyaryoTemplate;
 import json.SyaryoToZip;
 import obj.SyaryoObject2;
@@ -24,8 +23,8 @@ public class SyaryoObjectCreate {
 	}
 
 	public void create(String kisy) {
-		String midtemp = "..\\KomatsuData\\中間データ\\syaryo_mid_" + kisy;
-		//String midtemp = "middle\\syaryo_mid_" + kisy + ".zip";
+		//String midtemp = "..\\KomatsuData\\中間データ\\syaryo_mid_" + kisy;
+		String midtemp = "middle\\syaryo_mid_" + kisy + ".gz";
 		String FILENAME = "json\\syaryo_obj_" + kisy + ".json";
 
 		Map<String, SyaryoTemplate> syaryoTemplates = new SyaryoToZip().readTemplate(midtemp);
@@ -56,7 +55,7 @@ public class SyaryoObjectCreate {
 
 			en += syaryoObj.add(template);
             syaryoObj.compress(true);
-            syaryo.compress(false);
+            syaryo = null;
             
 			//System.out.println(syaryoObj.dump());
 			syaryoMap.put(syaryoObj.getName(), syaryoObj);

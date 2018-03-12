@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.lang.reflect.Type;
+import obj.SyaryoObject2;
 
 /**
  *
@@ -47,6 +48,21 @@ public class SyaryoToZip {
         
         Gson gson = new Gson();
         Type type = new TypeToken<Map<String, SyaryoTemplate>>() {
+        }.getType();
+        try {
+            return gson.fromJson(readGzipFile(filename), type);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            System.exit(0);
+        }
+        return null;
+    }
+    
+    public Map<String, SyaryoObject2> readObject(String filename) {
+        filename = filename.replace(".gz", "") + ".gz";
+        
+        Gson gson = new Gson();
+        Type type = new TypeToken<Map<String, SyaryoObject2>>() {
         }.getType();
         try {
             return gson.fromJson(readGzipFile(filename), type);
