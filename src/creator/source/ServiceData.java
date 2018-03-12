@@ -70,7 +70,6 @@ public class ServiceData {
                     Order._Order.KSYCD,
                     Service._Service.SVCKR_KNRNO,
                     Order._Order.SBN,
-                    HiveDB.TABLE.SERVICE,
                     HiveDB.TABLE.CUSTOMER_COMMON,
                     Service._Service.KSYCD,
                     Customer.Common.KSYCD,
@@ -170,13 +169,13 @@ public class ServiceData {
                 syaryo.addHistory(db, company, date, id);
                 
                 /*"DB, 会社コード, 日付, 作番登録日, 実施予定日, 完了日, 作番, 修・単, 作番ステータス, 顧客ID, 顧客名, 保有顧客ID, 保有顧客名, 工数, 指示工数, 売上区分, 請求, 概要 ";*/
-                syaryo.addOrder(db, company, date, "-1", "-1", date, id, odr_kbn, "-1", "?", "?", cid, cname, kosu, "-1", uag_kbn, price, text);
+                syaryo.addOrder(db, company, date, "-1", "-1", date, id, sg_keitai_id, "?", odr_kbn, "-1", "?", "?", cid, cname, kosu, "-1", uag_kbn, price, text);
 
                 //Parts
                 if (sp2 == 1) {
                     syaryo.addParts(db, company, date, id, sg_mid, "?", parts_id, parts_name, suryo, "-1", price);
                 } else if (sp2 == 2) {
-                    syaryo.addWork(db, company, date, id, sg_mid, sg_keitai_id, "?", sg_id, sg_name, "-1", suryo, price, "-1", "-1", "-1", "-1", "-1", kosu);
+                    syaryo.addWork(db, company, date, id, sg_mid, sg_id, sg_name, "-1", suryo, price, "-1", "-1", "-1", "-1", "-1", kosu);
                 }
 
                 //Owner

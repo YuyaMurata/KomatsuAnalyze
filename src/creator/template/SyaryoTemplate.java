@@ -89,12 +89,12 @@ public class SyaryoTemplate{
 		if (key.equals("受注")) {
 			addOrder(s[0], s[1], s[2], s[3], s[4], s[5], s[6],
 				s[7], s[8], s[9], s[10], s[11], s[12], s[13],
-				s[14], s[15], s[16], s[17]);
+				s[14], s[15], s[16], s[17], s[18], s[19]);
 		}
 		if (key.equals("作業")) {
 			addWork(s[0], s[1], s[2], s[3], s[4], s[5], s[6],
 				s[7], s[8], s[9], s[10], s[11], s[12], s[13],
-				s[14], s[15], s[16], s[17]);
+				s[14], s[15]);
 		}
 		if (key.equals("部品")) {
 			addParts(s[0], s[1], s[2], s[3], s[4], s[5], s[6], s[7], s[8], s[9], s[10]);
@@ -304,7 +304,7 @@ public class SyaryoTemplate{
 	}
 
 	public void addOrder(String db, String company, String date, String sbnDate, String startDate, String finishDate,
-		String sbn, String hanbai, String status,
+		String sbn, String sgkt_id, String sgkt_name, String hanbai, String status,
 		String kokyakuId, String kokyakuName, String id, String name,
 		String step, String sijistep,
 		String uag_kbn, String price, String gaiyo
@@ -316,7 +316,7 @@ public class SyaryoTemplate{
 		String str = "";
 		if (map.get("受注") == null) {
 			str = "DB, 会社コード, 日付, 作番登録日, 実施予定日, 完了日, "
-				+ "作番, 修・単, 作番ステータス, "
+				+ "作番, 作業形態コード, 作業形態名, 修・単, 作番ステータス, "
 				+ "顧客ID, 顧客名, 保有顧客ID, 保有顧客名, "
 				+ "工数, 指示工数, "
 				+ "売上区分, 請求,"
@@ -325,7 +325,8 @@ public class SyaryoTemplate{
 			str = map.get("受注") + " \n ";
 		}
 
-		str += db + "," + company + "," + date + "," + sbnDate + "," + startDate + "," + finishDate + "," + sbn + "," + hanbai + "," + status + ","
+		str += db + "," + company + "," + date + "," + sbnDate + "," + startDate + "," + finishDate + "," 
+            + sbn + "," +sgkt_id + "," + sgkt_name + "," + hanbai + "," + status + ","
 			+ kokyakuId + "," + kokyakuName + "," + id + "," + name + ","
 			+ step + "," + sijistep + ","
 			+ uag_kbn + "," + price + "," + gaiyo;
@@ -333,7 +334,6 @@ public class SyaryoTemplate{
 	}
 
 	public void addWork(String db, String company, String date, String sbn, String sg_id,
-		String keitaiId, String keitaiName,
 		String id, String name, String finish,
 		String suryo, String kingaku,
 		String gaichu, String gaichuKingaku,
@@ -345,9 +345,8 @@ public class SyaryoTemplate{
 		String str = "";
 		if (map.get("作業") == null) {
 			str = "DB, 会社コード, 受注日, 作番, 作業明細番号, "
-				+ "作業形態コード, 作業形態名, "
 				+ "作業コード, 作業名, 完了フラグ, "
-				+ "数量, 標準金額, "
+				+ "数量, 請求金額, "
 				+ "外注フラグ, 外注原価, "
 				+ "標準工数, 請求工数, 指示工数, 実績累計工数 \n ";
 		} else {
@@ -355,7 +354,6 @@ public class SyaryoTemplate{
 		}
 
 		str += db + "," + company + "," + date + "," + sbn + "," + sg_id + ","
-			+ keitaiId + "," + keitaiName + ","
 			+ id + "," + name + "," + finish + ","
 			+ suryo + "," + kingaku + ","
 			+ gaichu + "," + gaichuKingaku + ","
@@ -371,7 +369,7 @@ public class SyaryoTemplate{
 		String str = "";
 		if (map.get("部品") == null) {
 			str = "DB, 会社コード, 日付, 作番, 部品明細番号, 部品メーカ区分, 品番, "
-				+ "品名, 受注数量, キャンセル数量, 標準金額 \n ";
+				+ "品名, 受注数量, キャンセル数量, 請求金額 \n ";
 		} else {
 			str = map.get("部品") + " \n ";
 		}

@@ -44,7 +44,7 @@ public class PartsData {
                     Order.Parts.BHN_NM, //品名
                     Order.Parts.ODR_SU, //受注数量
                     Order.Parts.CANSL_SU, //キャンセル数量
-                    Order.Parts.HJUN_KKU, //標準価格
+                    Order.Parts.SKKG, //請求金額
                     Order.Parts.LAST_UPD_DAYT,
                     HiveDB.TABLE.PARTS,
                     HiveDB.TABLE.ORDER.get(),
@@ -75,7 +75,7 @@ public class PartsData {
                 String parts_name = res.getString(Order.Parts.BHN_NM.get()); //品名
                 String suryo = res.getString(Order.Parts.ODR_SU.get()); //受注数量
                 String cancel = res.getString(Order.Parts.CANSL_SU.get()); //キャンセル数量
-                String price = res.getString(Order.Parts.HJUN_KKU.get()); //標準価格
+                String price = res.getString(Order.Parts.SKKG.get()); //請求金額
 
                 //Date
                 String date = res.getString(Order.Parts.MIDAY.get());  //明細登録日

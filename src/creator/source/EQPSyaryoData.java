@@ -35,7 +35,7 @@ public class EQPSyaryoData {
             Statement stmt = con.createStatement();
 
             //EQP_Syaryo
-            String sql = String.format("select e.%s,e.%s,e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, s.%s, c.%s, c.%s, c2.%s from %s e join %s s on (e.kisy=s.kisy and e.kiban=s.kiban) join %s c on (s.%s=c.%s) join %s c2 on (s.%s=c2.%s) where e.kisy like '%s'",
+            String sql = String.format("select e.%s,e.%s,e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, s.%s, c.%s, c.%s, c2.%s from %s e join %s s on (e.kisy=s.kisy and e.kiban=s.kiban) join %s c on (e.%s=c.%s) join %s c2 on (e.%s=c2.%s) where e.kisy like '%s'",
                     EQP.Syaryo.KISY, EQP.Syaryo.TYP, EQP.Syaryo.SYHK, EQP.Syaryo.KIBAN, //Unique ID
                     EQP.Syaryo.MNF_DATE, //生産日
                     EQP.Syaryo.PLANT, //生産工場(catalog)

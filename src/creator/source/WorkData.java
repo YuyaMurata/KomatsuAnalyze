@@ -34,7 +34,7 @@ public class WorkData {
             Statement stmt = con.createStatement();
 
             //Syaryo
-            String sql = String.format("select o.%s,o.%s,o.%s,o.%s, w.%s, w.%s, w.%s, o.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, o.%s, o.%s, w.%s from %s w join %s o on (w.%s=o.%s and w.%s=o.%s) where o.kisy like '%s'",
+            String sql = String.format("select o.%s,o.%s,o.%s,o.%s, w.%s, w.%s, w.%s, o.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s, w.%s from %s w join %s o on (w.%s=o.%s and w.%s=o.%s) where o.kisy like '%s'",
                     Order._Order.KISY, Order._Order.TYP, Order._Order.SYHK, Order._Order.KIBAN, //Unique ID
                     Work.Info.KSYCD, //会社コード
                     Work.Info.SBN, //作番
@@ -49,10 +49,8 @@ public class WorkData {
                     Work.Info.JRKOS, //実績累計工数
                     Work.Info.ODR_SU, //受注数量
                     Work.Info.GTWT_UMFLG, //外注有無
-                    Work.Info.JKT_GKGK, //純工賃合計原価
+                    Work.Info.SKKG, //請求金額
                     Work.Info.GT_GKGK, //外注合計原価
-                    Order._Order.SGYO_KTICD, //作業形態コード
-                    Order._Order.SGKT_NM, //作業形態名
                     Work.Info.LAST_UPD_DAYT,
                     HiveDB.TABLE.WORK_INFO,
                     HiveDB.TABLE.ORDER.get(),
@@ -78,13 +76,11 @@ public class WorkData {
                 //Work
                 String sbn = res.getString(Work.Info.SBN.get()); //作番
                 String id = res.getString(Work.Info.SGYO_MSINO.get());   //作業明細番号
-                String sgkt_id = res.getString(Order._Order.SGYO_KTICD.get());    //作業形態コード
-                String sgkt_name = res.getString(Order._Order.SGKT_NM.get());       //作業形態名
                 String sg_id = res.getString(Work.Info.SGYOCD.get()); //作業コード
                 String sg_name = res.getString(Work.Info.SGYO_NM.get()); //作業名
                 String sg_finishflg = res.getString(Work.Info.SGYO_KRFLG.get()); //作業完了フラグ
                 String suryo = res.getString(Work.Info.ODR_SU.get());   //受注数量
-                String price = res.getString(Work.Info.JKT_GKGK.get());     //純工賃合計原価
+                String price = res.getString(Work.Info.SKKG.get());     //請求金額
                 
                 //工数
                 String hyouzyun= res.getString(Work.Info.HJUN_KOS.get()); //標準工数
@@ -108,7 +104,7 @@ public class WorkData {
                 String name = SyaryoTemplate.check(kisy, type, s_type, kiban);
                 if (name == null || SyaryoTemplate.errorCheck(date)) {
                     errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + last_date + "," + db + "," + company + "," + date + "," + sbn + "," + id 
-                                    + "," + sgkt_id + "," + sgkt_name + "," + sg_id + "," + sg_name + "," + sg_finishflg + "," + price 
+                                    + "," + sg_id + "," + sg_name + "," + sg_finishflg + "," + price 
                                     + "," + suryo + "," + hyouzyun + "," + seikyu + "," + siji + "," + jruikei + "," + gaichu + "," + gaichu_price);
                     continue;
                 }
@@ -126,7 +122,7 @@ public class WorkData {
                 syaryo.addLast(db, company, last_date);
                 
                 //Work
-                syaryo.addWork(db, company, date, sbn, id, sgkt_id, sgkt_name, sg_id, sg_name, sg_finishflg, suryo, price, gaichu, gaichu_price, hyouzyun, seikyu, siji, jruikei);
+                syaryo.addWork(db, company, date, sbn, id, sg_id, sg_name, sg_finishflg, suryo, price, gaichu, gaichu_price, hyouzyun, seikyu, siji, jruikei);
                 
                 //AddSyaryo
                 map.put(syaryo.getName(), syaryo);

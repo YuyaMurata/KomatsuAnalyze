@@ -34,10 +34,12 @@ public class OrderData {
             Statement stmt = con.createStatement();
 
             //Syaryo
-            String sql = String.format("select %s,%s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s from %s where kisy like '%s'",
+            String sql = String.format("select %s,%s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s from %s where kisy like '%s'",
                     Order._Order.KISY, Order._Order.TYP, Order._Order.SYHK, Order._Order.KIBAN, //Unique ID
                     Order._Order.KSYCD, //会社コード
                     Order._Order.SBN, //作番
+                    Order._Order.SGYO_KTICD, //作業形態コード
+                    Order._Order.SGKT_NM, //作業形態名
                     Order._Order.ODDAY, //受注日
                     Order._Order.ODR_KBN, //受注区分
                     Order._Order.KKYKCD, //顧客コード
@@ -51,7 +53,7 @@ public class OrderData {
                     Order._Order.SBN_HKDAY, //作番発行日
                     Order._Order.JRKOS, //実質累計工数
                     Order._Order.SIJI_RKI_KOS, //指示累計工数
-                    Order._Order.SKKG, //原価合計金額
+                    Order._Order.SKKG, //請求合計金額
                     Order._Order.KNRO_TRFLG, //作業完了フラグ
                     Order._Order.SGYO_KRDAY, //作業完了日
                     Order._Order.LAST_UPD_DAYT, //最終更新日
@@ -90,6 +92,8 @@ public class OrderData {
                 String s_kosu = res.getString(Order._Order.SIJI_RKI_KOS.get());  //指示累計工数
                 String sg_fin_flg = res.getString(Order._Order.KNRO_TRFLG.get());   //全作業完了フラグ
                 String text = res.getString(Order._Order.GAIYO_1.get()) +"-"+res.getString(Order._Order.GAIYO_2.get());   //概要
+                String sgkt_id = res.getString(Order._Order.SGYO_KTICD.get());    //作業形態コード
+                String sgkt_name = res.getString(Order._Order.SGKT_NM.get());       //作業形態名
                 
                 //Date
                 String date = res.getString(Order._Order.ODDAY.get()); //受注日
@@ -116,7 +120,7 @@ public class OrderData {
                 String name = SyaryoTemplate.check(kisy, type, s_type, kiban);
                 if (name == null || SyaryoTemplate.errorCheck(date)) {
                     errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + last_date + "," + db + "," + company + "," + cid + "," + cname 
-                                    + "," + date + "," + id + "," + sbn_date + "," + sbn_status + "," + odr_kbn + "," + uag1 + "," + uag2 + "," + uag3
+                                    + "," + date + "," + id + "," + sgkt_id + "," + sgkt_name + "," + sbn_date + "," + sbn_status + "," + odr_kbn + "," + uag1 + "," + uag2 + "," + uag3
                                     + "," + price + "," + sg_date + "," + sg_fin_flg + "," + sg_fin_date + "," + j_kosu + "," + s_kosu
                                     + "," + smr_date + "," + smr + "," + text);
                     continue;
@@ -139,7 +143,7 @@ public class OrderData {
                 String uag_kbn = uag1+"-"+uag2+"-"+uag3;
                 
                 /*"DB, 会社コード, 日付, 作番登録日, 実施予定日, 完了日, 作番, 修・単, 作番ステータス, 顧客ID, 顧客名, 保有顧客ID, 保有顧客名, 工数, 指示工数, 売上区分, 請求, 概要 ";*/
-                syaryo.addOrder(db, company, date, sbn_date, sg_date, sg_fin_date, id, odr_kbn, sbn_status, "?", "?", cid, cname, j_kosu, s_kosu, uag_kbn, price, text);
+                syaryo.addOrder(db, company, date, sbn_date, sg_date, sg_fin_date, id, sgkt_id, sgkt_name, odr_kbn, sbn_status, "?", "?", cid, cname, j_kosu, s_kosu, uag_kbn, price, text);
                 
                 //SMR
                 syaryo.addSMR(db, company, smr_date, smr);

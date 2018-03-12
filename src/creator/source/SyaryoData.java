@@ -52,7 +52,6 @@ public class SyaryoData {
                     HiveDB.TABLE.CUSTOMER_COMMON,
                     Syaryo._Syaryo.KSYCD, Customer.Common.KSYCD,
                     Syaryo._Syaryo.HY_KKYKCD, Customer.Common.KKYKCD,
-                    HiveDB.TABLE.SYARYO,
                     HiveDB.TABLE.CUSTOMER,
                     Syaryo._Syaryo.KSYCD, Customer._Customer.KSYCD,
                     Syaryo._Syaryo.HY_KKYKCD, Customer._Customer.KKYKCD,
