@@ -5,6 +5,7 @@
  */
 package obj;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
+import json.JSONToBSON;
 
 /**
  *
@@ -23,8 +25,9 @@ import java.util.stream.Collectors;
  */
 public class SyaryoObject2 {
     public String name;
-	public Map map = new LinkedHashMap();
-	private transient DecimalFormat dformat = new DecimalFormat("000");
+	public transient Map map = new LinkedHashMap();
+	public byte[] mapData;	
+    private transient DecimalFormat dformat = new DecimalFormat("000");
 
 	public SyaryoObject2(String name) {
 		this.name = name;
@@ -335,6 +338,28 @@ public class SyaryoObject2 {
     public Map<String, Map> getAll() {
 		return map;
 	}
+    
+    public void compress(Boolean flg){
+        try{
+            if(flg)
+                mapData = JSONToBSON.toBson(map);
+            if(map != null)
+                map.clear();
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+    
+    public void decompress(){
+        try{
+            byte[] b = mapData;
+            if(this.map == null)
+                this.map = new TreeMap<>();
+            this.map = JSONToBSON.toMap(b);
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+    }
     
 	//Remove
 	public void remove(String key) {

@@ -35,6 +35,9 @@ public class SyaryoObjectCreate {
         int en = 0;
 		//車両のオブジェクト化
 		for (String syaryoName : syaryoTemplates.keySet()) {
+            if(syaryoName.equals("_summary"))
+                continue;
+            
 			//
 			SyaryoTemplate syaryo = syaryoTemplates.get(syaryoName);
             syaryo.decompress();
@@ -52,22 +55,21 @@ public class SyaryoObjectCreate {
 			n++;
 
 			en += syaryoObj.add(template);
-
+            syaryoObj.compress(true);
+            syaryo.compress(false);
+            
 			//System.out.println(syaryoObj.dump());
 			syaryoMap.put(syaryoObj.getName(), syaryoObj);
 
 			if (n % 10000 == 0) {
 				System.out.println(n + " 台");
 			}
-            
-            syaryo.compress(false);
 		}
         
         if (en > 0) 
 			System.out.println("欠損データ=" + en);
 
-		SyaryoObjToJson json = new SyaryoObjToJson();
-		json.write(FILENAME, syaryoMap);
+		new SyaryoToZip().write(FILENAME, syaryoMap);
 
 		System.out.println(syaryoMap.size());
 	}

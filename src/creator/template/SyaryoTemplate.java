@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import json.JSONToBSON;
 
 /**
@@ -19,7 +20,7 @@ public class SyaryoTemplate{
     private static Map<String, String> validate = new HashMap();
     
     public String kisy, type, s_type, kiban;
-	transient public Map<String, String> map = new LinkedHashMap();
+	public Map<String, String> map = new LinkedHashMap();
     public byte[] mapData;
     
 	public SyaryoTemplate(String kisy, String type, String s_type, String kiban) {
@@ -77,7 +78,7 @@ public class SyaryoTemplate{
 			addLast(s[0], s[1], s[2]);
 		}
 		if (key.equals("顧客")) {
-			addOwner(s[0], s[1], s[2], s[3], s[4], s[5]);
+			addOwner(s[0], s[1], s[2], s[3], s[4], s[5], s[6]);
 		}
 		if (key.equals("SMR")) {
 			addSMR(s[0], s[1], s[2], s[3]);
@@ -254,19 +255,19 @@ public class SyaryoTemplate{
 		map.put("最終更新日", str);
 	}
 
-	public void addOwner(String db, String company, String date, String gyosyu, String id, String name) {
+	public void addOwner(String db, String company, String date, String kbn, String gyosyu, String id, String name) {
 		if (errorCheck(date)) {
 			return;
 		}
 
 		String str = "";
 		if (map.get("顧客") == null) {
-			str = "DB, 会社コード, 日付, 業種, 顧客ID, 顧客名 \n ";
+			str = "DB, 会社コード, 日付, 顧客区分, 業種, 顧客ID, 顧客名 \n ";
 		} else {
 			str = map.get("顧客") + " \n ";
 		}
 
-		str += db + "," + company + "," + date + "," + gyosyu + "," + id + "," + name;
+		str += db + "," + company + "," + date + "," + kbn + "," + gyosyu + "," + id + "," + name;
 		map.put("顧客", str);
 	}
 
@@ -627,6 +628,8 @@ public class SyaryoTemplate{
     public void decompress(){
         try{
             byte[] b = mapData;
+            if(this.map == null)
+                this.map = new TreeMap<>();
             this.map = JSONToBSON.toMap(b);
         }catch(IOException e){
             e.printStackTrace();

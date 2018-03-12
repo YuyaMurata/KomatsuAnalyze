@@ -15,6 +15,7 @@ import java.sql.Statement;
 import java.util.Map;
 import java.util.TreeMap;
 import creator.template.SyaryoTemplate;
+import db.field.Customer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class SellsData {
             Statement stmt = con.createStatement();
 
             //Syaryo
-            String sql = String.format("select %s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s from %s where %s and %s and %s and %s and kisy like '%s'",
+            String sql = String.format("select s.%s,s.%s,s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, c.%s, c.%s, c2.%s from %s join %s c on (s.%s=c.%s and s.%s=c.%s) join %s c2 on (s.%s=c2.%s and s.%s=c2.%s) where s.%s and s.%s and s.%s and s.%s and s.kisy like '%s'",
                     Sell._Sell.KISY, Sell._Sell.TYP, Sell._Sell.SYHK, Sell._Sell.KIBAN, //Unique ID
                     Sell._Sell.KSYCD, //会社コード
                     Sell._Sell.NOU_YTI_DAY, //納入年月
@@ -45,7 +46,20 @@ public class SellsData {
                     Sell._Sell.RL_URI_KN, //実質価
                     Sell._Sell.STD_SY_KKU, //標準価
                     Sell._Sell.LAST_UPD_DAYT,
+                    Customer.Common.GYSD_BNRCD,
+                    Customer.Common.GYSCD,
+                    Customer._Customer.KKYK_KBN,
                     HiveDB.TABLE.SELL,
+                    HiveDB.TABLE.CUSTOMER_COMMON,
+                    Sell._Sell.KSYCD,
+                    Customer.Common.KSYCD,
+                    Sell._Sell.NNSCD,
+                    Customer.Common.KKYKCD,
+                    HiveDB.TABLE.CUSTOMER,
+                    Sell._Sell.KSYCD,
+                    Customer._Customer.KSYCD,
+                    Sell._Sell.NNSCD,
+                    Customer._Customer.KKYKCD,
                     Sell._Sell.CO_URI_ACT_KBN + "=2",
                     Sell._Sell.MKM_ACT_KBN + "=2",
                     Sell._Sell.SP_MTO_SK_KBN + "=1",
@@ -74,9 +88,11 @@ public class SellsData {
                 String price3 = res.getString(Sell._Sell.STD_SY_KKU.get());  //標準価
 
                 //Customer
+                String ckbn = res.getString(Customer._Customer.KKYK_KBN.get());
                 String cid = res.getString(Sell._Sell.NNSCD.get());   //納入先コード
                 String cname = res.getString(Sell._Sell.NNSK_NM_1.get());   //納入先名
-                String gyosyu = "?-" + res.getString(Sell._Sell.NOU_GYSCD.get());   //納入先業種
+                String gyosyu = res.getString(Customer.Common.GYSD_BNRCD.get())
+                        + "-" + res.getString(Customer.Common.GYSCD.get());   //納入先業種
 
                 //Date
                 String date = res.getString(Sell._Sell.NOU_YTI_DAY.get()); //納入年月
@@ -109,10 +125,10 @@ public class SellsData {
                 //Sell
                 if (nu_kbn.equals("N")) {
                     syaryo.addNew(db, company, date, price3, price1, price2);
-                    syaryo.addOwner(db, company, date, gyosyu, cid, cname);
+                    syaryo.addOwner(db, company, date, ckbn, gyosyu, cid, cname);
                 } else if (nu_kbn.equals("U")) {
                     syaryo.addUsed(db, company, date, price3, price1, price2);
-                    syaryo.addOwner(db, company, date, gyosyu, cid, cname);
+                    syaryo.addOwner(db, company, date, ckbn, gyosyu, cid, cname);
                 } else {
                     continue;
                 }
@@ -334,8 +350,8 @@ public class SellsData {
                 syaryo.addUsed(db, company, date, price, satei_price, String.valueOf(Integer.valueOf(price) - Integer.valueOf(cost)));
 
                 //Customer
-                syaryo.addOwner(db, company, date, "?-?" + nctry_name, "-1", nname);
-                syaryo.addOwner(db, company, shire_date, "?-?", "-1", sname);
+                syaryo.addOwner(db, company, date, "?","?-?" + nctry_name, "-1", nname);
+                syaryo.addOwner(db, company, shire_date, "?", "?-?", "-1", sname);
 
                 //SMR
                 syaryo.addSMR(db, company, shire_date, smr);

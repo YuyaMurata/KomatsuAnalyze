@@ -16,8 +16,8 @@ import java.sql.Statement;
 import java.util.Map;
 import java.util.TreeMap;
 import creator.template.SyaryoTemplate;
+import db.field.Customer;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -35,7 +35,7 @@ public class EQPSyaryoData {
             Statement stmt = con.createStatement();
 
             //EQP_Syaryo
-            String sql = String.format("select e.%s,e.%s,e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, s.%s from %s e join %s s on (e.kisy=s.kisy and e.kiban=s.kiban) where e.kisy like '%s'",
+            String sql = String.format("select e.%s,e.%s,e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, s.%s, c.%s, c.%s, c2.%s from %s e join %s s on (e.kisy=s.kisy and e.kiban=s.kiban) join %s c on (s.%s=c.%s) join %s c2 on (s.%s=c2.%s) where e.kisy like '%s'",
                     EQP.Syaryo.KISY, EQP.Syaryo.TYP, EQP.Syaryo.SYHK, EQP.Syaryo.KIBAN, //Unique ID
                     EQP.Syaryo.MNF_DATE, //生産日
                     EQP.Syaryo.PLANT, //生産工場(catalog)
@@ -52,8 +52,17 @@ public class EQPSyaryoData {
                     EQP.Syaryo.KMTRX_APP_CTG, //Komtrax
                     EQP.Syaryo.VHMS_APP_CTG, //Komtrax plus
                     Syaryo._Syaryo.SEHN_BNR_CD_B, //製品分類コード B
+                    Customer.Common.GYSD_BNRCD,
+                    Customer.Common.GYSCD,
+                    Customer._Customer.KKYK_KBN,
                     HiveDB.TABLE.EQP_SYARYO,
                     HiveDB.TABLE.SYARYO,
+                    HiveDB.TABLE.CUSTOMER_COMMON,
+                    EQP.Syaryo.CUST_CD,
+                    Customer.Common.KKYKCD,
+                    HiveDB.TABLE.CUSTOMER,
+                    EQP.Syaryo.CUST_CD,
+                    Customer._Customer.KKYKCD,
                     machine
             );
             System.out.println("Running: " + sql);
@@ -95,8 +104,11 @@ public class EQPSyaryoData {
                 String used_flg = res.getString(EQP.Syaryo.DELI_CTG.get());
 
                 //Customer
+                String ckbn = res.getString(Customer._Customer.KKYK_KBN.get());
                 String cid = res.getString(EQP.Syaryo.CUST_CD.get());
                 String cname = res.getString(EQP.Syaryo.CUST_NM.get());
+                String gyosyu = res.getString(Customer.Common.GYSD_BNRCD.get())
+                        + "-" + res.getString(Customer.Common.GYSCD.get());   //納入先業種
 
                 //DB
                 String db = "eqp_syaryo";
@@ -113,7 +125,7 @@ public class EQPSyaryoData {
                 //車両チェック
                 String name = SyaryoTemplate.check(kisy, type, s_type, kiban);
                 if (name == null) {
-                    errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + smr_date + "," + db + "," + company + "," + cid + "," + cname + "," + plant
+                    errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + smr_date + "," + db + "," + company + "," + ckbn + "," + gyosyu  + "," + cid + "," + cname + "," + plant
                                     + "," + mnf_date + "," + ship_date + "," + scrap_date + "," + used_flg + "," + used_date + "," + smr);
                     continue;
                 }
@@ -138,10 +150,10 @@ public class EQPSyaryoData {
                 //中古
                 if (used_flg.equals("1")) {
                     syaryo.addUsed(db, company, used_date, "-1", "-1", "-1");
-                    syaryo.addOwner(db, company, used_date, "?-?", cid, cname);
-                    syaryo.addOwner(db, company, new_date, "-1", "-1", "?");
+                    syaryo.addOwner(db, company, used_date, ckbn, gyosyu, cid, cname);
+                    syaryo.addOwner(db, company, new_date, "?", "?-?", "?", "?");
                 }else{
-                    syaryo.addOwner(db, company, new_date, "?-?", cid, cname);
+                    syaryo.addOwner(db, company, new_date, ckbn, gyosyu, cid, cname);
                 }
                 
                 //Spec

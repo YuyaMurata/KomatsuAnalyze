@@ -16,6 +16,7 @@ import java.sql.Statement;
 import java.util.Map;
 import java.util.TreeMap;
 import creator.template.SyaryoTemplate;
+import db.field.Customer;
 import db.field.Order;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +36,7 @@ public class ServiceData {
             Statement stmt = con.createStatement();
 
             //Syaryo
-            String sql = String.format("select s.%s,s.%s,s.%s,s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s  from %s s left outer join %s k on (s.%s=k.%s and s.%s=k.%s) where s.%s and s.%s and k.%s is NULL and s.kisy like '%s'",
+            String sql = String.format("select s.%s,s.%s,s.%s,s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, c.%s, c.%s, c2.%s from %s s left outer join %s k on (s.%s=k.%s and s.%s=k.%s) join %s c on (s.%s=c.%s and s.%s=c.%s) join %s c2 on (s.%s=c2.%s and s.%s=c2.%s)where s.%s and s.%s and k.%s is NULL and s.kisy like '%s'",
                     Service._Service.KISY, Service._Service.TYP, Service._Service.SYHK, Service._Service.KIBAN, //Unique ID
                     Service._Service.KSYCD, //会社コード
                     Service._Service.JSDAY, //実施日
@@ -60,12 +61,26 @@ public class ServiceData {
                     Service._Service.SKKG, //請求金額
                     Service._Service.SVC_MTR, //サービスメータ
                     Service._Service.LAST_UPD_DAYT,
+                    Customer.Common.GYSD_BNRCD,
+                    Customer.Common.GYSCD,
+                    Customer._Customer.KKYK_KBN,
                     HiveDB.TABLE.SERVICE,
                     HiveDB.TABLE.ORDER.get(),
                     Service._Service.KSYCD,
                     Order._Order.KSYCD,
                     Service._Service.SVCKR_KNRNO,
                     Order._Order.SBN,
+                    HiveDB.TABLE.SERVICE,
+                    HiveDB.TABLE.CUSTOMER_COMMON,
+                    Service._Service.KSYCD,
+                    Customer.Common.KSYCD,
+                    Service._Service.HY_KKYKCD,
+                    Customer.Common.KKYKCD,
+                    HiveDB.TABLE.CUSTOMER,
+                    Service._Service.KSYCD,
+                    Customer._Customer.KSYCD,
+                    Service._Service.HY_KKYKCD,
+                    Customer._Customer.KKYKCD,
                     Service._Service.HASSEI_KBN + "=" + sp1,
                     Service._Service.ODR_KBN + "=" + sp2,
                     Order._Order.SBN,
@@ -115,9 +130,11 @@ public class ServiceData {
                 String last_date = res.getString(Service._Service.LAST_UPD_DAYT.get());
 
                 //Customer
+                String ckbn = res.getString(Customer._Customer.KKYK_KBN.get());
                 String cid = res.getString(Service._Service.HY_KKYKCD.get());     //顧客コード
                 String cname = res.getString(Service._Service.KYKNM.get());
-                String gyosyu = "?-?";
+                String gyosyu = res.getString(Customer.Common.GYSD_BNRCD.get())
+                        + "-" + res.getString(Customer.Common.GYSCD.get());   //納入先業種
 
                 //SMR
                 String smr = res.getString(Service._Service.SVC_MTR.get()); //サービスメータ
@@ -130,7 +147,7 @@ public class ServiceData {
                 String comment = res.getString(Service._Service.KISY_CMT.get());
                 String name = SyaryoTemplate.check(kisy, type, s_type, kiban);
                 if (name == null || SyaryoTemplate.errorCheck(date)) {
-                    errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + last_date + "," + db + "," + company + "," + cid + "," + gyosyu + "," + cname
+                    errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + last_date + "," + db + "," + company + "," + ckbn+ "," + cid + "," + gyosyu + "," + cname
                             + "," + date + "," + id + "," + odr_kbn + "," + uag1 + "," + uag2 + "," + uag3 + "," + price + "," + sg_mid + "," + sg_add_id
                             + "," + sg_keitai_id + "," + sg_id + "," + sg_name + "," + kosu + "," + suryo + "," + parts_id + "," + parts_name
                             + "," + smr + "," + text + "," + comment);
@@ -163,7 +180,7 @@ public class ServiceData {
                 }
 
                 //Owner
-                syaryo.addOwner(db, company, date, gyosyu, cid, cname);
+                syaryo.addOwner(db, company, date, ckbn, gyosyu, cid, cname);
 
                 //SMR
                 syaryo.addSMR(db, company, date, smr);

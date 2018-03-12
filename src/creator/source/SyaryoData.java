@@ -34,7 +34,7 @@ public class SyaryoData {
             Statement stmt = con.createStatement();
 
             //Syaryo
-            String sql = String.format("select s.%s,s.%s,s.%s,s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, c.%s, c.%s, c.%s from %s s join %s c on (s.%s=c.%s and s.%s=c.%s) where s.kisy like '%s'",
+            String sql = String.format("select s.%s,s.%s,s.%s,s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, c.%s, c.%s, c.%s, c2.%s from %s s join %s c on (s.%s=c.%s and s.%s=c.%s) join %s c2 on (s.%s=c2.%s and s.%s=c2.%s) where s.kisy like '%s'",
                     Syaryo._Syaryo.KISY, Syaryo._Syaryo.TYP, Syaryo._Syaryo.SYHK, Syaryo._Syaryo.KIBAN, //Unique ID
                     Syaryo._Syaryo.KSYCD, //会社コード
                     Syaryo._Syaryo.NU_KBN, //NU区分
@@ -47,10 +47,15 @@ public class SyaryoData {
                     Customer.Common.KYKNM_1,
                     Customer.Common.GYSD_BNRCD,
                     Customer.Common.GYSCD,
+                    Customer._Customer.KKYK_KBN,
                     HiveDB.TABLE.SYARYO,
                     HiveDB.TABLE.CUSTOMER_COMMON,
                     Syaryo._Syaryo.KSYCD, Customer.Common.KSYCD,
                     Syaryo._Syaryo.HY_KKYKCD, Customer.Common.KKYKCD,
+                    HiveDB.TABLE.SYARYO,
+                    HiveDB.TABLE.CUSTOMER,
+                    Syaryo._Syaryo.KSYCD, Customer._Customer.KSYCD,
+                    Syaryo._Syaryo.HY_KKYKCD, Customer._Customer.KKYKCD,
                     machine
             );
             System.out.println("Running: " + sql);
@@ -76,6 +81,7 @@ public class SyaryoData {
                 String komtrax = res.getString(Syaryo._Syaryo.KOMTRX_SOTY_KBN.get());
 
                 //Customer
+                String ckbn = res.getString(Customer._Customer.KKYK_KBN.get());
                 String cid = res.getString(Syaryo._Syaryo.HY_KKYKCD.get());
                 String cname = res.getString(Customer.Common.KYKNM_1.get());
                 String gyosyu = res.getString(Customer.Common.GYSD_BNRCD.get())
@@ -93,7 +99,7 @@ public class SyaryoData {
                 //車両チェック
                 String name = SyaryoTemplate.check(kisy, type, s_type, kiban);
                 if (name == null) {
-                    errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + last_date + "," + db + "," + company + "," + cid + "," + gyosyu + "," + cname
+                    errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + last_date + "," + db + "," + company + "," + ckbn + "," + cid + "," + gyosyu + "," + cname
                             + "," + komtrax + "," + nu + "," + nounyu + "," + syareki_date + "," + syareki);
                     continue;
                 }
@@ -110,10 +116,10 @@ public class SyaryoData {
                 //NU
                 if (nu.equals("N")) {
                     syaryo.addNew(db, company, nounyu, "-1", "-1", "-1");
-                    syaryo.addOwner(db, company, nounyu, gyosyu, cid, cname);
+                    syaryo.addOwner(db, company, nounyu, ckbn, gyosyu, cid, cname);
                 } else if (nu.equals("U")) {
                     syaryo.addUsed(db, company, nounyu, "-1", "-1", "-1");
-                    syaryo.addOwner(db, company, nounyu, gyosyu, cid, cname);
+                    syaryo.addOwner(db, company, nounyu, ckbn, gyosyu, cid, cname);
                 }
 
                 //History

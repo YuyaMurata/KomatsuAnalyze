@@ -17,9 +17,13 @@ import json.SyaryoToZip;
  * @author ZZ17390
  */
 public class SyaryoTemplateCompressAggregate {
-
-	public static void main(String[] args) {
-        String kisy = "PC200";
+    public static void main(String[] args) {
+        SyaryoTemplateCompressAggregate.agrregate("PC200");
+        SyaryoTemplateCompressAggregate.agrregate("PC200");
+        SyaryoTemplateCompressAggregate.agrregate("PC200");
+        SyaryoTemplateCompressAggregate.agrregate("PC200");
+    }
+	public static void agrregate(String kisy) {
 		String path = "..\\KomatsuData\\車両テンプレート\\"+kisy+"系\\";
 		//String path = "template\\"+kisy+"\\";
 		String outpath = "..\\KomatsuData\\中間データ\\";

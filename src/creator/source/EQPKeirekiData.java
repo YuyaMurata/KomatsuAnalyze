@@ -16,6 +16,7 @@ import java.sql.Statement;
 import java.util.Map;
 import java.util.TreeMap;
 import creator.template.SyaryoTemplate;
+import db.field.Customer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public class EQPKeirekiData {
             Statement stmt = con.createStatement();
 
             //EQP_Syaryo
-            String sql = String.format("select %s,%s,%s,%s, %s, %s, %s, %s, %s, %s, %s from %s where kisy like '%s'",
+            String sql = String.format("select e.%s,e.%s,e.%s,e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, c.%s, c.%s, c2.%s from %s e join %s c on (e.%s=c.%s) join %s c2 on (e.%s=c2.%s) where e.kisy like '%s'",
                     EQP.Keireki.KISY, EQP.Keireki.TYP, EQP.Keireki.SYHK, EQP.Keireki.KIBAN, //Unique ID
                     EQP.Keireki.HIS_DATE, //経歴日
                     EQP.Keireki.HIS_INFO_CD, //経歴コード
@@ -43,7 +44,16 @@ public class EQPKeirekiData {
                     EQP.Keireki.CUST_CD, //顧客コード
                     EQP.Keireki.CUST_NM, //顧客名
                     EQP.Keireki.DB, //代理店
+                    Customer.Common.GYSD_BNRCD,
+                    Customer.Common.GYSCD,
+                    Customer._Customer.KKYK_KBN,
                     HiveDB.TABLE.EQP_KEIREKI,
+                    HiveDB.TABLE.CUSTOMER_COMMON,
+                    EQP.Keireki.CUST_CD,
+                    Customer.Common.KKYKCD,
+                    HiveDB.TABLE.CUSTOMER,
+                    EQP.Keireki.CUST_CD,
+                    Customer._Customer.KKYKCD,
                     machine
             );
             System.out.println("Running: " + sql);
@@ -68,8 +78,11 @@ public class EQPKeirekiData {
                 String id = res.getString(EQP.Keireki.HIS_INFO_CD.get());
 
                 //Customer
+                String ckbn = res.getString(Customer._Customer.KKYK_KBN.get());
                 String cid = res.getString(EQP.Keireki.CUST_CD.get());
                 String cname = res.getString(EQP.Keireki.CUST_NM.get());
+                String gyosyu = res.getString(Customer.Common.GYSD_BNRCD.get())
+                        + "-" + res.getString(Customer.Common.GYSCD.get());   //納入先業種
 
                 //Country
                 String country = res.getString(EQP.Keireki.CNTRY.get());
@@ -89,7 +102,7 @@ public class EQPKeirekiData {
                 //車両チェック
                 String name = SyaryoTemplate.check(kisy, type, s_type, kiban);
                 if (name == null || SyaryoTemplate.errorCheck(date)) {
-                    errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + date + "," + db + "," + company + "," + cid + "," + cname + "," + country + "," + id + "," + smr);
+                    errpw.println(n + "," + SyaryoTemplate.getName(kisy, type, s_type, kiban) + "," + date + "," + db + "," + company + "," + ckbn + "," + gyosyu + "," + cid + "," + cname + "," + country + "," + id + "," + smr);
                     continue;
                 }
                 
@@ -104,7 +117,7 @@ public class EQPKeirekiData {
 
                 //Add SyaryoTemplate
                 syaryo.addHistory(db, company, date, id);
-                syaryo.addOwner(db, company, date, "-1", cid, cname);
+                syaryo.addOwner(db, company, date, ckbn, gyosyu, cid, cname);
                 syaryo.addSMR(db, company, date, smr);
                 syaryo.addCountry(db, company, date, country);
 

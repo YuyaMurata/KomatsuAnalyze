@@ -30,21 +30,21 @@ import obj.SyaryoObject2;
  */
 public class FormalizeSyaryoObject2 {
 
-    private static String kisy = "PC200";
-    private static List extract = Arrays.asList(new String[]{"PC200-8", "PC200-8N1", "PC200-10", "PC200LC-8", "PC200LC-10", "PC200LC-8N1"});
+    //private static String kisy = "PC200";
+    //private static List extract = Arrays.asList(new String[]{"PC200-8", "PC200-8N1", "PC200-10", "PC200LC-8", "PC200LC-10", "PC200LC-8N1"});
     //private static String kisy = "PC210";
     //private static List extract = Arrays.asList(new String[]{"PC210-8", "PC210-8N1", "PC210-10", "PC210LC-8","PC210LC-10","PC210LC-8N1"});
-    //private static String kisy = "WA470";
-    //private static List extract = Arrays.asList(new String[]{"WA470-7", "WA470-8"});
+    private static String kisy = "WA470";
+    private static List extract = Arrays.asList(new String[]{"WA470-7", "WA470-8"});
 
-    //private static String filename = "json\\syaryo_obj_" + kisy + ".json";
-    private static String filename = "json\\syaryo_obj_" + kisy + "_extract.json";
+    private static String filename = "json\\syaryo_obj_" + kisy + ".json";
+    private static String spritfilename = "json\\syaryo_obj_" + kisy + "_extract.json";
     private static String output = "json\\syaryo_obj_" + kisy + "_form.json";
 
     public static void main(String[] args) {
 
-        //filename = sprit(new JsonToSyaryoObj().reader3(filename));
-        Map formMap = forming(new JsonToSyaryoObj().reader3(filename));
+        sprit(new JsonToSyaryoObj().reader3(filename));
+        //Map formMap = forming(new JsonToSyaryoObj().reader3(spritfilename));
 
         //Map joinMap = joinData("PC200", "PC210");
         /*map = new JsonToSyaryoObj().reader(output);
@@ -61,19 +61,16 @@ public class FormalizeSyaryoObject2 {
         //Map syaryoMap = new FormalizeSyaryoObject().join(new String[]{"PC200", "PC210", "HB205", "HB215"});
         //new SyaryoObjToJson().write2("syaryo_obj_"+kisy+"_form.json", syaryoMap);
         //System.out.println("Finish joining & compressing json data!");
-        new SyaryoObjToJson().write(output, (Map) formMap);
+        //new SyaryoObjToJson().write(output, (Map) formMap);
         System.out.println("Finish forming json data!");
 
     }
 
-    public static String sprit(Map map) {
+    public static void sprit(Map map) {
         //1次処理 データの分離
-        String splitFile = filename.replace(kisy, kisy + "_extract");
         Map formMap = splitForming(map);
-        new SyaryoObjToJson().write(splitFile, (Map) formMap.get("extract"));
+        new SyaryoObjToJson().write(spritfilename, (Map) formMap.get("extract"));
         new SyaryoObjToJson().write(filename.replace(kisy, kisy + "_reject"), (Map) formMap.get("reject"));
-
-        return splitFile;
     }
 
     public static Map forming(Map map) {
