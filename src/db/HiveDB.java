@@ -86,7 +86,7 @@ public abstract class HiveDB {
         //GAICHU("gaichu", Gaichu._Gaichu.values()),
         //GAICHU_WORK("gaichu_work", Gaichu.Work.values()),
         //GAICHU_WORK_INFO("gaichu_work_info", Gaichu.Work_Info.values()),
-        CARE("kom_care", Care._Care.values()),
+        CARE("kom_care_genka", Care._Care.values()),
         CARE_PRICE("kom_care_preprice", Care.PrePrice.values()),
         KOMTRAX("komtrax", Komtrax.TABLE.values());
 

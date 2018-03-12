@@ -26,8 +26,6 @@ public class TranslationSyaryoToBSON {
         String kisy = "WA470";
         String path = "..\\KomatsuData\\車両テンプレート\\" + kisy + "系\\";
         //String path = "template\\"+kisy+"\\";
-        String outpath = "..\\KomatsuData\\中間データ\\";
-        //String outpath = "middle\\";
         File[] flist = (new File(path)).listFiles();
 
         for (File f : flist) {

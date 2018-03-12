@@ -212,9 +212,10 @@ public class SyaryoElements {
 		DB("DB", 0),
         Company("会社", 1),
         Date("日付", 2),
-		Code("業種コード", 3),
-        ID("顧客ID", 4),
-		Name("顧客名", 5);
+        KBN("顧客区分", 3),
+		Code("業種コード", 4),
+        ID("顧客ID", 5),
+		Name("顧客名", 6);
 		
 		final String name;
 		final Integer index;
@@ -265,17 +266,19 @@ public class SyaryoElements {
 		PDate("実施予定日", 4),
 		FDate("完了日", 5),
 		ID("作番", 6),
-		Sell("単・修", 7),
-		Status("作番ステータス", 8),
-		SCustomer("顧客ID", 9),
-		SName("顧客名", 10),
-        Customer("顧客ID", 11),
-		Name("顧客名", 12),
-		Step("工数", 13),
-		DStep("指示工数", 14),
-        FLAG("売上区分", 15),
-		Invoice("請求", 16),
-		Summary("概要", 17);
+        SG_Code("作業形態コード", 7),
+        SG_Name("作業形態名", 8),
+		Sell("単・修", 9),
+		Status("作番ステータス", 10),
+		SCustomer("顧客ID", 11),
+		SName("顧客名", 12),
+        Customer("顧客ID", 13),
+		Name("顧客名", 14),
+		Step("工数", 15),
+		DStep("指示工数", 16),
+        FLAG("売上区分", 17),
+		Invoice("請求", 18),
+		Summary("概要", 19);
 		
 		final String name;
 		final Integer index;
@@ -294,26 +297,24 @@ public class SyaryoElements {
 	}
 	
 	//Work
-    //"作業": "DB, 会社コード, 受注日, 作番, 作業明細番号, 作業形態コード, 作業形態名, 作業コード, 作業名, 完了フラグ, 数量, 標準金額, 外注フラグ, 外注原価, 標準工数, 請求工数, 指示工数, 実績累計工数
+    //"作業": "DB, 会社コード, 受注日, 作番, 作業明細番号, 作業コード, 作業名, 完了フラグ, 数量, 標準金額, 外注フラグ, 外注原価, 標準工数, 請求工数, 指示工数, 実績累計工数
 	public enum Work implements Element{
 		DB("DB", 0),
         Company("会社",1),
         Date("日付", 2),
 		ID("作番", 3),
 		SID("作業明細番号", 4),
-		SFCode("作業形態コード", 5),
-		SFName("作業形態名", 6),
-		SCode("作業コード", 7),
-		SName("作業名", 8),
-		Finish("完了フラグ", 9),
-		Quant("数量", 10),
-		Price("標準金額", 11),
-		Outsorce("外注フラグ", 12),
-		OPrice("外注原価", 13),
-		SStep("標準工数", 14),
-		RStep("請求工数", 15),
-		DStep("指示工数", 16),
-		RTStep("実質累計工数", 17);
+		SCode("作業コード", 5),
+		SName("作業名", 6),
+		Finish("完了フラグ", 7),
+		Quant("数量", 8),
+		Price("請求金額", 9),
+		Outsorce("外注フラグ", 10),
+		OPrice("外注原価", 11),
+		SStep("標準工数", 12),
+		RStep("請求工数", 13),
+		DStep("指示工数", 14),
+		RTStep("実質累計工数", 15);
 		
 		final String name;
 		final Integer index;
@@ -344,7 +345,7 @@ public class SyaryoElements {
 		HName("品名", 7),
 		Quant("数量", 8),
 		Cancel("キャンセル数量", 9),
-		Price("標準金額", 10);
+		Price("請求金額", 10);
 		
 		final String name;
 		final Integer index;
