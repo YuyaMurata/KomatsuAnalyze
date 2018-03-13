@@ -209,7 +209,7 @@ public class SyaryoObject2 {
 
 	//Komtrax
 	public Map<String, List> getSMR() {
-		return (Map) map.get("SMR");
+		return (Map) map.get("KMSMR");
 	}
 
 	public Map<String, List> getGPS() {
@@ -225,7 +225,7 @@ public class SyaryoObject2 {
 	}
 
 	public Map<String, List> getError() {
-		return (Map) map.get("エラー");
+		return (Map) map.get("KMERROR");
 	}
 
 	/**
@@ -295,13 +295,13 @@ public class SyaryoObject2 {
 
 	public String getAge(String date) {
 		try {
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 			SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy/MM/dd");
 			Date birth = sdf.parse(getFirstDate());
 			Date last = sdf2.parse(date);
 			Long age = (last.getTime() - birth.getTime()) / (1000 * 60 * 60 * 24);
 
-			//System.out.println(sdf.format(birth) + " - " + sdf.format(last) +" = "+age);
+			System.out.println(sdf.format(birth) + " - " + sdf.format(last) +" = "+age);
 			return age.toString();
 		} catch (ParseException ex) {
 			return "NA";

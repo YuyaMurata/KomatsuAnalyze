@@ -212,10 +212,10 @@ public class SyaryoElements {
 		DB("DB", 0),
         Company("会社", 1),
         Date("日付", 2),
-        KBN("顧客区分", 3),
-		Code("業種コード", 4),
-        ID("顧客ID", 5),
-		Name("顧客名", 6);
+        //KBN("顧客区分", 3),
+		Code("業種コード", 3),
+        ID("顧客ID", 4),
+		Name("顧客名", 5);
 		
 		final String name;
 		final Integer index;
@@ -266,19 +266,19 @@ public class SyaryoElements {
 		PDate("実施予定日", 4),
 		FDate("完了日", 5),
 		ID("作番", 6),
-        SG_Code("作業形態コード", 7),
-        SG_Name("作業形態名", 8),
-		Sell("単・修", 9),
-		Status("作番ステータス", 10),
-		SCustomer("顧客ID", 11),
-		SName("顧客名", 12),
-        Customer("顧客ID", 13),
-		Name("顧客名", 14),
-		Step("工数", 15),
-		DStep("指示工数", 16),
-        FLAG("売上区分", 17),
-		Invoice("請求", 18),
-		Summary("概要", 19);
+        //SG_Code("作業形態コード", 7),
+        //SG_Name("作業形態名", 8),
+		Sell("単・修", 7),
+		Status("作番ステータス", 8),
+		SCustomer("顧客ID", 9),
+		SName("顧客名", 10),
+        Customer("顧客ID", 11),
+		Name("顧客名", 12),
+		Step("工数", 13),
+		DStep("指示工数", 14),
+        FLAG("売上区分", 15),
+		Invoice("請求", 16),
+		Summary("概要", 17);
 		
 		final String name;
 		final Integer index;
@@ -439,12 +439,13 @@ public class SyaryoElements {
 	
 	//Error
 	public enum Error implements Element{
-		Date("日付", -1),
-		Code("エラーコード", 0),
-        Kind("エラー種類", 1),
-		Count("カウント", 2),
-		Company("会社",3),
-        DB("DB", 4),
+	DB("DB", 0),
+	Company("会社",1),
+	Date("日付", 2),
+		Code("エラーコード", 3),
+        Kind("エラー種類", 4),
+		Count("カウント", 5),
+		
         Age("経過日", -3),
 		Format("format:yyyy/MM/dd", 0);
 		
@@ -491,10 +492,11 @@ public class SyaryoElements {
 	
 	//SMR
 	public enum SMR implements Element{
-		Date("日付", -1),
-		_SMR("SMR", 0),
-		Company("会社", 1),
-        DB("DB", 2),
+		Company("会社", 0),
+        DB("DB", 1),
+		Date("日付",2),
+		_SMR("SMR", 3),
+		
         Age("経過日", -3),
 		Format("format:yyyy/MM/dd", 0);
 		

@@ -19,7 +19,10 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import json.JsonToSyaryoObj;
+import json.SyaryoToZip;
+import obj.SyaryoElements;
 import obj.SyaryoObject;
+import obj.SyaryoObject2;
 
 /**
  *
@@ -31,12 +34,12 @@ public class Histgram {
 
     //Test
     public static void main(String[] args) {
-        String filename = "syaryo_obj_WA470_form.json";
-        Map<String, SyaryoObject> syaryoMap = new JsonToSyaryoObj().reader(filename);
+        String filename = "json\\syaryo_obj_WA470_form";
+        Map<String, SyaryoObject2> syaryoMap = new SyaryoToZip().readObject(filename);
         //orderanalyze(filename, syaryoMap);
-        //orderpriceanalyze(filename, syaryoMap);
+        orderpriceanalyze(filename, syaryoMap);
         //smrAnalyze(filename, syaryoMap);
-        komerrAnalyze(filename, syaryoMap);
+        //komerrAnalyze(filename, syaryoMap);
     }
 
     //階級幅の整形
@@ -101,19 +104,26 @@ public class Histgram {
     }
 
     //受注数
-    public static void orderanalyze(String filename, Map<String, SyaryoObject> syaryoMap) {
+    public static void orderanalyze(String filename, Map<String, SyaryoObject2> syaryoMap) {
         List<String> type = syaryoMap.values().stream()
                 .map(s -> s.getType()).distinct().collect(Collectors.toList());
 
         List allList = new ArrayList();
         Map<String, List<Integer>> analyzData = new HashMap<>();
         for (String typ : type) {
-
-            List list = syaryoMap.values().stream()
-                    .filter(s -> s.getType().equals(typ))
-                    .filter(s -> s.getOrder() != null)
-                    .map(s -> s.getOrder().size())
-                    .collect(Collectors.toList());
+			
+			List list = new ArrayList();
+			for(SyaryoObject2 syaryo : syaryoMap.values()){
+				if(!syaryo.getType().equals(typ))
+					continue;
+				
+				syaryo.decompress();
+				if(syaryo.getOrder() == null)
+					continue;
+				
+				list.add(syaryo.getOrder().size());
+				syaryo.compress(true);
+			}
 
             analyzData.put(typ, list);
             allList.addAll(list);
@@ -137,7 +147,7 @@ public class Histgram {
     }
 
     //受注請求額
-    public static void orderpriceanalyze(String filename, Map<String, SyaryoObject> syaryoMap) {
+    public static void orderpriceanalyze(String filename, Map<String, SyaryoObject2> syaryoMap) {
         List allList = new ArrayList();
         Map<String, List> analyzData = new HashMap<>();
 
@@ -146,18 +156,20 @@ public class Histgram {
 
         for (String typ : type) {
 
-            List data = syaryoMap.values().stream()
-                    .filter(s -> s.getType().equals(typ))
-                    .filter(s -> s.getOrder() != null)
-                    //.map(s -> s.getOrder("17")) //列の指定
-                    .collect(Collectors.toList());
-            List list = new ArrayList();
-            for (Object l : data) {
-                list.addAll((List) l);
-            }
-            list = (List) list.stream()
-                    .map(s -> Integer.valueOf(s.toString()))
-                    .collect(Collectors.toList());
+			List list = new ArrayList();
+			for(SyaryoObject2 syaryo : syaryoMap.values()){
+				if(!syaryo.getType().equals(typ))
+					continue;
+				
+				syaryo.decompress();
+				if(syaryo.getOrder() == null)
+					continue;
+				
+				for(List data : syaryo.getOrder().values()){
+					Integer price = Double.valueOf(data.get(SyaryoElements.Order.Invoice.getNo()).toString()).intValue();
+					list.add(price);
+				}
+			}
 
             allList.addAll(list);
             analyzData.put(typ, list);

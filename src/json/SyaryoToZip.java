@@ -32,7 +32,7 @@ import obj.SyaryoObject2;
 public class SyaryoToZip {
 
     public void write(String filename, Map syaryoMap) {
-        filename = filename.replace(".json", "") + ".gz";
+        filename = filename.replace(".json", "").replace(".gz", "") + ".gz";
         
         Gson gson = new Gson();
         String json = gson.toJson(syaryoMap);
