@@ -11,6 +11,7 @@ import java.util.TreeMap;
 import creator.template.SyaryoTemplate;
 import java.util.stream.Collectors;
 import json.SyaryoToZip;
+import json.SyaryoToZip2;
 
 /**
  *
@@ -19,7 +20,7 @@ import json.SyaryoToZip;
 public class SyaryoTemplateCompressAggregate {
     public static void main(String[] args) {
         SyaryoTemplateCompressAggregate.agrregate("WA470");
-        //SyaryoTemplateCompressAggregate.agrregate("PC200");
+        //SyaryoTemplateCompressAggregate.agrregate("PC138US");
         //SyaryoTemplateCompressAggregate.agrregate("PC200");
         //SyaryoTemplateCompressAggregate.agrregate("PC200");
     }
@@ -33,7 +34,6 @@ public class SyaryoTemplateCompressAggregate {
 		File[] flist = (new File(path)).listFiles();
 
 		TreeMap<String, SyaryoTemplate> syaryoBase = new TreeMap(new SyaryoToZip().readTemplate(path + "syaryo_"+kisy+"_template.gz"));
-		//TreeMap<String, SyaryoTemplate> syaryoMap = new TreeMap();
 
 		System.out.println(syaryoBase.keySet().stream().map(s -> s.split("-")[0]).distinct().collect(Collectors.toList()));
 		//System.exit(0);
@@ -45,26 +45,28 @@ public class SyaryoTemplateCompressAggregate {
 			}
 			System.out.print(f.getName()+",");
 
-			Map<String, SyaryoTemplate> syaryoTemplates = new SyaryoToZip().readTemplate(f.getPath());
+			Map<String, SyaryoTemplate> syaryoTemplates = new SyaryoToZip2().readTemplate(f);
             if(syaryoTemplates == null){
                 System.out.println("SyaryoTemplate is NULL!");
                 continue;
             }
 
-            int numRecord = 0;
-            int numSyaryo = 0;
-			for (SyaryoTemplate template : syaryoTemplates.values()) {
-                numSyaryo++;
+            //int numRecord = 0;
+            //int numSyaryo = 0;
+			//for (SyaryoTemplate template : syaryoTemplates.values()) {
+            syaryoTemplates.values().parallelStream().forEach(template -> {
+                //numSyaryo++;
 				SyaryoTemplate syaryo = syaryoBase.get(template.getName());
                 
                 //車両テンプレート展開
                 template.decompress();
                 syaryo.decompress();
 				
-                for (String key : template.getAll().keySet()) {
-					int index = 0;
+                //for (String key : template.getAll().keySet()) {
+				template.getAll().entrySet().parallelStream().forEach(t ->{
+                    int index = 0;
 					Boolean header = true;
-					for (String str : template.getAll().get(key).split("\n")) {
+					for (String str : t.getValue().split("\n")) {
 						if (header) {
 							index = str.split(",").length;
 							header = false;
@@ -74,12 +76,13 @@ public class SyaryoTemplateCompressAggregate {
 						if (str.replace(" ", "").split(",").length < index) {
 							str += "?";
 						}
-						syaryo.add(key, str.trim().split(","));
+						syaryo.add(t.getKey(), str.trim().split(","));
                         
-                        numRecord++;
-                        totalRecord++;
+                        //numRecord++;
+                        //totalRecord++;
 					}
 				}
+                );
                 
                 //車両テンプレート圧縮
                 template = null;
@@ -90,8 +93,9 @@ public class SyaryoTemplateCompressAggregate {
 					System.out.println("n = " + numSyaryo);
 				}*/
 			}
+            );
             
-            System.out.println(numSyaryo + "," + numRecord);
+            //System.out.println(numSyaryo + "," + numRecord);
 		}
 
 		System.out.println("データ件数, " + totalRecord);

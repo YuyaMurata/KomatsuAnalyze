@@ -23,7 +23,7 @@ public class TranslationSyaryoToBSON {
 
     public static void main(String[] args) throws IOException {
 
-        String kisy = "WA470";
+        String kisy = "PC138US";
         String path = "..\\KomatsuData\\車両テンプレート\\" + kisy + "系\\";
         //String path = "template\\"+kisy+"\\";
         File[] flist = (new File(path)).listFiles();
