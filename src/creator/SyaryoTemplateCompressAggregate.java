@@ -26,10 +26,10 @@ public class SyaryoTemplateCompressAggregate {
     }
     
 	public static void agrregate(String kisy) {
-		String path = "..\\KomatsuData\\車両テンプレート\\"+kisy+"系\\";
-		String outpath = "..\\KomatsuData\\中間データ\\";
-        //String path = "template\\"+kisy+"\\";
-		//String outpath = "middle\\";
+		//String path = "..\\KomatsuData\\車両テンプレート\\"+kisy+"系\\";
+		//String outpath = "..\\KomatsuData\\中間データ\\";
+        String path = "template\\"+kisy+"系\\";
+		String outpath = "middle\\";
 		String FILENAME = outpath+"syaryo_mid_" + kisy;
 		File[] flist = (new File(path)).listFiles();
 
@@ -43,7 +43,7 @@ public class SyaryoTemplateCompressAggregate {
                  || f.getName().contains("_komtrax_caution") || f.getName().contains("_komtrax_engine")) {
 				continue;
 			}
-			System.out.print(f.getName()+",");
+			System.out.println(f.getName()+",");
 
 			Map<String, SyaryoTemplate> syaryoTemplates = new SyaryoToZip2().readTemplate(f);
             if(syaryoTemplates == null){
