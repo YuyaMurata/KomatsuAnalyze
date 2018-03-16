@@ -7,6 +7,7 @@ package check;
 
 import creator.template.SyaryoTemplate;
 import java.util.Map;
+import java.util.stream.Collectors;
 import json.SyaryoToZip;
 
 /**
@@ -15,20 +16,20 @@ import json.SyaryoToZip;
  */
 public class MiddleDataCheck {
     public static void main(String[] args) {
-        String kisy = "WA470";
+        String kisy = "PC138US";
         String path = "..\\KomatsuData\\中間データ\\";
 		//String outpath = "middle\\";
         String FILENAME = path+"syaryo_mid_" + kisy;
         
         Map<String, SyaryoTemplate> syaryoMap = new SyaryoToZip().readTemplate(FILENAME);
-        System.out.println(syaryoMap);
+        System.out.println(syaryoMap.keySet().stream().filter(s -> !s.equals("_summary")).map(s -> s.split("-")[1]).distinct().collect(Collectors.toList()));
         
-        for(String name : syaryoMap.keySet()){
+        /*for(String name : syaryoMap.keySet()){
             SyaryoTemplate syaryo = syaryoMap.get(name);
             System.out.println(name);
             syaryo.decompress();
             System.out.println("\t"+syaryo.toString());
             syaryo.compress(false);
-        }
+        }*/
     }
 }

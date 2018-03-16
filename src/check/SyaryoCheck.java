@@ -33,13 +33,13 @@ public class SyaryoCheck {
         //smr("PC200-10-450972", syaryoMap);
         //smrCheck(syaryoMap);
         //komtraxCheck(syaryoMap);
-        customerCheck(syaryoMap);
+        //customerCheck(syaryoMap);
 
         //nullCheck();
         //Check 1:
         //randomSampling(10, syaryoMap);
     }
-
+    
     public static void count() {
         List<String> typs = syaryoMap.values().stream()
             .map(s -> s.getType())

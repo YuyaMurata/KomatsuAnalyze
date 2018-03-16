@@ -203,8 +203,9 @@ public class SyaryoObject2 {
 	}
 
 	public Boolean getKomtrax() {
-		Map<String, List> spec = getSpec();
-		return spec.get("0").get(SyaryoElements.Spec.Komtrax.getNo()).toString().equals("1");
+        if(getSpec() == null)
+            return false;
+        return getSpec().values().stream().findFirst().get().get(SyaryoElements.Spec.Komtrax.getNo()).toString().equals("1");
 	}
 
 	//Komtrax
