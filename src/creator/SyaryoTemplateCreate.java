@@ -25,13 +25,13 @@ public class SyaryoTemplateCreate extends HiveDB {
     private static String FILENAME;
     
     public static void main(String[] args) throws IOException {
-        //SyaryoTemplateCreate.execute("WA470%");
-        //SyaryoTemplateCreate.execute("WA100%");
-        //SyaryoTemplateCreate.execute("HB205%");
-        //SyaryoTemplateCreate.execute("HB215%");
-        //SyaryoTemplateCreate.execute("PC200%");
-        //SyaryoTemplateCreate.execute("PC210%");
-        //SyaryoTemplateCreate.execute("PC78US%");
+        SyaryoTemplateCreate.execute("WA470%");
+        SyaryoTemplateCreate.execute("WA100%");
+        SyaryoTemplateCreate.execute("HB205%");
+        SyaryoTemplateCreate.execute("HB215%");
+        SyaryoTemplateCreate.execute("PC200%");
+        SyaryoTemplateCreate.execute("PC210%");
+        SyaryoTemplateCreate.execute("PC78US%");
         SyaryoTemplateCreate.execute("PC138US%");
     }
     
@@ -68,11 +68,12 @@ public class SyaryoTemplateCreate extends HiveDB {
         service_s(con, syaryoTemplate);
         service_t(con, syaryoTemplate);
         order(con, syaryoTemplate);
-        */work(con, syaryoTemplate);
-        /*parts(con, syaryoTemplate);
+        work(con, syaryoTemplate);
+        parts(con, syaryoTemplate);
         sell(con, syaryoTemplate);
         sell_used(con, syaryoTemplate);
-        
+        */allsupport(con, syaryoTemplate);
+        /*
         //KOSMIC
         sell_old(con, syaryoTemplate);
         
@@ -245,6 +246,16 @@ public class SyaryoTemplateCreate extends HiveDB {
             Map<String, SyaryoTemplate> syaryoMap = new KomatsuCareData().addPreprice(con, pw, KISY, syaryoTemplate);
             new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_care_preprice.json"), syaryoMap);
             System.out.println("Komatsu Care not update List:"+KomatsuCareData.dataCheck());
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+    //オールサポート
+    public static void allsupport(Connection con, Map<String, SyaryoTemplate> syaryoTemplate) {
+        try (PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_allsupport_error.csv")))))) {
+            Map<String, SyaryoTemplate> syaryoMap = new AllSupport().addAllsupport(con, pw, KISY, syaryoTemplate);
+            new SyaryoTemplateToJson().write(FILENAME.replace(".json", "_allsupport.json"), syaryoMap);
+            System.out.println("AllSupport not update List:"+AllSupport.dataCheck());
         } catch (IOException ex) {
             ex.printStackTrace();
         }

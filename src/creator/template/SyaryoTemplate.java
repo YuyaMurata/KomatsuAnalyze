@@ -422,6 +422,19 @@ public class SyaryoTemplate{
 		str += db + "," + company + "," + price;
 		map.put("コマツケア前受け金", str);
 	}
+    
+    public void addAllSupport(String db, String company, String plan, String st_date, String fn_date) {
+
+		String str = "";
+		if (map.get("オールサポート") == null) {
+			str = "DB, 会社コード, 契約, 開始日, 満了日 \n ";
+		} else {
+			str = map.get("オールサポート") + " \n ";
+		}
+
+		str += db + "," + company + "," + plan + "," + st_date + "," + fn_date;
+		map.put("オールサポート", str);
+	}
 
 	//Komtrax
 	//GPS

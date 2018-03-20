@@ -5,6 +5,8 @@
  */
 package db;
 
+import creator.source.AllSupport;
+import db.field.Allsupport;
 import db.field.Care;
 import db.field.Fields;
 import db.field.Order;
@@ -88,6 +90,7 @@ public abstract class HiveDB {
         //GAICHU_WORK_INFO("gaichu_work_info", Gaichu.Work_Info.values()),
         CARE("kom_care_genka", Care._Care.values()),
         CARE_PRICE("kom_care_preprice", Care.PrePrice.values()),
+        ALLSUPPORT("allsupport", Allsupport._Allsupport.values()),
         KOMTRAX("komtrax", Komtrax.TABLE.values());
 
         private final String text;

@@ -304,7 +304,7 @@ public class SyaryoObject2 {
 
 			System.out.println(sdf.format(birth) + " - " + sdf.format(last) +" = "+age);
 			return age.toString();
-		} catch (ParseException ex) {
+		} catch (Exception ex) {
 			return "NA";
 		}
 	}

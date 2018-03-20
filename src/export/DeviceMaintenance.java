@@ -20,7 +20,7 @@ import obj.SyaryoObject2;
  */
 public class DeviceMaintenance {
 
-	private static String kisy = "WA470";
+	private static String kisy = "PC138US";
 
 	public static void main(String[] args) {
 		String filename = "json\\syaryo_obj_" + kisy + "_form";
@@ -97,7 +97,11 @@ public class DeviceMaintenance {
 				try {
 					sb.append(gyousyuCode.floorEntry(date_int).getValue());
 				} catch (NullPointerException e) {
+                    try{
 					sb.append(gyousyuCode.higherEntry(date_int).getValue());
+                    }catch(NullPointerException ex){
+                    sb.append("?");    
+                    }
 				}
 				sb.append(",");
 				sb.append(syaryo.getAge(date));
