@@ -296,10 +296,10 @@ public class SyaryoObject2 {
 
 	public String getAge(String date) {
 		try {
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-			SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy/MM/dd");
-			Date birth = sdf.parse(getFirstDate());
-			Date last = sdf2.parse(date);
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+			SimpleDateFormat sdf2 = new SimpleDateFormat("yyyyMMdd");
+			Date birth = sdf.parse(getFirstDate().replace("/", ""));
+			Date last = sdf2.parse(date.replace("/", ""));
 			Long age = (last.getTime() - birth.getTime()) / (1000 * 60 * 60 * 24);
 
 			System.out.println(sdf.format(birth) + " - " + sdf.format(last) +" = "+age);

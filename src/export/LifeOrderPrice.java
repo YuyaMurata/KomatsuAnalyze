@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import json.JsonToSyaryoObj;
+import json.SyaryoToZip;
 import obj.SyaryoElements;
 import obj.SyaryoObject2;
 
@@ -21,22 +22,22 @@ import obj.SyaryoObject2;
  */
 public class LifeOrderPrice {
 
-    private static String kisy = "PC200";
-    private static String syaryoName = "PC200-8N1-315586";
+    private static String kisy = "WA470";
+    private static String syaryoName = "WA470-7-10354";
     
     public static void main(String[] args) {
-        String filename = "json\\syaryo_obj_" + kisy + "_form.json";
-        Map<String, SyaryoObject2> syaryoMap = new JsonToSyaryoObj().reader3(filename);
+        String filename = "json\\syaryo_obj_" + kisy + "_form";
+        Map<String, SyaryoObject2> syaryoMap = new SyaryoToZip().readObject(filename);
 
-        String outputname = "life_order_price_" + kisy + ".csv";
+        /*String outputname = "life_order_price_" + kisy + ".csv";
         try (PrintWriter csv = CSVFileReadWrite.writer(outputname)) {
             extractMaxOrder(syaryoMap, csv, 1); //0:ALL 1:NEW 2:USED
-        }
+        }*/
         
-        /*String outputname = "life_order_price_" + syaryoName + ".csv";
+        String outputname = "life_order_price_" + syaryoName + ".csv";
         try (PrintWriter csv = CSVFileReadWrite.writer(outputname)) {
             extractSyaryoLifeOrder(syaryoMap.get(syaryoName), csv);
-        }*/
+        }
     }
 
     public static void extractMaxOrder(Map<String, SyaryoObject2> syaryoMap, PrintWriter csv, int newUsedFlg) {
@@ -45,6 +46,7 @@ public class LifeOrderPrice {
         csv.println("Company,ID,Kisy,Type,業種コード,回数,合計,平均金額,中央値,会社_区分_作番,最大金額,会社_区分_作番,最小金額");
         for (SyaryoObject2 syaryo : syaryoMap.values()) {
             cnt++;
+            syaryo.decompress();
 
             StringBuilder sb = new StringBuilder();
             String company = ExportTool.extractCompany(syaryo);
@@ -134,6 +136,7 @@ public class LifeOrderPrice {
 
             csv.println(sb.toString());
 
+            syaryo.compress(true);
             if (cnt % 1000 == 0) {
                 System.out.println(cnt + "台");
             }
@@ -154,6 +157,7 @@ public class LifeOrderPrice {
     
     public static void extractSyaryoLifeOrder(SyaryoObject2 syaryo, PrintWriter csv) {
         csv.println("日付,会社,区分,作番,金額,概要,,累積コマツ請求,累積社内請求,累積一般請求(単),累積一般請求(修)");
+        syaryo.decompress();
         
         Long general_s = 0L,general_p = 0L,komatsu = 0L,company = 0L;
         
