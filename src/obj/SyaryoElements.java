@@ -257,7 +257,7 @@ public class SyaryoElements {
 	}
 	
 	//Order
-    //"受注":DB, 会社コード, 日付, 作番登録日, 実施予定日, 完了日, 作番, 修・単, 作番ステータス, 顧客ID, 顧客名, 保有顧客ID, 保有顧客名, 工数, 指示工数, 売上区分, 一般請求, コマツ請求, 概要
+    //"受注":DB, 会社コード, 日付, 作番登録日, 実施予定日, 完了日, 作番, 作業形態コード, 作業形態名 修・単, 作番ステータス, 顧客ID, 顧客名, 保有顧客ID, 保有顧客名, 工数, 指示工数, 売上区分, 一般請求, コマツ請求, 概要
 	public enum Order implements Element{
 		DB("DB", 0),
         Company("会社", 1),
@@ -266,8 +266,8 @@ public class SyaryoElements {
 		PDate("実施予定日", 4),
 		FDate("完了日", 5),
 		ID("作番", 6),
-        //SG_Code("作業形態コード", 7),
-        //SG_Name("作業形態名", 8),
+        SG_Code("作業形態コード", 7),
+        SG_Name("作業形態名", 8),
 		Sell("単・修", 7),
 		Status("作番ステータス", 8),
 		SCustomer("顧客ID", 9),

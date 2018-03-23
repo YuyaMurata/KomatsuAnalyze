@@ -5,6 +5,7 @@
  */
 package check;
 
+import creator.template.SyaryoTemplate;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -18,6 +19,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import json.JsonToSyaryoObj;
+import json.SyaryoToZip;
 import obj.SyaryoObject2;
 
 /**
@@ -25,7 +27,7 @@ import obj.SyaryoObject2;
  * @author ZZ17390
  */
 public class DataCheck {
-    private static String kisy = "WA470";
+    private static String kisy = "PC200";
     private static String path = "..\\KomatsuData\\車両テンプレート\\"+kisy+"系\\";
     
     public static void main(String[] args) throws IOException {
@@ -36,10 +38,37 @@ public class DataCheck {
         //errorCheck();
         
         //オブジェクトカウント
-        objCheck("json\\syaryo_obj_"+kisy+".json");
+        //objCheck("json\\syaryo_obj_"+kisy+".json");
         
         //2csv 比較
         //csvCheck();
+        
+        templateRanking();
+    }
+    
+    //Syaryo Ranking
+    public static void templateRanking() throws IOException{
+        Map<String, String> rank = new HashMap();
+        Map<String, SyaryoTemplate> syaryoMap = new SyaryoToZip().readTemplate(path+"syaryo_"+kisy+"_template_order");
+        
+        syaryoMap.values().parallelStream().forEach(syaryo -> {
+            syaryo.decompress();
+            rank.put(syaryo.getName(), String.valueOf(syaryo.getAll().get("受注").split("\n").length-1));
+            syaryo.compress(false);
+        });
+        
+        syaryoMap = new SyaryoToZip().readTemplate(path+"syaryo_"+kisy+"_template_komtrax_smr");
+        syaryoMap.values().parallelStream().forEach(syaryo -> {
+            syaryo.decompress();
+            if(rank.get(syaryo.getName()) != null)
+                rank.put(syaryo.getName(), rank.get(syaryo.getName())+","+String.valueOf(syaryo.getAll().get("KMSMR").split("\n").length-1));
+            else
+                rank.put(syaryo.getName(), "0,"+String.valueOf(syaryo.getAll().get("KMSMR").split("\n").length-1));
+            syaryo.compress(false);
+        });
+        
+        for(Object name : rank.keySet())
+            System.out.println(name+","+rank.get(name));
     }
     
     public static void templateCheck() throws IOException{

@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import java.util.Map;
 import java.util.TreeMap;
 import json.JsonToSyaryoObj;
+import json.MapIndexToJSON;
 import json.SyaryoToZip;
 import obj.SyaryoElements;
 import obj.SyaryoObject2;
@@ -29,19 +30,28 @@ public class DeviceMaintenance {
 		String outputname = "device_smr_year_KM_" + kisy + ".csv";
 		try (PrintWriter csv = CSVFileReadWrite.writer(outputname)) {
 			extractDeviceMaintenance(syaryoMap, csv);
-		}
+		}catch(Exception e){
+            e.printStackTrace();
+        }
 	}
 
 	public static void extractDeviceMaintenance(Map<String, SyaryoObject2> syaryoMap, PrintWriter csv) {
 		int cnt = 0;
+        //AS Index
+        Map index = new MapIndexToJSON().reader("index\\allsupport_index.json");
 
-		csv.println("Company,ID,Kisy,Type,業種コード,経年,SMR,作番,メーカー,品番,品名,装置コード,金額");
+		csv.println("Company,ID,Kisy,Type,業種コード,経年,SMR,作番,作業形態,作業コード,作業名,装置コード,対象,金額");
 		for (SyaryoObject2 syaryo : syaryoMap.values()) {
 			syaryo.decompress();
 
 			cnt++;
-			if (syaryo.getParts() == null) {
-				System.out.println(syaryo.getName());
+			if (syaryo.getWork() == null) {
+				System.out.println("作業なし："+syaryo.getName());
+
+				continue;
+			}
+            if (syaryo.getOrder() == null) {
+				System.out.println("受注なし："+syaryo.getName());
 				continue;
 			}
 
@@ -64,26 +74,26 @@ public class DeviceMaintenance {
 			}
 
 			StringBuilder sb = new StringBuilder();
-			for (String date : syaryo.getParts().keySet()) {
-				String company = (String) syaryo.getParts().get(date).get(SyaryoElements.Parts.Company.getNo());
-				String sbnID = (String) syaryo.getParts().get(date).get(SyaryoElements.Parts.ID.getNo());
-				String marker = (String) syaryo.getParts().get(date).get(SyaryoElements.Parts.MAKER.getNo());
-				String partsID = (String) syaryo.getParts().get(date).get(SyaryoElements.Parts.HID.getNo());
-				String partsName = (String) syaryo.getParts().get(date).get(SyaryoElements.Parts.HName.getNo());
-				String price = (String) syaryo.getParts().get(date).get(SyaryoElements.Parts.Price.getNo());
+			for (String date : syaryo.getWork().keySet()) {
+				String company = (String) syaryo.getWork().get(date).get(SyaryoElements.Work.Company.getNo());
+				String sbnID = (String) syaryo.getWork().get(date).get(SyaryoElements.Work.ID.getNo());
+                String keitai = (String) syaryo.getOrder().values().stream()
+                                                    .filter(o -> o.get(SyaryoElements.Order.ID.getNo()).equals(sbnID))
+                                                    .map(o -> o.get(SyaryoElements.Order.SG_Code.getNo()))
+                                                    .findFirst().get();
+				String workID = (String) syaryo.getWork().get(date).get(SyaryoElements.Work.SCode.getNo());
+				String workName = (String) syaryo.getWork().get(date).get(SyaryoElements.Work.SName.getNo());
+				String price = (String) syaryo.getWork().get(date).get(SyaryoElements.Work.Price.getNo());
 				
-				String deviceID = "?";
-				if (partsID.split("-").length > 1) {
-					deviceID = partsID.split("-")[1];
-				} else if (partsID.length() > 5) {
-					try{
-						deviceID = partsID.substring(5, 7);
-					}catch(Exception e){
-						deviceID = "?";
-					}
-						
-				}
-
+                //System.out.println(workID);
+                String deviceID4 = "";
+                try{
+                    deviceID4 = workID.substring(0, 4);
+                }catch(Exception e){
+                    System.out.println(workID);
+                }
+                String deviceID2 = workID.substring(0, 2);
+                
 				Integer date_int = Integer.valueOf(date.replace("/", "").split("#")[0]);
 
 				sb.append(company);
@@ -114,13 +124,25 @@ public class DeviceMaintenance {
 				sb.append(",");
 				sb.append(sbnID);
 				sb.append(",");
-				sb.append(marker);
+				sb.append(keitai);
 				sb.append(",");
-				sb.append(partsID);
+				sb.append(workID);
 				sb.append(",");
-				sb.append(partsName);
+				sb.append(workName);
 				sb.append(",");
-				sb.append(deviceID);
+                if(index.get(deviceID4) != null){
+                    sb.append(deviceID4);
+                    sb.append(",");
+                    sb.append(index.get(deviceID4));
+                } else if(index.get(deviceID2) != null){
+                    sb.append(deviceID2);
+                    sb.append(",");
+                    sb.append(index.get(deviceID2));
+                }else{
+                    sb.append(deviceID4);
+                    sb.append(",");
+                    sb.append("0");
+                }
 				sb.append(",");
 				sb.append(price);
 				sb.append("\n");

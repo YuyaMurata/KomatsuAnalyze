@@ -23,15 +23,15 @@ public class TranslationSyaryoToBSON {
 
     public static void main(String[] args) throws IOException {
 
-        String kisy = "WA470";
-        //String path = "..\\KomatsuData\\車両テンプレート\\" + kisy + "系\\";
-        String path = "template\\"+kisy+"系\\";
+        String kisy = "PC200";
+        String path = "..\\KomatsuData\\車両テンプレート\\" + kisy + "系\\";
+        //String path = "template\\"+kisy+"系\\";
         File[] flist = (new File(path)).listFiles();
 
         for (File f : flist) {
             TreeMap<String, SyaryoTemplate> syaryoMap = new TreeMap();
             
-            if (f.getName().contains("error.csv") || f.getName().contains(".gz")) {
+            if (f.getName().contains("error.csv") || f.getName().contains(".gz") || f.getName().contains("eqpkeireki")) {
                 continue;
             }
             System.out.println(f.getName() + ",");
@@ -45,6 +45,8 @@ public class TranslationSyaryoToBSON {
             }
             System.out.println("compress:"+ObjectSizeCalculator.getObjectSize(syaryoMap));
             new SyaryoToZip().write(path+f.getName(), syaryoMap);
+            
+            syaryoTemplates = null;
         }
     }
 }

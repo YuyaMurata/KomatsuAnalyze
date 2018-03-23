@@ -210,7 +210,10 @@ public class SyaryoObject2 {
 
 	//Komtrax
 	public Map<String, List> getSMR() {
-		return (Map) map.get("KMSMR");
+        if(map.get("KMSMR") != null)
+            return (Map) map.get("KMSMR");
+        else
+            return (Map) map.get("SMR");
 	} 
 
 	public Map<String, List> getGPS() {
