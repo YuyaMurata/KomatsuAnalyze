@@ -7,8 +7,10 @@ package export;
 
 import file.CSVFileReadWrite;
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 import json.JsonToSyaryoObj;
 import json.MapIndexToJSON;
 import json.SyaryoToZip;
@@ -40,7 +42,7 @@ public class DeviceMaintenance {
         //AS Index
         Map index = new MapIndexToJSON().reader("index\\allsupport_index.json");
 
-		csv.println("Company,ID,Kisy,Type,業種コード,経年,SMR,作番,作業形態,作業コード,作業名,装置コード,対象,金額");
+		csv.println("Company,ID,Kisy,Type,業種コード,経年,SMR,作番,作業形態,作業コード,作業名,対象,金額");
 		for (SyaryoObject2 syaryo : syaryoMap.values()) {
 			syaryo.decompress();
 
@@ -74,25 +76,22 @@ public class DeviceMaintenance {
 			}
 
 			StringBuilder sb = new StringBuilder();
-			for (String date : syaryo.getWork().keySet()) {
-				String company = (String) syaryo.getWork().get(date).get(SyaryoElements.Work.Company.getNo());
-				String sbnID = (String) syaryo.getWork().get(date).get(SyaryoElements.Work.ID.getNo());
-                String keitai = (String) syaryo.getOrder().values().stream()
-                                                    .filter(o -> o.get(SyaryoElements.Order.ID.getNo()).equals(sbnID))
-                                                    .map(o -> o.get(SyaryoElements.Order.SG_Code.getNo()))
-                                                    .findFirst().get();
-				String workID = (String) syaryo.getWork().get(date).get(SyaryoElements.Work.SCode.getNo());
-				String workName = (String) syaryo.getWork().get(date).get(SyaryoElements.Work.SName.getNo());
-				String price = (String) syaryo.getWork().get(date).get(SyaryoElements.Work.Price.getNo());
+			for (String date : syaryo.getOrder().keySet()) {
+				String company = (String) syaryo.getOrder().get(date).get(SyaryoElements.Order.Company.getNo());
+				String sbnID = (String) syaryo.getOrder().get(date).get(SyaryoElements.Order.ID.getNo());
+                String keitai = (String) syaryo.getOrder().get(date).get(SyaryoElements.Order.SG_Code.getNo());
+				List workIDs = syaryo.getWork().entrySet().parallelStream().filter(e -> e.getKey().contains(date))
+                                                                                .map(e -> e.getValue().get(SyaryoElements.Work.SCode.getNo()))
+                                                                                .collect(Collectors.toList());
+				List workNames = syaryo.getWork().entrySet().parallelStream().filter(e -> e.getKey().contains(date))
+                                                                                .map(e -> e.getValue().get(SyaryoElements.Work.SName.getNo()))
+                                                                                .collect(Collectors.toList());
+				String price = (String) syaryo.getOrder().get(date).get(SyaryoElements.Order.Invoice.getNo());
 				
+                if(workIDs.isEmpty())
+                    continue;
+                
                 //System.out.println(workID);
-                String deviceID4 = "";
-                try{
-                    deviceID4 = workID.substring(0, 4);
-                }catch(Exception e){
-                    System.out.println(workID);
-                }
-                String deviceID2 = workID.substring(0, 2);
                 
 				Integer date_int = Integer.valueOf(date.replace("/", "").split("#")[0]);
 
@@ -126,23 +125,11 @@ public class DeviceMaintenance {
 				sb.append(",");
 				sb.append(keitai);
 				sb.append(",");
-				sb.append(workID);
+				sb.append(workIDs.toString().replace(",", "|"));
 				sb.append(",");
-				sb.append(workName);
+				sb.append(workNames.toString().replace(",", "|"));
 				sb.append(",");
-                if(index.get(deviceID4) != null){
-                    sb.append(deviceID4);
-                    sb.append(",");
-                    sb.append(index.get(deviceID4));
-                } else if(index.get(deviceID2) != null){
-                    sb.append(deviceID2);
-                    sb.append(",");
-                    sb.append(index.get(deviceID2));
-                }else{
-                    sb.append(deviceID4);
-                    sb.append(",");
-                    sb.append("0");
-                }
+                sb.append(powerlineCheck(workIDs, index));
 				sb.append(",");
 				sb.append(price);
 				sb.append("\n");
@@ -153,5 +140,20 @@ public class DeviceMaintenance {
 			syaryo.compress(false);
 		}
 	}
-
+    
+    private static String powerlineCheck(List workIDs, Map index){
+        for(Object id : workIDs){
+            if(id.toString().length() > 3){
+                String device4 = id.toString().substring(0, 4);
+                if(index.get(device4) != null)
+                    return "1";
+            }
+            
+            String device2 = id.toString().substring(0, 2);
+            if(index.get(device2) != null)
+                return "1";
+        }
+        
+        return "0";
+    }
 }

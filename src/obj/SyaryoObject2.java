@@ -212,8 +212,9 @@ public class SyaryoObject2 {
 	public Map<String, List> getSMR() {
         if(map.get("KMSMR") != null)
             return (Map) map.get("KMSMR");
-        else
-            return (Map) map.get("SMR");
+        //else
+        //    return (Map) map.get("SMR");
+        return null;
 	} 
 
 	public Map<String, List> getGPS() {

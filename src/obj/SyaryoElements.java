@@ -268,17 +268,17 @@ public class SyaryoElements {
 		ID("作番", 6),
         SG_Code("作業形態コード", 7),
         SG_Name("作業形態名", 8),
-		Sell("単・修", 7),
-		Status("作番ステータス", 8),
-		SCustomer("顧客ID", 9),
-		SName("顧客名", 10),
-        Customer("顧客ID", 11),
-		Name("顧客名", 12),
-		Step("工数", 13),
-		DStep("指示工数", 14),
-        FLAG("売上区分", 15),
-		Invoice("請求", 16),
-		Summary("概要", 17);
+		Sell("単・修", 9),
+		Status("作番ステータス", 10),
+		SCustomer("顧客ID", 11),
+		SName("顧客名", 12),
+        Customer("顧客ID", 13),
+		Name("顧客名", 14),
+		Step("工数", 15),
+		DStep("指示工数", 16),
+        FLAG("売上区分", 17),
+		Invoice("請求", 18),
+		Summary("概要", 19);
 		
 		final String name;
 		final Integer index;
