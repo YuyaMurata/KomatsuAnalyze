@@ -108,8 +108,14 @@ public class SyaryoTemplate{
         if (key.equals("コマツケア前受け金")) {
 			addCarePrePrice(s[0], s[1], s[2]);
 		}
+        if (key.equals("オールサポート")) {
+			addAllSupport(s[0], s[1], s[2], s[3], s[4]);
+		}
 		if (key.equals("GPS")) {
 			addGPS(s[0], s[1], s[2], s[3], s[4]);
+		}
+        if (key.equals("KMACT")) {
+			addKMAct(s[0], s[1], s[2], s[3]);
 		}
 		if (key.equals("KMSMR")) {
 			addKMSMR(s[0], s[1], s[2], s[3]);

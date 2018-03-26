@@ -375,7 +375,13 @@ public class SyaryoObject2 {
 		StringBuilder sb = new StringBuilder();
 		sb.append(name);
 		sb.append(":");
-		sb.append(map);
+        for(Object key : map.keySet()){
+            sb.append("\n ");
+            sb.append(key);
+            sb.append(":");
+            sb.append(map.get(key));
+        }
+        
 		return sb.toString();
 	}
 }

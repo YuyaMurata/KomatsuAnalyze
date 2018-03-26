@@ -16,26 +16,32 @@ import obj.SyaryoObject2;
 public class SyaryoDataCheck {
 	public static void main(String[] args) {
 		String kisy = "PC138US";
-		Map<String, SyaryoObject2> map = new SyaryoToZip().readObject("json\\syaryo_obj_"+kisy+"_form");
+		Map<String, SyaryoObject2> map = new SyaryoToZip().readObject("json\\syaryo_obj_"+kisy);
 		
-		//syaryoCheck(1, "仕様", map);
+		syaryoCheck(100, map);
+        //syaryoCheck("29888", "KMSMR", map);
         //nullCheck("最終更新日", map);
-        komtraxCheck(map);
+        //komtraxCheck(map);
 	}
 	
-	private static void syaryoCheck(int num, String field, Map<String, SyaryoObject2> syaryos){
-		int n= 0;
+	private static void syaryoCheck(int num, Map<String, SyaryoObject2> syaryos){
+		int n = 0;
 		for(SyaryoObject2 syaryo : syaryos.values()){
 			syaryo.decompress();
 			
-			System.out.println(syaryo.getName());
-			System.out.println("\t"+syaryo.get(field));
+			System.out.println(syaryo.dump());
 			
             syaryo.compress(true);
             
-			if(num >= n++)
+			if(num < n++)
 				break;
 		}
+	}
+    
+    private static void syaryoCheck(String kiban, String field, Map<String, SyaryoObject2> syaryos){
+		SyaryoObject2 syaryo = syaryos.values().stream().filter(s -> s.getName().contains(kiban)).findFirst().get();
+        syaryo.decompress();
+        System.out.println(syaryo.dump());
 	}
     
     private static void nullCheck(String field, Map<String, SyaryoObject2> syaryos){
