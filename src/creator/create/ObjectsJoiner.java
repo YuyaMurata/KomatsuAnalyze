@@ -9,6 +9,7 @@ import creator.template.SyaryoTemplate;
 import java.io.File;
 import java.util.Map;
 import json.SyaryoToZip;
+import json.SyaryoToZip2;
 import obj.SyaryoObject2;
 
 /**
@@ -16,12 +17,13 @@ import obj.SyaryoObject2;
  * @author ZZ17390
  */
 public class ObjectsJoiner {
-    public static void main(String[] args) {
-        join("PC138US", "allsupport");
-    }
+    private static String kisy = "PC138US";
+    private static String path = "..\\KomatsuData\\中間データ\\"+kisy+"\\obj\\";
+    private static SyaryoToZip zip = new SyaryoToZip();
+    private static SyaryoToZip2 zip2 = new SyaryoToZip2();
     
-    public static void join(String kisy, String filename){
-        String file = "json\\"+kisy+"\\syaryo_obj_" + kisy + "_" + filename;
+    public static void main(String[] args) {
+        File[] flist = (new File(path)).listFiles();
         String objFile = "json\\syaryo_obj_" + kisy;
         
         //exists Syaryo Object
@@ -29,19 +31,32 @@ public class ObjectsJoiner {
         if(!f.exists()){
             System.out.println("syaryo_obj_"+kisy+" not found!");
             System.exit(0);
+        
         }
+        Map<String, SyaryoObject2> obj = zip.readObject(objFile);
         
-        Map<String, SyaryoObject2> obj = new SyaryoToZip().readObject(objFile);
-        Map<String, SyaryoObject2> joinobj = new SyaryoToZip().readObject(file);
+        for(File file : flist)
+            join("PC138US", file, obj);
         
-        obj.values().stream().filter(syaryo -> joinobj.get(syaryo.getName()) != null).forEach(syaryo ->{
+        zip.write(objFile, obj);
+    }
+    
+    public static void join(String kisy, File file, Map<String, SyaryoObject2> obj){
+        System.out.println(file.getName());
+        
+        Map<String, SyaryoObject2> joinobj = zip2.readObject(file);
+        
+        joinobj.values().parallelStream().forEach(data ->{
+            data.decompress();
+            
+            SyaryoObject2 syaryo = obj.get(data.getName());
             syaryo.decompress();
-            joinobj.get(syaryo.getName()).decompress();
-            syaryo.map.putAll(joinobj.get(syaryo.getName()).getAll());
+            syaryo.map.putAll(data.getAll());
             syaryo.compress(true);
-            joinobj.get(syaryo.getName()).compress(false);
+            
+            data.compress(false);
         });
         
-        new SyaryoToZip().write(objFile, obj);
+        joinobj = null;
     }
 }

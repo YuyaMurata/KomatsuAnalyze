@@ -16,26 +16,32 @@ import obj.SyaryoObject2;
 public class SyaryoDataCheck {
 	public static void main(String[] args) {
 		String kisy = "PC138US";
-		Map<String, SyaryoObject2> map = new SyaryoToZip().readObject("json\\syaryo_obj_"+kisy);
+		Map<String, SyaryoObject2> map = new SyaryoToZip().readObject("json\\syaryo_obj_"+kisy+"_form");
 		
-		syaryoCheck(100, map);
-        //syaryoCheck("29888", "KMSMR", map);
+		//syaryoCheck(1000, "オールサポート", map);
+        syaryoCheck("42474", "KMSMR", map);
         //nullCheck("最終更新日", map);
         //komtraxCheck(map);
 	}
 	
-	private static void syaryoCheck(int num, Map<String, SyaryoObject2> syaryos){
+	private static void syaryoCheck(int num, String field, Map<String, SyaryoObject2> syaryos){
 		int n = 0;
 		for(SyaryoObject2 syaryo : syaryos.values()){
 			syaryo.decompress();
+			if(syaryo.map.get(field) == null){
+                syaryo.compress(false);
+                continue;
+            }
+            
+            System.out.println(syaryo.name);
+			System.out.println(" "+syaryo.map.get(field));
 			
-			System.out.println(syaryo.dump());
-			
-            syaryo.compress(true);
+            syaryo.compress(false);
             
 			if(num < n++)
 				break;
 		}
+        System.out.println(n);
 	}
     
     private static void syaryoCheck(String kiban, String field, Map<String, SyaryoObject2> syaryos){

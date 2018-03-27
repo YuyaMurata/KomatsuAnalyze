@@ -11,6 +11,7 @@ import java.util.TreeMap;
 import creator.template.SyaryoTemplate;
 import java.io.File;
 import json.SyaryoToZip;
+import json.SyaryoToZip2;
 import obj.SyaryoObject2;
 
 /**
@@ -19,14 +20,21 @@ import obj.SyaryoObject2;
  * @author ZZ17390
  */
 public class TamplateToObjectCreate {
-
+    private static String kisy = "PC138US";
+    private static String path = "..\\KomatsuData\\中間データ\\"+kisy+"\\mid\\";
+    private static String outpath = "..\\KomatsuData\\中間データ\\"+kisy+"\\obj\\";
+    
 	public static void main(String[] args) {
-		new TamplateToObjectCreate().create("PC138US", "allsupport");
+        File[] flist = (new File(path)).listFiles();
+        
+        for(File f : flist)
+            create(kisy, f);
 	}
 
-	public void create(String kisy, String filename) {
-		String inputTemp = "..\\KomatsuData\\車両テンプレート\\"+kisy+"系\\gz\\syaryo_"+kisy+"_template_"+filename;
-		String FILENAME = "json\\"+kisy+"\\syaryo_obj_" + kisy + "_" + filename;
+	public static void create(String kisy, File file) {
+        System.out.println(file.getName());
+        
+		String FILENAME = outpath+"syaryo_obj_" + kisy + "_" + file.getName().split("_")[3];
         
         //Folder
         File f = new File("json\\"+kisy);
@@ -36,7 +44,7 @@ public class TamplateToObjectCreate {
         } else {
         }
         
-		Map<String, SyaryoTemplate> templates = new SyaryoToZip().readTemplate(inputTemp);
+		Map<String, SyaryoTemplate> templates = new SyaryoToZip2().readTemplate(file);
 		TreeMap<String, SyaryoObject2> syaryoMap = new TreeMap();
 
 		//int n = 0;

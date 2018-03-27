@@ -212,10 +212,10 @@ public class SyaryoElements {
 		DB("DB", 0),
         Company("会社", 1),
         Date("日付", 2),
-        //KBN("顧客区分", 3),
-		Code("業種コード", 3),
-        ID("顧客ID", 4),
-		Name("顧客名", 5);
+        KBN("顧客区分", 3),
+		Code("業種コード", 4),
+        ID("顧客ID", 5),
+		Name("顧客名", 6);
 		
 		final String name;
 		final Integer index;
@@ -398,6 +398,29 @@ public class SyaryoElements {
 		final String name;
 		final Integer index;
 		private CarePrice(String name, Integer index){
+			this.name = name;
+			this.index = index;
+		}
+		
+		public String getText(){
+			return name;
+		}
+		
+		public Integer getNo(){
+			return index;
+		}
+	}
+    
+    public enum AllSupport implements Element{
+		DB("DB", 0),
+        Company("会社",1),
+		KIND("保証タイプ", 2),
+        START("開始日",3),
+        FINISH("満了日",4);
+		
+		final String name;
+		final Integer index;
+		private AllSupport(String name, Integer index){
 			this.name = name;
 			this.index = index;
 		}

@@ -5,6 +5,7 @@
  */
 package creator.form;
 
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -129,7 +130,7 @@ public class FormalizeSyaryoObject2 {
         Map newMap = new TreeMap();
 
         //for (SyaryoObject2 syaryo : map.values()) {
-        map.values().parallelStream().forEach(syaryo -> {
+        map.values().stream().forEach(syaryo -> {
             syaryo.decompress();
 
             System.out.println(syaryo.getName());
@@ -138,7 +139,8 @@ public class FormalizeSyaryoObject2 {
             formOwner(syaryo.get("顧客"), index);
             formOrder(syaryo.get("受注"));
             formKMSMR(syaryo.get("KMSMR"));
-
+            formAllSupport(syaryo.get("オールサポート"));
+            
             syaryo.compress(true);
             newMap.put(syaryo.getName(), syaryo);
         });
@@ -168,7 +170,10 @@ public class FormalizeSyaryoObject2 {
         Map map1 = new TreeMap();
         Map map2 = new TreeMap();
 
-        for (SyaryoObject2 syaryo : syaryoMap.values()) {
+        for (String name : syaryoMap.keySet()) {
+            SyaryoObject2 syaryo = syaryoMap.get(name);
+            syaryo.name = name;
+            
             if (extract.stream()
                 .filter(ksyType -> syaryo.getName().contains(ksyType + "-"))
                 .findFirst().isPresent()) {
@@ -285,7 +290,24 @@ public class FormalizeSyaryoObject2 {
         String newdate = "???", id = "???", name = "???";
         String[] code = new String[]{"?", "?"};
         List temp = null;
-
+        
+        List owners = owner.values().stream()
+                                .map(l -> l.get(SyaryoElements.Customer.ID.getNo()))
+                                .distinct()
+                                .collect(Collectors.toList());
+        
+        int i = 0;
+        for (String date : owner.keySet()) {
+            List obj = owner.get(date);
+            if(obj.get(SyaryoElements.Customer.ID.getNo()).equals(owners.get(i))){
+                i++;
+                update.put(date.split("#")[0], obj);
+            }
+            if(i > (owners.size()-1))
+                break;
+        }
+        
+        /*
         for (String date : owner.keySet()) {
             List obj = owner.get(date);
 
@@ -360,7 +382,7 @@ public class FormalizeSyaryoObject2 {
         }
         for (Object date : removeDate) {
             update.remove(date);
-        }
+        }*/
 
         owner.clear();
 
@@ -417,6 +439,25 @@ public class FormalizeSyaryoObject2 {
 
             //kmsmrMap.put(date, list);
         }
+    }
+    
+    private static DecimalFormat dformat = new DecimalFormat("00");
+    private static void formAllSupport(Map<String, List> asMap) {
+        if (asMap == null) {
+            return;
+        }
+        
+        if(1 < asMap.size()){
+            List removeKey = asMap.keySet().stream().limit(asMap.size()-1).collect(Collectors.toList());
+            for(Object key : removeKey)
+                asMap.remove(key);
+        }
+        List list = asMap.values().stream().findFirst().get();
+        String finish = (String) list.get(SyaryoElements.AllSupport.FINISH.getNo());
+        String[] formFinish = finish.split("/");
+        formFinish[1] = dformat.format(Integer.valueOf(formFinish[1]));
+        formFinish[2] = dformat.format(Integer.valueOf(formFinish[2]));
+        list.set(SyaryoElements.AllSupport.FINISH.getNo(), String.join("", formFinish));
     }
 
     private void formGPS(Map<String, List> gps, Map<String, List> smr) {

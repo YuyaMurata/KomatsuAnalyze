@@ -16,17 +16,21 @@ import json.SyaryoToZip;
 public class MiddleDataCheck {
     public static void main(String[] args) {
         String kisy = "PC138US";
-        String path = "..\\KomatsuData\\中間データ\\"+kisy+"\\";
+        String path = "..\\KomatsuData\\中間データ\\"+kisy+"\\mid\\";
 		//String outpath = "middle\\";
-        String FILENAME = path+"syaryo_mid_" + kisy+"_KMACT";
+        String FILENAME = path+"syaryo_mid_" + kisy+"_オールサポート";
         
         Map<String, SyaryoTemplate> syaryoMap = new SyaryoToZip().readTemplate(FILENAME);
-        
+        int cnt=0;
         for(String name : syaryoMap.keySet()){
+            //if(!name.contains("-40651")) continue;
             SyaryoTemplate syaryo = syaryoMap.get(name);
             syaryo.decompress();
+            System.out.println(syaryo.getName());
             System.out.println(syaryo.map);
             syaryo.compress(false);
+            cnt++;
         }
+        System.out.println(cnt);
     }
 }

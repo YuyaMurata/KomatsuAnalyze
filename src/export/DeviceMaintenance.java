@@ -42,10 +42,11 @@ public class DeviceMaintenance {
         //AS Index
         Map index = new MapIndexToJSON().reader("index\\allsupport_index.json");
 
-		csv.println("Company,ID,Kisy,Type,業種コード,経年,SMR,作番,作業形態,作業コード,作業名,対象,金額");
+		csv.println("Company,ID,Kisy,Type,業種コード,経年,SMR,作番,作業形態,作業コード,作業名,パワーライン対象装置,オールサポート,金額");
 		for (SyaryoObject2 syaryo : syaryoMap.values()) {
+            System.out.print(syaryo.name);
 			syaryo.decompress();
-
+            
 			cnt++;
 			if (syaryo.getWork() == null) {
 				System.out.println("作業なし："+syaryo.getName());
@@ -104,10 +105,10 @@ public class DeviceMaintenance {
 				sb.append(syaryo.getType());
 				sb.append(",");
 				try {
-					sb.append(gyousyuCode.floorEntry(date_int).getValue());
+					sb.append("'"+gyousyuCode.floorEntry(date_int).getValue());
 				} catch (NullPointerException e) {
                     try{
-					sb.append(gyousyuCode.higherEntry(date_int).getValue());
+					sb.append("'"+gyousyuCode.higherEntry(date_int).getValue());
                     }catch(NullPointerException ex){
                     sb.append("?");    
                     }
@@ -121,16 +122,18 @@ public class DeviceMaintenance {
 					sb.append(smr.higherEntry(date_int).getValue());
 				}
 				sb.append(",");
-				sb.append(sbnID);
+				sb.append("'"+sbnID);
 				sb.append(",");
 				sb.append(keitai);
 				sb.append(",");
-				sb.append(workIDs.toString().replace(",", "|"));
+				sb.append("'"+workIDs.toString().replace(",", "|"));
 				sb.append(",");
 				sb.append(workNames.toString().replace(",", "|"));
 				sb.append(",");
                 sb.append(powerlineCheck(workIDs, index));
 				sb.append(",");
+                sb.append(syaryo.getAllSupport(date));
+                sb.append(",");
 				sb.append(price);
 				sb.append("\n");
 			}
@@ -138,6 +141,8 @@ public class DeviceMaintenance {
 			csv.println(sb.toString());
 
 			syaryo.compress(false);
+            
+            System.out.println(" OK");
 		}
 	}
     

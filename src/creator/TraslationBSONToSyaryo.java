@@ -18,9 +18,9 @@ public class TraslationBSONToSyaryo {
     public static void main(String[] args) throws IOException {
         String kisy = "PC138US";
         //String path = "..\\KomatsuData\\車両テンプレート\\" + kisy + "系\\gz\\";
-        String path = "json\\" + kisy + "\\";
+        String path = "json\\";
         //String filename = path+"syaryo_"+kisy+"_template_allsupport";
-        String filename = path+"syaryo_obj_"+kisy+"_allsupport";
+        String filename = path+"syaryo_obj_"+kisy;
         Map<String, SyaryoTemplate> syaryoTemplates = new SyaryoToZip().readTemplate(filename);
         
         for(String name : syaryoTemplates.keySet()){
@@ -28,7 +28,7 @@ public class TraslationBSONToSyaryo {
             System.out.println(name);
             System.out.println(syaryoTemplates.get(name).map);
             
-            //System.exit(0);
+            System.exit(0);
         }
     }
 }
