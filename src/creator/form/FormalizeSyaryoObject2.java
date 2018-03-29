@@ -46,7 +46,7 @@ public class FormalizeSyaryoObject2 {
 
     public static void main(String[] args) {
 
-        sprit(new SyaryoToZip().readObject(filename));
+        //sprit(new SyaryoToZip().readObject(filename));
         forming(new SyaryoToZip().readObject(spritfilename));
 
         //Map joinMap = joinData("PC200", "PC210");
@@ -427,18 +427,22 @@ public class FormalizeSyaryoObject2 {
             return;
         }
 
+        TreeMap update = new TreeMap();
         for (String date : kmsmrMap.keySet()) {
             //System.out.println(date+":"+obj);
             if (date.contains("#")) {
                 continue;
             }
-
+            
             //komtraxSMR 分→時間 変換
             List list = kmsmrMap.get(date);
             list.set(3, String.valueOf((Integer) (Integer.valueOf(list.get(3).toString()) / 60)));
-
-            //kmsmrMap.put(date, list);
+            
+            update.put(date, list);
         }
+        
+        kmsmrMap.clear();
+        kmsmrMap.putAll(update);
     }
     
     private static DecimalFormat dformat = new DecimalFormat("00");

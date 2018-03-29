@@ -221,7 +221,7 @@ public class SyaryoObject2 {
             return (Map) map.get("KMSMR");
         }
         else
-            System.out.print(" KOMPAS_SMR ");
+            //System.out.print(" KOMPAS_SMR ");
             return (Map) map.get("SMR");
     }
 
