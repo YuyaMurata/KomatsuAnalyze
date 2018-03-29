@@ -25,14 +25,14 @@ public class SyaryoTemplateCreate extends HiveDB {
     private static String FILENAME;
     
     public static void main(String[] args) throws IOException {
-        SyaryoTemplateCreate.execute("WA470%");
+        //SyaryoTemplateCreate.execute("WA470%");
         SyaryoTemplateCreate.execute("WA100%");
-        SyaryoTemplateCreate.execute("HB205%");
-        SyaryoTemplateCreate.execute("HB215%");
-        SyaryoTemplateCreate.execute("PC200%");
+        //SyaryoTemplateCreate.execute("HB205%");
+        //SyaryoTemplateCreate.execute("HB215%");
+        //SyaryoTemplateCreate.execute("PC200%");
         SyaryoTemplateCreate.execute("PC210%");
         SyaryoTemplateCreate.execute("PC78US%");
-        SyaryoTemplateCreate.execute("PC138US%");
+        //SyaryoTemplateCreate.execute("PC138US%");
     }
     
     public static void execute(String KISY){
@@ -55,11 +55,11 @@ public class SyaryoTemplateCreate extends HiveDB {
         Connection con = getConnection(); //HiveDB
 
         //テンプレート生成 true=KOMPAS車両 false=EQP車両
-        //template(con, true);
+        template(con, true);
         Map<String, SyaryoTemplate> syaryoTemplate = readTempate();
         
         //EQP
-        /*eqp_syaryo(con, syaryoTemplate);
+        eqp_syaryo(con, syaryoTemplate);
         eqp_spec(con, syaryoTemplate);
         eqp_keireki(con, syaryoTemplate);
         
@@ -72,8 +72,8 @@ public class SyaryoTemplateCreate extends HiveDB {
         parts(con, syaryoTemplate);
         sell(con, syaryoTemplate);
         sell_used(con, syaryoTemplate);
-        */allsupport(con, syaryoTemplate);
-        /*
+        allsupport(con, syaryoTemplate);
+        
         //KOSMIC
         sell_old(con, syaryoTemplate);
         
@@ -82,7 +82,7 @@ public class SyaryoTemplateCreate extends HiveDB {
         
         //KOMTRAX
         komtrax(con, syaryoTemplate);
-        */
+
         long stop = System.currentTimeMillis();
         
         System.out.println((stop-start)+"ms");
