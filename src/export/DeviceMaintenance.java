@@ -42,7 +42,7 @@ public class DeviceMaintenance {
         //AS Index
         Map index = new MapIndexToJSON().reader("index\\allsupport_index.json");
 
-		csv.println("Company,ID,Kisy,Type,業種コード,経年,SMR,作番,作業形態,作業コード,作業名,パワーライン対象装置,オールサポート,金額");
+		csv.println("Company,ID,Kisy,Type,業種コード,経過日,SMR,売上区分,作番,作業形態,作業コード,作業名,パワーライン対象装置,オールサポート,金額,事故フラグ,概要");
 		for (SyaryoObject2 syaryo : syaryoMap.values()) {
             System.out.print(syaryo.name);
 			syaryo.decompress();
@@ -50,11 +50,12 @@ public class DeviceMaintenance {
 			cnt++;
 			if (syaryo.getWork() == null) {
 				System.out.println("作業なし："+syaryo.getName());
-
+                syaryo.compress(false);
 				continue;
 			}
             if (syaryo.getOrder() == null) {
 				System.out.println("受注なし："+syaryo.getName());
+                syaryo.compress(false);
 				continue;
 			}
 
@@ -80,6 +81,8 @@ public class DeviceMaintenance {
 			for (String date : syaryo.getOrder().keySet()) {
 				String company = (String) syaryo.getOrder().get(date).get(SyaryoElements.Order.Company.getNo());
 				String sbnID = (String) syaryo.getOrder().get(date).get(SyaryoElements.Order.ID.getNo());
+                String uagekbn = (String) syaryo.getOrder().get(date).get(SyaryoElements.Order.FLAG.getNo());
+                String summary = (String) syaryo.getOrder().get(date).get(SyaryoElements.Order.Summary.getNo());
                 String keitai = (String) syaryo.getOrder().get(date).get(SyaryoElements.Order.SG_Code.getNo());
 				List workIDs = syaryo.getWork().entrySet().parallelStream().filter(e -> e.getKey().contains(date))
                                                                                 .map(e -> e.getValue().get(SyaryoElements.Work.SCode.getNo()))
@@ -103,12 +106,12 @@ public class DeviceMaintenance {
 				sb.append(syaryo.getMachine());
 				sb.append(",");
 				sb.append(syaryo.getType());
-				sb.append(",");
+				sb.append(",'");
 				try {
-					sb.append("'"+gyousyuCode.floorEntry(date_int).getValue());
+					sb.append(gyousyuCode.floorEntry(date_int).getValue());
 				} catch (NullPointerException e) {
                     try{
-					sb.append("'"+gyousyuCode.higherEntry(date_int).getValue());
+					sb.append(gyousyuCode.higherEntry(date_int).getValue());
                     }catch(NullPointerException ex){
                     sb.append("?");    
                     }
@@ -121,12 +124,14 @@ public class DeviceMaintenance {
 				} catch (NullPointerException e) {
 					sb.append(smr.higherEntry(date_int).getValue());
 				}
-				sb.append(",");
-				sb.append("'"+sbnID);
+                sb.append(",'");
+                sb.append(uagekbn);
+				sb.append(",'");
+				sb.append(sbnID);
 				sb.append(",");
 				sb.append(keitai);
-				sb.append(",");
-				sb.append("'"+workIDs.toString().replace(",", "|"));
+				sb.append(",'");
+				sb.append(workIDs.toString().replace(",", "|"));
 				sb.append(",");
 				sb.append(workNames.toString().replace(",", "|"));
 				sb.append(",");
@@ -135,6 +140,13 @@ public class DeviceMaintenance {
                 sb.append(syaryo.getAllSupport(date));
                 sb.append(",");
 				sb.append(price);
+                sb.append(",");
+                if(summary.contains("事故") || summary.contains("横転") || summary.contains("転倒") || summary.contains("水没"))
+                    sb.append("1");
+                else
+                    sb.append("0");
+                sb.append(",");
+                sb.append(summary);
 				sb.append("\n");
 			}
 

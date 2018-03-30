@@ -22,7 +22,7 @@ public class IDFilter {
     public static void main(String[] args) {
         String filterCSVFile = "device_smr_year_KM_PC138US.csv";
         int id_no = 1;
-        String filterIDs = "max_smr_time_PC138US_filter5000.csv";
+        String filterIDs = "PC138US_filter5y.csv";
         
         try (PrintWriter csv = CSVFileReadWrite.writer("filter_"+filterCSVFile)) {
             try(BufferedReader br = CSVFileReadWrite.reader(filterCSVFile)){
