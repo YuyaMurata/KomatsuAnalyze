@@ -141,7 +141,7 @@ public class DeviceMaintenance {
                 sb.append(",");
 				sb.append(price);
                 sb.append(",");
-                if(summary.contains("事故") || summary.contains("横転") || summary.contains("転倒") || summary.contains("水没"))
+                if(summary.contains("事故") || summary.contains("横転") || summary.contains("転倒") || summary.contains("水没") || summary.contains("火災"))
                     sb.append("1");
                 else
                     sb.append("0");

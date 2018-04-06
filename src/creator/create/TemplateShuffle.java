@@ -19,7 +19,7 @@ import json.SyaryoToZip2;
  */
 public class TemplateShuffle {
     public static void main(String[] args) {
-        shuffle("PC138US");
+        shuffle("PC200");
     }
     
     public static void shuffle(String kisy){
@@ -47,6 +47,10 @@ public class TemplateShuffle {
             Map<String, SyaryoTemplate> syaryoTemplates = new SyaryoToZip2().readTemplate(f);
             if(syaryoTemplates == null){
                 System.out.println("SyaryoTemplate is NULL!");
+                continue;
+            }
+            if(syaryoTemplates.isEmpty()){
+                System.out.println("SyaryoTemplate is Empty!");
                 continue;
             }
             
