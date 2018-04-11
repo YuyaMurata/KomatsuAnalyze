@@ -37,9 +37,14 @@ public class TemplateShuffle {
         
         //ベースファイル
         File basefile = new File(path + "syaryo_"+kisy+"_template.gz");
+        Boolean stflg = false;
         
         for (File f : flist) {
             System.out.println(f.getName());
+            if(!stflg)
+                continue;
+            if(f.getName().contains("sell_old"))
+                stflg = true;
             
             if(f.getName().equals(basefile.getName()))
                 continue;
