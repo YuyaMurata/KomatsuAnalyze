@@ -44,11 +44,11 @@ public class KomtraxData {
         //System.out.println("Komtrax GPS not update List:"+dataCheck());
         addSMR(syaryoMap);
         //System.out.println("Komtrax SMR not update List:"+dataCheck());
-        addEngine(syaryoMap);
+        //addEngine(syaryoMap);
         //System.out.println("Komtrax Engine not update List:"+dataCheck());
         addError(syaryoMap);
         //System.out.println("Komtrax Error not update List:"+dataCheck());
-        addCaution(syaryoMap);
+        //addCaution(syaryoMap);
         //System.out.println("Komtrax Caution not update List:"+dataCheck());
         addFuel(syaryoMap);
         //System.out.println("Komtrax Fuel not update List:"+dataCheck());
