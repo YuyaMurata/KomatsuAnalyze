@@ -34,11 +34,11 @@ public class MapIndexToJSON {
         }
     }
     
-    public Map<String, String> reader(String filename) {
+    public Map reader(String filename) {
 		Map<String, String> index;
         try (JsonReader reader = new JsonReader(new BufferedReader(new FileReader(filename)))) {
 
-			Type type = new TypeToken<Map<String, String>>() {
+			Type type = new TypeToken<Map>() {
 			}.getType();
 
 			Gson gson = new Gson();

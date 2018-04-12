@@ -35,7 +35,7 @@ public class EQPKeirekiData {
             Statement stmt = con.createStatement();
 
             //EQP_Syaryo
-            String sql = String.format("select e.%s,e.%s,e.%s,e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, c.%s, c.%s, c2.%s from %s e join %s c on (e.%s=c.%s) join %s c2 on (e.%s=c2.%s) where e.kisy like '%s'",
+            String sql = String.format("select e.%s,e.%s,e.%s,e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, e.%s, c.%s, c.%s, c2.%s from %s e join %s c on (e.%s=c.%s) join %s c2 on (e.%s=c2.%s) where e.kisy='%s'",
                     EQP.Keireki.KISY, EQP.Keireki.TYP, EQP.Keireki.SYHK, EQP.Keireki.KIBAN, //Unique ID
                     EQP.Keireki.HIS_DATE, //経歴日
                     EQP.Keireki.HIS_INFO_CD, //経歴コード

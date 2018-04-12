@@ -67,7 +67,7 @@ public class KomtraxData {
             Statement stmt = con.createStatement();
 
             //CW_GPS
-            String sql = String.format("select %s,%s,%s, %s, %s, %s from %s where kisy like '%s'",
+            String sql = String.format("select %s,%s,%s, %s, %s, %s from %s where kisy='%s'",
                     Komtrax.CW_GPS.KISY, Komtrax.CW_GPS.TYP, Komtrax.CW_GPS.KIBAN, //Unique ID
                     Komtrax.CW_GPS.GPS_TIME,    //GPS Date
                     Komtrax.CW_GPS.LATITUDE,    //緯度
@@ -154,7 +154,7 @@ public class KomtraxData {
             Statement stmt = con.createStatement();
 
             //CW_SERVICE_METER
-            String sql = String.format("select %s,%s,%s, %s, %s from %s where kisy like '%s'",
+            String sql = String.format("select %s,%s,%s, %s, %s from %s where kisy='%s'",
                     Komtrax.CW_SERVICE_METER.KISY, Komtrax.CW_SERVICE_METER.TYP, Komtrax.CW_SERVICE_METER.KIBAN, //Unique ID
                     Komtrax.CW_SERVICE_METER.SMR_TIME,    //SMR Date
                     Komtrax.CW_SERVICE_METER.SMR_VALUE,    //SMR
@@ -237,7 +237,7 @@ public class KomtraxData {
             Statement stmt = con.createStatement();
 
             //CW_DAILY_THROTTLE
-            String sql = String.format("select %s,%s,%s, %s, %s from %s where kisy like '%s'",
+            String sql = String.format("select %s,%s,%s, %s, %s from %s where kisy='%s'",
                     Komtrax.CW_DAILY_THROTTLE.KISY, Komtrax.CW_DAILY_THROTTLE.TYP, Komtrax.CW_DAILY_THROTTLE.KIBAN, //Unique ID
                     Komtrax.CW_DAILY_THROTTLE.THROTTLE_DATE,    //Engine Date
                     Komtrax.CW_DAILY_THROTTLE.AVE_THROTTLE_RATE,    //Engine
@@ -322,7 +322,7 @@ public class KomtraxData {
             Statement stmt = con.createStatement();
 
             //CW_ERROR
-            String sql = String.format("select %s,%s,%s, %s, %s, %s, %s from %s where kisy like '%s'",
+            String sql = String.format("select %s,%s,%s, %s, %s, %s, %s from %s where kisy='%s'",
                     Komtrax.CW_ERROR.KISY, Komtrax.CW_ERROR.TYP, Komtrax.CW_ERROR.KIBAN, //Unique ID
                     Komtrax.CW_ERROR.ERROR_TIME,    //Error Date
                     Komtrax.CW_ERROR.ERROR_CODE,    //Error code
@@ -412,7 +412,7 @@ public class KomtraxData {
             Statement stmt = con.createStatement();
 
             //CW_CAUTION
-            String sql = String.format("select %s,%s,%s, %s, %s, %s from %s where kisy like '%s'",
+            String sql = String.format("select %s,%s,%s, %s, %s, %s from %s where kisy='%s'",
                     Komtrax.CW_CAUTION_DATA.KISY, Komtrax.CW_CAUTION_DATA.TYP, Komtrax.CW_CAUTION_DATA.KIBAN, //Unique ID
                     Komtrax.CW_CAUTION_DATA.CAUTION_DATE,    //Caution Date
                     Komtrax.CW_CAUTION_DATA.ICON_CODE,  //Caution Icon code
@@ -499,7 +499,7 @@ public class KomtraxData {
             Statement stmt = con.createStatement();
 
             //CW_CAUTION
-            String sql = String.format("select %s,%s,%s, %s, %s from %s where kisy like '%s'",
+            String sql = String.format("select %s,%s,%s, %s, %s from %s where kisy='%s'",
                     Komtrax.CW_DAILY_FUEL_CONSUME.KISY, Komtrax.CW_DAILY_FUEL_CONSUME.TYP, Komtrax.CW_DAILY_FUEL_CONSUME.KIBAN, //Unique ID
                     Komtrax.CW_DAILY_FUEL_CONSUME.CONSUME_DATE,    //Caution Date
                     Komtrax.CW_DAILY_FUEL_CONSUME.CONSUME_COUNT,
@@ -584,7 +584,7 @@ public class KomtraxData {
             Statement stmt = con.createStatement();
 
             //CW_CAUTION
-            String sql = String.format("select %s,%s,%s, %s, %s, %s from %s where kisy like '%s'",
+            String sql = String.format("select %s,%s,%s, %s, %s, %s from %s where kisy='%s'",
                     Komtrax.CW_ACT_DATA.KISY, Komtrax.CW_ACT_DATA.TYP, Komtrax.CW_ACT_DATA.KIBAN, //Unique ID
                     Komtrax.CW_ACT_DATA.ACT_DATE,    //Caution Date
                     Komtrax.CW_ACT_DATA.ACT_COUNT,

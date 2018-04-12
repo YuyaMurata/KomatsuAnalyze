@@ -34,7 +34,7 @@ public class SyaryoData {
             Statement stmt = con.createStatement();
 
             //Syaryo
-            String sql = String.format("select s.%s,s.%s,s.%s,s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, c.%s, c.%s, c.%s, c2.%s from %s s join %s c on (s.%s=c.%s and s.%s=c.%s) join %s c2 on (s.%s=c2.%s and s.%s=c2.%s) where s.kisy like '%s'",
+            String sql = String.format("select s.%s,s.%s,s.%s,s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, c.%s, c.%s, c.%s, c2.%s from %s s join %s c on (s.%s=c.%s and s.%s=c.%s) join %s c2 on (s.%s=c2.%s and s.%s=c2.%s) where s.kisy='%s'",
                     Syaryo._Syaryo.KISY, Syaryo._Syaryo.TYP, Syaryo._Syaryo.SYHK, Syaryo._Syaryo.KIBAN, //Unique ID
                     Syaryo._Syaryo.KSYCD, //会社コード
                     Syaryo._Syaryo.NU_KBN, //NU区分

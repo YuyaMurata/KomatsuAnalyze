@@ -36,7 +36,7 @@ public class ServiceData {
             Statement stmt = con.createStatement();
 
             //Syaryo
-            String sql = String.format("select s.%s,s.%s,s.%s,s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, c.%s, c.%s, c2.%s from %s s left outer join %s k on (s.%s=k.%s and s.%s=k.%s) join %s c on (s.%s=c.%s and s.%s=c.%s) join %s c2 on (s.%s=c2.%s and s.%s=c2.%s)where s.%s and s.%s and k.%s is NULL and s.kisy like '%s'",
+            String sql = String.format("select s.%s,s.%s,s.%s,s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, c.%s, c.%s, c2.%s from %s s left outer join %s k on (s.%s=k.%s and s.%s=k.%s) join %s c on (s.%s=c.%s and s.%s=c.%s) join %s c2 on (s.%s=c2.%s and s.%s=c2.%s)where s.%s and s.%s and k.%s is NULL and s.kisy='%s'",
                     Service._Service.KISY, Service._Service.TYP, Service._Service.SYHK, Service._Service.KIBAN, //Unique ID
                     Service._Service.KSYCD, //会社コード
                     Service._Service.JSDAY, //実施日

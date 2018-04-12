@@ -6,12 +6,16 @@
 package file;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -32,6 +36,16 @@ public class CSVFileReadWrite {
     public static BufferedReader reader(String filename){
         try {
             return new BufferedReader(new FileReader(filename));
+        } catch (FileNotFoundException ex) {
+        }
+        
+        return null;
+    }
+    
+    public static BufferedReader readerSJIS(String filename){
+        try {
+            return new BufferedReader(new InputStreamReader(new FileInputStream(filename), "SJIS"));
+        } catch (UnsupportedEncodingException ex) {
         } catch (FileNotFoundException ex) {
         }
         

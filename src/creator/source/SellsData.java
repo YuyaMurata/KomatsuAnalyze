@@ -34,7 +34,7 @@ public class SellsData {
             Statement stmt = con.createStatement();
 
             //Syaryo
-            String sql = String.format("select s.%s,s.%s,s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, c.%s, c.%s, c2.%s from %s s join %s c on (s.%s=c.%s and s.%s=c.%s) join %s c2 on (s.%s=c2.%s and s.%s=c2.%s) where s.%s and s.%s and s.%s and s.%s and s.kisy like '%s'",
+            String sql = String.format("select s.%s,s.%s,s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, s.%s, c.%s, c.%s, c2.%s from %s s join %s c on (s.%s=c.%s and s.%s=c.%s) join %s c2 on (s.%s=c2.%s and s.%s=c2.%s) where s.%s and s.%s and s.%s and s.%s and s.kisy='%s'",
                     Sell._Sell.KISY, Sell._Sell.TYP, Sell._Sell.SYHK, Sell._Sell.KIBAN, //Unique ID
                     Sell._Sell.KSYCD, //会社コード
                     Sell._Sell.NOU_YTI_DAY, //納入年月
@@ -164,7 +164,7 @@ public class SellsData {
             Statement stmt = con.createStatement();
 
             //Syaryo
-            String sql = String.format("select %s,%s,%s,%s, %s, %s, %s from %s where kisy like '%s'",
+            String sql = String.format("select %s,%s,%s,%s, %s, %s, %s from %s where kisy='%s'",
                     Sell.Old.KISY, Sell.Old.TYP, Sell.Old.SYHK, Sell.Old.KIBAN, //Unique ID
                     Sell.Old.KSYCD, //会社コード
                     Sell.Old.URI_DAY, //売上年月
@@ -255,7 +255,7 @@ public class SellsData {
             Statement stmt = con.createStatement();
 
             //Syaryo
-            String sql = String.format("select %s,%s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s from %s where kisy like '%s'",
+            String sql = String.format("select %s,%s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s from %s where kisy='%s'",
                     Sell.Used.KISY, Sell.Used.TYPE, Sell.Used.S_TYPE, Sell.Used.KIBAN, //Unique ID
                     Sell.Used.URI_DAY, //売上日
                     Sell.Used.CO_CODE, //受注コード

@@ -36,7 +36,7 @@ public class AllSupport {
             Statement stmt = con.createStatement();
 
             //EQP_Syaryo
-            String sql = String.format("select %s,%s,%s,%s, %s, %s, %s, %s, %s from %s where kisy like '%s'",
+            String sql = String.format("select %s,%s,%s,%s, %s, %s, %s, %s, %s from %s where kisy='%s'",
                 Allsupport._Allsupport.KISY, Allsupport._Allsupport.TYP, Allsupport._Allsupport.SYHK, Allsupport._Allsupport.KIBAN, //Unique ID
                 Allsupport._Allsupport.DB,
                 Allsupport._Allsupport.KSYCD,
@@ -126,7 +126,7 @@ public class AllSupport {
             
             System.out.println(HiveDB.TABLE.CARE_PRICE.get());
             //EQP_Syaryo
-            String sql = String.format("select %s,%s,%s,%s, %s from %s where kisy like '%s'",
+            String sql = String.format("select %s,%s,%s,%s, %s from %s where kisy='%s'",
                 Care.PrePrice.KISY, Care.PrePrice.TYP, Care.PrePrice.SYHK, Care.PrePrice.KIBAN, //Unique ID
                 Care.PrePrice.PRICE, //金額
                 HiveDB.TABLE.CARE_PRICE.get(),

@@ -5,7 +5,6 @@
  */
 package db;
 
-import creator.source.AllSupport;
 import db.field.Allsupport;
 import db.field.Care;
 import db.field.Fields;
@@ -13,7 +12,6 @@ import db.field.Order;
 import db.field.Work;
 import db.field.Customer;
 import db.field.EQP;
-import db.field.Gaichu;
 import db.field.Sell;
 import db.field.Komtrax;
 import db.field.Syaryo;
@@ -31,7 +29,7 @@ public abstract class HiveDB {
     //Setting DB
     public enum DB {
         DRIVER("org.apache.hive.jdbc.HiveDriver"),
-        URL("jdbc:hive2://192.168.174.129:10000/default");
+        URL("jdbc:hive2://192.168.174.130:10000/default");
         
         private final String text;
         private DB(final String text){

@@ -35,7 +35,7 @@ public class KomatsuCareData {
             Statement stmt = con.createStatement();
 
             //EQP_Syaryo
-            String sql = String.format("select %s,%s,%s,%s, %s, %s, %s, %s, %s, %s from %s where kisy like '%s'",
+            String sql = String.format("select %s,%s,%s,%s, %s, %s, %s, %s, %s, %s from %s where kisy='%s'",
                 Care._Care.KISY, Care._Care.TYP, Care._Care.SYHK, Care._Care.KIBAN, //Unique ID
                 Care._Care.TNK_DATE, //転記日
                 Care._Care.HSY_KIND, //保証種別
@@ -143,7 +143,7 @@ public class KomatsuCareData {
             
             System.out.println(HiveDB.TABLE.CARE_PRICE.get());
             //EQP_Syaryo
-            String sql = String.format("select %s,%s,%s,%s, %s from %s where kisy like '%s'",
+            String sql = String.format("select %s,%s,%s,%s, %s from %s where kisy='%s'",
                 Care.PrePrice.KISY, Care.PrePrice.TYP, Care.PrePrice.SYHK, Care.PrePrice.KIBAN, //Unique ID
                 Care.PrePrice.PRICE, //金額
                 HiveDB.TABLE.CARE_PRICE.get(),

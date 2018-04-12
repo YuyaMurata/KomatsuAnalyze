@@ -14,6 +14,8 @@ import java.util.Map;
 import json.JsonToSyaryoTemplate;
 import json.SyaryoTemplateToJson;
 import creator.template.SyaryoTemplate;
+import java.util.List;
+import json.MapIndexToJSON;
 
 /**
  * DBから車両テンプレートを作成する
@@ -25,24 +27,21 @@ public class SyaryoTemplateCreate extends HiveDB {
     private static String FILENAME;
     
     public static void main(String[] args) throws IOException {
-        //SyaryoTemplateCreate.execute("WA470%");
-        SyaryoTemplateCreate.execute("WA100%");
-        //SyaryoTemplateCreate.execute("HB205%");
-        //SyaryoTemplateCreate.execute("HB215%");
-        //SyaryoTemplateCreate.execute("PC200%");
-        SyaryoTemplateCreate.execute("PC210%");
-        SyaryoTemplateCreate.execute("PC78US%");
-        //SyaryoTemplateCreate.execute("PC138US%");
+        Map<String, List> kisyIndex = new MapIndexToJSON().reader("index\\kisy_index.json");
+        for(Object kisy : kisyIndex.get("ENABLE")){
+            SyaryoTemplateCreate.execute(kisy.toString().split(",")[0]);
+            System.gc();
+        }
     }
     
     public static void execute(String KISY){
         SyaryoTemplateCreate.KISY = KISY;
-        SyaryoTemplateCreate.FILENAME = "..\\KomatsuData\\車両テンプレート\\"+KISY.replace("%", "系")+"\\syaryo_"+KISY.replace("%", "")+"_template.json";
+        SyaryoTemplateCreate.FILENAME = "..\\KomatsuData\\車両テンプレート\\"+"\\syaryo_"+KISY+"_template.json";
         
         long start = System.currentTimeMillis();
         
         //Folder
-        File f = new File("..\\KomatsuData\\車両テンプレート\\"+KISY.replace("%", "系"));
+        File f = new File("..\\KomatsuData\\車両テンプレート\\"+KISY);
 
         if (!f.exists()) {
             //フォルダ作成実行
