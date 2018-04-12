@@ -62,7 +62,7 @@ public class KomtraxData {
         Map<String, SyaryoTemplate> map = new TreeMap();
         
         try {
-            PrintWriter errpw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_komtrax_gps_error.csv")))));
+            PrintWriter errpw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace("template", "error").replace(".json", "_komtrax_gps_error.csv")))));
             
             Statement stmt = con.createStatement();
 
@@ -149,7 +149,7 @@ public class KomtraxData {
         Map<String, SyaryoTemplate> map = new TreeMap();
         
         try {
-            PrintWriter errpw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_komtrax_smr_error.csv")))));
+            PrintWriter errpw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace("template", "error").replace(".json", "_komtrax_smr_error.csv")))));
             
             Statement stmt = con.createStatement();
 
@@ -232,7 +232,7 @@ public class KomtraxData {
         Map<String, SyaryoTemplate> map = new TreeMap();
         
         try {
-            PrintWriter errpw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_komtrax_engine_error.csv")))));
+            PrintWriter errpw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace("template", "error").replace(".json", "_komtrax_engine_error.csv")))));
             
             Statement stmt = con.createStatement();
 
@@ -317,7 +317,7 @@ public class KomtraxData {
         Map<String, SyaryoTemplate> map = new TreeMap();
 
         try {
-            PrintWriter errpw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_komtrax_error_error.csv")))));
+            PrintWriter errpw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace("template", "error").replace(".json", "_komtrax_error_error.csv")))));
             
             Statement stmt = con.createStatement();
 
@@ -407,7 +407,7 @@ public class KomtraxData {
         Map<String, SyaryoTemplate> map = new TreeMap();
 
         try {
-            PrintWriter errpw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_komtrax_caution_error.csv")))));
+            PrintWriter errpw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace("template", "error").replace(".json", "_komtrax_caution_error.csv")))));
             
             Statement stmt = con.createStatement();
 
@@ -494,7 +494,7 @@ public class KomtraxData {
         Map<String, SyaryoTemplate> map = new TreeMap();
 
         try {
-            PrintWriter errpw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_komtrax_fuelconsume_error.csv")))));
+            PrintWriter errpw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace("template", "error").replace(".json", "_komtrax_fuelconsume_error.csv")))));
             
             Statement stmt = con.createStatement();
 
@@ -579,7 +579,7 @@ public class KomtraxData {
         Map<String, SyaryoTemplate> map = new TreeMap();
 
         try {
-            PrintWriter errpw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace(".json", "_komtrax_actdata_error.csv")))));
+            PrintWriter errpw = new PrintWriter(new BufferedWriter(new FileWriter(new File(FILENAME.replace("template", "error").replace(".json", "_komtrax_actdata_error.csv")))));
             
             Statement stmt = con.createStatement();
 
