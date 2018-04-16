@@ -36,12 +36,13 @@ public class AllSupport {
             Statement stmt = con.createStatement();
 
             //EQP_Syaryo
-            String sql = String.format("select %s,%s,%s,%s, %s, %s, %s, %s, %s from %s where kisy='%s'",
+            String sql = String.format("select %s,%s,%s,%s, %s, %s, %s, %s, %s, %s from %s where kisy='%s'",
                 Allsupport._Allsupport.KISY, Allsupport._Allsupport.TYP, Allsupport._Allsupport.SYHK, Allsupport._Allsupport.KIBAN, //Unique ID
                 Allsupport._Allsupport.DB,
                 Allsupport._Allsupport.KSYCD,
-                Allsupport._Allsupport.AS_REG_DATE, //契約開始
-                Allsupport._Allsupport.M_MNRY_DATE, //契約満了
+                Allsupport._Allsupport.MK_ST_DATE, //契約開始
+                Allsupport._Allsupport.MK_FIN_DATE, //契約満了
+                Allsupport._Allsupport.MK_KIYK,     //解約
                 Allsupport._Allsupport.PLAN,
                 HiveDB.TABLE.ALLSUPPORT.get(),
                 machine
@@ -62,9 +63,11 @@ public class AllSupport {
                 String kiban = res.getString(Allsupport._Allsupport.KIBAN.get());
 
                 //Date
-                String st_date = res.getString(Allsupport._Allsupport.AS_REG_DATE.get());
-                String fn_date = res.getString(Allsupport._Allsupport.M_MNRY_DATE.get());
-
+                String st_date = res.getString(Allsupport._Allsupport.MK_ST_DATE.get());
+                String fn_date = res.getString(Allsupport._Allsupport.MK_KIYK.get());
+                if(fn_date.equals("0"))
+                    fn_date = res.getString(Allsupport._Allsupport.MK_FIN_DATE.get());
+                
                 //保証種別
                 String kind = res.getString(Allsupport._Allsupport.PLAN.get());
 
