@@ -19,12 +19,14 @@ import json.SyaryoToZip2;
  */
 public class TemplateShuffle {
     public static void main(String[] args) {
-        shuffle("PC200");
+        shuffle("PC138US");
     }
     
     public static void shuffle(String kisy){
-        String path = "..\\KomatsuData\\車両テンプレート\\"+kisy+"系\\gz\\";
-		String outpath = "..\\KomatsuData\\中間データ\\"+kisy+"\\";
+        //String path = "..\\KomatsuData\\車両テンプレート\\"+kisy+"系\\gz\\";
+		//String outpath = "..\\KomatsuData\\中間データ\\"+kisy+"\\";
+        String path = "template\\"+kisy+"\\gz\\";
+		String outpath = "middle\\"+kisy+"\\";
         
         String FILENAME = outpath+"syaryo_mid_" + kisy+"_";
 		File[] flist = (new File(path)).listFiles();
@@ -37,14 +39,9 @@ public class TemplateShuffle {
         
         //ベースファイル
         File basefile = new File(path + "syaryo_"+kisy+"_template.gz");
-        Boolean stflg = false;
         
         for (File f : flist) {
             System.out.println(f.getName());
-            if(!stflg)
-                continue;
-            if(f.getName().contains("sell_old"))
-                stflg = true;
             
             if(f.getName().equals(basefile.getName()))
                 continue;

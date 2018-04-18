@@ -23,18 +23,16 @@ public class TranslationSyaryoToBSON {
 
     public static void main(String[] args) throws IOException {
 
-        String kisy = "PC210";
-        String path = "..\\KomatsuData\\車両テンプレート\\" + kisy + "系\\template\\";
-        String outpath = "..\\KomatsuData\\車両テンプレート\\" + kisy + "系\\gz\\";
-        //String path = "template\\"+kisy+"系\\";
+        String kisy = "PC138US";
+        //String path = "..\\KomatsuData\\車両テンプレート\\" + kisy + "系\\template\\";
+        //String outpath = "..\\KomatsuData\\車両テンプレート\\" + kisy + "系\\gz\\";
+        String path = "template\\"+kisy+"\\template\\";
+        String outpath = "template\\"+kisy+"\\gz\\";
         File[] flist = (new File(path)).listFiles();
 
         for (File f : flist) {
             TreeMap<String, SyaryoTemplate> syaryoMap = new TreeMap();
             
-            if (!f.getName().contains("allsupport")) {
-                continue;
-            }
             System.out.println(f.getName() + ",");
 
             Map<String, SyaryoTemplate1> syaryoTemplates = new JsonToSyaryoTemplate().reader3(f.getPath());

@@ -18,7 +18,8 @@ import obj.SyaryoObject2;
  */
 public class ObjectsJoiner {
     private static String kisy = "PC138US";
-    private static String path = "..\\KomatsuData\\中間データ\\"+kisy+"\\obj\\";
+    //private static String path = "..\\KomatsuData\\中間データ\\"+kisy+"\\obj\\";
+    private static String path = "middle\\"+kisy+"\\obj\\";
     private static SyaryoToZip zip = new SyaryoToZip();
     private static SyaryoToZip2 zip2 = new SyaryoToZip2();
     
