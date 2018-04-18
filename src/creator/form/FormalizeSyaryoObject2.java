@@ -111,10 +111,11 @@ public class FormalizeSyaryoObject2 {
                     syaryo.remove("最終更新日");
                     syaryo.remove("国");
 
-                    syaryo.compress(true);
                     newMap.put(syaryo.getName(), syaryo);
                 }
             }
+            
+            syaryo.compress(true);
         });
 
         //After Count
@@ -139,7 +140,7 @@ public class FormalizeSyaryoObject2 {
             formOwner(syaryo.get("顧客"), index);
             formOrder(syaryo.get("受注"));
             formKMSMR(syaryo.get("KMSMR"));
-            formAllSupport(syaryo.get("オールサポート"));
+            //formAllSupport(syaryo.get("オールサポート"));
             
             syaryo.compress(true);
             newMap.put(syaryo.getName(), syaryo);
@@ -458,6 +459,7 @@ public class FormalizeSyaryoObject2 {
         }
         List list = asMap.values().stream().findFirst().get();
         String finish = (String) list.get(SyaryoElements.AllSupport.FINISH.getNo());
+        System.out.println(finish);
         String[] formFinish = finish.split("/");
         formFinish[1] = dformat.format(Integer.valueOf(formFinish[1]));
         formFinish[2] = dformat.format(Integer.valueOf(formFinish[2]));
