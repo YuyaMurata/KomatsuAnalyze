@@ -19,8 +19,8 @@ public class SyaryoDataCheck {
 		Map<String, SyaryoObject2> map = new SyaryoToZip().readObject("json\\syaryo_obj_"+kisy+"_form");
 		
 		//syaryoCheck(1000, "オールサポート", map);
-        syaryoCheck("1017", "SMR", map);
-        syaryoCheck("1017", "受注", map);
+        syaryoCheck("24709", "SMR", map);
+        syaryoCheck("24709", "受注", map);
         //nullCheck("最終更新日", map);
         //komtraxCheck(map);
 	}

@@ -33,7 +33,7 @@ public class PartsData {
             Statement stmt = con.createStatement();
 
             //Syaryo
-            String sql = String.format("select o.%s,o.%s,o.%s,o.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s from %s p join %s o on (p.%s=o.%s and p.%s=o.%s) where o.kisy='%s'",
+            String sql = String.format("select o.%s,o.%s,o.%s,o.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s, p.%s from %s p join %s o on (p.%s=o.%s and p.%s=o.%s) where o.kisy='%s' and o.uage_kjflg='1'",
                     Order._Order.KISY, Order._Order.TYP, Order._Order.SYHK, Order._Order.KIBAN, //Unique ID
                     Order.Parts.KSYCD, //会社コード
                     Order.Parts.SBN, //作番
