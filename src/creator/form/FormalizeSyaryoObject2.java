@@ -46,7 +46,7 @@ public class FormalizeSyaryoObject2 {
 
     public static void main(String[] args) {
 
-        //sprit(new SyaryoToZip().readObject(filename));
+        sprit(new SyaryoToZip().readObject(filename));
         forming(new SyaryoToZip().readObject(spritfilename));
 
         //Map joinMap = joinData("PC200", "PC210");

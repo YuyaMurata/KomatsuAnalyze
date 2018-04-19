@@ -44,7 +44,7 @@ public class DeviceMaintenance {
 
 		csv.println("Company,ID,Kisy,Type,業種コード,経過日,SMR,売上区分,作番,作業形態,作業コード,作業名,パワーライン対象装置,オールサポート,金額,事故フラグ,概要");
 		for (SyaryoObject2 syaryo : syaryoMap.values()) {
-            System.out.print(syaryo.name);
+            //System.out.print(syaryo.name);
 			syaryo.decompress();
             
 			cnt++;
@@ -154,7 +154,7 @@ public class DeviceMaintenance {
 
 			syaryo.compress(false);
             
-            System.out.println(" OK");
+            //System.out.println(" OK");
 		}
 	}
     

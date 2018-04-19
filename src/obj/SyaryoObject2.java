@@ -355,7 +355,7 @@ public class SyaryoObject2 {
             Date start = sdf.parse(list.get(SyaryoElements.AllSupport.START.getNo()));
             Date stop = sdf.parse(list.get(SyaryoElements.AllSupport.FINISH.getNo()).replace("/", ""));
             
-            System.out.println(start+"("+date.compareTo(start)+")<"+date+"<("+date.compareTo(stop)+")"+stop);
+            //System.out.println(start+"("+date.compareTo(start)+")<"+date+"<("+date.compareTo(stop)+")"+stop);
             if(date.compareTo(start) >= 0 && date.compareTo(stop) <= 0)
                 support = "1";
             

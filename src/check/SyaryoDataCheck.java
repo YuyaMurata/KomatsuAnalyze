@@ -19,7 +19,8 @@ public class SyaryoDataCheck {
 		Map<String, SyaryoObject2> map = new SyaryoToZip().readObject("json\\syaryo_obj_"+kisy+"_form");
 		
 		//syaryoCheck(1000, "オールサポート", map);
-        syaryoCheck("42474", "KMSMR", map);
+        syaryoCheck("1017", "SMR", map);
+        syaryoCheck("1017", "受注", map);
         //nullCheck("最終更新日", map);
         //komtraxCheck(map);
 	}
@@ -47,7 +48,10 @@ public class SyaryoDataCheck {
     private static void syaryoCheck(String kiban, String field, Map<String, SyaryoObject2> syaryos){
 		SyaryoObject2 syaryo = syaryos.values().stream().filter(s -> s.getName().contains(kiban)).findFirst().get();
         syaryo.decompress();
-        System.out.println(syaryo.dump());
+        for(Object key : syaryo.get(field).keySet()){
+            System.out.println(syaryo.get(field).get(key));
+        }
+        syaryo.compress(true);
 	}
     
     private static void nullCheck(String field, Map<String, SyaryoObject2> syaryos){

@@ -24,10 +24,10 @@ public class TranslationSyaryoToBSON {
     public static void main(String[] args) throws IOException {
 
         String kisy = "PC138US";
-        //String path = "..\\KomatsuData\\車両テンプレート\\" + kisy + "系\\template\\";
-        //String outpath = "..\\KomatsuData\\車両テンプレート\\" + kisy + "系\\gz\\";
-        String path = "template\\"+kisy+"\\template\\";
-        String outpath = "template\\"+kisy+"\\gz\\";
+        String path = "..\\KomatsuData\\車両テンプレート\\" + kisy + "\\template\\";
+        String outpath = "..\\KomatsuData\\車両テンプレート\\" + kisy + "\\gz\\";
+        //String path = "template\\"+kisy+"\\template\\";
+        //String outpath = "template\\"+kisy+"\\gz\\";
         File[] flist = (new File(path)).listFiles();
 
         for (File f : flist) {

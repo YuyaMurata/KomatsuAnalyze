@@ -21,10 +21,10 @@ import obj.SyaryoObject2;
  */
 public class TamplateToObjectCreate {
     private static String kisy = "PC138US";
-    //private static String path = "..\\KomatsuData\\中間データ\\"+kisy+"\\mid\\";
-    //private static String outpath = "..\\KomatsuData\\中間データ\\"+kisy+"\\obj\\";
-    private static String path = "middle\\"+kisy+"\\mid\\";
-    private static String outpath = "middle\\"+kisy+"\\obj\\";
+    private static String path = "..\\KomatsuData\\中間データ\\"+kisy+"\\mid\\";
+    private static String outpath = "..\\KomatsuData\\中間データ\\"+kisy+"\\obj\\";
+    //private static String path = "middle\\"+kisy+"\\mid\\";
+    //private static String outpath = "middle\\"+kisy+"\\obj\\";
     
 	public static void main(String[] args) {
         File[] flist = (new File(path)).listFiles();

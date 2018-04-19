@@ -23,10 +23,10 @@ public class TemplateShuffle {
     }
     
     public static void shuffle(String kisy){
-        //String path = "..\\KomatsuData\\車両テンプレート\\"+kisy+"系\\gz\\";
-		//String outpath = "..\\KomatsuData\\中間データ\\"+kisy+"\\";
-        String path = "template\\"+kisy+"\\gz\\";
-		String outpath = "middle\\"+kisy+"\\";
+        String path = "..\\KomatsuData\\車両テンプレート\\"+kisy+"\\gz\\";
+		String outpath = "..\\KomatsuData\\中間データ\\"+kisy+"\\";
+        //String path = "template\\"+kisy+"\\gz\\";
+		//String outpath = "middle\\"+kisy+"\\";
         
         String FILENAME = outpath+"syaryo_mid_" + kisy+"_";
 		File[] flist = (new File(path)).listFiles();

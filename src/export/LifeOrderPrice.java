@@ -22,8 +22,8 @@ import obj.SyaryoObject2;
  */
 public class LifeOrderPrice {
 
-    private static String kisy = "WA470";
-    private static String syaryoName = "WA470-7-10354";
+    private static String kisy = "PC138US";
+    private static String syaryoName = "PC138US-2-7511";
     
     public static void main(String[] args) {
         String filename = "json\\syaryo_obj_" + kisy + "_form";
