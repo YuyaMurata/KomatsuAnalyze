@@ -20,7 +20,7 @@ import obj.SyaryoObject2;
  * @author ZZ17390
  */
 public class TamplateToObjectCreate {
-    private static String kisy = "PC138US";
+    private static String kisy = "PC200";
     private static String path = "..\\KomatsuData\\中間データ\\"+kisy+"\\mid\\";
     private static String outpath = "..\\KomatsuData\\中間データ\\"+kisy+"\\obj\\";
     //private static String path = "middle\\"+kisy+"\\mid\\";

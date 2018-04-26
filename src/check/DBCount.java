@@ -60,7 +60,7 @@ public class DBCount {
             }
         }
 
-        countlist.stream().forEach(System.out::println);
+        //countlist.stream().forEach(System.out::println);
     }
 
     private static List<String> tableList() {
