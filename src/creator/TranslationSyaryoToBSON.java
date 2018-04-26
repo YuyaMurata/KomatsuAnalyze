@@ -23,7 +23,7 @@ public class TranslationSyaryoToBSON {
 
     public static void main(String[] args) throws IOException {
 
-        String kisy = "PC138US";
+        String kisy = "PC200";
         String path = "..\\KomatsuData\\車両テンプレート\\" + kisy + "\\template\\";
         String outpath = "..\\KomatsuData\\車両テンプレート\\" + kisy + "\\gz\\";
         //String path = "template\\"+kisy+"\\template\\";

@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-import json.JsonToSyaryoObj;
 import json.MapIndexToJSON;
 import json.SyaryoToZip;
 import obj.SyaryoElements;
@@ -42,7 +41,7 @@ public class DeviceMaintenance {
         //AS Index
         Map index = new MapIndexToJSON().reader("index\\allsupport_index.json");
 
-		csv.println("Company,ID,Kisy,Type,業種コード,経過日,SMR,売上区分,作番,作業形態,作業コード,作業名,パワーライン対象装置,オールサポート,金額,事故フラグ,概要");
+		csv.println("Company,ID,Kisy,Type,業種コード,経過年,SMR,売上区分,作番,作業形態,作業コード,作業名,パワーライン対象装置,オールサポート,金額,事故フラグ,概要");
 		for (SyaryoObject2 syaryo : syaryoMap.values()) {
             //System.out.print(syaryo.name);
 			syaryo.decompress();
@@ -117,7 +116,8 @@ public class DeviceMaintenance {
                     }
 				}
 				sb.append(",");
-				sb.append(syaryo.getAge(date));
+                Double age = Double.valueOf(syaryo.getAge(date)) / 365;
+				sb.append(age);
 				sb.append(",");
 				try {
 					sb.append(smr.floorEntry(date_int).getValue());

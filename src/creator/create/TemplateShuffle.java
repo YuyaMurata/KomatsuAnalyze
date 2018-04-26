@@ -19,7 +19,7 @@ import json.SyaryoToZip2;
  */
 public class TemplateShuffle {
     public static void main(String[] args) {
-        shuffle("PC138US");
+        shuffle("PC200");
     }
     
     public static void shuffle(String kisy){

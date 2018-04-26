@@ -29,14 +29,14 @@ public class DBCount {
         List countlist = new ArrayList();
 
         for (String table : tableList()) {
-            System.out.println(table);
+            //System.out.println(table);
 
             try {
                 Statement stmt = con.createStatement();
 
-                String sql = "select count(*) from " + table + " where kisy='PC200' and typ like '10%'";
+                String sql = "select count(*) from " + table;
 
-                System.out.println("Running:" + sql);
+                //System.out.println("Running:" + sql);
 
                 //exec SQL
                 ResultSet rs = stmt.executeQuery(sql);
@@ -55,7 +55,7 @@ public class DBCount {
                 countlist.add(cnt);
 
             } catch (SQLException ex) {
-                System.out.println("Not kisy and type !");
+                //System.out.println("Not kisy and type !");
                 //ex.printStackTrace();
             }
         }
