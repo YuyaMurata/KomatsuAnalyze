@@ -24,6 +24,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.lang.reflect.Type;
 import obj.SyaryoObject2;
+import obj.SyaryoObject3;
 
 /**
  *

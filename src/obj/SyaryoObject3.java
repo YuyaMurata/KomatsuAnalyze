@@ -18,19 +18,20 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import json.JSONToBSON;
+import json.SnappyMap;
 
 /**
  *
  * @author ZZ17390
  */
-public class SyaryoObject2 {
+public class SyaryoObject3 {
 
     public String name;
     public Map map = new LinkedHashMap();
     public byte[] mapData;
     private transient DecimalFormat dformat = new DecimalFormat("000");
 
-    public SyaryoObject2(String name) {
+    public SyaryoObject3(String name) {
         this.name = name;
     }
 
@@ -219,10 +220,10 @@ public class SyaryoObject2 {
     public Map<String, List> getSMR() {
         if (map.get("KMSMR") != null) {
             return (Map) map.get("KMSMR");
-        }
-        else
-            //System.out.print(" KOMPAS_SMR ");
+        } else //System.out.print(" KOMPAS_SMR ");
+        {
             return (Map) map.get("SMR");
+        }
     }
 
     public Map<String, List> getGPS() {
@@ -345,24 +346,26 @@ public class SyaryoObject2 {
     public String getAllSupport(String d) {
         String support = "0";
         Map<String, List> as = (Map<String, List>) map.get("オールサポート");
-        if(as == null)
+        if (as == null) {
             return support;
-        
+        }
+
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
             List<String> list = as.values().stream().findFirst().get();
             Date date = sdf.parse(d.split("#")[0].replace("/", ""));
             Date start = sdf.parse(list.get(SyaryoElements.AllSupport.START.getNo()));
             Date stop = sdf.parse(list.get(SyaryoElements.AllSupport.FINISH.getNo()).replace("/", ""));
-            
+
             //System.out.println(start+"("+date.compareTo(start)+")<"+date+"<("+date.compareTo(stop)+")"+stop);
-            if(date.compareTo(start) >= 0 && date.compareTo(stop) <= 0)
+            if (date.compareTo(start) >= 0 && date.compareTo(stop) <= 0) {
                 support = "1";
-            
+            }
+
         } catch (ParseException ex) {
             ex.printStackTrace();
         }
-        
+
         return support;
     }
 
@@ -377,26 +380,20 @@ public class SyaryoObject2 {
     }
 
     public void compress(Boolean flg) {
-        try {
-            if (flg) {
-                mapData = JSONToBSON.toBson(map);
-            }
-            if (map != null) {
-                map = null;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (flg) {
+            mapData = SnappyMap.toSnappy(map);
+        }
+        if (map != null) {
+            map = null;
         }
     }
 
     public void decompress() {
-        try {
-            byte[] b = mapData;
-            map = JSONToBSON.toMap(b);
-            mapData = null;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        byte[] b = mapData;
+        map = SnappyMap.toMap(b);
+        mapData = null;
+        if(map == null)
+            map = new LinkedHashMap();
     }
 
     //Remove

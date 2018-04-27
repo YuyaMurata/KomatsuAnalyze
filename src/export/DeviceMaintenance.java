@@ -28,7 +28,7 @@ public class DeviceMaintenance {
 		String filename = "json\\syaryo_obj_" + kisy + "_form";
 		Map<String, SyaryoObject2> syaryoMap = new SyaryoToZip().readObject(filename);
 
-		String outputname = "device_smr_year_KM_" + kisy + ".csv";
+		String outputname = "smr_year_service_" + kisy + ".csv";
 		try (PrintWriter csv = CSVFileReadWrite.writer(outputname)) {
 			extractDeviceMaintenance(syaryoMap, csv);
 		}catch(Exception e){

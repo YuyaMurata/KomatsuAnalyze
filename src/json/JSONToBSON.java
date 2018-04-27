@@ -10,12 +10,9 @@ import de.undercouch.bson4jackson.BsonFactory;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
 
 /**
  *
@@ -23,45 +20,27 @@ import org.apache.commons.codec.binary.Hex;
  */
 public class JSONToBSON {
 
-    public static void main(String[] args) throws IOException, DecoderException {
-        Map map = new HashMap();
-        map.put("name", "ABC");
-        map.put("age", 13);
-        System.out.println(map);
-        byte[] b = JSONToBSON.toBson(map);
-        System.out.println(b);
-        
-        //String str = new String(Hex.encodeHex(b));
-        //System.out.println(str);
-        
-        Map map2 = JSONToBSON.toMap(b);
-        System.out.println(map2);
-    }
-
     public static byte[] toBson(Map map) throws IOException {
-        ByteArrayOutputStream bos;
-        GZIPOutputStream gos;
+        
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             ObjectMapper mapper = new ObjectMapper(new BsonFactory());
             mapper.writeValue(baos, map);
             //byte[] buffer = baos.toByteArray();
-            bos = new ByteArrayOutputStream();
-            gos = new GZIPOutputStream(bos);
-            gos.write(baos.toByteArray());
+            try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                GZIPOutputStream gos = new GZIPOutputStream(bos)) {
+                gos.write(baos.toByteArray());
+                return bos.toByteArray();
+            }
         }
-        bos.close();
-        gos.finish();
-
-        return bos.toByteArray();
     }
 
     public static Map toMap(byte[] buffer) throws IOException {
-        ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
-        GZIPInputStream gis = new GZIPInputStream(bais);
-        
-        ObjectMapper mapper = new ObjectMapper(new BsonFactory());
-        Map map = mapper.readValue(gis, Map.class);
+        try (ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
+            GZIPInputStream gis = new GZIPInputStream(bais)) {
 
-        return map;
+            ObjectMapper mapper = new ObjectMapper(new BsonFactory());
+            Map map = mapper.readValue(gis, Map.class);
+            return map;
+        }
     }
 }

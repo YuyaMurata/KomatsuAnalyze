@@ -10,18 +10,13 @@ import com.google.gson.reflect.TypeToken;
 import creator.template.SyaryoTemplate;
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 import java.lang.reflect.Type;
 import obj.SyaryoObject2;
 
