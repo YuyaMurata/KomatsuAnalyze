@@ -5,29 +5,20 @@
  */
 package json;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.lang.reflect.Type;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
-import obj.SyaryoObject2;
-import obj.SyaryoObject3;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 
 /**
  *
@@ -35,77 +26,46 @@ import obj.SyaryoObject3;
  */
 public class SyaryoToZip3 {
 
-    public Map<String, SyaryoObject3> readObject(File file) {
-        try {
-            return (Map<String, SyaryoObject3>) getObject(readGzipFile(file));
+    public void write(String file, Map map) {
+        int size = 1024;
+        try (ByteArrayInputStream in = new ByteArrayInputStream(getBytes(map))) {
+            OutputStream fout = Files.newOutputStream(Paths.get(file.split("\\.")[0] + ".bz2"));
+            BufferedOutputStream out = new BufferedOutputStream(fout);
+            BZip2CompressorOutputStream bzOut = new BZip2CompressorOutputStream(out);
+            final byte[] buffer = new byte[size];
+            int n = 0;
+            while (-1 != (n = in.read(buffer))) {
+                bzOut.write(buffer, 0, n);
+            }
+            bzOut.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public Map read(String file) {
+        int size = 1024;
+
+        try (InputStream fin = Files.newInputStream(Paths.get(file));
+                BufferedInputStream in = new BufferedInputStream(fin);
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                BZip2CompressorInputStream bzIn = new BZip2CompressorInputStream(in)) {
+            final byte[] buffer = new byte[size];
+            int n = 0;
+            while (-1 != (n = bzIn.read(buffer))) {
+                out.write(buffer, 0, n);
+            }
+
+            return (Map) getObject(out.toByteArray());
         } catch (IOException ex) {
             ex.printStackTrace();
         }
         return null;
-    }
-
-    public void write(String filename, Map syaryoMap) {
-        filename = filename.replace(".json", "").replace(".gz", "") + ".gz";
-        try {
-            writeGzipFile(filename, getBytes(syaryoMap));
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    private byte[] readGzipFile(File file) throws FileNotFoundException, IOException {
-        byte[] result = new byte[]{};
-        try (GZIPInputStream gis = new GZIPInputStream(
-            new BufferedInputStream(
-                new FileInputStream(
-                    file)))) {
-            gis.read(result);
-            return result;
-        }
-    }
-    
-    public Map<String, SyaryoObject3> readOldObject(String filename) {
-        filename = filename.replace(".gz", "") + ".gz";
-        
-        Gson gson = new Gson();
-        Type type = new TypeToken<Map<String, SyaryoObject3>>() {
-        }.getType();
-        try {
-            return gson.fromJson(readOldGzipFile(filename), type);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            System.exit(0);
-        }
-        return null;
-    }
-    
-    private String readOldGzipFile(String filename) throws FileNotFoundException, IOException {
-        try (BufferedReader br = new BufferedReader(
-            new InputStreamReader(
-                new GZIPInputStream(
-                    new BufferedInputStream(
-                        new FileInputStream(
-                            new File(filename))))))) {
-            return br.readLine();
-        }
-    }
-
-    private void writeGzipFile(String filename, byte[] syaryoMapBytes) throws FileNotFoundException, IOException {
-        byte[] compress;
-        try(ByteArrayOutputStream baos = new ByteArrayOutputStream(syaryoMapBytes.length);
-            GZIPOutputStream gos = new GZIPOutputStream(baos)){
-            gos.write(syaryoMapBytes);
-            compress = baos.toByteArray();
-        }
-        
-        try(FileOutputStream fos = new FileOutputStream(filename)){
-            fos.write(compress);
-        }
     }
 
     private static byte[] getBytes(Object obj) {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(baos)) {
+                ObjectOutputStream oos = new ObjectOutputStream(baos)) {
             oos.writeObject(obj);
             return baos.toByteArray();
         } catch (IOException ex) {
@@ -116,10 +76,12 @@ public class SyaryoToZip3 {
 
     private static Object getObject(byte[] bytes) {
         try (ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-            ObjectInputStream ois = new ObjectInputStream(bais)) {
+                ObjectInputStream ois = new ObjectInputStream(bais)) {
             return ois.readObject();
         } catch (IOException ex) {
+            ex.printStackTrace();
         } catch (ClassNotFoundException ex) {
+            ex.printStackTrace();
         }
         return null;
     }

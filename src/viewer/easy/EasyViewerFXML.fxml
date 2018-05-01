@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="viewer.easy.EasyViewerFXMLController">
+   <children>
+      <VBox layoutX="6.0" layoutY="7.0" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <MenuBar fx:id="menu">
+              <menus>
+                <Menu mnemonicParsing="false" text="Import File">
+                  <items>
+                    <MenuItem fx:id="import_json" mnemonicParsing="false" onAction="#loadJSONFile" text="Import" />
+                  </items>
+                </Menu>
+              </menus>
+            </MenuBar>
+            <HBox prefHeight="378.0" prefWidth="600.0">
+               <children>
+                  <ListView fx:id="keylist" prefHeight="200.0" prefWidth="200.0" />
+                  <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="375.0" prefWidth="402.0">
+                     <content>
+                        <Label fx:id="viewarea" />
+                     </content>
+                  </ScrollPane>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

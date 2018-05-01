@@ -7,10 +7,7 @@ package creator.create;
 
 import java.io.File;
 import java.util.Map;
-import json.SyaryoToZip;
-import json.SyaryoToZip2;
 import json.SyaryoToZip3;
-import obj.SyaryoObject2;
 import obj.SyaryoObject3;
 
 /**
@@ -18,10 +15,9 @@ import obj.SyaryoObject3;
  * @author ZZ17390
  */
 public class ObjectsJoiner {
-    private static String kisy = "PC200";
-    private static String path = "..\\KomatsuData\\中間データ\\"+kisy+"\\obj\\";
-    //private static String path = "middle\\"+kisy+"\\obj\\";
-    private static SyaryoToZip zip = new SyaryoToZip();
+    private static String kisy = "PC138US";
+    //private static String path = "..\\KomatsuData\\中間データ\\"+kisy+"\\obj\\";
+    private static String path = "middle\\"+kisy+"\\obj\\";
     private static SyaryoToZip3 zip3 = new SyaryoToZip3();
     
     public static void main(String[] args) {
@@ -29,13 +25,12 @@ public class ObjectsJoiner {
         String objFile = "json\\syaryo_obj_" + kisy;
         
         //exists Syaryo Object
-        File f = new File(objFile+".gz");
+        File f = new File(objFile+".bz2");
         if(!f.exists()){
             System.out.println("syaryo_obj_"+kisy+" not found!");
             System.exit(0);
-        
         }
-        Map<String, SyaryoObject3> obj = zip3.readOldObject(objFile+".gz");
+        Map<String, SyaryoObject3> obj = zip3.read(objFile+".bz2");
         
         for(File file : flist)
             join(file, obj);
@@ -46,7 +41,7 @@ public class ObjectsJoiner {
     public static void join(File file, Map<String, SyaryoObject3> obj){
         System.out.println(file.getName());
         
-        Map<String, SyaryoObject3> joinobj = zip3.readOldObject(file.getAbsolutePath());
+        Map<String, SyaryoObject3> joinobj = zip3.read(file.getAbsolutePath());
         
         joinobj.values().parallelStream().forEach(data ->{
             data.decompress();

@@ -11,6 +11,7 @@ import java.util.TreeMap;
 import jdk.nashorn.internal.ir.debug.ObjectSizeCalculator;
 import json.SyaryoToZip;
 import json.SyaryoToZip2;
+import json.SyaryoToZip3;
 import obj.SyaryoObject2;
 import obj.SyaryoObject3;
 
@@ -20,8 +21,9 @@ import obj.SyaryoObject3;
  */
 public class OldSyaryoObjectToNewSyaryoObject {
 
-    private static String kisy = "PC200";
-    private static String path = "..\\KomatsuData\\中間データ\\" + kisy + "\\obj\\";
+    private static String kisy = "PC138US";
+    //private static String path = "..\\KomatsuData\\中間データ\\" + kisy + "\\obj\\";
+    private static String path = "middle\\" + kisy + "\\temp\\";
 
     public static void main(String[] args) {
         File[] flist = (new File(path)).listFiles();
@@ -34,9 +36,10 @@ public class OldSyaryoObjectToNewSyaryoObject {
             
             int n = oldobj.size();
             System.out.println(n+"台");
-            for(SyaryoObject2 oldsyaryo : oldobj.values()){
+            for(String name : oldobj.keySet()){
+                SyaryoObject2 oldsyaryo = oldobj.get(name);
                 oldsyaryo.decompress();
-                SyaryoObject3 syaryo = new SyaryoObject3(oldsyaryo.name);
+                SyaryoObject3 syaryo = new SyaryoObject3(name);
                 syaryo.map.putAll(oldsyaryo.map);
                 syaryo.compress(true);
                 oldsyaryo.compress(false);
@@ -46,7 +49,7 @@ public class OldSyaryoObjectToNewSyaryoObject {
                     System.out.println("残り"+n+"台");
             }
             
-            new SyaryoToZip().write(file.getAbsolutePath(), newobj);
+            new SyaryoToZip3().write(file.getAbsolutePath(), newobj);
             
             System.out.println("finish:"+ObjectSizeCalculator.getObjectSize(newobj));
         }

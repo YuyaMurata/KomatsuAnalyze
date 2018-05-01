@@ -6,6 +6,7 @@
 package obj;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -24,7 +25,7 @@ import json.SnappyMap;
  *
  * @author ZZ17390
  */
-public class SyaryoObject3 {
+public class SyaryoObject3 implements Serializable{
 
     public String name;
     public Map map = new LinkedHashMap();
@@ -389,8 +390,7 @@ public class SyaryoObject3 {
     }
 
     public void decompress() {
-        byte[] b = mapData;
-        map = SnappyMap.toMap(b);
+        map = SnappyMap.toMap(mapData);
         mapData = null;
         if(map == null)
             map = new LinkedHashMap();
