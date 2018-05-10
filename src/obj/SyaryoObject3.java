@@ -5,7 +5,6 @@
  */
 package obj;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -18,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-import json.JSONToBSON;
 import json.SnappyMap;
 
 /**
@@ -26,7 +24,6 @@ import json.SnappyMap;
  * @author ZZ17390
  */
 public class SyaryoObject3 implements Serializable{
-
     public String name;
     public Map map = new LinkedHashMap();
     public byte[] mapData;
@@ -407,10 +404,15 @@ public class SyaryoObject3 implements Serializable{
         sb.append(name);
         sb.append(":");
         for (Object key : map.keySet()) {
-            sb.append("\n ");
+            sb.append("\n    ");
             sb.append(key);
             sb.append(":");
-            sb.append(map.get(key));
+            Map<String, List> m = (Map<String, List>) map.get(key);
+            for(String d : m.keySet()){
+                sb.append("\n\t");
+                sb.append(d);
+                sb.append(m.get(d));
+            }
         }
 
         return sb.toString();

@@ -19,10 +19,9 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import json.JsonToSyaryoObj;
 import json.MapIndexToJSON;
-import json.SyaryoToZip;
+import json.SyaryoToZip3;
 import obj.SyaryoElements;
-import obj.SyaryoObject;
-import obj.SyaryoObject2;
+import obj.SyaryoObject3;
 
 /**
  * 車両オブジェクトから重複部分を排除して整形
@@ -31,23 +30,25 @@ import obj.SyaryoObject2;
  */
 public class FormalizeSyaryoObject2 {
 
-    //private static String kisy = "PC200";
-    //private static List extract = Arrays.asList(new String[]{"PC200-8", "PC200-8N1", "PC200-10", "PC200LC-8", "PC200LC-10", "PC200LC-8N1"});
+    private static String kisy = "PC200";
+    private static List extract = Arrays.asList(new String[]{"PC200-8", "PC200-8N1", "PC200-10"});
+    //private static String kisy = "PC200LC";
+    //private static List extract = Arrays.asList(new String[]{"PC200LC-8", "PC200LC-10", "PC200LC-8N1"});
     //private static String kisy = "PC210";
     //private static List extract = Arrays.asList(new String[]{"PC210-8", "PC210-8N1", "PC210-10", "PC210LC-8","PC210LC-10","PC210LC-8N1"});
     //private static String kisy = "WA470";
     //private static List extract = Arrays.asList(new String[]{"WA470-7", "WA470-8"});
-    private static String kisy = "PC138US";
-    private static List extract = Arrays.asList(new String[]{"PC138US-2", "PC138US-8", "PC138US-10"});
+    //private static String kisy = "PC138US";
+    //private static List extract = Arrays.asList(new String[]{"PC138US-2", "PC138US-8", "PC138US-10"});
 
-    private static String filename = "json\\syaryo_obj_" + kisy + ".gz";
-    private static String spritfilename = "json\\syaryo_obj_" + kisy + "_extract.gz";
-    private static String output = "json\\syaryo_obj_" + kisy + "_form.gz";
+    private static String filename = "json\\syaryo_obj_" + kisy + ".bz2";
+    private static String spritfilename = "json\\syaryo_obj_" + kisy + "_extract.bz2";
+    private static String output = "json\\syaryo_obj_" + kisy + "_form.bz2";
 
     public static void main(String[] args) {
 
-        sprit(new SyaryoToZip().readObject(filename));
-        forming(new SyaryoToZip().readObject(spritfilename));
+        sprit(new SyaryoToZip3().read(filename));
+        forming(new SyaryoToZip3().read(spritfilename));
 
         //Map joinMap = joinData("PC200", "PC210");
         /*map = new JsonToSyaryoObj().reader(output);
@@ -71,8 +72,8 @@ public class FormalizeSyaryoObject2 {
     public static void sprit(Map map) {
         //1次処理 データの分離
         Map formMap = splitForming(map);
-        new SyaryoToZip().write(spritfilename, (Map) formMap.get("extract"));
-        new SyaryoToZip().write(filename.replace(kisy, kisy + "_reject"), (Map) formMap.get("reject"));
+        new SyaryoToZip3().write(spritfilename, (Map) formMap.get("extract"));
+        new SyaryoToZip3().write(filename.replace(kisy, kisy + "_reject"), (Map) formMap.get("reject"));
     }
 
     public static Map forming(Map map) {
@@ -83,12 +84,12 @@ public class FormalizeSyaryoObject2 {
         //3次処理 重複除去
         formMap = secondForming(formMap);
 
-        new SyaryoToZip().write(output, (Map) formMap);
+        new SyaryoToZip3().write(output, (Map) formMap);
 
         return formMap;
     }
 
-    public static Map firstForming(Map<String, SyaryoObject2> map) {
+    public static Map firstForming(Map<String, SyaryoObject3> map) {
         Map newMap = new TreeMap();
         //Before Count
         System.out.println("Before:" + map.size());
@@ -124,17 +125,16 @@ public class FormalizeSyaryoObject2 {
         return newMap;
     }
 
-    public static Map secondForming(Map<String, SyaryoObject2> map) {
+    public static Map secondForming(Map<String, SyaryoObject3> map) {
         //Customer Index
         Map index = new MapIndexToJSON().reader("index\\customer_index.json");
 
         Map newMap = new TreeMap();
 
-        //for (SyaryoObject2 syaryo : map.values()) {
         map.values().stream().forEach(syaryo -> {
             syaryo.decompress();
 
-            System.out.println(syaryo.getName());
+            //System.out.println(syaryo.getName());
             formNew(syaryo.get("新車"));
             formUsed(syaryo.get("中古"));
             formOwner(syaryo.get("顧客"), index);
@@ -149,7 +149,7 @@ public class FormalizeSyaryoObject2 {
         return newMap;
     }
 
-    public static Map splitForming(Map<String, SyaryoObject2> map) {
+    public static Map splitForming(Map<String, SyaryoObject3> map) {
         Map splitMap = new HashMap();
 
         List formList = split(map, extract);
@@ -166,13 +166,13 @@ public class FormalizeSyaryoObject2 {
         return splitMap;
     }
 
-    public static List<Map<String, SyaryoObject2>> split(Map<String, SyaryoObject2> syaryoMap, List extract) {
+    public static List<Map<String, SyaryoObject3>> split(Map<String, SyaryoObject3> syaryoMap, List extract) {
         //Type
         Map map1 = new TreeMap();
         Map map2 = new TreeMap();
 
         for (String name : syaryoMap.keySet()) {
-            SyaryoObject2 syaryo = syaryoMap.get(name);
+            SyaryoObject3 syaryo = syaryoMap.get(name);
             syaryo.name = name;
             
             if (extract.stream()
@@ -287,10 +287,6 @@ public class FormalizeSyaryoObject2 {
             return ;
         
         Map update = new TreeMap();
-
-        String newdate = "???", id = "???", name = "???";
-        String[] code = new String[]{"?", "?"};
-        List temp = null;
         
         List owners = owner.values().stream()
                                 .map(l -> l.get(SyaryoElements.Customer.ID.getNo()))
@@ -307,84 +303,7 @@ public class FormalizeSyaryoObject2 {
             if(i > (owners.size()-1))
                 break;
         }
-        
-        /*
-        for (String date : owner.keySet()) {
-            List obj = owner.get(date);
-
-            //System.out.println(date+":"+obj);
-            if (obj.get(SyaryoElements.Customer.ID.getNo()).toString().contains("##")
-                || obj.get(SyaryoElements.Customer.ID.getNo()).toString().equals("")) {
-                continue;
-            } else if (obj.get(SyaryoElements.Customer.ID.getNo()).toString().length() < 6) {
-                continue;
-            }
-
-            //code formating
-            if (obj.get(SyaryoElements.Customer.Code.getNo()).toString().equals("-1")
-                || obj.get(SyaryoElements.Customer.Code.getNo()).toString().split("-").length < 2) {
-                obj.set(SyaryoElements.Customer.Code.getNo(), "?-?");
-            }
-
-            if (!obj.get(SyaryoElements.Customer.ID.getNo()).equals(id)
-                && !obj.get(SyaryoElements.Customer.Name.getNo()).toString().contains(name)) {
-
-                newdate = date.split("#")[0];
-                code = obj.get(SyaryoElements.Customer.Code.getNo()).toString().split("-");
-
-                id = (String) obj.get(SyaryoElements.Customer.ID.getNo());
-                name = (String) obj.get(SyaryoElements.Customer.Name.getNo());
-                temp = obj;
-
-                update.put(newdate, temp);
-
-                //System.out.println(newdate);
-            } else {
-                String gyosyu = obj.get(SyaryoElements.Customer.Code.getNo()).toString();
-                //System.out.println("1:"+gyosyu);
-                if (!code[0].equals("?") && !code[1].equals("?")) {
-                    continue;
-                }
-                if (!gyosyu.equals("-1")) {
-                    //System.out.println("2:"+gyosyu);
-                    if (!gyosyu.equals("?-?")) {
-                        code[0] = gyosyu.split("-")[0];
-                        code[1] = gyosyu.split("-")[1];
-                    } else if (!gyosyu.split("-")[0].equals("?")) {
-                        code[0] = gyosyu.split("-")[0];
-                    } else if (!gyosyu.split("-")[1].equals("?")) {
-                        code[1] = gyosyu.split("-")[1];
-                    }
-                    temp.set(SyaryoElements.Customer.Code.getNo(), code[0] + "-" + code[1]);
-                    //System.out.println("After:"+code[0] + "-" + code[1]);
-                    temp.set(SyaryoElements.Customer.Name.getNo(), obj.get(SyaryoElements.Customer.Name.getNo()));
-                }
-            }
-        }
-        //System.out.println(update);
-
-        //index check
-        String temp_id = "???";
-        List removeDate = new ArrayList();
-
-        for (Object date : update.keySet()) {
-            String customer_id = ((List) update.get(date)).get(SyaryoElements.Customer.Company.getNo())
-                + "_" + ((List) update.get(date)).get(SyaryoElements.Customer.ID.getNo());
-
-            if (index.get(customer_id) != null) {
-                if (index.get(temp_id) != null) {
-                    if (index.get(temp_id).equals(index.get(customer_id))) {
-                        removeDate.add(date);
-                    }
-                }
-            }
-
-            temp_id = customer_id;
-        }
-        for (Object date : removeDate) {
-            update.remove(date);
-        }*/
-
+     
         owner.clear();
 
         owner.putAll(update);
@@ -569,54 +488,6 @@ public class FormalizeSyaryoObject2 {
             error.get(date).set(SyaryoElements.Error.Count.getNo(), String.valueOf(cnt - errorCnt.get(code)));
 
             errorCnt.put(code, cnt);
-        }
-    }
-
-    //オブジェクトデータの補間
-    private Map<String, SyaryoObject> interFormalize(Map<String, SyaryoObject> syaryoMap) {
-        Map map = new TreeMap();
-
-        for (String name : syaryoMap.keySet()) {
-            //System.out.println(name);
-
-            interSMR(syaryoMap.get(name), syaryoMap.get(name).getSMR());
-
-            map.put(name, syaryoMap.get(name));
-        }
-
-        return map;
-    }
-
-    //SMRの補間
-    private void interSMR(SyaryoObject syaryo, Map<String, List> smrMap) {
-        Map<String, List> update = new TreeMap();
-
-        if (smrMap == null) {
-            return;
-        }
-
-        int smr = SyaryoElements.SMR._SMR.getNo();
-
-        LinkedList<String> queue = new LinkedList<>();
-
-        for (String date : smrMap.keySet()) {
-            List obj = smrMap.get(date);
-
-            //3データから線形補間
-            queue.offer(date);
-            if (queue.size() == 3) {
-                List<Integer> smrValue = queue.stream()
-                    .map(s -> Integer.valueOf(smrMap.get(s).get(smr).toString()))
-                    .collect(Collectors.toList());
-
-                if (smrValue.get(1) < smrValue.get(0)) {
-                    String interValue = linearInterpolation(queue, smrValue);
-                    System.out.println(" before = " + queue + ":" + smrMap.get(queue.get(1)));
-                    smrMap.get(queue.get(1)).set(smr, interValue);
-                    System.out.println(" after = " + queue + ":" + smrMap.get(queue.get(1)));
-                }
-                queue.poll();
-            }
         }
     }
 

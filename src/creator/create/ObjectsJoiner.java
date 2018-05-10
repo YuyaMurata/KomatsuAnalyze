@@ -15,9 +15,9 @@ import obj.SyaryoObject3;
  * @author ZZ17390
  */
 public class ObjectsJoiner {
-    private static String kisy = "PC138US";
-    //private static String path = "..\\KomatsuData\\中間データ\\"+kisy+"\\obj\\";
-    private static String path = "middle\\"+kisy+"\\obj\\";
+    private static String kisy = "PC200";
+    private static String path = "..\\KomatsuData\\中間データ\\"+kisy+"\\obj\\";
+    //private static String path = "middle\\"+kisy+"\\obj\\";
     private static SyaryoToZip3 zip3 = new SyaryoToZip3();
     
     public static void main(String[] args) {
@@ -55,5 +55,6 @@ public class ObjectsJoiner {
         });
         
         joinobj = null;
+        System.gc();
     }
 }

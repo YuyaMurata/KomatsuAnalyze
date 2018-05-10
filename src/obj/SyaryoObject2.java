@@ -415,7 +415,6 @@ public class SyaryoObject2 {
             sb.append(":");
             sb.append(map.get(key));
         }
-
         return sb.toString();
     }
 }

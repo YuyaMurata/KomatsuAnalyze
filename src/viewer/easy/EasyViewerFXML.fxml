@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
 <?import javafx.scene.*?>
@@ -19,14 +20,111 @@
                 </Menu>
               </menus>
             </MenuBar>
-            <HBox prefHeight="378.0" prefWidth="600.0">
+            <HBox prefHeight="378.0" prefWidth="600.0" VBox.vgrow="ALWAYS">
                <children>
-                  <ListView fx:id="keylist" prefHeight="200.0" prefWidth="200.0" />
-                  <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="375.0" prefWidth="402.0">
-                     <content>
-                        <Label fx:id="viewarea" />
-                     </content>
-                  </ScrollPane>
+                  <ListView fx:id="keylist" maxWidth="200.0" minWidth="200.0" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+                  <VBox HBox.hgrow="ALWAYS">
+                     <children>
+                        <Label fx:id="id_label" text="syaryo">
+                           <font>
+                              <Font size="15.0" />
+                           </font></Label>
+                        <Region maxHeight="10.0" minHeight="10.0" prefHeight="10.0" VBox.vgrow="NEVER" />
+                        <ScrollPane fitToWidth="true" prefViewportHeight="391.0" prefViewportWidth="400.0" VBox.vgrow="ALWAYS">
+                           <content>
+                              <Accordion VBox.vgrow="ALWAYS">
+                                <panes>
+                                    <TitledPane fx:id="spec" animated="false" text="仕様">
+                                       <content>
+                                          <TextArea fx:id="viewarea_spec" editable="false" prefHeight="200.0" prefWidth="200.0" />
+                                       </content>
+                                    </TitledPane>
+                                    <TitledPane fx:id="detail" animated="false" text="詳細">
+                                       <content>
+                                          <TextArea fx:id="viewarea_detail" editable="false" prefHeight="200.0" prefWidth="200.0" />
+                                       </content>
+                                    </TitledPane>
+                                    <TitledPane fx:id="product" animated="false" text="生産">
+                                       <content>
+                                          <TextArea fx:id="viewarea_product" editable="false" prefHeight="200.0" prefWidth="200.0" />
+                                       </content>
+                                    </TitledPane>
+                                    <TitledPane fx:id="deploy" animated="false" text="出荷">
+                                       <content>
+                                          <TextArea fx:id="viewarea_deploy" editable="false" prefHeight="200.0" prefWidth="200.0" />
+                                       </content>
+                                    </TitledPane>
+                                    <TitledPane fx:id="dead" animated="false" text="廃車">
+                                       <content>
+                                          <TextArea fx:id="viewarea_dead" editable="false" prefHeight="200.0" prefWidth="200.0" />
+                                       </content>
+                                    </TitledPane>
+                                    <TitledPane fx:id="news" animated="false" text="新車">
+                                       <content>
+                                          <TextArea fx:id="viewarea_news" editable="false" prefHeight="200.0" prefWidth="200.0" />
+                                       </content>
+                                    </TitledPane>
+                                    <TitledPane fx:id="used" animated="false" text="中古車">
+                                       <content>
+                                          <TextArea fx:id="viewarea_used" editable="false" prefHeight="200.0" prefWidth="200.0" />
+                                       </content>
+                                    </TitledPane>
+                                    <TitledPane fx:id="owner" animated="false" text="顧客">
+                                       <content>
+                                          <TextArea fx:id="viewarea_owner" editable="false" prefHeight="200.0" prefWidth="200.0" />
+                                       </content>
+                                    </TitledPane>
+                                    <TitledPane fx:id="care" animated="false" text="コマツケア">
+                                       <content>
+                                          <TextArea fx:id="viewarea_care" editable="false" prefHeight="200.0" prefWidth="200.0" />
+                                       </content>
+                                    </TitledPane>
+                                    <TitledPane fx:id="support" animated="false" text="オールサポート">
+                                       <content>
+                                          <TextArea fx:id="viewarea_support" editable="false" prefHeight="200.0" prefWidth="200.0" />
+                                       </content>
+                                    </TitledPane>
+                                    <TitledPane fx:id="order" animated="false" text="受注">
+                                       <content>
+                                          <TextArea fx:id="viewarea_order" editable="false" prefHeight="200.0" prefWidth="200.0" />
+                                       </content>
+                                    </TitledPane>
+                                    <TitledPane fx:id="work" animated="false" text="作業">
+                                       <content>
+                                          <TextArea fx:id="viewarea_work" editable="false" prefHeight="200.0" prefWidth="200.0" />
+                                       </content>
+                                    </TitledPane>
+                                    <TitledPane fx:id="parts" animated="false" text="部品">
+                                       <content>
+                                          <TextArea fx:id="viewarea_parts" editable="false" prefHeight="200.0" prefWidth="200.0" />
+                                       </content>
+                                    </TitledPane>
+                                    <TitledPane fx:id="smr" animated="false" text="SMR">
+                                       <content>
+                                          <TextArea fx:id="viewarea_smr" editable="false" prefHeight="200.0" prefWidth="200.0" />
+                                       </content>
+                                    </TitledPane>
+                                    <TitledPane fx:id="kmsmr" animated="false" text="KOMTRAX_SMR">
+                                       <content>
+                                          <TextArea fx:id="viewarea_kmsmr" editable="false" prefHeight="200.0" prefWidth="200.0" />
+                                       </content>
+                                    </TitledPane>
+                                    <TitledPane fx:id="kmgps" animated="false" text="KOMTRAX_GPS">
+                                       <content>
+                                          <TextArea fx:id="viewarea_kmgps" editable="false" prefHeight="200.0" prefWidth="200.0" />
+                                       </content>
+                                    </TitledPane>
+                                    <TitledPane fx:id="kmerror" animated="false" text="KOMTRAX_ERROR">
+                                       <content>
+                                          <TextArea fx:id="viewarea_kmerror" editable="false" prefHeight="200.0" prefWidth="200.0" />
+                                       </content>
+                                    </TitledPane>
+                                </panes>
+                              </Accordion>
+                           </content>
+                        </ScrollPane>
+                     </children>
+                  </VBox>
                </children>
             </HBox>
          </children>

@@ -21,9 +21,9 @@ import obj.SyaryoObject3;
  */
 public class OldSyaryoObjectToNewSyaryoObject {
 
-    private static String kisy = "PC138US";
-    //private static String path = "..\\KomatsuData\\中間データ\\" + kisy + "\\obj\\";
-    private static String path = "middle\\" + kisy + "\\temp\\";
+    private static String kisy = "PC200";
+    private static String path = "..\\KomatsuData\\中間データ\\" + kisy + "\\obj\\";
+    //private static String path = "middle\\" + kisy + "\\temp\\";
 
     public static void main(String[] args) {
         File[] flist = (new File(path)).listFiles();

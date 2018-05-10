@@ -30,9 +30,10 @@ public class SyaryoTemplateCreate extends HiveDB {
 
     public static void main(String[] args) throws IOException {
         Map<String, List> kisyIndex = new MapIndexToJSON().reader("index\\kisy_index.json");
-        //for(Object kisy : kisyIndex.get("ENABLE")){
-        SyaryoTemplateCreate.execute("PC200");
-        //}
+        for(Object kisy : kisyIndex.get("ENABLE")){
+            SyaryoTemplateCreate.execute(kisy.toString().split(",")[0]);
+            System.gc();
+        }
     }
 
     public static void execute(String KISY) {

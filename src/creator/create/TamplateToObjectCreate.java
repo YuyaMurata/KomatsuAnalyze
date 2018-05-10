@@ -12,7 +12,9 @@ import creator.template.SyaryoTemplate;
 import java.io.File;
 import json.SyaryoToZip;
 import json.SyaryoToZip2;
+import json.SyaryoToZip3;
 import obj.SyaryoObject2;
+import obj.SyaryoObject3;
 
 /**
  * 車両テンプレートから車両オブジェクトを作成
@@ -29,8 +31,15 @@ public class TamplateToObjectCreate {
 	public static void main(String[] args) {
         File[] flist = (new File(path)).listFiles();
         
-        for(File f : flist)
+        Boolean st = true;
+        for(File f : flist){
+            if(st){
+                if(f.getName().contains("syaryo_mid_PC200_SMR"))
+                    st = false;
+                continue;
+            }
             create(kisy, f);
+        }
 	}
 
 	public static void create(String kisy, File file) {
@@ -47,7 +56,7 @@ public class TamplateToObjectCreate {
         }
         
 		Map<String, SyaryoTemplate> templates = new SyaryoToZip2().readTemplate(file);
-		TreeMap<String, SyaryoObject2> syaryoMap = new TreeMap();
+		TreeMap<String, SyaryoObject3> syaryoMap = new TreeMap();
 
 		//int n = 0;
         //int en = 0;
@@ -57,13 +66,12 @@ public class TamplateToObjectCreate {
             s.decompress();
             
 			//Map<String, String> template = syaryo.getAll();
-            SyaryoObject2 syaryoObj = new SyaryoObject2(s.getName());
+            SyaryoObject3 syaryoObj = new SyaryoObject3(s.getName());
             int en = syaryoObj.add(s.getAll());
-
+            
             syaryoObj.compress(true);
             s = null;
             
-			//System.out.println(syaryoObj.dump());
 			syaryoMap.put(syaryoObj.getName(), syaryoObj);
 
 			//if (n % 10000 == 0) {
@@ -73,9 +81,13 @@ public class TamplateToObjectCreate {
                 System.out.println("欠損データ=" + s.getName());
 		});
         
+        SyaryoObject3 syaryo = syaryoMap.values().stream().findFirst().get();
+        syaryo.decompress();
+        System.out.println(syaryo.dump());
+        syaryo.compress(true);
+		new SyaryoToZip3().write(FILENAME, syaryoMap);
         
-		new SyaryoToZip().write(FILENAME, syaryoMap);
-
 		System.out.println(syaryoMap.size());
+        //System.gc();
 	}
 }

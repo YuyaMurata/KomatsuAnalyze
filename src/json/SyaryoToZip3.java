@@ -27,25 +27,30 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream
 public class SyaryoToZip3 {
 
     public void write(String file, Map map) {
+        file = file.replace(".gz", "").replace(".bz2", "");
+        
         int size = 1024;
-        try (ByteArrayInputStream in = new ByteArrayInputStream(getBytes(map))) {
-            OutputStream fout = Files.newOutputStream(Paths.get(file.split("\\.")[0] + ".bz2"));
+        try (ByteArrayInputStream in = new ByteArrayInputStream(getBytes(map));
+            OutputStream fout = Files.newOutputStream(Paths.get(file + ".bz2"));
             BufferedOutputStream out = new BufferedOutputStream(fout);
-            BZip2CompressorOutputStream bzOut = new BZip2CompressorOutputStream(out);
+            BZip2CompressorOutputStream bzOut = new BZip2CompressorOutputStream(out)) {
             final byte[] buffer = new byte[size];
             int n = 0;
             while (-1 != (n = in.read(buffer))) {
                 bzOut.write(buffer, 0, n);
             }
-            bzOut.close();
         } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
 
     public Map read(String file) {
+        if(!file.contains(".bz2")){
+            System.out.println("ファイル拡張子が異なります:"+file);
+            System.exit(0);
+        }
+        
         int size = 1024;
-
         try (InputStream fin = Files.newInputStream(Paths.get(file));
                 BufferedInputStream in = new BufferedInputStream(fin);
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
