@@ -14,8 +14,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -25,6 +23,17 @@ public class CSVFileReadWrite {
     public static PrintWriter writer(String filename){
         try {
             return  new PrintWriter(new OutputStreamWriter(new FileOutputStream(filename), "SJIS"));
+        } catch (FileNotFoundException | UnsupportedEncodingException ex) {
+            ex.printStackTrace();
+            System.exit(0);
+        }
+        
+        return null;
+    }
+    
+    public static PrintWriter addwriter(String filename){
+        try {
+            return  new PrintWriter(new OutputStreamWriter(new FileOutputStream(filename, true), "SJIS"));
         } catch (FileNotFoundException | UnsupportedEncodingException ex) {
             ex.printStackTrace();
             System.exit(0);

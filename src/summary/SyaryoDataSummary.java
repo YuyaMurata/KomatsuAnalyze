@@ -13,7 +13,9 @@ import java.util.List;
 import java.util.Map;
 import json.SyaryoObjToJson;
 import json.SyaryoToZip;
+import json.SyaryoToZip3;
 import obj.SyaryoObject2;
+import obj.SyaryoObject3;
 
 /**
  *
@@ -21,22 +23,22 @@ import obj.SyaryoObject2;
  */
 public class SyaryoDataSummary {
 
-    private static String kisy = "PC138US";
+    private static String kisy = "PC200";
     private static String path = "..\\KomatsuData\\車両テンプレート\\" + kisy + "\\";
 
     public static void main(String[] args) {
 
-        SyaryoObject2 sample = null;
+        SyaryoObject3 sample = null;
         int size = 0;
 
-        String filename = "json\\syaryo_obj_" + kisy + "_form";
-        Map<String, SyaryoObject2> syaryoMap = new SyaryoToZip().readObject(filename);
+        String filename = "json\\syaryo_obj_" + kisy + "_form.bz2";
+        Map<String, SyaryoObject3> syaryoMap = new SyaryoToZip3().read(filename);
         
         //Syaryo Data Check
         int cnt = 0;
         Map<Object, Integer> dataSizeMap = new HashMap();
         Map<Object, Integer> numSyaryoMap = new HashMap();
-        for(SyaryoObject2 syaryo : syaryoMap.values()){
+        for(SyaryoObject3 syaryo : syaryoMap.values()){
             syaryo.decompress();
             int total = 0;
             for(Object key : syaryo.getAll().keySet()){

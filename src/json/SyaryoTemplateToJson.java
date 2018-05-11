@@ -7,19 +7,42 @@ package json;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import creator.template.SimpleTemplate;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Map;
-import obj.SyaryoObject;
 
 /**
  *
  * @author ZZ17390
  */
 public class SyaryoTemplateToJson {
+    
+    public Map<String, SimpleTemplate> reader(String filename) {
+		Map<String, SimpleTemplate> syaryoMap;
+        try (JsonReader reader = new JsonReader(new BufferedReader(new FileReader(filename)))) {
+
+			Type type = new TypeToken<Map<String, SimpleTemplate>>() {
+			}.getType();
+
+			Gson gson = new Gson();
+			syaryoMap = gson.fromJson(reader, type);
+            
+            //setting
+            syaryoMap.values().stream().forEach(s -> s.setting());
+            
+		} catch (Exception e) {
+			return null;
+		}
+        
+        return syaryoMap;
+	}
     
     public void write(String filename, Map syaryoMap){
         try(JsonWriter writer = new JsonWriter(new BufferedWriter(new FileWriter(filename)))){

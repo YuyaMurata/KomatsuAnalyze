@@ -22,7 +22,12 @@
             </MenuBar>
             <HBox prefHeight="378.0" prefWidth="600.0" VBox.vgrow="ALWAYS">
                <children>
-                  <ListView fx:id="keylist" maxWidth="200.0" minWidth="200.0" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+                  <VBox maxWidth="200.0" minWidth="200.0" prefWidth="200.0">
+                     <children>
+                        <ComboBox fx:id="datafilter" maxWidth="200.0" minWidth="200.0" onAction="#selectFilter" prefWidth="200.0" promptText="ALL" />
+                        <ListView fx:id="keylist" maxWidth="200.0" minWidth="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS" />
+                     </children>
+                  </VBox>
                   <VBox HBox.hgrow="ALWAYS">
                      <children>
                         <Label fx:id="id_label" text="syaryo">

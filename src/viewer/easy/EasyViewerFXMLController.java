@@ -18,6 +18,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Accordion;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
@@ -116,6 +118,8 @@ public class EasyViewerFXMLController implements Initializable {
     private TextArea viewarea_kmerror;
     @FXML
     private Label id_label;
+    @FXML
+    private ComboBox<String> datafilter;
 
     /**
      * Initializes the controller class.
@@ -125,6 +129,23 @@ public class EasyViewerFXMLController implements Initializable {
         // TODO
         syaryoMap = new HashMap();
         machineListInitialize();
+        dataFilterInitialize();
+    }
+    
+    public void dataFilterInitialize() {
+        
+        datafilter.getItems().addAll(
+            "ALL",
+            "生産なし",
+            "新車なし",
+            "顧客なし",
+            "AS対象車",
+            "AS対象外",
+            "KOMTRAX対象車",
+            "KOMTRAX対象外",
+            "KOMTRAXデータ存在",
+            "KOMTRAX対象外 データ存在"
+        );
     }
     
     public void machineListInitialize() {
@@ -149,6 +170,7 @@ public class EasyViewerFXMLController implements Initializable {
         settingData(syaryo);
     }
 
+    //アコーディオンの設定
     private void settingData(SyaryoObject3 syaryo){
         syaryo.decompress();
         
@@ -199,7 +221,7 @@ public class EasyViewerFXMLController implements Initializable {
         viewarea_kmsmr.setText(str = textdump(syaryo.get("KMSMR")));
         kmsmr.setText(check(kmsmr.getText(), str));
         
-        viewarea_kmgps.setText(str = textdump(syaryo.get("KMGPS")));
+        viewarea_kmgps.setText(str = textdump(syaryo.get("GPS")));
         kmgps.setText(check(kmgps.getText(), str));
         
         viewarea_kmerror.setText(str = textdump(syaryo.get("KMERROR")));
@@ -253,5 +275,11 @@ public class EasyViewerFXMLController implements Initializable {
     private void updateKeyList(List keyList) {
         ObservableList list = FXCollections.observableArrayList(keyList);
         keylist.setItems(list);
+    }
+
+    @FXML
+    private void selectFilter(ActionEvent event) {
+        System.out.println("Selection in the listView is : " + datafilter.getValue());
+        String filter = datafilter.getValue().toString();
     }
 }
