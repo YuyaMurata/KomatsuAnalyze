@@ -226,7 +226,7 @@ public class MachineHistoryFXMLController implements Initializable {
             }
         }
         data.add(list);
-        sampleView.getColumns().addAll(column.toArray(new TableColumn[column.size()]));
+        //sampleView.getColumns().addAll(column.toArray(new TableColumn[column.size()]));
 
         sampleView.setItems(data);
     }
