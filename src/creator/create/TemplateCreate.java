@@ -34,7 +34,8 @@ import json.SyaryoTemplateToJson;
 public class TemplateCreate {
 
     private static String INDEX_PATH = "index\\syaryo_data_index.csv";
-    private static String OUTPATH = "template\\";
+    private static String ROOTPATH = "template\\"; 
+    private static String OUTPATH;
     private static String[] kisyList = new String[]{"PC138US","PC200","PC200LC","PC200SC","PC78US","WA470","WA100","PC210","PC210LC"};
     
     
@@ -45,7 +46,7 @@ public class TemplateCreate {
 
     private static void create(String kisy) {
         //Folder
-        OUTPATH = OUTPATH + kisy + "\\";
+        OUTPATH = ROOTPATH + kisy + "\\";
         File path = new File(OUTPATH);
         if (!path.exists()) {
             path.mkdir();
