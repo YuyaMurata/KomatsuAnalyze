@@ -13,8 +13,10 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import json.MapIndexToJSON;
 import json.SyaryoToZip;
+import json.SyaryoToZip3;
 import obj.SyaryoElements;
 import obj.SyaryoObject2;
+import obj.SyaryoObject3;
 
 /**
  *
@@ -25,8 +27,8 @@ public class DeviceMaintenance {
 	private static String kisy = "PC138US";
 
 	public static void main(String[] args) {
-		String filename = "json\\syaryo_obj_" + kisy + "_form";
-		Map<String, SyaryoObject2> syaryoMap = new SyaryoToZip().readObject(filename);
+		String filename = "json\\syaryo_obj_" + kisy + "_form.bz2";
+		Map<String, SyaryoObject3> syaryoMap = new SyaryoToZip3().read(filename);
 
 		String outputname = "smr_year_service_" + kisy + ".csv";
 		try (PrintWriter csv = CSVFileReadWrite.writer(outputname)) {
@@ -36,13 +38,13 @@ public class DeviceMaintenance {
         }
 	}
 
-	public static void extractDeviceMaintenance(Map<String, SyaryoObject2> syaryoMap, PrintWriter csv) {
+	public static void extractDeviceMaintenance(Map<String, SyaryoObject3> syaryoMap, PrintWriter csv) {
 		int cnt = 0;
         //AS Index
         Map index = new MapIndexToJSON().reader("index\\allsupport_index.json");
 
 		csv.println("Company,ID,Kisy,Type,業種コード,経過年,SMR,売上区分,作番,作業形態,作業コード,作業名,パワーライン対象装置,オールサポート,金額,事故フラグ,概要");
-		for (SyaryoObject2 syaryo : syaryoMap.values()) {
+		for (SyaryoObject3 syaryo : syaryoMap.values()) {
             //System.out.print(syaryo.name);
 			syaryo.decompress();
             

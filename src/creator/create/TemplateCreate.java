@@ -35,31 +35,35 @@ public class TemplateCreate {
 
     private static String INDEX_PATH = "index\\syaryo_data_index.csv";
     private static String OUTPATH = "template\\";
-
+    private static String[] kisyList = new String[]{"PC138US","PC200","PC200LC","PC200SC","PC78US","WA470","WA100","PC210","PC210LC"};
+    
+    
     public static void main(String[] args) {
-        create("WA470");
+        for(String k: kisyList)
+            create(k);
     }
 
     private static void create(String kisy) {
         //Folder
-        OUTPATH = OUTPATH + kisy+"\\";
+        OUTPATH = OUTPATH + kisy + "\\";
         File path = new File(OUTPATH);
-        if(!path.exists())
+        if (!path.exists()) {
             path.mkdir();
-        
+        }
+
         //File
         SyaryoTemplateToJson json = new SyaryoTemplateToJson();
-        
+
         //Layout Index
         Map<String, List> index = index();
         System.out.println("Layout:");
-        index.entrySet().stream().map(e -> "  "+e.getKey()+":"+e.getValue()).forEach(System.out::println);
-        
+        index.entrySet().stream().map(e -> "  " + e.getKey() + ":" + e.getValue()).forEach(System.out::println);
+
         //Syaryo Index
         Map<String, SimpleTemplate> syaryoMap = syaryoindex(kisy, json);
         System.out.println("\n車両:");
         System.out.println(syaryoMap);
-        
+
         //Create Layout Template
         template(index, syaryoMap, json, kisy);
     }
@@ -75,158 +79,205 @@ public class TemplateCreate {
                 String name = br.readLine();
                 String[] code = br.readLine().split(",");
                 String[] select = br.readLine().split(",");
-                String[] joinFrom = br.readLine().split(",");
                 String[] joinTo = br.readLine().split(",");
                 br.readLine();
-                
+
                 List layout = new ArrayList();
-                for(int i=1; i < select.length; i++)
-                    if(select[i].equals("1"))
+                for (int i = 1; i < select.length; i++) {
+                    if (select[i].equals("1")) {
                         layout.add(code[i]);
-                
-                if(layout.isEmpty())
+                    }
+                }
+
+                if (layout.isEmpty()) {
                     continue;
-                
-                if(joinFrom.length > 1){
-                    layout.add(Arrays.asList(joinFrom).stream().filter(s -> s.length() > 0).collect(Collectors.joining(",")));
+                }
+
+                if (joinTo.length > 1) {
                     layout.add(Arrays.asList(joinTo).stream().filter(s -> s.length() > 0).collect(Collectors.joining(",")));
-                }else {
-                    layout.add("None");
+                } else {
                     layout.add("None");
                 }
-                    
-                
+
+                System.out.println(table+":"+layout);
+
                 index.put(table.split(",")[1], layout);
-                
+
             }
-            
+
             return index;
         } catch (IOException ex) {
             ex.printStackTrace();
         }
         return null;
     }
-    
+
     //Set Syaryo Index
     private static Map syaryoindex(String kisy, SyaryoTemplateToJson json) {
         Map index = new HashMap();
-        File file = new File(OUTPATH+"syaryo_"+kisy+"_index.json");
-        if(file.exists())
+        File file = new File(OUTPATH + "syaryo_" + kisy + "_index.json");
+        if (file.exists()) {
             return json.reader(file.getAbsolutePath());
-        
-        try(Connection con = HiveDB.getConnection()){
+        }
+
+        try (Connection con = HiveDB.getConnection()) {
             Statement stmt = con.createStatement();
             String temp_sql = "select e.kisy, e.typ, e.syhk, e.kiban "
-                            + "from EQP_SYARYO e "
-                            + "join SYARYO s on (e.kisy=s.kisy and e.kiban=s.kiban) "
-                            + "where e.kisy='"+kisy+"'";
+                + "from EQP_SYARYO e "
+                + "join SYARYO s on (e.kisy=s.kisy and e.kiban=s.kiban) "
+                + "where e.kisy='" + kisy + "'";
             System.out.println("Running: " + temp_sql);
             ResultSet res = stmt.executeQuery(temp_sql);
 
             int n = 0;
             while (res.next()) {
                 n++;
-                
+
                 //Name
                 String skisy = res.getString(EQP.Syaryo.KISY.get());
                 String type = res.getString(EQP.Syaryo.TYP.get());
                 String s_type = res.getString(EQP.Syaryo.SYHK.get());
                 String kiban = res.getString(EQP.Syaryo.KIBAN.get());
-                
+
                 //SimpleTemplate
-                SimpleTemplate temp = new SimpleTemplate(kisy, type, s_type, kiban);
+                SimpleTemplate temp = new SimpleTemplate(skisy, type, s_type, kiban);
                 index.put(temp.getName(), temp);
-                
-                if(n%1000 == 0)
-                    System.out.println(n+" 台処理");
+
+                if (n % 1000 == 0) {
+                    System.out.println(n + " 台処理");
+                }
             }
         } catch (SQLException ex) {
         }
-        
+
         json.write(file.getAbsolutePath(), index);
         return index;
     }
     
-    private static void template(Map<String, List> layoutIndex, Map<String, SimpleTemplate> syaryoMap, SyaryoTemplateToJson json, String kisy){
+    //Create Template
+    private static void template(Map<String, List> layoutIndex, Map<String, SimpleTemplate> syaryoMap, SyaryoTemplateToJson json, String kisy) {
         //エラーフォルダ作成
-        String err_path = OUTPATH+"error\\";
+        String err_path = OUTPATH + "error\\";
         File folder = new File(err_path);
-        if(!folder.exists())
+        if (!folder.exists()) {
             folder.mkdir();
-        
+        }
+
         //JSONフォルダ作成
-        String json_path = OUTPATH+"json\\";
+        String json_path = OUTPATH + "json\\";
         folder = new File(json_path);
-        if(!folder.exists())
+        if (!folder.exists()) {
             folder.mkdir();
-        
+        }
+
         //テンプレート作成
-        for(String table : layoutIndex.keySet()){
+        for (String table : layoutIndex.keySet()) {
             //File
             String filename = json_path + table + "_" + kisy + ".json";
             String errname = err_path + table + "_" + kisy + "_error.csv";
             
+            //Check
+            if((new File(filename)).exists()){
+                System.out.println("> exists "+filename);
+                continue;
+            }
+
             //
             List<String> code = layoutIndex.get(table);
-            if(code.get(code.size()-1).equals("None")){
-                json.write(
-                    filename,
-                    simpleTemplate(kisy, syaryoMap, table, code.subList(0, code.size()-2), errname)
-                );
-            }
+            json.write(
+                filename,
+                simpleTemplate(kisy, syaryoMap, table, code.subList(0, code.size() - 1), code.get(code.size() - 1), errname)
+            );
         }
     }
-    
-    private static Map simpleTemplate(String kisy, Map<String, SimpleTemplate> syaryoMap, String table, List<String> code, String err){
+
+    private static Map simpleTemplate(String kisy, Map<String, SimpleTemplate> syaryoMap, String table, List<String> code, String join, String err) {
         Map<String, SimpleTemplate> map = new HashMap();
-        
-        try(Connection con = HiveDB.getConnection();
-            PrintWriter err_pw = CSVFileReadWrite.writer(err)){
+
+        try (Connection con = HiveDB.getConnection();
+            PrintWriter err_pw = CSVFileReadWrite.writer(err)) {
             Statement stmt = con.createStatement();
-            String sql = createSQL(table, code)
-                        + "where kisy='"+kisy+"'";
-            
+            String sql = "";
+            if (join.equals("None")) {
+                sql = createSQL(table, code, kisy);
+            } else {
+                sql = createSQL(table, code, kisy, join);
+                code.add(0, "KISY");
+                code.add(1, "KIBAN");
+            }
+
             System.out.println("Running: " + sql);
             ResultSet res = stmt.executeQuery(sql);
 
             int n = 0;
             while (res.next()) {
                 List<String> content = new ArrayList<>();
-                for(String c : code)
+                for (String c : code) {
                     content.add(res.getString(c));
+                }
                 
-                //Syaryo Index二存在するか確認
-                String name = SimpleTemplate.check(content.get(code.indexOf("KISY")),content.get(code.indexOf("KIBAN")));
-                
+                //Syaryo Indexに存在するか確認
+                String name = SimpleTemplate.check(content.get(code.indexOf("KISY")), content.get(code.indexOf("KIBAN")));
+
                 //エラー処理
-                if(name == null){
+                if (name == null) {
                     err_pw.println(content);
                     continue;
                 }
-                
+
                 //データ追加
                 SimpleTemplate syaryo = map.get(name);
-                if(syaryo == null)
+                if (syaryo == null) {
                     syaryo = new SimpleTemplate(syaryoMap.get(name).name);
+                }
                 syaryo.add(table, String.join(",", content));
-                
+
                 map.put(syaryo.getName(), syaryo);
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        
+
         return map;
     }
-    
-    private static String createSQL(String table, List<String> code){
+
+    private static String createSQL(String table, List<String> code, String kisy) {
         StringBuilder sb = new StringBuilder("select ");
-        for(String c : code){
+        for (String c : code) {
             sb.append(c).append(",");
         }
-        sb.deleteCharAt(sb.length()-1);
+        sb.deleteCharAt(sb.length() - 1);
         sb.append(" from ");
         sb.append(table).append(" ");
+        if (kisy.length() > 0) {
+            sb.append("where kisy='").append(kisy).append("'");
+        }
+        return sb.toString();
+    }
+
+    private static String createSQL(String table, List<String> code, String kisy, String join) {
+        StringBuilder sb = new StringBuilder("select ");
+        sb.append("b.KISY,b.KIBAN,");
+        for (String c : code) {
+            sb.append("a.").append(c).append(",");
+        }
+        sb.deleteCharAt(sb.length() - 1);
+        sb.append(" from ");
+        sb.append(table).append(" a");
+
+        //JOIN
+        String[] j = join.split(",");
+        sb.append(" join ").append(j[1]).append(" b on (");
+        for (int i = 2; i < j.length; i++) {
+            sb.append("a.").append(j[i]).append("=")
+                .append("b.").append(j[i]).append(" and ");
+        }
+        sb.delete(sb.length() - 5, sb.length()).append(")");
+
+        if (kisy.length() > 0) {
+            sb.append(" where b.kisy='").append(kisy).append("'");
+        }
+
         return sb.toString();
     }
 }

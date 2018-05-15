@@ -48,7 +48,6 @@ public class SyaryoElementIndex {
             pw.println(sb2.substring(0, sb2.length()-1));
             pw.println(sb3.substring(0, sb3.length()-1));
             pw.println("SELECT");
-            pw.println("JOIN(FROM)");
             pw.println("JOIN(TO)");
             pw.println("");
             
