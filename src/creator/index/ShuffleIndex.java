@@ -16,7 +16,7 @@ public class ShuffleIndex {
 
     public static void main(String[] args) {
         Map kisyMap = createKisyMap();
-        new MapIndexToJSON().write("index\\kisy_index.json", kisyMap);
+        new MapIndexToJSON().write("index\\shuffle_format.json", kisyMap);
 
     }
 }
