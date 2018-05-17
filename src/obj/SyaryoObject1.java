@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  *
  * @author ZZ17390
  */
-public class SyaryoObject0 {
+public class SyaryoObject1 {
 
     public String name;
     public Map<String, Object> map = new LinkedHashMap();
@@ -29,7 +29,7 @@ public class SyaryoObject0 {
     private transient int deteilno = 0;
     private transient DecimalFormat dformat = new DecimalFormat("000");
 
-    public SyaryoObject0(String name) {
+    public SyaryoObject1(String name) {
         this.name = name;
     }
 

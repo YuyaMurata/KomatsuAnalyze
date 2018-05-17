@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import json.JsonToSyaryoObj;
-import obj.SyaryoObject0;
+import obj.SyaryoObject1;
 
 /**
  *
@@ -28,7 +28,7 @@ public class TimeAnalysis {
 
 	public static void main(String[] args) {
 		String filename = "json\\syaryo_obj_WA470_form.json";
-		Map<String, SyaryoObject0> syaryoMap = new JsonToSyaryoObj().reader(filename);
+		Map<String, SyaryoObject1> syaryoMap = new JsonToSyaryoObj().reader(filename);
 		orderDate(filename, syaryoMap);
 	}
 
@@ -76,7 +76,7 @@ public class TimeAnalysis {
 		return false;
 	}
 
-	public static void orderDate(String filename, Map<String, SyaryoObject0> syaryoMap) {
+	public static void orderDate(String filename, Map<String, SyaryoObject1> syaryoMap) {
 		Map<String, Map<String, List>> allData = new HashMap<>();
 		int n = 0;
 		List<String> type = syaryoMap.values().stream()
@@ -87,12 +87,12 @@ public class TimeAnalysis {
 			List list1 = new ArrayList();
 			List list2 = new ArrayList();
 
-			List<SyaryoObject0> syaryo = syaryoMap.values().stream()
+			List<SyaryoObject1> syaryo = syaryoMap.values().stream()
 					.filter(s -> s.getType().equals(typ))
 					.filter(s -> s.getOrder() != null)
 					.collect(Collectors.toList());
 
-			for (SyaryoObject0 s : syaryo) {
+			for (SyaryoObject1 s : syaryo) {
 				if (s.getNew() == null) {
 					System.out.println(s.getName());
 					n++;

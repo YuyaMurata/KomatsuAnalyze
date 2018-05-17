@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 import json.JsonToSyaryoObj;
 import json.SyaryoToZip0;
 import obj.SyaryoElements;
-import obj.SyaryoObject0;
+import obj.SyaryoObject1;
 import obj.SyaryoObject2;
 
 /**
@@ -194,7 +194,7 @@ public class Histgram {
     }
 
     //SMR
-    public static void smrAnalyze(String filename, Map<String, SyaryoObject0> syaryoMap) {
+    public static void smrAnalyze(String filename, Map<String, SyaryoObject1> syaryoMap) {
         List<String> type = syaryoMap.values().stream()
                 .map(s -> s.getType()).distinct().collect(Collectors.toList());
 
@@ -235,7 +235,7 @@ public class Histgram {
     }
 
     //SMR_Komtrax
-    public static void komsmrAnalyze(String filename, Map<String, SyaryoObject0> syaryoMap) {
+    public static void komsmrAnalyze(String filename, Map<String, SyaryoObject1> syaryoMap) {
         List<String> type = syaryoMap.values().stream()
                 .map(s -> s.getType()).distinct().collect(Collectors.toList());
 
@@ -243,7 +243,7 @@ public class Histgram {
         Map<String, List<Integer>> analyzData = new HashMap<>();
         for (String typ : type) {
             List list = new ArrayList();
-            for (SyaryoObject0 syaryo : syaryoMap.values()) {
+            for (SyaryoObject1 syaryo : syaryoMap.values()) {
                 if (!syaryo.getType().equals(typ)) {
                     continue;
                 }
@@ -296,10 +296,10 @@ public class Histgram {
     }
 
     //Error_Komtrax
-    public static void komerrAnalyze(String filename, Map<String, SyaryoObject0> syaryoMap) {
+    public static void komerrAnalyze(String filename, Map<String, SyaryoObject1> syaryoMap) {
         Map<String, List<Integer>> analyzData = new HashMap<>();
         List<Integer> allValueList = new ArrayList<>();
-        for (SyaryoObject0 syaryo : syaryoMap.values()) {
+        for (SyaryoObject1 syaryo : syaryoMap.values()) {
             if (!syaryo.getKomtrax()) {
                 continue;
             }

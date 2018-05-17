@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 import json.JsonToSyaryoObj;
 import json.SyaryoObjToJson;
 import obj.SyaryoElements;
-import obj.SyaryoObject0;
+import obj.SyaryoObject1;
 
 /**
  * 車両オブジェクトから重複部分を排除して整形
@@ -58,10 +58,10 @@ public class FormalizeSyaryoObject {
     }
 
     //2009年以前の車両を分離
-    public Map<String, SyaryoObject0> split(Map<String, SyaryoObject0> syaryoMap) {
+    public Map<String, SyaryoObject1> split(Map<String, SyaryoObject1> syaryoMap) {
         //Type
         Map map = new TreeMap();
-        for (SyaryoObject0 syaryo : syaryoMap.values()) {
+        for (SyaryoObject1 syaryo : syaryoMap.values()) {
             if (Integer.valueOf(syaryo.getType()) > 6) {
                 map.put(syaryo.getName(), syaryo);
             }
@@ -70,7 +70,7 @@ public class FormalizeSyaryoObject {
         return map;
     }
 
-    public Map<String, SyaryoObject0> join(String[] kisy) {
+    public Map<String, SyaryoObject1> join(String[] kisy) {
         //Type
         Map map = new TreeMap();
         for (String s : kisy) {
@@ -81,7 +81,7 @@ public class FormalizeSyaryoObject {
         return map;
     }
 
-    public Map<String, SyaryoObject0> formalize(Map<String, SyaryoObject0> syaryoMap) {
+    public Map<String, SyaryoObject1> formalize(Map<String, SyaryoObject1> syaryoMap) {
         Map map = new TreeMap();
 
         for (String name : syaryoMap.keySet()) {
@@ -528,7 +528,7 @@ public class FormalizeSyaryoObject {
     }
 
     //オブジェクトデータの補間
-    private Map<String, SyaryoObject0> interFormalize(Map<String, SyaryoObject0> syaryoMap) {
+    private Map<String, SyaryoObject1> interFormalize(Map<String, SyaryoObject1> syaryoMap) {
         Map map = new TreeMap();
 
         for (String name : syaryoMap.keySet()) {
@@ -543,7 +543,7 @@ public class FormalizeSyaryoObject {
     }
 
     //SMRの補間
-    private void interSMR(SyaryoObject0 syaryo, Map<String, List> smrMap) {
+    private void interSMR(SyaryoObject1 syaryo, Map<String, List> smrMap) {
         Map<String, List> update = new TreeMap();
 
         if (smrMap == null) {

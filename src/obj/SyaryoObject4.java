@@ -7,51 +7,43 @@ package obj;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import json.SnappyMap;
 
 /**
  *
  * @author ZZ17390
  */
-public class SyaryoObject implements Serializable{
+public class SyaryoObject4 implements Serializable {
+
     private static final long serialVersionUID = 1L;
     public String name;
     public byte[] mapData;
-    
-    
-    public transient Map map = new LinkedHashMap();
+
+    public transient Map map = new HashMap();
     private transient DecimalFormat dformat = new DecimalFormat("0000");
 
-    public SyaryoObject(String name) {
+    public SyaryoObject4(String name) {
         this.name = name;
     }
 
     public String key_no(Object key) {
-        Map oldMap = (Map) map.get(key);
 
         String df = key.toString();
 
-        if (oldMap == null) {
+        if (map.get(key) == null) {
             return df;
         } else {
-            if (oldMap.get(df) == null) {
-                return df;
-            } else {
-                int i = 1;
-                while (oldMap.get(df + "#" + dformat.format(i)) != null) {
-                    i++;
-                }
-                return df + "#" + dformat.format(i);
+            int i = 1;
+            while (map.get(df + "#" + dformat.format(i)) != null) {
+                i++;
             }
+            return df + "#" + dformat.format(i);
         }
     }
 
@@ -63,9 +55,11 @@ public class SyaryoObject implements Serializable{
             String[] lines = template.get(field).toString().split("\n");
 
             for (String line : lines) {
-                List<String> s = Arrays.asList(line.trim().split(","));
-                if(n > s.size())
+                List<String> s = new ArrayList<>();
+                s.addAll(Arrays.asList(line.trim().split(",")));
+                if (n > s.size()) {
                     s.add(" ");
+                }
                 map.put(key_no(field), s);
             }
         }
@@ -95,8 +89,9 @@ public class SyaryoObject implements Serializable{
     public void decompress() {
         map = SnappyMap.toMap(mapData);
         mapData = null;
-        if(map == null)
+        if (map == null) {
             map = new LinkedHashMap();
+        }
     }
 
     //Dump
@@ -104,7 +99,8 @@ public class SyaryoObject implements Serializable{
         StringBuilder sb = new StringBuilder();
         sb.append(name);
         sb.append(":");
-        for (Object key : map.keySet()) {
+        sb.append(map);
+        /*for (Object key : map.keySet()) {
             sb.append("\n    ");
             sb.append(key);
             sb.append(":");
@@ -114,7 +110,7 @@ public class SyaryoObject implements Serializable{
                 sb.append(d);
                 sb.append(m.get(d));
             }
-        }
+        }*/
 
         return sb.toString();
     }

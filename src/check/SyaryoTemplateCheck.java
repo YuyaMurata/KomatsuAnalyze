@@ -12,7 +12,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import json.JsonToSyaryoObj;
 import json.JsonToSyaryoTemplate;
-import obj.SyaryoObject0;
+import obj.SyaryoObject1;
 import creator.template.SyaryoTemplate;
 
 /**

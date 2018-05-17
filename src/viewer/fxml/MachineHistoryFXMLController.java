@@ -44,7 +44,7 @@ import javafx.util.Callback;
 import json.JsonToSyaryoObj;
 import obj.Element;
 import obj.SyaryoElements;
-import obj.SyaryoObject0;
+import obj.SyaryoObject1;
 import viewer.csv.CSVViewerOutput;
 import viewer.filter.DataRuleFilter;
 
@@ -63,7 +63,7 @@ public class MachineHistoryFXMLController implements Initializable {
     @FXML
     private ListView<?> machineList;
 
-    private Map<String, SyaryoObject0> syaryoMap = new HashMap();
+    private Map<String, SyaryoObject1> syaryoMap = new HashMap();
     @FXML
     private Label history_label;
     @FXML
@@ -76,7 +76,7 @@ public class MachineHistoryFXMLController implements Initializable {
     @FXML
     private Button applyButton;
 
-    private SyaryoObject0 syaryo;
+    private SyaryoObject1 syaryo;
     @FXML
     private Button csv;
     @FXML

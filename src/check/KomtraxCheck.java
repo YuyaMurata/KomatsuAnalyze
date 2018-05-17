@@ -13,7 +13,7 @@ import java.util.TreeMap;
 import json.JsonToSyaryoObj;
 import json.SyaryoObjToJson;
 import obj.SyaryoElements;
-import obj.SyaryoObject0;
+import obj.SyaryoObject1;
 
 /**
  *
@@ -22,7 +22,7 @@ import obj.SyaryoObject0;
 public class KomtraxCheck {
 
 	private static final String kisy = "WA470";
-	private static Map<String, SyaryoObject0> syaryoMap;
+	private static Map<String, SyaryoObject1> syaryoMap;
 
 	public static void main(String[] args) {
 		JsonToSyaryoObj obj = new JsonToSyaryoObj();
@@ -32,7 +32,7 @@ public class KomtraxCheck {
 		//formSMR();
 		
 		//Syaryo SMR
-		for(SyaryoObject0 syaryo : syaryoMap.values()){
+		for(SyaryoObject1 syaryo : syaryoMap.values()){
 			Map map = new HashMap();
 			for(String date : syaryo.getSMR().keySet()){
 				String d = date.split(" ")[0];
@@ -50,7 +50,7 @@ public class KomtraxCheck {
 	}
 	
 	private static void formSMR(){
-		for(SyaryoObject0 syaryo : syaryoMap.values()){
+		for(SyaryoObject1 syaryo : syaryoMap.values()){
 			Map<String, List> smrmap = new TreeMap();
 			Map map = new HashMap();
 			for(String date : syaryo.getSMR().keySet()){

@@ -22,6 +22,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import json.SyaryoTemplateToJson;
 
@@ -32,14 +34,14 @@ import json.SyaryoTemplateToJson;
 public class TemplateCreate {
 
     private static String INDEX_PATH = "index\\syaryo_data_index.csv";
-    private static String ROOTPATH = "template\\"; 
+    private static String ROOTPATH = "template\\";
     private static String OUTPATH;
-    private static String[] kisyList = new String[]{"PC138US","PC200","PC200LC","PC200SC","PC78US","WA470","WA100","PC210","PC210LC"};
-    
-    
+    private static String[] kisyList = new String[]{"PC138US", "PC200", "PC200LC", "PC200SC", "PC78US", "WA470", "WA100", "PC210", "PC210LC"};
+
     public static void main(String[] args) {
-        for(String k: kisyList)
+        for (String k : kisyList) {
             create(k);
+        }
     }
 
     private static void create(String kisy) {
@@ -65,6 +67,7 @@ public class TemplateCreate {
 
         //Create Layout Template
         template(index, syaryoMap, json, kisy);
+
     }
 
     //Set Layout Index
@@ -98,7 +101,7 @@ public class TemplateCreate {
                     layout.add("None");
                 }
 
-                System.out.println(table+":"+layout);
+                System.out.println(table + ":" + layout);
 
                 index.put(table.split(",")[1], layout);
 
@@ -152,7 +155,7 @@ public class TemplateCreate {
         json.write(file.getAbsolutePath(), index);
         return index;
     }
-    
+
     //Create Template
     private static void template(Map<String, List> layoutIndex, Map<String, SimpleTemplate> syaryoMap, SyaryoTemplateToJson json, String kisy) {
         //エラーフォルダ作成
@@ -174,11 +177,17 @@ public class TemplateCreate {
             //File
             String filename = json_path + table + "_" + kisy + ".json";
             String errname = err_path + table + "_" + kisy + "_error.csv";
-            
+
             //Check
-            if((new File(filename)).exists()){
-                System.out.println("> exists "+filename);
+            if ((new File(filename)).exists()) {
+                System.out.println("> exists " + filename);
                 continue;
+            } else {
+                try {
+                    //Time
+                    Thread.sleep(10000);
+                } catch (InterruptedException ex) {
+                }
             }
 
             //
@@ -214,7 +223,7 @@ public class TemplateCreate {
                 for (String c : code) {
                     content.add(res.getString(c));
                 }
-                
+
                 //Syaryo Indexに存在するか確認
                 String name = SimpleTemplate.check(content.get(code.indexOf("KISY")), content.get(code.indexOf("KIBAN")));
 
@@ -232,6 +241,10 @@ public class TemplateCreate {
                 syaryo.add(table, String.join(",", content));
 
                 map.put(syaryo.getName(), syaryo);
+                
+                n++;
+                if(n%10000 == 0)
+                    System.out.println(n+" 処理");
             }
         } catch (SQLException ex) {
             ex.printStackTrace();

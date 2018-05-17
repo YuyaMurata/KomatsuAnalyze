@@ -12,7 +12,7 @@ import java.io.File;
 import java.util.List;
 import json.SyaryoTemplateToJson;
 import json.SyaryoToZip3;
-import obj.SyaryoObject;
+import obj.SyaryoObject4;
 
 /**
  * 車両テンプレートから車両オブジェクトを作成
@@ -48,7 +48,7 @@ public class TamplateToObjectCreate {
         File[] flist = (new File(fpath)).listFiles();
         for (File f : flist) {
             String table = f.getName().substring(0, f.getName().lastIndexOf("_"));
-            String FILENAME = opath + "syaryo_mid_" + kisy + "_" + table;
+            String FILENAME = opath + "syaryo_mid_" + kisy + "_" + table+".bz2";
             int fieldLen = index.get(table).size()-1;
             System.out.println(table+":"+fieldLen);
             
@@ -62,7 +62,7 @@ public class TamplateToObjectCreate {
             System.out.println(f.getName());
 
             Map<String, SimpleTemplate> templats = json.reader(f.getAbsolutePath());
-            TreeMap<String, SyaryoObject> syaryoMap = new TreeMap();
+            TreeMap<String, SyaryoObject4> syaryoMap = new TreeMap();
 
             //int n = 0;
             //int en = 0;
@@ -70,9 +70,10 @@ public class TamplateToObjectCreate {
             templats.entrySet().parallelStream()
                 .map(s -> s.getValue()).forEach(s -> {
 
-                SyaryoObject syaryoObj = new SyaryoObject(s.getName());
+                SyaryoObject4 syaryoObj = new SyaryoObject4(s.getName());
                 syaryoObj.add(s.temp, fieldLen);
-
+                
+                //System.out.println(syaryoObj.dump());
                 syaryoObj.compress(true);
 
                 syaryoMap.put(syaryoObj.getName(), syaryoObj);
@@ -80,7 +81,7 @@ public class TamplateToObjectCreate {
                 s = null;
             });
 
-            SyaryoObject syaryo = syaryoMap.values().stream().findFirst().get();
+            SyaryoObject4 syaryo = syaryoMap.values().stream().findFirst().get();
             syaryo.decompress();
             System.out.println(syaryo.dump());
             syaryo.compress(true);

@@ -47,7 +47,7 @@ import javafx.scene.control.Slider;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 import json.JsonToSyaryoObj;
-import obj.SyaryoObject0;
+import obj.SyaryoObject1;
 
 /**
  * FXML Controller class
@@ -93,10 +93,10 @@ public class GoogleMapFXMLController implements Initializable {
 		map = mapView.createMap(mapOptions, false);
 
 		//Get Syaryo Data
-		Map<String, SyaryoObject0> syaryoMap = new JsonToSyaryoObj().reader("syaryo_obj_WA470_form.json");
+		Map<String, SyaryoObject1> syaryoMap = new JsonToSyaryoObj().reader("syaryo_obj_WA470_form.json");
 
 		String rule = "WA470-7-10180";
-		List<SyaryoObject0> syaryoList = syaryoMap.values().stream()
+		List<SyaryoObject1> syaryoList = syaryoMap.values().stream()
 			.filter(s -> s.getName().contains(rule))
 			.filter(s -> s.getGPS() != null)
 			.collect(Collectors.toList());
@@ -132,7 +132,7 @@ public class GoogleMapFXMLController implements Initializable {
 
 	MapPathData data;
 
-	public void timePoint(SyaryoObject0 syaryo) {
+	public void timePoint(SyaryoObject1 syaryo) {
 		System.out.println(syaryo.getName() + ":" + syaryo.getGPS().size());
 		data = new MapPathData(syaryo.getName());
 
