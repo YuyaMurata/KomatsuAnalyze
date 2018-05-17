@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import json.JsonToSyaryoObj;
-import json.SyaryoToZip;
+import json.SyaryoToZip0;
 import obj.SyaryoObject2;
 
 /**
@@ -49,7 +49,7 @@ public class DataCheck {
     //Syaryo Ranking
     public static void templateRanking() throws IOException{
         Map<String, String> rank = new HashMap();
-        Map<String, SyaryoTemplate> syaryoMap = new SyaryoToZip().readTemplate(path+"syaryo_"+kisy+"_template_order");
+        Map<String, SyaryoTemplate> syaryoMap = new SyaryoToZip0().readTemplate(path+"syaryo_"+kisy+"_template_order");
         
         syaryoMap.values().parallelStream().forEach(syaryo -> {
             syaryo.decompress();
@@ -57,7 +57,7 @@ public class DataCheck {
             syaryo.compress(false);
         });
         
-        syaryoMap = new SyaryoToZip().readTemplate(path+"syaryo_"+kisy+"_template_komtrax_smr");
+        syaryoMap = new SyaryoToZip0().readTemplate(path+"syaryo_"+kisy+"_template_komtrax_smr");
         syaryoMap.values().parallelStream().forEach(syaryo -> {
             syaryo.decompress();
             if(rank.get(syaryo.getName()) != null)

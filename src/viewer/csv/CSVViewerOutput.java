@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import obj.SyaryoObject;
+import obj.SyaryoObject0;
 import viewer.filter.DataRuleFilter;
 import viewer.sql.DataToSQLLite;
 import viewer.sql.DataTransaction;
@@ -22,13 +22,13 @@ import viewer.sql.DataTransaction;
  */
 public class CSVViewerOutput {
 
-    public static Integer none(String filename, DataRuleFilter filter, Map<String, Integer> selectData, List<SyaryoObject> syaryos) {
+    public static Integer none(String filename, DataRuleFilter filter, Map<String, Integer> selectData, List<SyaryoObject0> syaryos) {
         int n = 0;
 
         try (PrintWriter pw = CSVFileReadWrite.writer(filename)) {
             pw.println(selectData.keySet().stream().collect(Collectors.joining(",")));
 
-            for (SyaryoObject syaryo : syaryos) {
+            for (SyaryoObject0 syaryo : syaryos) {
                 int max = 0;
                 for (String header : selectData.keySet()) {
                     String key = header.split("\\.")[0];
@@ -68,7 +68,7 @@ public class CSVViewerOutput {
         return n;
     }
 
-    public static Integer time(String filename, DataRuleFilter filter, Map<String, Integer> selectData, List<SyaryoObject> syaryos) {
+    public static Integer time(String filename, DataRuleFilter filter, Map<String, Integer> selectData, List<SyaryoObject0> syaryos) {
         int n = 0;
 
         //日付
@@ -80,7 +80,7 @@ public class CSVViewerOutput {
         try (PrintWriter pw = CSVFileReadWrite.writer(filename)) {
             pw.println("日付,車両,データ,値");
 
-            for (SyaryoObject syaryo : syaryos) {
+            for (SyaryoObject0 syaryo : syaryos) {
                 int n1 = 0;
                 //日付 + データ
                 for (String header : dateHeaders) {
@@ -135,11 +135,11 @@ public class CSVViewerOutput {
         return n;
     }
 
-    public static Integer sql(String filename, DataRuleFilter filter, Map<String, Map<String, Integer>> selectData, List<SyaryoObject> syaryos) {
+    public static Integer sql(String filename, DataRuleFilter filter, Map<String, Map<String, Integer>> selectData, List<SyaryoObject0> syaryos) {
         DataToSQLLite sql = new DataToSQLLite();
         
         int n = 0;
-        for (SyaryoObject syaryo : syaryos) {
+        for (SyaryoObject0 syaryo : syaryos) {
             selectData.keySet().parallelStream().forEach(header ->{
                 DataTransaction dt = new DataTransaction(syaryo.getName(), header, selectData.get(header).keySet().stream().collect(Collectors.toList()));
                 

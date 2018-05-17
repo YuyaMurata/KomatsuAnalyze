@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import json.JsonToSyaryoObj;
-import obj.SyaryoObject;
+import obj.SyaryoObject0;
 
 /**
  *
@@ -26,15 +26,15 @@ public class SyaryoToCSV {
     public static void main(String[] args) {
         String path = "分析結果\\";
         String kisy = "WA470";
-        Map<String, SyaryoObject> syaryoMap = new JsonToSyaryoObj().reader("syaryo_obj_" + kisy + "_form.json");
+        Map<String, SyaryoObject0> syaryoMap = new JsonToSyaryoObj().reader("syaryo_obj_" + kisy + "_form.json");
 
         String name = "WA470-7-10180";
-        SyaryoObject syaryo = syaryoMap.get(name);
+        SyaryoObject0 syaryo = syaryoMap.get(name);
 
         komtrax(syaryo);
     }
 
-    public static void komtrax(SyaryoObject syaryo) {
+    public static void komtrax(SyaryoObject0 syaryo) {
         try {
             PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(syaryo.getName() + "_komtrax_data.csv"))));
             

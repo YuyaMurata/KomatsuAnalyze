@@ -68,7 +68,7 @@ public class TemplateCreate {
     }
 
     //Set Layout Index
-    private static Map index() {
+    public static Map index() {
         try (BufferedReader br = CSVFileReadWrite.readerSJIS(INDEX_PATH)) {
             String line;
             Map index = new HashMap();

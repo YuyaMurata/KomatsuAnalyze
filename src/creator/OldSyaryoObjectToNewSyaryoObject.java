@@ -9,7 +9,7 @@ import java.io.File;
 import java.util.Map;
 import java.util.TreeMap;
 import jdk.nashorn.internal.ir.debug.ObjectSizeCalculator;
-import json.SyaryoToZip;
+import json.SyaryoToZip0;
 import json.SyaryoToZip2;
 import json.SyaryoToZip3;
 import obj.SyaryoObject2;

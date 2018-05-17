@@ -10,7 +10,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import json.JsonToSyaryoObj;
 import json.SyaryoObjToJson;
-import obj.SyaryoObject;
+import obj.SyaryoObject0;
 
 /**
  *
@@ -18,7 +18,7 @@ import obj.SyaryoObject;
  */
 public class SyaryoFiltering {
     private static final String kisy = "WA470";
-    private static Map<String, SyaryoObject> syaryoMap;
+    private static Map<String, SyaryoObject0> syaryoMap;
     
     public static void main(String[] args) {
         JsonToSyaryoObj obj = new JsonToSyaryoObj();
@@ -28,7 +28,7 @@ public class SyaryoFiltering {
         
         TreeMap map1 = new TreeMap();
         TreeMap map2 = new TreeMap();
-        for(SyaryoObject syaryo : syaryoMap.values()){
+        for(SyaryoObject0 syaryo : syaryoMap.values()){
             if(syaryo.getType().equals("8"))
                 map1.put(syaryo.getName(), syaryo);
             else

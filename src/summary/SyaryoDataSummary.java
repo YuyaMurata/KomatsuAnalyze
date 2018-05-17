@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import json.SyaryoObjToJson;
-import json.SyaryoToZip;
+import json.SyaryoToZip0;
 import json.SyaryoToZip3;
 import obj.SyaryoObject2;
 import obj.SyaryoObject3;

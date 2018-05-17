@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-import json.SyaryoToZip;
+import json.SyaryoToZip0;
 import obj.SyaryoElements;
 import obj.SyaryoObject2;
 
@@ -24,7 +24,7 @@ public class SMRTime {
     
     public static void main(String[] args) {
         String filename = "json\\syaryo_obj_" + kisy + "_form";
-        Map<String, SyaryoObject2> syaryoMap = new SyaryoToZip().readObject(filename);
+        Map<String, SyaryoObject2> syaryoMap = new SyaryoToZip0().readObject(filename);
         
         String outputname = "max_smr_time_" + kisy + ".csv";
         try (PrintWriter csv = CSVFileReadWrite.writer(outputname)) {

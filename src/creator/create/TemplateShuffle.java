@@ -10,7 +10,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
-import json.SyaryoToZip;
+import json.SyaryoToZip0;
 import json.SyaryoToZip2;
 
 /**
@@ -113,7 +113,7 @@ public class TemplateShuffle {
             
             //Mapを出力
             for(Object key : fieldMap.keySet()){
-                new SyaryoToZip().write(FILENAME+key, fieldMap.get(key));
+                new SyaryoToZip0().write(FILENAME+key, fieldMap.get(key));
             }
         }
     }

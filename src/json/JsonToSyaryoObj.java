@@ -8,7 +8,7 @@ package json;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
-import obj.SyaryoObject;
+import obj.SyaryoObject0;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -23,11 +23,11 @@ import zip.ZipFile;
  */
 public class JsonToSyaryoObj {
     
-    public Map<String, SyaryoObject> reader(String filename){
-        Map<String, SyaryoObject> syaryoMap;
+    public Map<String, SyaryoObject0> reader(String filename){
+        Map<String, SyaryoObject0> syaryoMap;
         
         try(JsonReader reader = new JsonReader(new BufferedReader(new FileReader(filename)))){
-            Type type = new TypeToken<Map<String, SyaryoObject>>(){}.getType();
+            Type type = new TypeToken<Map<String, SyaryoObject0>>(){}.getType();
 
             Gson gson = new Gson();
             syaryoMap = gson.fromJson(reader, type);
@@ -39,11 +39,11 @@ public class JsonToSyaryoObj {
         return syaryoMap;
     }
     
-    public Map<String, SyaryoObject> reader2(String filename){
-        Map<String, SyaryoObject> syaryoMap;
+    public Map<String, SyaryoObject0> reader2(String filename){
+        Map<String, SyaryoObject0> syaryoMap;
         
         try{
-            Type type = new TypeToken<Map<String, SyaryoObject>>(){}.getType();
+            Type type = new TypeToken<Map<String, SyaryoObject0>>(){}.getType();
 
             Gson gson = new Gson();
             syaryoMap = gson.fromJson(new ZipFile().unzip(filename), type);

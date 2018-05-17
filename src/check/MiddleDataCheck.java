@@ -7,7 +7,7 @@ package check;
 
 import creator.template.SyaryoTemplate;
 import java.util.Map;
-import json.SyaryoToZip;
+import json.SyaryoToZip0;
 
 /**
  *
@@ -20,7 +20,7 @@ public class MiddleDataCheck {
 		//String outpath = "middle\\";
         String FILENAME = path+"syaryo_mid_" + kisy+"_オールサポート";
         
-        Map<String, SyaryoTemplate> syaryoMap = new SyaryoToZip().readTemplate(FILENAME);
+        Map<String, SyaryoTemplate> syaryoMap = new SyaryoToZip0().readTemplate(FILENAME);
         int cnt=0;
         for(String name : syaryoMap.keySet()){
             //if(!name.contains("-40651")) continue;

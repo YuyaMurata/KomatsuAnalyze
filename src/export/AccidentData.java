@@ -15,7 +15,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import json.JsonToSyaryoObj;
-import json.SyaryoToZip;
+import json.SyaryoToZip0;
 import obj.SyaryoElements;
 import obj.SyaryoObject2;
 
@@ -29,7 +29,7 @@ public class AccidentData {
 
     public static void main(String[] args) {
         String filename = "json\\syaryo_obj_" + kisy + "_form";
-        Map<String, SyaryoObject2> syaryoMap = new SyaryoToZip().readObject(filename);
+        Map<String, SyaryoObject2> syaryoMap = new SyaryoToZip0().readObject(filename);
 
         String outputname = "accident_" + kisy + ".csv";
         try (PrintWriter csv = CSVFileReadWrite.writer(outputname)) {

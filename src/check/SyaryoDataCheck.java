@@ -6,7 +6,7 @@
 package check;
 
 import java.util.Map;
-import json.SyaryoToZip;
+import json.SyaryoToZip0;
 import obj.SyaryoObject2;
 
 /**
@@ -16,7 +16,7 @@ import obj.SyaryoObject2;
 public class SyaryoDataCheck {
 	public static void main(String[] args) {
 		String kisy = "PC138US";
-		Map<String, SyaryoObject2> map = new SyaryoToZip().readObject("json\\syaryo_obj_"+kisy+"_form");
+		Map<String, SyaryoObject2> map = new SyaryoToZip0().readObject("json\\syaryo_obj_"+kisy+"_form");
 		
 		//syaryoCheck(1000, "オールサポート", map);
         //syaryoCheck("24709", "SMR", map);

@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import json.JsonToSyaryoObj;
-import obj.SyaryoObject;
+import obj.SyaryoObject0;
 
 /**
  *
@@ -49,7 +49,7 @@ public class ZipFile {
 	//Test
 	public static void main(String[] args) {
 		JsonToSyaryoObj json = new JsonToSyaryoObj();
-		Map<String, SyaryoObject> syaryoMap = json.reader2("syaryo_obj_WA470.zip");
+		Map<String, SyaryoObject0> syaryoMap = json.reader2("syaryo_obj_WA470.zip");
 
 		System.out.println(syaryoMap.keySet().stream().findFirst());
 	}

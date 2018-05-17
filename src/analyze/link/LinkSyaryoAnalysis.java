@@ -8,7 +8,7 @@ package analyze.link;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import json.SyaryoToZip;
+import json.SyaryoToZip0;
 import obj.SyaryoObject2;
 
 /**
@@ -20,7 +20,7 @@ public class LinkSyaryoAnalysis {
     
     public static void main(String[] args) {
         String filename = "json\\syaryo_obj_" + kisy + "_form";
-        Map<String, SyaryoObject2> syaryoMap = new SyaryoToZip().readObject(filename);
+        Map<String, SyaryoObject2> syaryoMap = new SyaryoToZip0().readObject(filename);
         
         List key = syaryoMap.keySet().stream().collect(Collectors.toList());
         for(int i=0; i< key.size()-1; i++){

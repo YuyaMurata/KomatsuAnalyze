@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import creator.template.SyaryoTemplate;
 import java.util.stream.Collectors;
-import json.SyaryoToZip;
+import json.SyaryoToZip0;
 import json.SyaryoToZip2;
 
 /**
@@ -33,7 +33,7 @@ public class SyaryoTemplateCompressAggregate {
 		String FILENAME = outpath+"syaryo_mid_" + kisy;
 		File[] flist = (new File(path)).listFiles();
 
-		TreeMap<String, SyaryoTemplate> syaryoBase = new TreeMap(new SyaryoToZip().readTemplate(path + "syaryo_"+kisy+"_template.gz"));
+		TreeMap<String, SyaryoTemplate> syaryoBase = new TreeMap(new SyaryoToZip0().readTemplate(path + "syaryo_"+kisy+"_template.gz"));
 
 		System.out.println(syaryoBase.keySet().stream().map(s -> s.split("-")[0]).distinct().collect(Collectors.toList()));
 		//System.exit(0);
@@ -103,6 +103,6 @@ public class SyaryoTemplateCompressAggregate {
 
 		syaryoBase.put("_summary", new SyaryoTemplate("データ件数, " + totalRecord, ",車両数, " + syaryoBase.size(), "", ""));
 
-		new SyaryoToZip().write(FILENAME, syaryoBase);
+		new SyaryoToZip0().write(FILENAME, syaryoBase);
 	}
 }

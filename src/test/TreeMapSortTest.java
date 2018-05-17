@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-import json.SyaryoToZip;
+import json.SyaryoToZip0;
 import obj.SyaryoObject2;
 
 /**
@@ -19,7 +19,7 @@ import obj.SyaryoObject2;
 public class TreeMapSortTest {
     public static void main(String[] args) {
         String filename = "json\\syaryo_obj_PC138US_form";
-        Map<String, SyaryoObject2> syaryoMap = new SyaryoToZip().readObject(filename);
+        Map<String, SyaryoObject2> syaryoMap = new SyaryoToZip0().readObject(filename);
         
         SyaryoObject2 syaryo = syaryoMap.values().stream().findAny().get();
         syaryo.decompress();

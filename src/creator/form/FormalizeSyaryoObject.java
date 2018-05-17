@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 import json.JsonToSyaryoObj;
 import json.SyaryoObjToJson;
 import obj.SyaryoElements;
-import obj.SyaryoObject;
+import obj.SyaryoObject0;
 
 /**
  * 車両オブジェクトから重複部分を排除して整形
@@ -58,10 +58,10 @@ public class FormalizeSyaryoObject {
     }
 
     //2009年以前の車両を分離
-    public Map<String, SyaryoObject> split(Map<String, SyaryoObject> syaryoMap) {
+    public Map<String, SyaryoObject0> split(Map<String, SyaryoObject0> syaryoMap) {
         //Type
         Map map = new TreeMap();
-        for (SyaryoObject syaryo : syaryoMap.values()) {
+        for (SyaryoObject0 syaryo : syaryoMap.values()) {
             if (Integer.valueOf(syaryo.getType()) > 6) {
                 map.put(syaryo.getName(), syaryo);
             }
@@ -70,7 +70,7 @@ public class FormalizeSyaryoObject {
         return map;
     }
 
-    public Map<String, SyaryoObject> join(String[] kisy) {
+    public Map<String, SyaryoObject0> join(String[] kisy) {
         //Type
         Map map = new TreeMap();
         for (String s : kisy) {
@@ -81,7 +81,7 @@ public class FormalizeSyaryoObject {
         return map;
     }
 
-    public Map<String, SyaryoObject> formalize(Map<String, SyaryoObject> syaryoMap) {
+    public Map<String, SyaryoObject0> formalize(Map<String, SyaryoObject0> syaryoMap) {
         Map map = new TreeMap();
 
         for (String name : syaryoMap.keySet()) {
@@ -528,7 +528,7 @@ public class FormalizeSyaryoObject {
     }
 
     //オブジェクトデータの補間
-    private Map<String, SyaryoObject> interFormalize(Map<String, SyaryoObject> syaryoMap) {
+    private Map<String, SyaryoObject0> interFormalize(Map<String, SyaryoObject0> syaryoMap) {
         Map map = new TreeMap();
 
         for (String name : syaryoMap.keySet()) {
@@ -543,7 +543,7 @@ public class FormalizeSyaryoObject {
     }
 
     //SMRの補間
-    private void interSMR(SyaryoObject syaryo, Map<String, List> smrMap) {
+    private void interSMR(SyaryoObject0 syaryo, Map<String, List> smrMap) {
         Map<String, List> update = new TreeMap();
 
         if (smrMap == null) {

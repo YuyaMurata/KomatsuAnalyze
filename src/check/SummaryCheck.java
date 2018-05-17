@@ -7,7 +7,7 @@ package check;
 
 import java.util.Map;
 import json.JsonToSyaryoObj;
-import obj.SyaryoObject;
+import obj.SyaryoObject0;
 
 /**
  *
@@ -15,7 +15,7 @@ import obj.SyaryoObject;
  */
 public class SummaryCheck {
     public static void main(String[] args) {
-        Map<String, SyaryoObject> syaryo = new JsonToSyaryoObj().reader("syaryo_obj_WA500.json");
+        Map<String, SyaryoObject0> syaryo = new JsonToSyaryoObj().reader("syaryo_obj_WA500.json");
         System.out.println(syaryo.entrySet().parallelStream()
                                     .filter(s -> s.getKey().equals("_summary"))
                                     .map(sum -> sum.getValue().getName())

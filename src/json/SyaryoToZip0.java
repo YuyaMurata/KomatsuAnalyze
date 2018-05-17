@@ -30,7 +30,7 @@ import obj.SyaryoObject3;
  *
  * @author ZZ17390
  */
-public class SyaryoToZip {
+public class SyaryoToZip0 {
 
     public void write(String filename, Map syaryoMap) {
         filename = filename.replace(".json", "").replace(".gz", "") + ".gz";

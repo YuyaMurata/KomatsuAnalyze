@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import jdk.nashorn.internal.ir.debug.ObjectSizeCalculator;
 import json.JsonToSyaryoTemplate;
-import json.SyaryoToZip;
+import json.SyaryoToZip0;
 
 /**
  *
@@ -43,7 +43,7 @@ public class TranslationSyaryoToBSON {
                 syaryoMap.put(name, syaryo);
             }
             System.out.println("compress:"+ObjectSizeCalculator.getObjectSize(syaryoMap));
-            new SyaryoToZip().write(outpath+f.getName(), syaryoMap);
+            new SyaryoToZip0().write(outpath+f.getName(), syaryoMap);
             
             syaryoTemplates = null;
         }

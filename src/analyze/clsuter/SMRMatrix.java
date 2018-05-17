@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import json.JsonToSyaryoObj;
 import obj.SyaryoElements;
-import obj.SyaryoObject;
+import obj.SyaryoObject0;
 
 /**
  *
@@ -23,7 +23,7 @@ import obj.SyaryoObject;
 public class SMRMatrix {
 
 	public static Object[][] create(String filename) {
-		Map<String, SyaryoObject> syaryoMap = new JsonToSyaryoObj().reader(filename);
+		Map<String, SyaryoObject0> syaryoMap = new JsonToSyaryoObj().reader(filename);
 		int n = syaryoMap.values().stream()
 			.map(s -> s.getAge(s.getSMR().keySet().toArray(new String[s.getSMR().size()])[s.getSMR().size() - 1]))
 			.map(s -> Integer.valueOf(s))
@@ -133,7 +133,7 @@ public class SMRMatrix {
 		}
 	}
 
-	private static String diffValue(SyaryoObject syaryo, String date) {
+	private static String diffValue(SyaryoObject0 syaryo, String date) {
 		return syaryo.diffSMR(date);
 	}
 

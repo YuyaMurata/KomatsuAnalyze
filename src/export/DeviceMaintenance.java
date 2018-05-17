@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import json.MapIndexToJSON;
-import json.SyaryoToZip;
+import json.SyaryoToZip0;
 import json.SyaryoToZip3;
 import obj.SyaryoElements;
 import obj.SyaryoObject2;

@@ -12,7 +12,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import json.JsonToSyaryoObj;
 import obj.SyaryoElements;
-import obj.SyaryoObject;
+import obj.SyaryoObject0;
 import creator.template.SyaryoTemplate;
 
 /**
@@ -22,7 +22,7 @@ import creator.template.SyaryoTemplate;
 public class SyaryoCheck {
 
     private static final String kisy = "WA470";
-    private static Map<String, SyaryoObject> syaryoMap;
+    private static Map<String, SyaryoObject0> syaryoMap;
 
     public static void main(String[] args) {
         JsonToSyaryoObj obj = new JsonToSyaryoObj();
@@ -48,7 +48,7 @@ public class SyaryoCheck {
 
         for (String typ : typs) {
             long cnt = 0L;//syaryoMap.keySet().stream().filter(s -> s.split("-")[1].contains(typ)).filter(s -> syaryoMap.get(s).getKomtrax()).count();
-            for (SyaryoObject syaryo : syaryoMap.values()) {
+            for (SyaryoObject0 syaryo : syaryoMap.values()) {
                 if (!syaryo.getType().equals(typ)) {
                     continue;
                 }
@@ -67,11 +67,11 @@ public class SyaryoCheck {
         }
     }
 
-    public static void smr(String name, Map<String, SyaryoObject> map) {
+    public static void smr(String name, Map<String, SyaryoObject0> map) {
         map.get(name).getSMR().entrySet().stream().forEach(e -> System.out.println(e.getKey() + ":" + e.getValue()));
     }
 
-    public static void smrCheck(Map<String, SyaryoObject> map) {
+    public static void smrCheck(Map<String, SyaryoObject0> map) {
         for (String name : map.keySet()) {
             String before = "";
             String before0 = "";
@@ -90,7 +90,7 @@ public class SyaryoCheck {
         }
     }
 
-    public static void komtraxCheck(Map<String, SyaryoObject> map) {
+    public static void komtraxCheck(Map<String, SyaryoObject0> map) {
         List<String> km0 = map.entrySet().stream()
             .filter(s -> !s.getValue().getKomtrax()).map(s -> s.getKey())
             .collect(Collectors.toList());
@@ -104,7 +104,7 @@ public class SyaryoCheck {
         System.out.println(km1);
     }
     
-    public static void customerCheck(Map<String, SyaryoObject> map){
+    public static void customerCheck(Map<String, SyaryoObject0> map){
         for(String name : map.keySet()){
             Map<String, List> owner = map.get(name).getOwner();
             if(owner.isEmpty())
@@ -125,7 +125,7 @@ public class SyaryoCheck {
     }
 
     public static void nullCheck() {
-        for (SyaryoObject syaryo : syaryoMap.values()) {
+        for (SyaryoObject0 syaryo : syaryoMap.values()) {
             if (syaryo.getNew() == null) {
                 System.out.println(syaryo.getName());
             }

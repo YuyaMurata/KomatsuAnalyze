@@ -8,7 +8,7 @@ package creator;
 import creator.template.SyaryoTemplate;
 import java.io.IOException;
 import java.util.Map;
-import json.SyaryoToZip;
+import json.SyaryoToZip0;
 
 /**
  *
@@ -21,7 +21,7 @@ public class TraslationBSONToSyaryo {
         String path = "json\\";
         //String filename = path+"syaryo_"+kisy+"_template_allsupport";
         String filename = path+"syaryo_obj_"+kisy;
-        Map<String, SyaryoTemplate> syaryoTemplates = new SyaryoToZip().readTemplate(filename);
+        Map<String, SyaryoTemplate> syaryoTemplates = new SyaryoToZip0().readTemplate(filename);
         
         for(String name : syaryoTemplates.keySet()){
             syaryoTemplates.get(name).decompress();

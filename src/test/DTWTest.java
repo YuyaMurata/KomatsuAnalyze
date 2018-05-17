@@ -8,7 +8,7 @@ package test;
 import java.util.HashMap;
 import java.util.Map;
 import json.JsonToSyaryoObj;
-import obj.SyaryoObject;
+import obj.SyaryoObject0;
 
 /**
  *
@@ -17,7 +17,7 @@ import obj.SyaryoObject;
 public class DTWTest {
     public static void main(String[] args) {
         JsonToSyaryoObj jobj = new JsonToSyaryoObj();
-        Map<String, SyaryoObject> smap = jobj.reader("syaryo_obj_WA470_from.json");
+        Map<String, SyaryoObject0> smap = jobj.reader("syaryo_obj_WA470_from.json");
         
         
     }

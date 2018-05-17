@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import json.JsonToSyaryoObj;
 import obj.SyaryoElements;
-import obj.SyaryoObject;
+import obj.SyaryoObject0;
 
 /**
  *
@@ -31,7 +31,7 @@ public class AllSyaryoToCSV {
     public static void main(String[] args) {
         String path = "..\\KomatsuData\\分析結果\\";
         String kisy = "WA470";
-        Map<String, SyaryoObject> syaryoMap = new JsonToSyaryoObj().reader("json\\syaryo_obj_" + kisy + "_form.json");
+        Map<String, SyaryoObject0> syaryoMap = new JsonToSyaryoObj().reader("json\\syaryo_obj_" + kisy + "_form.json");
 
         //service(path + kisy, syaryoMap);
         //order(path+kisy, syaryoMap);
@@ -44,12 +44,12 @@ public class AllSyaryoToCSV {
         //smrReachCount(kisy, 100, syaryoMap);
     }
 
-    public static void order(String filename, Map<String, SyaryoObject> syaryoMap) {
+    public static void order(String filename, Map<String, SyaryoObject0> syaryoMap) {
         PrintWriter pw;
 
         try {
             pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(filename + "_order.csv"))));
-            for (SyaryoObject syaryo : syaryoMap.values()) {
+            for (SyaryoObject0 syaryo : syaryoMap.values()) {
                 if (syaryo.getOrder() != null) {
                     for (String date : syaryo.getOrder().keySet()) {
                         List order = syaryo.getRow("受注", date);
@@ -64,18 +64,18 @@ public class AllSyaryoToCSV {
         }
     }
 
-    public static void komtrax(String filename, Map<String, SyaryoObject> syaryoMap) {
+    public static void komtrax(String filename, Map<String, SyaryoObject0> syaryoMap) {
         PrintWriter pw1, pw2;
 
         try {
             pw1 = new PrintWriter(new BufferedWriter(new FileWriter(new File(filename + "_komtrax_syaryoDB.csv"))));
             pw2 = new PrintWriter(new BufferedWriter(new FileWriter(new File(filename + "_komtrax_komtraxDB.csv"))));
 
-            List<SyaryoObject> syaryos = syaryoMap.values().stream()
+            List<SyaryoObject0> syaryos = syaryoMap.values().stream()
                     .filter(s -> s.getType().equals("8"))
                     .collect(Collectors.toList());
 
-            for (SyaryoObject syaryo : syaryos) {
+            for (SyaryoObject0 syaryo : syaryos) {
                 String[] name = syaryo.getName().split("-");
                 if (syaryo.getKomtrax()) {
                     pw1.println(name[0] + "," + name[1] + "," + name[2] + "," + syaryo.getKomtrax());
@@ -96,7 +96,7 @@ public class AllSyaryoToCSV {
         }
     }
 
-    public static void service(String filename, Map<String, SyaryoObject> syaryoMap) {
+    public static void service(String filename, Map<String, SyaryoObject0> syaryoMap) {
         PrintWriter pw;
 
         try {
@@ -109,11 +109,11 @@ public class AllSyaryoToCSV {
 
             Map<String, Integer> map = new TreeMap();
             for (String typ : typs) {
-                List<SyaryoObject> syaryos = syaryoMap.values().stream()
+                List<SyaryoObject0> syaryos = syaryoMap.values().stream()
                         .filter(s -> s.getType().toString().equals(typ))
                         .collect(Collectors.toList());
 
-                for (SyaryoObject syaryo : syaryos) {
+                for (SyaryoObject0 syaryo : syaryos) {
                     for (String date : syaryo.getHistory().keySet()) {
                         List history = syaryo.getHistory().get(date);
                         if (!history.get(1).toString().contains("service")) {
@@ -138,7 +138,7 @@ public class AllSyaryoToCSV {
         }
     }
 
-    public static void komtraxError(String filename, Map<String, SyaryoObject> syaryoMap) {
+    public static void komtraxError(String filename, Map<String, SyaryoObject0> syaryoMap) {
         PrintWriter pw;
 
         try {
@@ -146,7 +146,7 @@ public class AllSyaryoToCSV {
 
             Map<String, Map<String, Integer>> map = new TreeMap();
             List<String> header = new ArrayList<>();
-            for (SyaryoObject syaryo : syaryoMap.values()) {
+            for (SyaryoObject0 syaryo : syaryoMap.values()) {
                 if (syaryo.getError() == null) {
                     continue;
                 }
@@ -179,7 +179,7 @@ public class AllSyaryoToCSV {
         }
     }
 
-    public static void orderDataCount(String filename, Map<String, SyaryoObject> syaryoMap, String rule) {
+    public static void orderDataCount(String filename, Map<String, SyaryoObject0> syaryoMap, String rule) {
         try {
             PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(filename + "_extract_ordercnt_r" + rule + ".csv"))));
             pw.println("name,customer," + rule + "_CNT");
@@ -207,7 +207,7 @@ public class AllSyaryoToCSV {
 
     }
 
-    public static void workDataCount(String filename, Map<String, SyaryoObject> syaryoMap, String rule) {
+    public static void workDataCount(String filename, Map<String, SyaryoObject0> syaryoMap, String rule) {
         try {
             PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(filename + "_extract_workcnt_r" + rule + ".csv"))));
             pw.println("type," + rule + "_CNT, inv");
@@ -247,7 +247,7 @@ public class AllSyaryoToCSV {
 
     }
 
-    public static void workDataCount2(String filename, Map<String, SyaryoObject> syaryoMap, String rule) {
+    public static void workDataCount2(String filename, Map<String, SyaryoObject0> syaryoMap, String rule) {
         try {
             PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(filename + "_workcnt_r" + rule + ".csv"))));
             pw.println("name,type," + rule + "_CNT, 金額, 会社, 作番, SMR, 経過年");
@@ -295,12 +295,12 @@ public class AllSyaryoToCSV {
 
     }
     
-    public static void smrOrderCount(String filename, Map<String, SyaryoObject> syaryoMap){
+    public static void smrOrderCount(String filename, Map<String, SyaryoObject0> syaryoMap){
         try {
             PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(filename + "_smrToorder.csv"))));
             pw.println("name,SMR,order");
             
-            for(SyaryoObject syaryo : syaryoMap.values()){
+            for(SyaryoObject0 syaryo : syaryoMap.values()){
                 if(syaryo.getOrder() == null){
                     pw.println(syaryo.getName()+",NA, NA");
                     continue;
@@ -316,13 +316,13 @@ public class AllSyaryoToCSV {
         }
     }
     
-    public static void smrReachCount(String filename, Integer smriv,Map<String, SyaryoObject> syaryoMap){
+    public static void smrReachCount(String filename, Integer smriv,Map<String, SyaryoObject0> syaryoMap){
         try{
             PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(filename + "_smr.csv"))));
             pw.println("SMR,count");
             
             Integer max = 0;
-            for(SyaryoObject syaryo : syaryoMap.values()){
+            for(SyaryoObject0 syaryo : syaryoMap.values()){
                 String last = syaryo.getSMR().keySet().stream().max(Comparator.naturalOrder()).get();
                 if(max < Integer.valueOf(syaryo.getSMR(last)))
                     max = Integer.valueOf(syaryo.getSMR(last));
@@ -333,7 +333,7 @@ public class AllSyaryoToCSV {
             for(int i=1; i < max; i+= smriv)
                 map.put(i, 0);
             
-            for(SyaryoObject syaryo : syaryoMap.values()){
+            for(SyaryoObject0 syaryo : syaryoMap.values()){
                 String last = syaryo.getSMR().keySet().stream().max(Comparator.naturalOrder()).get();
                 int i=1;
                 while(i < Integer.valueOf(syaryo.getSMR(last))){
