@@ -18,8 +18,12 @@ import json.SyaryoToZip2;
  * @author ZZ17390
  */
 public class TemplateShuffle {
+    private static String KISY = "PC138US";
+    private static String FILEPATH = "template\\";
+    private static String OUTPATH = "middle\\";
+    
     public static void main(String[] args) {
-        shuffle("PC200");
+        shuffle(KISY);
     }
     
     public static void shuffle(String kisy){
