@@ -8,6 +8,7 @@ package creator.create;
 import creator.template.SyaryoTemplate;
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import json.MapIndexToJSON;
@@ -26,12 +27,59 @@ public class TemplateShuffle {
     
     public static void main(String[] args) {
         //shuffle(KISY);
-        
-        System.out.println(index());
+        Map<String, Map<String, List>> map = index();
+        for(Map<String, List> m : map.values()){
+            for(List<String> l : m.values())
+                for(String s : l)
+                    check(s);
+        }
     }
     
     private static Map index(){
         return new MapIndexToJSON().reader(INDEXPATH);
+    }
+    
+    private static Map check(String d){
+        Map cmap = new HashMap();
+        System.out.println(d);
+        
+        if(!d.contains("."))
+            cmap.put("data", d);
+        else if(d.contains("=")){
+            cmap.put("condition", "=");
+            cmap.put("comp1", d.split("=")[0]);
+            cmap.put("comp2", d.split("=")[1]);
+        } else if (d.contains("<>")){
+            cmap.put("condition", "<>");
+            cmap.put("comp1", d.split("<>")[0]);
+            cmap.put("comp2", d.split("<>")[1]);
+        } else if(d.contains("<")){
+            cmap.put("condition", "<");
+            cmap.put("comp1", d.split("<")[0]);
+            cmap.put("comp2", d.split("<")[1]);
+        } else if(d.contains(">")){
+            cmap.put("condition", ">");
+            cmap.put("comp1", d.split(">")[0]);
+            cmap.put("comp2", d.split(">")[1]);
+        }else if(d.contains("+")){
+            cmap.put("arith", "+");
+            cmap.put("v1", d.split("+")[0]);
+            cmap.put("v2", d.split("+")[1]);
+        }else if(d.contains("-")){
+            cmap.put("arith", "-");
+            cmap.put("v1", d.split("-")[0]);
+            cmap.put("v2", d.split("-")[1]);
+        }else if(d.contains("/")){
+            cmap.put("arith", "/");
+            cmap.put("v1", d.split("/")[0]);
+            cmap.put("v2", d.split("/")[1]);
+        }else{
+            
+        }
+        
+        System.out.println(cmap);
+        
+        return cmap;
     }
     
     //旧バージョン
