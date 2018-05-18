@@ -10,6 +10,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
+import json.MapIndexToJSON;
 import json.SyaryoToZip0;
 import json.SyaryoToZip2;
 
@@ -19,13 +20,21 @@ import json.SyaryoToZip2;
  */
 public class TemplateShuffle {
     private static String KISY = "PC138US";
+    private static String INDEXPATH="index\\shuffle_format.json";
     private static String FILEPATH = "template\\";
     private static String OUTPATH = "middle\\";
     
     public static void main(String[] args) {
-        shuffle(KISY);
+        //shuffle(KISY);
+        
+        System.out.println(index());
     }
     
+    private static Map index(){
+        return new MapIndexToJSON().reader(INDEXPATH);
+    }
+    
+    //旧バージョン
     public static void shuffle(String kisy){
         String path = "..\\KomatsuData\\車両テンプレート\\"+kisy+"\\gz\\";
 		String outpath = "..\\KomatsuData\\中間データ\\"+kisy+"\\";

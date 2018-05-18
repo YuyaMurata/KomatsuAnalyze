@@ -23,7 +23,7 @@ import obj.SyaryoObject3;
  */
 public class SyaryoDataSummary {
 
-    private static String kisy = "PC200";
+    private static String kisy = "PC138US";
     private static String path = "..\\KomatsuData\\車両テンプレート\\" + kisy + "\\";
 
     public static void main(String[] args) {

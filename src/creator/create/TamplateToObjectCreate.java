@@ -21,14 +21,15 @@ import obj.SyaryoObject4;
  */
 public class TamplateToObjectCreate {
 
-    private static String KISY = "PC138US";
+    private static String[] kisyList = new String[]{"PC138US", "PC200", "PC200LC", "PC200SC", "PC78US", "WA470", "WA100", "PC210", "PC210LC"};
     private static String FILEPATH = "template\\";
     private static String OUTPATH = "middle\\";
     //private static String path = "middle\\"+kisy+"\\mid\\";
     //private static String outpath = "middle\\"+kisy+"\\obj\\";
 
     public static void main(String[] args) {
-        create(KISY);
+        for(String kisy : kisyList)
+            create(kisy);
     }
 
     public static void create(String kisy) {
