@@ -68,7 +68,7 @@ public class TamplateToObjectCreate {
             //int n = 0;
             //int en = 0;
             //オブジェクト化
-            templats.entrySet().parallelStream()
+            templats.entrySet().stream()
                 .map(s -> s.getValue()).forEach(s -> {
 
                 SyaryoObject4 syaryoObj = new SyaryoObject4(s.getName());
