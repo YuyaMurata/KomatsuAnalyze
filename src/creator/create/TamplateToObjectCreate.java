@@ -64,7 +64,13 @@ public class TamplateToObjectCreate {
 
             Map<String, SimpleTemplate> templats = json.reader(f.getAbsolutePath());
             TreeMap<String, SyaryoObject4> syaryoMap = new TreeMap();
-
+            
+            if(templats.isEmpty()){
+                System.out.println("No Data " + objf.getName());
+                continue;
+            }
+                
+            
             //int n = 0;
             //int en = 0;
             //オブジェクト化

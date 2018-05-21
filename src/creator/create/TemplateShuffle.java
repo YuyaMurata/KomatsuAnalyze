@@ -35,6 +35,7 @@ public class TemplateShuffle {
 
     public static void main(String[] args) {
         //shuffle(KISY);
+        create(KISY);
     }
 
     private static Map index() {
@@ -43,24 +44,24 @@ public class TemplateShuffle {
 
     private static Map check(String d) {
         Map cmap = new HashMap();
-        System.out.println(d);
+        //System.out.println(d);
 
         if (d.contains("=")) {
             cmap.put("condition", "=");
-            cmap.put("comp1", d.split("=")[0]);
-            cmap.put("comp2", d.split("=")[1]);
+            cmap.put("c1", d.split("=")[0]);
+            cmap.put("c2", d.split("=")[1]);
         } else if (d.contains("<>")) {
             cmap.put("condition", "<>");
-            cmap.put("comp1", d.split("<>")[0]);
-            cmap.put("comp2", d.split("<>")[1]);
+            cmap.put("c1", d.split("<>")[0]);
+            cmap.put("c2", d.split("<>")[1]);
         } else if (d.contains("<")) {
             cmap.put("condition", "<");
-            cmap.put("comp1", d.split("<")[0]);
-            cmap.put("comp2", d.split("<")[1]);
+            cmap.put("c1", d.split("<")[0]);
+            cmap.put("c2", d.split("<")[1]);
         } else if (d.contains(">")) {
             cmap.put("condition", ">");
-            cmap.put("comp1", d.split(">")[0]);
-            cmap.put("comp2", d.split(">")[1]);
+            cmap.put("c1", d.split(">")[0]);
+            cmap.put("c2", d.split(">")[1]);
         } else if (d.contains("|")) {
             cmap.put("arith", "|");
             cmap.put("v1", d.split("\\|")[0]);
@@ -81,10 +82,10 @@ public class TemplateShuffle {
             cmap.put("data", d);
         }
 
-        if (cmap.get("comp2") != null) {
-            String s = cmap.get("comp2").toString();
+        if (cmap.get("c2") != null) {
+            String s = cmap.get("c2").toString();
             if (s.contains("?")) {
-                cmap.put("comp2", s.split("\\?")[0]);
+                cmap.put("c2", s.split("\\?")[0]);
                 cmap.put("data", s.split("\\?")[1]);
             }
         }
@@ -111,27 +112,36 @@ public class TemplateShuffle {
 
                 //Read SyaryoObject File
                 List<String> readList = getDatas.stream()
-                        .filter(s -> s.contains("."))
-                        .map(s -> s.split(".")[0])
-                        .distinct()
-                        .collect(Collectors.toList());
+                    .filter(s -> s.contains("."))
+                    .map(s -> s.split("\\.")[0])
+                    .distinct()
+                    .collect(Collectors.toList());
                 Map<String, Map<String, SyaryoObject4>> readFile = new HashMap();
                 for (String f : readList) {
-                    readFile.put(f, zip.read(FILEPATH + "syaryo_mid_" + kisy + "_" + f + "bz2"));
+                    readFile.put(f, zip.read(FILEPATH + "syaryo_mid_" + kisy + "_" + f + ".bz2"));
                 }
 
                 //車両ごとにデータを抽出
                 for (String id : syaryoIndex) {
                     //読み込むファイルにIDが存在しなければ飛ばす
                     Boolean flg = false;
+                    String table = "";
                     for (String f : readFile.keySet()) {
                         if (readFile.get(f).get(id) == null) {
+                            table += f;
                             flg = true;
+                        } else {
+                            table += ",exist " + f + ",";
                         }
                     }
                     if (flg) {
+                        System.out.println("Do not exist ID." + id + " : " + table);
                         continue;
                     }
+
+                    //Read File Extract Syaryo ID
+                    Map readMap = idExtractList(id, readFile);
+                    System.out.println(id + ":" + readMap);
 
                     //Shuffle車両の登録
                     SyaryoObject4 shuffleSyaryo = shuffleMap.get(id);
@@ -139,57 +149,180 @@ public class TemplateShuffle {
                         shuffleSyaryo = new SyaryoObject4(id);
                     }
 
+                    Map updateMap = shuffleSyaryo.get(key);
+                    if (updateMap == null) {
+                        updateMap = new HashMap();
+                    }
+
+                    format(getDatas, subKey, readMap, updateMap);
+                    System.out.println(updateMap);
+                    System.exit(0);
                 }
             }
         }
     }
 
-    private static Map format(List<String> formatList, String subKey, List<String> inList, Map<String, List<String>> updateMap) {
-        Boolean flg = false;
-        List dataList = new ArrayList();
-        for (String g : formatList) {
+    //テンプレートファイルからターゲット車両のリストデータを抽出する
+    private static Map<String, List<List<String>>> idExtractList(String target, Map<String, Map<String, SyaryoObject4>> readFile) {
+        Map extract = new HashMap();
+        for (String table : readFile.keySet()) {
+            List<List<String>> data = new ArrayList<>();
+
+            SyaryoObject4 targetSyaryo = readFile.get(table).get(target);
+            targetSyaryo.decompress();
+
+            for (Object list : targetSyaryo.map.values()) {
+                data.add((List<String>) list);
+            }
+
+            targetSyaryo.compress(false);
+            extract.put(table, data);
+        }
+
+        return extract;
+    }
+
+    private static Map format(List<String> formatData, String subKey, Map<String, List<List<String>>> readMap, Map<String, List<String>> updateMap) {
+        List<Map<String, String>> formatList = new ArrayList<>();
+
+        for (String g : formatData) {
             Map<String, String> getData = check(g);
-            if(getData.get("data") != null){
-                String data = getData.get("data");
-                if(data.contains("#"))
-                    data = inList.get(Integer.valueOf(data.split("#")[1]));
-                else if(data.contains("arith"))
-                    data = calc(getData.get("arith"), getData.get("v1"), getData.get("v2"), inList).toString();
-                dataList.add(data);
+            formatList.add(getData);
+        }
+
+        //SubKey settings
+        String subKeyTable = null;
+        Integer subKeyIDX = null;
+        if (subKey.contains("#")) {
+            subKeyTable = subKey.split("\\.")[0];
+            subKeyIDX = Integer.valueOf(subKey.split("#")[1]);
+        }
+
+        //Data settings
+        for (Map<String, String> f : formatList) {
+            String key = subKey;
+            if (f.get("condition") != null) {
+                comp(f, readMap, subKeyTable, subKeyIDX, key, updateMap);
+            } else if (f.get("arith") != null) {
+                arith(f, readMap, subKeyTable, subKeyIDX, key, updateMap);
+            } else if (f.get("data") != null) {
+                data(f, readMap, subKeyTable, subKeyIDX, key, updateMap);
             }
         }
-        
-        //除外時の処理
-        if(flg)
-            return null;
-        
-        //Mapを更新
-        String key;
-        if(subKey.contains("#"))
-            key = inList.get(Integer.valueOf(subKey.split("#")[1]));
-        else
-            key = subKey;
-        
-        updateMap.put(key, dataList);
-        
+
         return updateMap;
     }
-    
-    private static Object calc(String op, String v1, String v2, List<String> ref){
+
+    private static void data(Map<String, String> f, Map<String, List<List<String>>> readMap, String subKeyTable, Integer subKeyIDX, String key, Map<String, List<String>> updateMap) {
+        //Simple exist key="data"
+        String table = null;
+        Integer idx = null;
+        if (f.get("data").contains("#")) {
+            table = f.get("data").split("\\.")[0];
+            idx = Integer.valueOf(f.get("data").split("#")[1]);
+        }
+        for (int i = 0; i < readMap.get(table).size(); i++) {
+            if (subKeyIDX != null) {
+                key = readMap.get(subKeyTable).get(i).get(subKeyIDX);
+            }
+            if (updateMap.get(key) == null) {
+                updateMap.put(key, new ArrayList());
+            }
+
+            if (idx != null) {
+                updateMap.get(key).add(readMap.get(table).get(i).get(idx));
+            } else {
+                updateMap.get(key).add(f.get("data"));
+            }
+        }
+    }
+
+    private static void arith(Map<String, String> f, Map<String, List<List<String>>> readMap, String subKeyTable, Integer subKeyIDX, String key, Map<String, List<String>> updateMap) {
+        //key="arith"
+        String table = null;
+        Integer idx = null;
+        if (f.get("v1").contains("#")) {
+            table = f.get("v1").split("\\.")[0];
+            idx = Integer.valueOf(f.get("v1").split("#")[1]);
+        }
+        for (int i = 0; i < readMap.get(table).size(); i++) {
+            if (subKeyIDX != null) {
+                key = readMap.get(subKeyTable).get(i).get(subKeyIDX);
+            }
+            if (updateMap.get(key) == null) {
+                updateMap.put(key, new ArrayList());
+            }
+
+            if (idx != null) {
+                updateMap.get(key).add(calc(f.get("arith"), f.get("v1"), f.get("v2"), readMap.get(table).get(i)).toString());
+            }
+        }
+    }
+
+    private static Object calc(String op, String v1, String v2, List<String> ref) {
         v1 = ref.get(Integer.valueOf(v1.split("#")[1]));
-        if(v2.contains("#"))
-            v2 = ref.get(Integer.valueOf(v2.split("#")[1]));;
-        
-        if(op.equals("+"))
+        if (v2.contains("#")) {
+            v2 = ref.get(Integer.valueOf(v2.split("#")[1]));
+        }
+
+        if (op.equals("+")) {
             return Integer.valueOf(v1) + Integer.valueOf(v2);
-        else if(op.equals("-"))
+        } else if (op.equals("-")) {
             return Integer.valueOf(v1) - Integer.valueOf(v2);
-        else if(op.equals("/"))
+        } else if (op.equals("/")) {
             return Integer.valueOf(v1) - Integer.valueOf(v2);
-        else if(op.equals("|"))
+        } else if (op.equals("|")) {
             return Integer.valueOf(v1) | Integer.valueOf(v2);
-        else{
-            System.out.println("Arithmatic Error! "+op);
+        } else {
+            System.out.println("Arithmatic Error! " + op);
+            return null;
+        }
+    }
+
+    private static List<String> comp(Map<String, String> f, Map<String, List<List<String>>> readMap, String subKeyTable, Integer subKeyIDX, String key, Map<String, List<String>> updateMap) {
+        String table = null;
+        Integer idx = null;
+        List reject = new ArrayList();
+        if (f.get("c1").contains("#")) {
+            table = f.get("c1").split("\\.")[0];
+            idx = Integer.valueOf(f.get("comp1").split("#")[1]);
+        }
+        for (int i = 0; i < readMap.get(table).size(); i++) {
+            if (subKeyIDX != null) {
+                key = readMap.get(subKeyTable).get(i).get(subKeyIDX);
+            }
+            if (!compare(f.get("condition"), f.get("c1"), f.get("c2"), readMap.get(table).get(i))) {
+                //データ除外
+                reject.add(key);
+            } else {
+                if (f.get("data") != null) {
+                    if (updateMap.get(key) == null) {
+                        updateMap.put(key, new ArrayList());
+                    }
+                    
+                    updateMap.get(key).add(readMap.get(table).get(i).get(idx));
+                }
+            }
+        }
+        return reject;
+    }
+
+    private static Boolean compare(String cond, String c1, String c2, List<String> ref) {
+        c1 = ref.get(Integer.valueOf(c1.split("#")[1]));
+        if (c2.contains("#")) {
+            c2 = ref.get(Integer.valueOf(c2.split("#")[1]));
+        }
+
+        c2 = c2.replace("'", "");
+        if (cond.equals("=")) {
+            return c1.equals(c2);
+        } else if (cond.equals("<>")) {
+            return !c1.equals(c2);
+        } else if (cond.equals("<")) {
+            return Integer.valueOf(c1) < Integer.valueOf(c2);
+        } else if (cond.equals(">")) {
+            return Integer.valueOf(c1) > Integer.valueOf(c2);
+        } else {
             return null;
         }
     }
