@@ -18,19 +18,17 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Accordion;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TitledPane;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import json.SyaryoToZip3;
-import obj.SyaryoObject3;
+//import obj.SyaryoObject3;
+import obj.SyaryoObject4;
 
 /**
  * FXML Controller class
@@ -163,7 +161,7 @@ public class EasyViewerFXMLController implements Initializable {
     public void machineHistorySelected(Integer index) {
         System.out.println("Selection in the listView is : " + index);
         String name = keylist.getItems().get(index).toString();
-        SyaryoObject3 syaryo = (SyaryoObject3) syaryoMap.get(name);
+        SyaryoObject4 syaryo = (SyaryoObject4) syaryoMap.get(name);
         id_label.setText(name);
         
         //データの設定
@@ -171,7 +169,7 @@ public class EasyViewerFXMLController implements Initializable {
     }
 
     //アコーディオンの設定
-    private void settingData(SyaryoObject3 syaryo){
+    private void settingData(SyaryoObject4 syaryo){
         syaryo.decompress();
         
         String str;

@@ -30,9 +30,14 @@ public class ShuffleIndex {
         
         for(String key : layoutMap.keySet()){
             Map m = new HashMap();
+            final int inc;
+            if(layoutMap.get(key).contains("None"))
+                inc = 0;
+            else
+                inc = 2;
             m.put("subKey_"+key, 
                 layoutMap.get(key).stream()
-                            .map(s -> key+"."+s+"#"+layoutMap.get(key).indexOf(s))
+                            .map(s -> key+"."+s+"#"+(layoutMap.get(key).indexOf(s)+inc))
                             .limit(layoutMap.get(key).size()-1)
                             .collect(Collectors.toList())
             );
