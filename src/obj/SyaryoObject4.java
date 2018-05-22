@@ -87,8 +87,10 @@ public class SyaryoObject4 implements Serializable {
     }
 
     public void decompress() {
-        map = SnappyMap.toMap(mapData);
-        mapData = null;
+        if (mapData != null) {
+            map = SnappyMap.toMap(mapData);
+            mapData = null;
+        }
         if (map == null) {
             map = new LinkedHashMap();
         }

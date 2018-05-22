@@ -7,6 +7,7 @@ package creator.create;
 
 import creator.template.SyaryoTemplate;
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,10 +29,11 @@ import obj.SyaryoObject4;
 public class TemplateShuffle {
 
     private static String KISY = "PC138US";
+    private static String FILENAME = "syaryo_mid_"+KISY+"_";
     private static String INDEXPATH = "index\\shuffle_format.json";
     private static String SINDEXPATH = "template\\" + KISY + "\\syaryo_" + KISY + "_index.json";
     private static String FILEPATH = "middle\\" + KISY + "\\obj\\";
-    private static String OUTPATH = "middle\\";
+    private static String OUTPATH = "middle\\"+KISY+"\\shuffle\\";
 
     public static void main(String[] args) {
         //shuffle(KISY);
@@ -99,10 +101,14 @@ public class TemplateShuffle {
     }
 
     private static void create(String kisy) {
+        //Create Folder
+        if(!(new File(OUTPATH)).exists())
+            (new File(OUTPATH)).mkdir();
+        
         Map<String, Map<String, List>> map = index();
         SyaryoToZip3 zip = new SyaryoToZip3();
         List<String> syaryoIndex = new ArrayList(new SyaryoTemplateToJson().reader(SINDEXPATH).keySet());
-
+        
         for (String key : map.keySet()) {
             Map<String, List> dataMap = map.get(key);
             Map<String, SyaryoObject4> shuffleMap = new HashMap();
@@ -148,6 +154,7 @@ public class TemplateShuffle {
                     if (shuffleSyaryo == null) {
                         shuffleSyaryo = new SyaryoObject4(id);
                     }
+                    shuffleSyaryo.decompress();
 
                     Map updateMap = shuffleSyaryo.get(key);
                     if (updateMap == null) {
@@ -156,9 +163,17 @@ public class TemplateShuffle {
 
                     format(getDatas, subKey, readMap, updateMap);
                     System.out.println(updateMap);
-                    System.exit(0);
+                    
+                    shuffleSyaryo.get(key).putAll(updateMap);
+                    shuffleSyaryo.compress(true);
+                    
+                    shuffleMap.put(shuffleSyaryo.getName(), shuffleSyaryo);
+                    
+                    //System.exit(0);
                 }
             }
+            
+            zip.write(OUTPATH+FILENAME+key, shuffleMap);
         }
     }
 
@@ -212,6 +227,15 @@ public class TemplateShuffle {
 
         return updateMap;
     }
+    
+    private static DecimalFormat df = new DecimalFormat("0000");
+    private static String dup(String key, Map map){
+            int cnt = 0;
+            String k = key;
+            while(map.get(k) != null)
+                k = key + df.format(++cnt);
+            return k;
+    }
 
     private static void data(Map<String, String> f, Map<String, List<List<String>>> readMap, String subKeyTable, Integer subKeyIDX, String key, Map<String, List<String>> updateMap) {
         //Simple exist key="data"
@@ -226,7 +250,7 @@ public class TemplateShuffle {
                 key = readMap.get(subKeyTable).get(i).get(subKeyIDX);
             }
             if (updateMap.get(key) == null) {
-                updateMap.put(key, new ArrayList());
+                updateMap.put(dup(key, updateMap), new ArrayList());
             }
 
             if (idx != null) {
@@ -250,7 +274,7 @@ public class TemplateShuffle {
                 key = readMap.get(subKeyTable).get(i).get(subKeyIDX);
             }
             if (updateMap.get(key) == null) {
-                updateMap.put(key, new ArrayList());
+                updateMap.put(dup(key, updateMap), new ArrayList());
             }
 
             if (idx != null) {
@@ -297,7 +321,7 @@ public class TemplateShuffle {
             } else {
                 if (f.get("data") != null) {
                     if (updateMap.get(key) == null) {
-                        updateMap.put(key, new ArrayList());
+                        updateMap.put(dup(key, updateMap), new ArrayList());
                     }
                     
                     updateMap.get(key).add(readMap.get(table).get(i).get(idx));
