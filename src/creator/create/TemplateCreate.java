@@ -62,6 +62,11 @@ public class TemplateCreate {
         Map<String, SimpleTemplate> syaryoMap = syaryoindex(kisy, json);
         System.out.println("\n車両:");
         System.out.println(syaryoMap);
+        
+        if(syaryoMap.isEmpty()){
+            System.err.println("Do not find kisy="+kisy);
+            return ;
+        }
 
         //Create Layout Template
         template(index, syaryoMap, json, kisy);
