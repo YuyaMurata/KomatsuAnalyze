@@ -57,7 +57,7 @@ public class SyaryoObject4 implements Serializable {
             for (String line : lines) {
                 List<String> s = new ArrayList<>();
                 s.addAll(Arrays.asList(line.trim().split(",")));
-                while(n < s.size()) {
+                while(n > s.size()) {
                     s.add(" ");
                 }
                 map.put(key_no(field), s);

@@ -26,16 +26,15 @@ import obj.SyaryoObject4;
  * @author ZZ17390
  */
 public class TemplateShuffle {
-
-    private static String KISY = "WA470";
-    private static String INDEXPATH = "index\\shuffle_format.json";
-    private static String ROOTPATH = "middle\\";
-    private static String ROOTPATH_SIDX = "template\\";
-    private static String[] kisyList = new String[]{"PC138US", "PC200", "PC200LC", "PC200SC", "PC78US", "WA470", "WA100", "PC210", "PC210LC"};
+    private static String INDEXPATH = KomatsuDataParameter.SHUFFLE_FORMAT_PATH;
+    private static String[] kisyList = KomatsuDataParameter.KISY_LIST;
+    private static String ROOTPATH = KomatsuDataParameter.MIDDLEDATA_PATH;
+    private static String ROOTPATH_SIDX = KomatsuDataParameter.TEMPLATE_PATH;
 
     public static void main(String[] args) {
         //shuffle(KISY);
-        create(KISY);
+        for(String kisy : kisyList)
+            create(kisy);
     }
 
     private static Map index() {
@@ -98,10 +97,17 @@ public class TemplateShuffle {
     }
 
     private static void create(String kisy) {
-        String SINDEXPATH = ROOTPATH_SIDX + kisy + "\\syaryo_" + KISY + "_index.json";
+        String SINDEXPATH = ROOTPATH_SIDX + kisy + "\\syaryo_" + kisy + "_index.json";
         String FILEPATH = ROOTPATH + kisy + "\\obj\\";
         String OUTPATH = ROOTPATH + kisy + "\\shuffle\\";
         String FILENAME = "syaryo_mid_" + kisy + "_";
+        
+        //機種を取得しているかチェック
+        if (!(new File(SINDEXPATH)).exists()) {
+            System.out.println("Do not get kisy=" + kisy + "!");
+            return;
+        }
+        
         //Create Folder
         if (!(new File(OUTPATH)).exists()) {
             (new File(OUTPATH)).mkdir();
@@ -367,7 +373,10 @@ public class TemplateShuffle {
         } else if (op.equals("/")) {
             return Integer.valueOf(v1) - Integer.valueOf(v2);
         } else if (op.equals("|")) {
-            return Integer.valueOf(v1) | Integer.valueOf(v2);
+            if(v1.equals("Y") || v2.equals("Y"))
+                return 1;
+            else
+                return 0;
         } else {
             System.out.println("Arithmatic Error! " + op);
             return null;

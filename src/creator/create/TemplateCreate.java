@@ -22,8 +22,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import json.SyaryoTemplateToJson;
 
@@ -33,10 +31,10 @@ import json.SyaryoTemplateToJson;
  */
 public class TemplateCreate {
 
-    private static String INDEX_PATH = "index\\syaryo_data_index.csv";
-    private static String ROOTPATH = "template\\";
+    private static String INDEX_PATH = KomatsuDataParameter.SETTING_GETDATA_PATH;
+    private static String ROOTPATH = KomatsuDataParameter.TEMPLATE_PATH;
+    private static String[] kisyList = KomatsuDataParameter.KISY_LIST;
     private static String OUTPATH;
-    private static String[] kisyList = new String[]{"PC138US", "PC200", "PC200LC", "PC200SC", "PC78US", "WA470", "WA100", "PC210", "PC210LC"};
 
     public static void main(String[] args) {
         for (String k : kisyList) {

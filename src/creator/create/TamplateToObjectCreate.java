@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import json.SyaryoTemplateToJson;
 import json.SyaryoToZip3;
 import obj.SyaryoObject4;
@@ -21,38 +22,52 @@ import obj.SyaryoObject4;
  */
 public class TamplateToObjectCreate {
 
-    private static String[] kisyList = new String[]{"PC138US", "PC200", "PC200LC", "PC200SC", "PC78US", "WA470", "WA100", "PC210", "PC210LC"};
-    private static String FILEPATH = "template\\";
-    private static String OUTPATH = "middle\\";
+    private static String[] kisyList = KomatsuDataParameter.KISY_LIST;
+    private static String FILEPATH = KomatsuDataParameter.TEMPLATE_PATH;
+    private static String OUTPATH = KomatsuDataParameter.MIDDLEDATA_PATH;
     //private static String path = "middle\\"+kisy+"\\mid\\";
     //private static String outpath = "middle\\"+kisy+"\\obj\\";
 
     public static void main(String[] args) {
-        for(String kisy : kisyList)
+        for (String kisy : kisyList) {
             create(kisy);
+        }
     }
 
     public static void create(String kisy) {
         String fpath = FILEPATH + kisy + "\\json\\";
-        String opath= OUTPATH  + kisy + "\\obj\\";
-        
+        String opath = OUTPATH + kisy + "\\obj\\";
+
+        //機種を取得しているかチェック
+        if (!(new File(fpath)).exists()) {
+            System.out.println("Do not get kisy=" + kisy + "!");
+            return;
+        }
+
         //Layout
         Map<String, List> index = TemplateCreate.index();
-        
+
         if (!(new File(opath)).exists()) {
             (new File(opath)).mkdirs();
         }
-        
+
         //File
         SyaryoTemplateToJson json = new SyaryoTemplateToJson();
 
         File[] flist = (new File(fpath)).listFiles();
         for (File f : flist) {
             String table = f.getName().substring(0, f.getName().lastIndexOf("_"));
-            String FILENAME = opath + "syaryo_mid_" + kisy + "_" + table+".bz2";
-            int fieldLen = index.get(table).size()-1;
-            System.out.println(table+":"+fieldLen);
-            
+            String FILENAME = opath + "syaryo_mid_" + kisy + "_" + table + ".bz2";
+
+            //テーブル設定値の列数を取得
+            final int fieldLen;
+            if (index.get(table).contains("None")) {
+                fieldLen = index.get(table).size() - 1;
+            } else {
+                fieldLen = index.get(table).size() + 2 - 1;
+            }
+            System.out.println(table + ":" + fieldLen);
+
             //Folder
             File objf = new File(FILENAME);
             if (objf.exists()) {
@@ -63,29 +78,26 @@ public class TamplateToObjectCreate {
             System.out.println(f.getName());
 
             Map<String, SimpleTemplate> templats = json.reader(f.getAbsolutePath());
-            TreeMap<String, SyaryoObject4> syaryoMap = new TreeMap();
-            
-            if(templats.isEmpty()){
+            Map<String, SyaryoObject4> syaryoMap = new ConcurrentHashMap<>();
+
+            if (templats.isEmpty()) {
                 System.out.println("No Data " + objf.getName());
                 continue;
             }
-                
-            
+
             //int n = 0;
             //int en = 0;
             //オブジェクト化
-            templats.entrySet().stream()
+            templats.entrySet().parallelStream()
                 .map(s -> s.getValue()).forEach(s -> {
 
                 SyaryoObject4 syaryoObj = new SyaryoObject4(s.getName());
                 syaryoObj.add(s.temp, fieldLen);
-                
+
                 //System.out.println(syaryoObj.dump());
                 syaryoObj.compress(true);
 
                 syaryoMap.put(syaryoObj.getName(), syaryoObj);
-
-                s = null;
             });
 
             SyaryoObject4 syaryo = syaryoMap.values().stream().findFirst().get();
