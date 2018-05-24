@@ -68,6 +68,8 @@ public class ObjectsJoiner {
             syaryo.map.putAll(s.map);
             syaryo.compress(true);
             
+            map1.put(syaryo.getName(), syaryo);
+            
             s.compress(false);
         });
     }
