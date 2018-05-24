@@ -7,54 +7,68 @@ package creator.create;
 
 import java.io.File;
 import java.util.Map;
+import java.util.TreeMap;
 import json.SyaryoToZip3;
-import obj.SyaryoObject3;
+import obj.SyaryoObject4;
 
 /**
  *
  * @author ZZ17390
  */
 public class ObjectsJoiner {
-    private static String kisy = "PC200";
-    private static String path = "..\\KomatsuData\\中間データ\\"+kisy+"\\obj\\";
-    //private static String path = "middle\\"+kisy+"\\obj\\";
-    private static SyaryoToZip3 zip3 = new SyaryoToZip3();
-    
+    private static String KISY = "WA470";
+    private static String PATH = KomatsuDataParameter.MIDDLEDATA_PATH;
+    private static String OUTPATH = KomatsuDataParameter.OBJECT_PATH;
+       
     public static void main(String[] args) {
-        File[] flist = (new File(path)).listFiles();
-        String objFile = "json\\syaryo_obj_" + kisy;
-        
-        //exists Syaryo Object
-        File f = new File(objFile+".bz2");
-        if(!f.exists()){
-            System.out.println("syaryo_obj_"+kisy+" not found!");
-            System.exit(0);
-        }
-        Map<String, SyaryoObject3> obj = zip3.read(objFile+".bz2");
-        
-        for(File file : flist)
-            join(file, obj);
-        
-        zip3.write(objFile, obj);
+        create(KISY, true);
     }
     
-    public static void join(File file, Map<String, SyaryoObject3> obj){
-        System.out.println(file.getName());
+    public static void create(String kisy, Boolean iot){
+        SyaryoToZip3 zip3 = new SyaryoToZip3();
+        String objPath = PATH+"\\"+kisy+"\\shuffle\\";
+        String syaryoPath = OUTPATH;
         
-        Map<String, SyaryoObject3> joinobj = zip3.read(file.getAbsolutePath());
+        //Folder
+        if(!(new File(syaryoPath)).exists())
+            (new File(syaryoPath)).mkdir();
         
-        joinobj.values().parallelStream().forEach(data ->{
-            data.decompress();
+        //Syaryo Map
+        Map<String, SyaryoObject4> syaryoMap = new TreeMap<>();
+        
+        //Middle File
+        File[] flist = (new File(objPath)).listFiles();
+        for(File file : flist){
+            //IoTデータは統合しない処理
+            if(iot)
+                if(file.getName().contains("KOMTRAX"))
+                    continue;
             
-            SyaryoObject3 syaryo = obj.get(data.getName());
+            //統合処理
+            System.out.println(file.getName());
+            join(syaryoMap, zip3.read(file.getAbsolutePath()));
+        }
+        
+        zip3.write(syaryoPath+"syaryo_obj_"+kisy, syaryoMap);
+    }
+    
+    public static void join(Map<String, SyaryoObject4> map1, Map<String, SyaryoObject4> map2){
+        if(map2.isEmpty())
+            System.out.println("Target File is Empty!");
+        
+        map2.values().parallelStream().forEach(s ->{
+            s.decompress();
+            
+            SyaryoObject4 syaryo = map1.get(s.getName());
+            if(syaryo == null)
+                syaryo = new SyaryoObject4(s.getName());
+            
+            //車両情報を結合
             syaryo.decompress();
-            syaryo.map.putAll(data.getAll());
+            syaryo.map.putAll(s.map);
             syaryo.compress(true);
             
-            data.compress(false);
+            s.compress(false);
         });
-        
-        joinobj = null;
-        System.gc();
     }
 }

@@ -15,7 +15,7 @@ public interface KomatsuDataParameter {
     public static String[] KISY_LIST = new String[]{
         "PC138US",
         "PC78US",
-        "PC200", "PC200LC", "PC200SC", "PC210", "PC210LC", 
+        "PC200", "PC200LC", "PC210", "PC210LC", 
         "HB205","HB205LC", "HB215", "HB215LC",
         "PC228US", "PC228USLC",
         "WA100",
@@ -25,6 +25,7 @@ public interface KomatsuDataParameter {
     
     public static String TEMPLATE_PATH = "template\\";
     public static String MIDDLEDATA_PATH = "middle\\";
+    public static String OBJECT_PATH = "syaryo\\";
     public static String SHUFFLE_FORMAT_PATH = "index\\shuffle_format.json";
     public static String SETTING_GETDATA_PATH = "index\\syaryo_data_index.csv";
 }

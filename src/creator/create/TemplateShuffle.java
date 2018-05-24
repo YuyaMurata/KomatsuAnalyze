@@ -26,6 +26,7 @@ import obj.SyaryoObject4;
  * @author ZZ17390
  */
 public class TemplateShuffle {
+
     private static String INDEXPATH = KomatsuDataParameter.SHUFFLE_FORMAT_PATH;
     private static String[] kisyList = KomatsuDataParameter.KISY_LIST;
     private static String ROOTPATH = KomatsuDataParameter.MIDDLEDATA_PATH;
@@ -33,8 +34,9 @@ public class TemplateShuffle {
 
     public static void main(String[] args) {
         //shuffle(KISY);
-        for(String kisy : kisyList)
+        for (String kisy : kisyList) {
             create(kisy);
+        }
     }
 
     private static Map index() {
@@ -101,13 +103,13 @@ public class TemplateShuffle {
         String FILEPATH = ROOTPATH + kisy + "\\obj\\";
         String OUTPATH = ROOTPATH + kisy + "\\shuffle\\";
         String FILENAME = "syaryo_mid_" + kisy + "_";
-        
+
         //機種を取得しているかチェック
         if (!(new File(SINDEXPATH)).exists()) {
             System.out.println("Do not get kisy=" + kisy + "!");
             return;
         }
-        
+
         //Create Folder
         if (!(new File(OUTPATH)).exists()) {
             (new File(OUTPATH)).mkdir();
@@ -135,12 +137,11 @@ public class TemplateShuffle {
             //抽出するFormatIndexGroupを設定 e.g. as_keiyaku テーブル
             for (String subKey : dataFormatMap.keySet()) {
                 List<String> getDataFormat = dataFormatMap.get(subKey);
-                if(getDataFormat.contains(null)){
+                if (getDataFormat.contains(null)) {
                     System.err.println("Error Shuffle Format contained NULL!");
                     System.exit(0);
                 }
-                    
-                
+
                 //抽出に必要なテーブルリストを取得
                 List<String> readList = getDataFormat.stream()
                     .filter(s -> s.contains("."))
@@ -209,8 +210,11 @@ public class TemplateShuffle {
                             }
                             shuffleSyaryo.get(key).put(recID, update);
                         } else {
-                            String recIDTable = subKey.split("\\.")[0];
-                            System.out.println("ID=" + shuffleSyaryo.getName() + " 除外データ("+recIDTable+"):" + readMap.get(recIDTable).get(i));
+                            if (subKey.contains("#")) {
+                                String recIDTable = subKey.split("\\.")[0];
+                                System.out.println("ID=" + shuffleSyaryo.getName() + " 除外データ(" + recIDTable + "):" + readMap.get(recIDTable).get(i));
+                            }else
+                                System.out.println("ID=" + shuffleSyaryo.getName() + " 除外データ(" + key + "):" + getDataFormat);
                         }
                     }
 
@@ -373,10 +377,11 @@ public class TemplateShuffle {
         } else if (op.equals("/")) {
             return Integer.valueOf(v1) - Integer.valueOf(v2);
         } else if (op.equals("|")) {
-            if(v1.equals("Y") || v2.equals("Y"))
+            if (v1.equals("Y") || v2.equals("Y")) {
                 return 1;
-            else
+            } else {
                 return 0;
+            }
         } else {
             System.out.println("Arithmatic Error! " + op);
             return null;
