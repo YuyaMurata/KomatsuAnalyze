@@ -28,4 +28,8 @@ public interface KomatsuDataParameter {
     public static String OBJECT_PATH = "syaryo\\";
     public static String SHUFFLE_FORMAT_PATH = "index\\shuffle_format.json";
     public static String SETTING_GETDATA_PATH = "index\\syaryo_data_index.csv";
+    
+    //EasyViewer
+    public static String SYARYOOBJECT_FDPATH = "syaryo\\"; 
+    public static String SETTING_DATAFILETER_PATH="index\\easyviwer_datafilter.csv";
 }

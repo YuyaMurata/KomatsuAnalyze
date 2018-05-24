@@ -30,7 +30,6 @@ import json.SyaryoTemplateToJson;
  * @author ZZ17390
  */
 public class TemplateCreate {
-
     private static String INDEX_PATH = KomatsuDataParameter.SETTING_GETDATA_PATH;
     private static String ROOTPATH = KomatsuDataParameter.TEMPLATE_PATH;
     private static String[] kisyList = KomatsuDataParameter.KISY_LIST;
@@ -42,7 +41,7 @@ public class TemplateCreate {
         }
     }
 
-    private static void create(String kisy) {
+    public static void create(String kisy) {
         //Folder
         OUTPATH = ROOTPATH + kisy + "\\";
         File path = new File(OUTPATH);

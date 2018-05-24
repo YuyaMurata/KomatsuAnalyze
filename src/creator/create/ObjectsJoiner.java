@@ -8,6 +8,7 @@ package creator.create;
 import java.io.File;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import json.SyaryoToZip3;
 import obj.SyaryoObject4;
 
@@ -21,20 +22,27 @@ public class ObjectsJoiner {
     private static String OUTPATH = KomatsuDataParameter.OBJECT_PATH;
        
     public static void main(String[] args) {
-        create(KISY, true);
+        create(KISY, false);
     }
     
     public static void create(String kisy, Boolean iot){
         SyaryoToZip3 zip3 = new SyaryoToZip3();
         String objPath = PATH+"\\"+kisy+"\\shuffle\\";
         String syaryoPath = OUTPATH;
+        String filename = syaryoPath+"syaryo_obj_"+kisy+".bz2";
         
         //Folder
         if(!(new File(syaryoPath)).exists())
             (new File(syaryoPath)).mkdir();
         
+        //Filec Check
+        if((new File(filename)).exists()){
+            System.out.println("exists file " + filename);
+            return;
+        }
+        
         //Syaryo Map
-        Map<String, SyaryoObject4> syaryoMap = new TreeMap<>();
+        Map<String, SyaryoObject4> syaryoMap = new ConcurrentHashMap<>();
         
         //Middle File
         File[] flist = (new File(objPath)).listFiles();
@@ -49,7 +57,7 @@ public class ObjectsJoiner {
             join(syaryoMap, zip3.read(file.getAbsolutePath()));
         }
         
-        zip3.write(syaryoPath+"syaryo_obj_"+kisy, syaryoMap);
+        zip3.write(filename, syaryoMap);
     }
     
     public static void join(Map<String, SyaryoObject4> map1, Map<String, SyaryoObject4> map2){

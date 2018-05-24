@@ -20,7 +20,7 @@ import obj.SyaryoObject4;
  *
  * @author ZZ17390
  */
-public class TamplateToObjectCreate {
+public class TemplateToObjectCreate {
 
     private static String[] kisyList = KomatsuDataParameter.KISY_LIST;
     private static String FILEPATH = KomatsuDataParameter.TEMPLATE_PATH;
@@ -94,7 +94,6 @@ public class TamplateToObjectCreate {
                 SyaryoObject4 syaryoObj = new SyaryoObject4(s.getName());
                 syaryoObj.add(s.temp, fieldLen);
 
-                //System.out.println(syaryoObj.dump());
                 syaryoObj.compress(true);
 
                 syaryoMap.put(syaryoObj.getName(), syaryoObj);
@@ -107,7 +106,8 @@ public class TamplateToObjectCreate {
             new SyaryoToZip3().write(FILENAME, syaryoMap);
 
             System.out.println(syaryoMap.size());
-            //System.gc();
+            
+            System.gc();
         }
     }
 }

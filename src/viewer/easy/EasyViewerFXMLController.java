@@ -5,12 +5,23 @@
  */
 package viewer.easy;
 
+import creator.create.KomatsuDataParameter;
+import file.CSVFileReadWrite;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -25,6 +36,8 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TitledPane;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.stage.FileChooser;
 import json.SyaryoToZip3;
 //import obj.SyaryoObject3;
@@ -45,7 +58,7 @@ public class EasyViewerFXMLController implements Initializable {
     private ListView<?> keylist;
     private Accordion viewarea;
 
-    private Map syaryoMap;
+    private Map<String, SyaryoObject4> syaryoMap;
     @FXML
     private TitledPane spec;
     @FXML
@@ -118,7 +131,21 @@ public class EasyViewerFXMLController implements Initializable {
     private Label id_label;
     @FXML
     private ComboBox<String> datafilter;
-
+    @FXML
+    private TitledPane kmact;
+    @FXML
+    private TextArea viewarea_kmact;
+    @FXML
+    private TitledPane kmfuel;
+    @FXML
+    private TextArea viewarea_kmfuel;
+    @FXML
+    private MenuItem rightClick_copy;
+    
+    private Map filterMap;
+    @FXML
+    private Label number_syaryo_label;
+    
     /**
      * Initializes the controller class.
      */
@@ -127,25 +154,10 @@ public class EasyViewerFXMLController implements Initializable {
         // TODO
         syaryoMap = new HashMap();
         machineListInitialize();
-        dataFilterInitialize();
+        filterMap = dataFilterSettings(KomatsuDataParameter.SETTING_DATAFILETER_PATH);
+        System.out.println(filterMap);
     }
-    
-    public void dataFilterInitialize() {
-        
-        datafilter.getItems().addAll(
-            "ALL",
-            "生産なし",
-            "新車なし",
-            "顧客なし",
-            "AS対象車",
-            "AS対象外",
-            "KOMTRAX対象車",
-            "KOMTRAX対象外",
-            "KOMTRAXデータ存在",
-            "KOMTRAX対象外 データ存在"
-        );
-    }
-    
+
     public void machineListInitialize() {
         //Event
         keylist.getSelectionModel().selectedIndexProperty().addListener(
@@ -156,99 +168,108 @@ public class EasyViewerFXMLController implements Initializable {
             }
         );
     }
-    
+
     //Selected Machine
     public void machineHistorySelected(Integer index) {
         System.out.println("Selection in the listView is : " + index);
+        if(index < 0)
+            return;
         String name = keylist.getItems().get(index).toString();
         SyaryoObject4 syaryo = (SyaryoObject4) syaryoMap.get(name);
         id_label.setText(name);
-        
+
         //データの設定
         settingData(syaryo);
     }
 
     //アコーディオンの設定
-    private void settingData(SyaryoObject4 syaryo){
+    private void settingData(SyaryoObject4 syaryo) {
         syaryo.decompress();
-        
+
         String str;
         viewarea_spec.setText(str = textdump(syaryo.get(spec.getText().replace("×", ""))));
         spec.setText(check(spec.getText(), str));
-        
+
         viewarea_detail.setText(str = textdump(syaryo.get(detail.getText().replace("×", ""))));
         detail.setText(check(detail.getText(), str));
-        
+
         viewarea_product.setText(str = textdump(syaryo.get(product.getText().replace("×", ""))));
         product.setText(check(product.getText(), str));
-        
+
         viewarea_deploy.setText(str = textdump(syaryo.get(deploy.getText().replace("×", ""))));
         deploy.setText(check(deploy.getText(), str));
-        
+
         viewarea_dead.setText(str = textdump(syaryo.get(dead.getText().replace("×", ""))));
         dead.setText(check(dead.getText(), str));
-        
+
         viewarea_news.setText(str = textdump(syaryo.get(news.getText().replace("×", ""))));
         news.setText(check(news.getText(), str));
-        
+
         viewarea_used.setText(str = textdump(syaryo.get(used.getText().replace("×", ""))));
         used.setText(check(used.getText(), str));
-        
+
         viewarea_owner.setText(str = textdump(syaryo.get(owner.getText().replace("×", ""))));
         owner.setText(check(owner.getText(), str));
-        
+
         viewarea_care.setText(str = textdump(syaryo.get("コマツケア前受け金")));
-        viewarea_care.setText(str = viewarea_care.getText()+"\n\n"+textdump(syaryo.get(care.getText().replace("×", ""))));
+        viewarea_care.setText(str + "\n\n" + textdump(syaryo.get(care.getText().replace("×", ""))));
         care.setText(check(care.getText(), str));
         
         viewarea_support.setText(str = textdump(syaryo.get(support.getText().replace("×", ""))));
         support.setText(check(support.getText(), str));
-        
+
         viewarea_order.setText(str = textdump(syaryo.get(order.getText().replace("×", ""))));
         order.setText(check(order.getText(), str));
-        
+
         viewarea_work.setText(str = textdump(syaryo.get(work.getText().replace("×", ""))));
         work.setText(check(work.getText(), str));
-        
+
         viewarea_parts.setText(str = textdump(syaryo.get(parts.getText().replace("×", ""))));
         parts.setText(check(parts.getText(), str));
-        
+
         viewarea_smr.setText(str = textdump(syaryo.get(smr.getText().replace("×", ""))));
         smr.setText(check(smr.getText(), str));
-        
-        viewarea_kmsmr.setText(str = textdump(syaryo.get("KMSMR")));
+
+        viewarea_kmsmr.setText(str = textdump(syaryo.get(kmsmr.getText().replace("×", ""))));
         kmsmr.setText(check(kmsmr.getText(), str));
-        
-        viewarea_kmgps.setText(str = textdump(syaryo.get("GPS")));
+
+        viewarea_kmgps.setText(str = textdump(syaryo.get(kmgps.getText().replace("×", ""))));
         kmgps.setText(check(kmgps.getText(), str));
-        
-        viewarea_kmerror.setText(str = textdump(syaryo.get("KMERROR")));
+
+        viewarea_kmerror.setText(str = textdump(syaryo.get(kmerror.getText().replace("×", ""))));
         kmerror.setText(check(kmerror.getText(), str));
-        
+
+        viewarea_kmact.setText(str = textdump(syaryo.get(kmact.getText().replace("×", ""))));
+        kmact.setText(check(kmact.getText(), str));
+
+        viewarea_kmfuel.setText(str = textdump(syaryo.get(kmfuel.getText().replace("×", ""))));
+        kmfuel.setText(check(kmfuel.getText(), str));
+
         syaryo.compress(true);
     }
-    
-    private String check(String title, String datastr){
-        if(datastr.contains("None"))
-            return "×"+title.replace("×", "");
-        else
+
+    private String check(String title, String datastr) {
+        if (datastr == null) {
+            return "×" + title.replace("×", "");
+        } else {
             return title.replace("×", "");
+        }
     }
-    
-    private String textdump(Map<String, List> m){
-        if(m == null)
-            return "None";
+
+    private String textdump(Map<String, List> m) {
+        if (m == null) {
+            return null;
+        }
         StringBuilder sb = new StringBuilder();
         sb.append("データ数:");
         sb.append(m.size());
         sb.append("\n\n");
-        
-        for(String d : m.keySet()){
+
+        for (String d : m.keySet()) {
             sb.append(d);
             sb.append(m.get(d));
             sb.append("\n");
         }
-        
 
         return sb.toString();
     }
@@ -256,12 +277,12 @@ public class EasyViewerFXMLController implements Initializable {
     @FXML
     private void loadJSONFile(ActionEvent event) {
         FileChooser filechooser = new FileChooser();
-        filechooser.setInitialDirectory(new File("json\\"));
+        filechooser.setInitialDirectory(new File(KomatsuDataParameter.SYARYOOBJECT_FDPATH));
         File file = filechooser.showOpenDialog(menu.getScene().getWindow());
         if (file != null) {
             id_label.setText(file.getName());
             syaryoMap = loadSyaryoMap(file);
-            updateKeyList((List) syaryoMap.keySet().stream().collect(Collectors.toList()));
+            updateKeyList(syaryoMap.keySet());
         }
     }
 
@@ -270,14 +291,62 @@ public class EasyViewerFXMLController implements Initializable {
         return new SyaryoToZip3().read(file.getAbsolutePath());
     }
 
-    private void updateKeyList(List keyList) {
-        ObservableList list = FXCollections.observableArrayList(keyList);
+    private void updateKeyList(Set keys) {
+        ObservableList list = FXCollections.observableArrayList(new TreeSet(keys));
         keylist.setItems(list);
+        number_syaryo_label.setText(keylist.getItems().size()+" / "+syaryoMap.size());
     }
 
     @FXML
     private void selectFilter(ActionEvent event) {
         System.out.println("Selection in the listView is : " + datafilter.getValue());
-        String filter = datafilter.getValue().toString();
+        String filter = datafilter.getValue();
+        
+        final Map<String, Object> datafilterList = new ConcurrentHashMap();
+        if(filter.contains("なし"))
+            syaryoMap.values().parallelStream()
+                .forEach(s ->{
+                    s.decompress();
+                    if(s.get(filter.replace("なし", "")) == null)
+                        datafilterList.put(s.getName(), "");
+                    s.compress(true);
+                });
+        else{
+            if(filter.equals("ALL")){
+                datafilterList.putAll(syaryoMap);
+            }
+        }
+
+        //更新処理
+        if(keylist.getItems() != datafilterList)
+            updateKeyList(datafilterList.keySet());
+    }
+
+    @FXML
+    private void rightClickCopy(ActionEvent event) {
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        ClipboardContent content = new ClipboardContent();
+        content.putString(id_label.getText());
+        clipboard.setContent(content);
+    }
+    
+    private Map dataFilterSettings(String file){
+        Map<String, String> map = new LinkedHashMap();
+        try(BufferedReader br = CSVFileReadWrite.reader(file)){
+            //header
+            String line = br.readLine();
+            
+            while((line = br.readLine()) != null)
+                map.put(line.split(",")[0],line.split(",")[1]);
+            
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        
+        datafilter.getItems().addAll(map.keySet().stream()
+                        .map(f -> map.get(f).contains("0")?f+"なし":f)
+                        .collect(Collectors.toList()));
+        
+        return map;
     }
 }

@@ -7,7 +7,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="viewer.easy.EasyViewerFXMLController">
+<AnchorPane id="AnchorPane" prefHeight="519.0" prefWidth="804.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="viewer.easy.EasyViewerFXMLController">
    <children>
       <VBox layoutX="6.0" layoutY="7.0" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -33,7 +33,14 @@
                         <Label fx:id="id_label" text="syaryo">
                            <font>
                               <Font size="15.0" />
-                           </font></Label>
+                           </font>
+                           <contextMenu>
+                              <ContextMenu>
+                                <items>
+                                  <MenuItem fx:id="rightClick_copy" mnemonicParsing="false" onAction="#rightClickCopy" text="コピ-" />
+                                </items>
+                              </ContextMenu>
+                           </contextMenu></Label>
                         <Region maxHeight="10.0" minHeight="10.0" prefHeight="10.0" VBox.vgrow="NEVER" />
                         <ScrollPane fitToWidth="true" prefViewportHeight="391.0" prefViewportWidth="400.0" VBox.vgrow="ALWAYS">
                            <content>
@@ -124,6 +131,16 @@
                                           <TextArea fx:id="viewarea_kmerror" editable="false" prefHeight="200.0" prefWidth="200.0" />
                                        </content>
                                     </TitledPane>
+                                    <TitledPane fx:id="kmact" animated="false" text="KOMTRAX_ACT_DATA">
+                                       <content>
+                                          <TextArea fx:id="viewarea_kmact" editable="false" prefHeight="200.0" prefWidth="200.0" />
+                                       </content>
+                                    </TitledPane>
+                                    <TitledPane fx:id="kmfuel" animated="false" text="KOMTRAX_FUEL_CONSUME">
+                                       <content>
+                                          <TextArea fx:id="viewarea_kmfuel" editable="false" prefHeight="200.0" prefWidth="200.0" />
+                                       </content>
+                                    </TitledPane>
                                 </panes>
                               </Accordion>
                            </content>
@@ -132,6 +149,11 @@
                   </VBox>
                </children>
             </HBox>
+            <AnchorPane prefHeight="20.0" prefWidth="200.0" VBox.vgrow="NEVER">
+               <children>
+                  <Label fx:id="number_syaryo_label" layoutX="631.0" layoutY="3.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="15.0" prefWidth="160.0" text="0 / 0" textAlignment="RIGHT" />
+               </children>
+            </AnchorPane>
          </children>
       </VBox>
    </children>
