@@ -12,6 +12,7 @@
 *.xlsx
 /build/
 /dist/
+*.zip
 *.db
 *.gz
 *.bz2
