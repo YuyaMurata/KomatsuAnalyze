@@ -349,4 +349,17 @@ public class EasyViewerFXMLController implements Initializable {
         
         return map;
     }
+
+    @FXML
+    private void rightClickCopyList(ActionEvent event) {
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        ClipboardContent content = new ClipboardContent();
+        StringBuilder sb = new StringBuilder();
+        for(Object id : keylist.getItems()){
+            sb.append(id);
+            sb.append("\n");
+        }
+        content.putString(sb.toString());
+        clipboard.setContent(content);
+    }
 }

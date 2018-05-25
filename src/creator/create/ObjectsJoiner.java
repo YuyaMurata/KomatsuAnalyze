@@ -25,7 +25,7 @@ public class ObjectsJoiner {
         create(KISY, false);
     }
     
-    public static void create(String kisy, Boolean iot){
+    public static Integer create(String kisy, Boolean iot){
         SyaryoToZip3 zip3 = new SyaryoToZip3();
         String objPath = PATH+"\\"+kisy+"\\shuffle\\";
         String syaryoPath = OUTPATH;
@@ -38,7 +38,7 @@ public class ObjectsJoiner {
         //Filec Check
         if((new File(filename)).exists()){
             System.out.println("exists file " + filename);
-            return;
+            return -1;
         }
         
         //Syaryo Map
@@ -58,6 +58,8 @@ public class ObjectsJoiner {
         }
         
         zip3.write(filename, syaryoMap);
+        
+        return syaryoMap.size();
     }
     
     public static void join(Map<String, SyaryoObject4> map1, Map<String, SyaryoObject4> map2){

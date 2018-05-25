@@ -14,9 +14,10 @@ public class AllExecProcess {
     private static String[] kisyList = KomatsuDataParameter.KISY_LIST;
 
     public static void main(String[] args) {
-        Long start = System.currentTimeMillis();
         
         for (String kisy : kisyList) {
+            Long start = System.currentTimeMillis();
+            
             //TemplateCreate.create(kisy);
             Long st_temc = System.currentTimeMillis();
             
@@ -26,12 +27,13 @@ public class AllExecProcess {
             TemplateShuffle.create(kisy);
             Long st_shuffle = System.currentTimeMillis();
             
-            ObjectsJoiner.create(kisy, true);
+            int n= ObjectsJoiner.create(kisy, true);
             Long st_join = System.currentTimeMillis();
             
             //Time Check
             System.out.println("\n--- "+kisy+" ---\n"+
                                 "Total:"+(st_join-start)+"ms\n"+
+                                "Syaryo N:"+n+"\n"+
                                 "  TemplateCreate:"+(st_temc-start)+"ms\n"+
                                 "  TemplateToObjectCreate:"+(st_temp2obj-st_temc)+"ms\n"+
                                 "  TemplateShuffle:"+(st_shuffle-st_temp2obj)+"ms\n"+
