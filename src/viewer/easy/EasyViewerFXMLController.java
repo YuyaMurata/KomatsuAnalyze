@@ -186,92 +186,108 @@ public class EasyViewerFXMLController implements Initializable {
     private void settingData(SyaryoObject4 syaryo) {
         syaryo.decompress();
 
-        String str;
-        viewarea_spec.setText(str = textdump(syaryo.get(spec.getText().replace("×", ""))));
+        String[] str;
+        str = textdump(syaryo.get(spec.getText().split(" ")[0].replace("×", "")));
+        viewarea_spec.setText(str[1]);
         spec.setText(check(spec.getText(), str));
 
-        viewarea_detail.setText(str = textdump(syaryo.get(detail.getText().replace("×", ""))));
+        str = textdump(syaryo.get(detail.getText().split(" ")[0].replace("×", "")));
+        viewarea_detail.setText(str[1]);
         detail.setText(check(detail.getText(), str));
 
-        viewarea_product.setText(str = textdump(syaryo.get(product.getText().replace("×", ""))));
+        str = textdump(syaryo.get(product.getText().split(" ")[0].replace("×", "")));
+        viewarea_product.setText(str[1]);
         product.setText(check(product.getText(), str));
 
-        viewarea_deploy.setText(str = textdump(syaryo.get(deploy.getText().replace("×", ""))));
+        str = textdump(syaryo.get(deploy.getText().split(" ")[0].replace("×", "")));
+        viewarea_deploy.setText(str[1]);
         deploy.setText(check(deploy.getText(), str));
 
-        viewarea_dead.setText(str = textdump(syaryo.get(dead.getText().replace("×", ""))));
+        str = textdump(syaryo.get(dead.getText().split(" ")[0].replace("×", "")));
+        viewarea_dead.setText(str[1]);
         dead.setText(check(dead.getText(), str));
 
-        viewarea_news.setText(str = textdump(syaryo.get(news.getText().replace("×", ""))));
+        str = textdump(syaryo.get(news.getText().split(" ")[0].replace("×", "")));
+        viewarea_news.setText(str[1]);
         news.setText(check(news.getText(), str));
 
-        viewarea_used.setText(str = textdump(syaryo.get(used.getText().replace("×", ""))));
+        str = textdump(syaryo.get(used.getText().split(" ")[0].replace("×", "")));
+        viewarea_used.setText(str[1]);
         used.setText(check(used.getText(), str));
 
-        viewarea_owner.setText(str = textdump(syaryo.get(owner.getText().replace("×", ""))));
+        str = textdump(syaryo.get(owner.getText().split(" ")[0].replace("×", "")));
+        viewarea_owner.setText(str[1]);
         owner.setText(check(owner.getText(), str));
 
-        viewarea_care.setText(str = textdump(syaryo.get("コマツケア前受け金")));
-        viewarea_care.setText(str + "\n\n" + textdump(syaryo.get(care.getText().replace("×", ""))));
+        String[] str2 = textdump(syaryo.get("コマツケア前受け金"));
+        str = textdump(syaryo.get(care.getText().split(" ")[0].replace("×", "")));
+        viewarea_care.setText(str2[1] + "\n\n" + str[1]);
         care.setText(check(care.getText(), str));
         
-        viewarea_support.setText(str = textdump(syaryo.get(support.getText().replace("×", ""))));
+        str = textdump(syaryo.get(support.getText().split(" ")[0].replace("×", "")));
+        viewarea_support.setText(str[1]);
         support.setText(check(support.getText(), str));
 
-        viewarea_order.setText(str = textdump(syaryo.get(order.getText().replace("×", ""))));
+        str = textdump(syaryo.get(order.getText().split(" ")[0].replace("×", "")));
+        viewarea_order.setText(str[1]);
         order.setText(check(order.getText(), str));
 
-        viewarea_work.setText(str = textdump(syaryo.get(work.getText().replace("×", ""))));
+        str = textdump(syaryo.get(work.getText().split(" ")[0].replace("×", "")));
+        viewarea_work.setText(str[1]);
         work.setText(check(work.getText(), str));
 
-        viewarea_parts.setText(str = textdump(syaryo.get(parts.getText().replace("×", ""))));
+        str = textdump(syaryo.get(parts.getText().split(" ")[0].replace("×", "")));
+        viewarea_parts.setText(str[1]);
         parts.setText(check(parts.getText(), str));
 
-        viewarea_smr.setText(str = textdump(syaryo.get(smr.getText().replace("×", ""))));
+        str = textdump(syaryo.get(smr.getText().split(" ")[0].replace("×", "")));
+        viewarea_smr.setText(str[1]);
         smr.setText(check(smr.getText(), str));
 
-        viewarea_kmsmr.setText(str = textdump(syaryo.get(kmsmr.getText().replace("×", ""))));
+        str = textdump(syaryo.get(kmsmr.getText().split(" ")[0].replace("×", "")));
+        viewarea_kmsmr.setText(str[1]);
         kmsmr.setText(check(kmsmr.getText(), str));
 
-        viewarea_kmgps.setText(str = textdump(syaryo.get(kmgps.getText().replace("×", ""))));
+        str = textdump(syaryo.get(kmgps.getText().split(" ")[0].replace("×", "")));
+        viewarea_kmgps.setText(str[1]);
         kmgps.setText(check(kmgps.getText(), str));
 
-        viewarea_kmerror.setText(str = textdump(syaryo.get(kmerror.getText().replace("×", ""))));
+        str = textdump(syaryo.get(kmerror.getText().split(" ")[0].replace("×", "")));
+        viewarea_kmerror.setText(str[1]);
         kmerror.setText(check(kmerror.getText(), str));
 
-        viewarea_kmact.setText(str = textdump(syaryo.get(kmact.getText().replace("×", ""))));
+        str = textdump(syaryo.get(kmact.getText().split(" ")[0].replace("×", "")));
+        viewarea_kmact.setText(str[1]);
         kmact.setText(check(kmact.getText(), str));
 
-        viewarea_kmfuel.setText(str = textdump(syaryo.get(kmfuel.getText().replace("×", ""))));
+        str = textdump(syaryo.get(kmfuel.getText().split(" ")[0].replace("×", "")));
+        viewarea_kmfuel.setText(str[1]);
         kmfuel.setText(check(kmfuel.getText(), str));
 
         syaryo.compress(true);
     }
 
-    private String check(String title, String datastr) {
-        if (datastr == null) {
-            return "×" + title.replace("×", "");
+    private String check(String title, String[] datastr) {
+        if (datastr[1] == null) {
+            return "×" + title.split(" ")[0].replace("×", "");
         } else {
-            return title.replace("×", "");
+            return title.split(" ")[0].replace("×", "")+" "+datastr[0];
         }
     }
 
-    private String textdump(Map<String, List> m) {
+    private String[] textdump(Map<String, List> m) {
         if (m == null) {
-            return null;
+            return new String[]{"", null};
         }
+        
         StringBuilder sb = new StringBuilder();
-        sb.append("データ数:");
-        sb.append(m.size());
-        sb.append("\n\n");
-
         for (String d : m.keySet()) {
             sb.append(d);
             sb.append(m.get(d));
             sb.append("\n");
         }
 
-        return sb.toString();
+        return new String[]{String.valueOf(m.size()), sb.toString()};
     }
 
     @FXML
