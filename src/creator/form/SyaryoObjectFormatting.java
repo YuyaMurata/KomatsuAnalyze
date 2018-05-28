@@ -66,6 +66,7 @@ public class SyaryoObjectFormatting {
         //ID重複排除 ##排除
         List owners = owner.values().stream()
                                 .map(l -> index.get(l.get(ownerID))==null?l.get(ownerID):index.get(l.get(ownerID)))
+                                .filter(id -> !id.toString().contains("##"))
                                 .distinct()
                                 .collect(Collectors.toList());
         
