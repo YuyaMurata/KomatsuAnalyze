@@ -5,8 +5,6 @@
  */
 package creator.create;
 
-import java.util.List;
-
 /**
  *
  * @author zz17390
@@ -28,6 +26,7 @@ public interface KomatsuDataParameter {
     public static String OBJECT_PATH = "syaryo\\";
     public static String SHUFFLE_FORMAT_PATH = "index\\shuffle_format.json";
     public static String SETTING_GETDATA_PATH = "index\\syaryo_data_index.csv";
+    public static String CUSTOMER_INDEX_PATH = "index\\customer_index.json";
     
     //EasyViewer
     public static String SYARYOOBJECT_FDPATH = "syaryo\\"; 
