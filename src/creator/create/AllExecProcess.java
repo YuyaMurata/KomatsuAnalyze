@@ -14,11 +14,11 @@ public class AllExecProcess {
     private static String[] kisyList = KomatsuDataParameter.KISY_LIST;
 
     public static void main(String[] args) {
-        
+        //String  kisy = "PC200";
         for (String kisy : kisyList) {
             Long start = System.currentTimeMillis();
             
-            //TemplateCreate.create(kisy);
+            TemplateCreate.create(kisy);
             Long st_temc = System.currentTimeMillis();
             
             TemplateToObjectCreate.create(kisy);

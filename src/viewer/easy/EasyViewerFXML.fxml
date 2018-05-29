@@ -24,7 +24,13 @@
                <children>
                   <VBox maxWidth="200.0" minWidth="200.0" prefWidth="200.0">
                      <children>
-                        <ComboBox fx:id="datafilter" maxWidth="200.0" minWidth="200.0" onAction="#selectFilter" prefWidth="200.0" promptText="ALL" />
+                        <HBox>
+                           <children>
+                              <ComboBox fx:id="datafilter" maxWidth="200.0" minWidth="136.0" onAction="#selectFilter" prefHeight="23.0" prefWidth="147.0" promptText="ALL" />
+                              <ToggleButton fx:id="filter_button" mnemonicParsing="false" onAction="#onFilter" prefHeight="23.0" prefWidth="36.0" text="NF" />
+                              <ToggleButton fx:id="order_button" mnemonicParsing="false" onAction="#onOrder" text="A" />
+                           </children>
+                        </HBox>
                         <ListView fx:id="keylist" maxWidth="200.0" minWidth="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
                            <contextMenu>
                               <ContextMenu>
@@ -37,17 +43,32 @@
                   </VBox>
                   <VBox HBox.hgrow="ALWAYS">
                      <children>
-                        <Label fx:id="id_label" text="syaryo">
-                           <font>
-                              <Font size="15.0" />
-                           </font>
-                           <contextMenu>
-                              <ContextMenu>
-                                <items>
-                                  <MenuItem fx:id="rightClick_copy" mnemonicParsing="false" onAction="#rightClickCopy" text="コピ-" />
-                                </items>
-                              </ContextMenu>
-                           </contextMenu></Label>
+                        <HBox>
+                           <children>
+                              <Label fx:id="index_number_label" prefHeight="19.0" prefWidth="59.0" text="99999">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                              </Label>
+                              <Label prefHeight="19.0" prefWidth="14.0" text=":" textAlignment="CENTER">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="id_label" text="syaryo">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                                 <contextMenu>
+                                    <ContextMenu>
+                                      <items>
+                                        <MenuItem fx:id="rightClick_copy" mnemonicParsing="false" onAction="#rightClickCopy" text="コピ-" />
+                                      </items>
+                                    </ContextMenu>
+                                 </contextMenu>
+                              </Label>
+                           </children>
+                        </HBox>
                         <Region maxHeight="10.0" minHeight="10.0" prefHeight="10.0" VBox.vgrow="NEVER" />
                         <ScrollPane fitToWidth="true" prefViewportHeight="391.0" prefViewportWidth="400.0" VBox.vgrow="ALWAYS">
                            <content>

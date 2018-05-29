@@ -20,8 +20,6 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -36,6 +34,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TitledPane;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.stage.FileChooser;
@@ -141,10 +140,14 @@ public class EasyViewerFXMLController implements Initializable {
     private TextArea viewarea_kmfuel;
     @FXML
     private MenuItem rightClick_copy;
-    
-    private Map filterMap;
     @FXML
     private Label number_syaryo_label;
+    @FXML
+    private ToggleButton filter_button;
+    @FXML
+    private ToggleButton order_button;
+    @FXML
+    private Label index_number_label;
     
     /**
      * Initializes the controller class.
@@ -154,8 +157,7 @@ public class EasyViewerFXMLController implements Initializable {
         // TODO
         syaryoMap = new HashMap();
         machineListInitialize();
-        filterMap = dataFilterSettings(KomatsuDataParameter.SETTING_DATAFILETER_PATH);
-        System.out.println(filterMap);
+        dataFilterSettings(KomatsuDataParameter.SETTING_DATAFILETER_PATH);
     }
 
     public void machineListInitialize() {
@@ -176,6 +178,7 @@ public class EasyViewerFXMLController implements Initializable {
             return;
         String name = keylist.getItems().get(index).toString();
         SyaryoObject4 syaryo = (SyaryoObject4) syaryoMap.get(name);
+        index_number_label.setText(String.valueOf(index+1));
         id_label.setText(name);
 
         //データの設定
@@ -298,7 +301,7 @@ public class EasyViewerFXMLController implements Initializable {
         if (file != null) {
             id_label.setText(file.getName());
             syaryoMap = loadSyaryoMap(file);
-            updateKeyList(syaryoMap.keySet());
+            updateKeyList(new ArrayList(new TreeSet(syaryoMap.keySet())));
         }
     }
 
@@ -307,35 +310,68 @@ public class EasyViewerFXMLController implements Initializable {
         return new SyaryoToZip3().read(file.getAbsolutePath());
     }
 
-    private void updateKeyList(Set keys) {
-        ObservableList list = FXCollections.observableArrayList(new TreeSet(keys));
+    private void updateKeyList(List keys) {
+        ObservableList list = FXCollections.observableArrayList(keys);
         keylist.setItems(list);
         number_syaryo_label.setText(keylist.getItems().size()+" / "+syaryoMap.size());
     }
 
+    private static Map currentFilterMap;
     @FXML
     private void selectFilter(ActionEvent event) {
         System.out.println("Selection in the listView is : " + datafilter.getValue());
         String filter = datafilter.getValue();
         
         final Map<String, Object> datafilterList = new ConcurrentHashMap();
-        if(filter.contains("なし"))
+        if(filter.equals("ALL")){
+            datafilterList.putAll(syaryoMap);
+        }
+        else if(filter_button.isSelected()){
             syaryoMap.values().parallelStream()
                 .forEach(s ->{
                     s.decompress();
-                    if(s.get(filter.replace("なし", "")) == null)
-                        datafilterList.put(s.getName(), "");
+                    if(s.get(filter) != null)
+                        datafilterList.put(s.getName(), s.get(filter).size());
                     s.compress(true);
                 });
-        else{
-            if(filter.equals("ALL")){
-                datafilterList.putAll(syaryoMap);
-            }
+            filter_button.setText("EF");
+        }else{
+            syaryoMap.values().parallelStream()
+                .forEach(s ->{
+                    s.decompress();
+                    if(s.get(filter) == null)
+                        datafilterList.put(s.getName(), s.get(filter).size());
+                    s.compress(true);
+                });
+            filter_button.setText("DF");
         }
-
+        
         //更新処理
         if(keylist.getItems() != datafilterList)
-            updateKeyList(datafilterList.keySet());
+            updateKeyList((new ArrayList(new TreeSet(datafilterList.keySet()))));
+        
+        currentFilterMap = datafilterList;
+    }
+    
+    private void selectOrder(ActionEvent event) {
+        List list;
+        if(datafilter.getValue().equals("ALL") || currentFilterMap == null)
+            return ;
+        else if(order_button.isSelected()){
+            list = (List) currentFilterMap.entrySet().stream()
+                                    .sorted(Map.Entry.comparingByValue().reversed())
+                                    .map(s -> ((Map.Entry)s).getKey().toString())
+                                    .collect(Collectors.toList());
+            order_button.setText("D");
+        }else{
+            list = (List) currentFilterMap.entrySet().stream()
+                                    .sorted(Map.Entry.comparingByValue())
+                                    .map(s -> ((Map.Entry)s).getKey().toString())
+                                    .collect(Collectors.toList());
+            order_button.setText("A");
+        }
+        //更新処理
+        updateKeyList(list);
     }
 
     @FXML
@@ -346,24 +382,24 @@ public class EasyViewerFXMLController implements Initializable {
         clipboard.setContent(content);
     }
     
-    private Map dataFilterSettings(String file){
-        Map<String, String> map = new LinkedHashMap();
+    private void dataFilterSettings(String file){
+        List<String> list = new ArrayList<>();
         try(BufferedReader br = CSVFileReadWrite.reader(file)){
             //header
             String line = br.readLine();
             
-            while((line = br.readLine()) != null)
-                map.put(line.split(",")[0],line.split(",")[1]);
+            while((line = br.readLine()) != null){
+                if(line.contains("ALL"))
+                    list.add(line);
+                else
+                    list.add(line);
+            }
             
         } catch (IOException ex) {
             ex.printStackTrace();
         }
         
-        datafilter.getItems().addAll(map.keySet().stream()
-                        .map(f -> map.get(f).contains("0")?f+"なし":f)
-                        .collect(Collectors.toList()));
-        
-        return map;
+        datafilter.getItems().addAll(list);
     }
 
     @FXML
@@ -377,5 +413,15 @@ public class EasyViewerFXMLController implements Initializable {
         }
         content.putString(sb.toString());
         clipboard.setContent(content);
+    }
+
+    @FXML
+    private void onFilter(ActionEvent event) {
+        selectFilter(event);
+    }
+
+    @FXML
+    private void onOrder(ActionEvent event) {
+        selectOrder(event);
     }
 }
