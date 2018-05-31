@@ -340,7 +340,7 @@ public class EasyViewerFXMLController implements Initializable {
                 .forEach(s ->{
                     s.decompress();
                     if(s.get(filter) == null)
-                        datafilterList.put(s.getName(), s.get(filter).size());
+                        datafilterList.put(s.getName(), 0);
                     s.compress(true);
                 });
             filter_button.setText("DF");

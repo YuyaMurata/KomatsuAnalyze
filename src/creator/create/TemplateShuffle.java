@@ -381,21 +381,22 @@ public class TemplateShuffle {
             v2 = ref.get(Integer.valueOf(v2.split("#")[1]));
         }
 
-        if (op.equals("+")) {
-            return Integer.valueOf(v1) + Integer.valueOf(v2);
-        } else if (op.equals("-")) {
-            return Integer.valueOf(v1) - Integer.valueOf(v2);
-        } else if (op.equals("/")) {
-            return Integer.valueOf(v1) / Integer.valueOf(v2);
-        } else if (op.equals("|")) {
-            if (v1.equals("Y") || v2.equals("Y")) {
-                return 1;
-            } else {
-                return 0;
-            }
-        } else {
-            System.out.println("Arithmatic Error! " + op);
-            return null;
+        switch (op) {
+            case "+":
+                return Integer.valueOf(v1) + Integer.valueOf(v2);
+            case "-":
+                return Integer.valueOf(v1) - Integer.valueOf(v2);
+            case "/":
+                return Integer.valueOf(v1) / Integer.valueOf(v2);
+            case "|":
+                if (v1.equals("Y") || v2.equals("Y")) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            default:
+                System.out.println("Arithmatic Error! " + op);
+                return null;
         }
     }
 
@@ -406,16 +407,17 @@ public class TemplateShuffle {
         }
 
         c2 = c2.replace("'", "");
-        if (cond.equals("=")) {
-            return c1.equals(c2);
-        } else if (cond.equals("<>")) {
-            return !c1.equals(c2);
-        } else if (cond.equals("<")) {
-            return Integer.valueOf(c1) < Integer.valueOf(c2);
-        } else if (cond.equals(">")) {
-            return Integer.valueOf(c1) > Integer.valueOf(c2);
-        } else {
-            return null;
+        switch (cond) {
+            case "=":
+                return c1.equals(c2);
+            case "<>":
+                return !c1.equals(c2);
+            case "<":
+                return Integer.valueOf(c1) < Integer.valueOf(c2);
+            case ">":
+                return Integer.valueOf(c1) > Integer.valueOf(c2);
+            default:
+                return null;
         }
     }
 }

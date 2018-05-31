@@ -44,13 +44,14 @@ public class SyaryoObjectFormatting {
         
         int n = 0;
         for(String key : syaryoMap.keySet()){
+            System.out.println(key);
             SyaryoObject4 syaryo = syaryoMap.get(key);
             syaryo.decompress();
             
-            Map newMap = formQwner(syaryo.get("顧客"), dataIndex.get("顧客"), honsyIndex);
+            Map newMap = formOwner(syaryo.get("顧客"), dataIndex.get("顧客"), honsyIndex);
             syaryo.map.put("顧客", newMap);
             
-            newMap = formNew(syaryo.get("新車"), syaryo.get("出荷"), dataIndex.get("新車"));
+            newMap = formNew(syaryo.get("新車"), syaryo.get("生産"), syaryo.get("出荷"), dataIndex.get("新車"));
             syaryo.map.put("新車", newMap);
             
             syaryo.compress(true);
@@ -65,31 +66,32 @@ public class SyaryoObjectFormatting {
         zip3.write(outfile, syaryoMap);
     }
     
-    private static Map formQwner(Map<String, List> owner, List indexList, Map<String, String> honsyIndex){
+    private static Map formOwner(Map<String, List> owner, List indexList, Map<String, String> honsyIndex){
         if(owner == null){
             System.out.println("Do no find owner!");
         }
         
-        Integer ownerID = indexList.indexOf("KKYKCD");
-        Integer ownerName = indexList.indexOf("KKYK_KANA");
+        Integer ownerID = indexList.indexOf("NNSCD");
+        Integer ownerName = indexList.indexOf("NNSK_NM_1");
         
         //ID重複排除 ##排除
         List owners = owner.values().stream()
                                 .map(l -> honsyIndex.get(l.get(ownerID))==null?l.get(ownerID):honsyIndex.get(l.get(ownerID)))
-                                .filter(id -> !id.toString().contains("##"))
-                                .distinct()
+                                .filter(id -> !(id.toString().contains("##") || id.toString().equals("")))
                                 .collect(Collectors.toList());
+        owners = exSeqDuplicate(owners);
         
         Map<String, List> map = new TreeMap();
         int i = 0;
         for(String date : owner.keySet()){
-            if(date.replace("/", "").length() >= 8){
+            String d = date.replace("/", "");
+            if(d.length() >= 8){
                 String id = owner.get(date).get(ownerID).toString();
                 if(honsyIndex.get(id) != null)
                     id = honsyIndex.get(id);
                     
                 if(id.equals(owners.get(i))){
-                    map.put(date.replace("/", ""), owner.get(date));
+                    map.put(d, owner.get(date));
                     i++;
                     if(owners.size() <= i)
                         break;
@@ -98,7 +100,7 @@ public class SyaryoObjectFormatting {
         }
         
         //名称重複排除
-        owners = map.values().stream()
+        /*owners = map.values().stream()
                         .map(l -> l.get(ownerName))
                         .distinct()
                         .collect(Collectors.toList());
@@ -112,16 +114,20 @@ public class SyaryoObjectFormatting {
                 if(owners.size() <= i)
                     break;
             }
-        }
+        }*/
         
-        return map2;
+        return map;
     }
     
-    private static Map formNew(Map<String, List> news, Map<String, List> deploy, List indexList){
+    private static Map formNew(Map<String, List> news,Map<String, List> born, Map<String, List> deploy, List indexList){
         Map<String, List> map = new TreeMap();
         if(news == null){
             //出荷情報を取得する処理
-            String date = deploy.keySet().stream().findFirst().get();
+            String date;
+            if(deploy != null)
+                date = deploy.keySet().stream().findFirst().get();
+            else
+                date = born.keySet().stream().findFirst().get();
             List list = new ArrayList();
             for(Object s : indexList)
                 list.add("None");
@@ -213,5 +219,18 @@ public class SyaryoObjectFormatting {
         }
         formIndex.entrySet().stream().map(e -> e.getKey()+":"+e.getValue()).forEach(System.out::println);
         return formIndex;
+    }
+    
+    private static List exSeqDuplicate(List<String> dupList){
+        List list = new ArrayList();
+        String tmp = "";
+        for(String el : dupList){
+            if(tmp.equals(el))
+                continue;
+            tmp = el;
+            list.add(tmp);
+        }
+        
+        return list;
     }
 }
