@@ -27,4 +27,14 @@ public class DataRejectRule {
         }
         return false;
     }
+    
+    List work = new ArrayList();
+    public List getWORKID(){
+        return work;
+    }
+    
+    List parts = new ArrayList();
+    public List getPARTSID(){
+        return parts;
+    }
 }

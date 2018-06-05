@@ -184,12 +184,6 @@ public class TemplateCreate {
             if ((new File(filename)).exists()) {
                 System.out.println("> exists " + filename);
                 continue;
-            } else {
-                try {
-                    //Time
-                    Thread.sleep(10000);
-                } catch (InterruptedException ex) {
-                }
             }
 
             //
@@ -223,7 +217,10 @@ public class TemplateCreate {
             while (res.next()) {
                 List<String> content = new ArrayList<>();
                 for (String c : code) {
-                    content.add(res.getString(c));
+                    String str = res.getString(c);
+                    if(str.equals(""))
+                        str = "None";
+                    content.add(str);
                 }
 
                 //Syaryo Indexに存在するか確認
