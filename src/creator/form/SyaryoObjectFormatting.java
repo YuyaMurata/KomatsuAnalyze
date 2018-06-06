@@ -561,7 +561,7 @@ public class SyaryoObjectFormatting {
             .distinct()
             .collect(Collectors.toList());
 
-        Map<String, List<String>> map = new LinkedHashMap();
+        Map<String, List<String>> map = new TreeMap();
 
         for (String date : dateList) {
             String stdate = date;
@@ -588,6 +588,9 @@ public class SyaryoObjectFormatting {
                         map.put(date, list);
                 }
             }
+            
+            //異常データの排除
+            //List sortList = map.entrySet().stream().sorted(Map.Entry.comparingByValue(cmp))
             
             //整形処理
             map.get(date).set(smridx, map.get(date).get(smridx).split("\\.")[0]);
