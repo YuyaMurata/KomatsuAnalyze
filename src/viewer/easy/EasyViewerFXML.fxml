@@ -45,7 +45,7 @@
                      <children>
                         <HBox>
                            <children>
-                              <Label fx:id="index_number_label" prefHeight="19.0" prefWidth="59.0" text="99999">
+                              <Label fx:id="index_number_label" prefHeight="19.0" prefWidth="75.0" text="99999">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
@@ -55,7 +55,7 @@
                                     <Font size="15.0" />
                                  </font>
                               </Label>
-                              <Label fx:id="id_label" text="syaryo">
+                              <Label fx:id="id_label" prefHeight="19.0" prefWidth="181.0" text="syaryo">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
@@ -67,6 +67,9 @@
                                     </ContextMenu>
                                  </contextMenu>
                               </Label>
+                              <Region prefHeight="23.0" prefWidth="102.0" HBox.hgrow="ALWAYS" />
+                              <ComboBox fx:id="graph_menu" prefHeight="23.0" prefWidth="118.0" promptText="None" />
+                              <Button fx:id="graph_button" alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#graphAction" prefHeight="23.0" prefWidth="82.0" text="Graph" />
                            </children>
                         </HBox>
                         <Region maxHeight="10.0" minHeight="10.0" prefHeight="10.0" VBox.vgrow="NEVER" />
@@ -141,7 +144,7 @@
                                     </TitledPane>
                                     <TitledPane fx:id="smr" animated="false" text="SMR">
                                        <content>
-                                          <TextArea fx:id="viewarea_smr" editable="false" prefHeight="200.0" prefWidth="200.0" />
+                                          <TextArea fx:id="viewarea_smr" editable="false" prefHeight="158.0" prefWidth="526.0" />
                                        </content>
                                     </TitledPane>
                                     <TitledPane fx:id="kmsmr" animated="false" text="KOMTRAX_SMR">

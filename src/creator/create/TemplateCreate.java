@@ -218,7 +218,9 @@ public class TemplateCreate {
                 List<String> content = new ArrayList<>();
                 for (String c : code) {
                     String str = res.getString(c);
-                    if(str.equals(""))
+                    if(str == null)
+                        str = "None";
+                    else if(str.equals(""))
                         str = "None";
                     content.add(str);
                 }

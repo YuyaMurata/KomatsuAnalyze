@@ -5,11 +5,13 @@
  */
 package viewer.easy;
 
+import command.py.PythonCommand;
 import creator.create.KomatsuDataParameter;
 import file.CSVFileReadWrite;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +29,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Accordion;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -148,6 +151,12 @@ public class EasyViewerFXMLController implements Initializable {
     private ToggleButton order_button;
     @FXML
     private Label index_number_label;
+    @FXML
+    private Button graph_button;
+    @FXML
+    private ComboBox<String> graph_menu;
+    
+    private SyaryoObject4 currentSyaryo;
     
     /**
      * Initializes the controller class.
@@ -158,6 +167,7 @@ public class EasyViewerFXMLController implements Initializable {
         syaryoMap = new HashMap();
         machineListInitialize();
         dataFilterSettings(KomatsuDataParameter.SETTING_DATAFILETER_PATH);
+        graphMenuSettings();
     }
 
     public void machineListInitialize() {
@@ -177,12 +187,12 @@ public class EasyViewerFXMLController implements Initializable {
         if(index < 0)
             return;
         String name = keylist.getItems().get(index).toString();
-        SyaryoObject4 syaryo = (SyaryoObject4) syaryoMap.get(name);
+        currentSyaryo = (SyaryoObject4) syaryoMap.get(name);
         index_number_label.setText(String.valueOf(index+1));
         id_label.setText(name);
 
         //データの設定
-        settingData(syaryo);
+        settingData(currentSyaryo);
     }
 
     //アコーディオンの設定
@@ -401,6 +411,11 @@ public class EasyViewerFXMLController implements Initializable {
         
         datafilter.getItems().addAll(list);
     }
+    
+    private void graphMenuSettings(){
+        
+        graph_menu.getItems().add("SMR");
+    }
 
     @FXML
     private void rightClickCopyList(ActionEvent event) {
@@ -423,5 +438,32 @@ public class EasyViewerFXMLController implements Initializable {
     @FXML
     private void onOrder(ActionEvent event) {
         selectOrder(event);
+    }
+
+    @FXML
+    private void graphAction(ActionEvent event) {
+        String v = graph_menu.getValue();
+        if(v == null)
+            return ;
+        
+        System.out.println(v);
+        if(currentSyaryo == null)
+            return ;
+        currentSyaryo.decompress();
+        Map<String, List> map = currentSyaryo.get(v);
+        currentSyaryo.compress(true);
+        if(map == null)
+            return ;
+                
+        //CSVFile 生成
+        try(PrintWriter csv = CSVFileReadWrite.writer(KomatsuDataParameter.GRAPH_TEMP_FILE)){
+            csv.println("Date,SMR");
+            for(String date : map.keySet()){
+                csv.println(date+","+map.get(date).get(2));
+            }
+        }
+        
+        //Graph Python 実行
+        PythonCommand.py(KomatsuDataParameter.GRAPH_PY, KomatsuDataParameter.GRAPH_TEMP_FILE);
     }
 }

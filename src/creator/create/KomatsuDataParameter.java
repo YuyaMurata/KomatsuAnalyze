@@ -35,6 +35,8 @@ public interface KomatsuDataParameter {
     //EasyViewer
     public static String SYARYOOBJECT_FDPATH = "syaryo\\";
     public static String SETTING_DATAFILETER_PATH = "index\\easyviwer_datafilter.csv";
+    public static String GRAPH_PY = "py\\smr_date_graph.py";
+    public static String GRAPH_TEMP_FILE = "py\\csv\\graph_temp.csv";
 
     //Formalize
     public static List KUEC_LIST = Arrays.asList(new String[]{

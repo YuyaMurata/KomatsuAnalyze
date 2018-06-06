@@ -38,6 +38,7 @@ public class SyaryoObjectFormatting {
         form(KISY);
     }
 
+    private static String currentKey;
     private static void form(String kisy) {
         SyaryoToZip3 zip3 = new SyaryoToZip3();
         String filename = OBJPATH + "syaryo_obj_" + kisy + ".bz2";
@@ -49,6 +50,7 @@ public class SyaryoObjectFormatting {
         int n = 0;
         for (String key : syaryoMap.keySet()) {
             System.out.println(key);
+            currentKey = key;
             
             SyaryoObject4 syaryo = syaryoMap.get(key);
             syaryo.decompress();
@@ -82,6 +84,10 @@ public class SyaryoObjectFormatting {
             //部品
             newMap = formParts(syaryo.get("部品"), dataIndex.get("部品"), rule.getPARTSID());
             syaryo.map.put("部品", newMap);
+            
+            //SMR
+            newMap = formSMR(syaryo.get("SMR"), dataIndex.get("SMR"));
+            syaryo.map.put("SMR", newMap);
             
             syaryo.compress(true);
             n++;
@@ -127,7 +133,7 @@ public class SyaryoObjectFormatting {
         List owners = owner.values().stream()
             .map(l -> l.get(ownerID))
             .filter(id -> !id.toString().contains("##")) //工場IDが振られていない
-            .filter(id -> !id.toString().equals("")) //IDが存在する
+            .filter(id -> !id.toString().equals("None")) //IDが存在する
             .filter(id -> !KomatsuDataParameter.KUEC_LIST.contains(id)) //KUECでない
             .collect(Collectors.toList());
         //System.out.println(owners);
@@ -364,7 +370,7 @@ public class SyaryoObjectFormatting {
                         map.put(sbn, list);
                     } else {
                         //System.out.println("サービス経歴に金額の入ったデータが2つ以上存在");
-                        if (!(map.get(sbn).get(price).equals("") || list.get(price).equals(""))) {
+                        if (!(map.get(sbn).get(price).equals("None") || list.get(price).equals("None"))) {
                             if (Double.valueOf(map.get(sbn).get(price).toString()) < Double.valueOf(list.get(price))) {
                                 map.put(sbn, list);
                             }
@@ -377,11 +383,9 @@ public class SyaryoObjectFormatting {
             }
 
             //System.out.println(map.get(sbn));
-            if (map.get(sbn).get(kind).equals("1")) {
-                partsOrder.add(sbn);
-            } else if(map.get(sbn).get(kind).equals("2")){
+            partsOrder.add(sbn);
+            if(map.get(sbn).get(kind).equals("2"))
                 workOrder.add(sbn);
-            }
         }
 
         //金額の整形処理
@@ -410,9 +414,13 @@ public class SyaryoObjectFormatting {
             List diff = sbnList.stream().filter(s -> !workOrder.contains(s)).collect(Collectors.toList());
             //System.out.println("order:" + workOrder);
             //System.out.println("work:" + sbnList);
-            System.out.println("受注作番と作業の発行数が違う");
-            System.out.println("差分[work-order]:"+diff);
-            
+            //System.out.println("受注作番と作業の発行数が違う");
+            //System.out.println(currentKey+",差分[work-order],"+diff);
+            /*if(!diff.isEmpty())
+                diff.stream()
+                    .map(s -> currentKey+","+work.get(s).get(indexList.indexOf("KSYCD"))+","+s+","+work.get(s).get(indexList.indexOf("LAST_UPD_DAYT")))
+                    .forEach(System.out::println);
+            */
             //受注にない作番を削除 (4月中に売り上げが完了していないもの)
             sbnList = sbnList.stream().filter(s -> !diff.contains(s)).collect(Collectors.toList());
         }
@@ -427,7 +435,7 @@ public class SyaryoObjectFormatting {
                 .filter(s -> s.contains(sbn))
                 .collect(Collectors.toList());
 
-            //KOMPAS 受注テーブル情報が存在するときは取り出す
+            //KOMPAS 作業情報が存在するときは取り出す
             Optional<List> kom = sbnGroup.stream()
                 .map(s -> work.get(s))
                 .filter(l -> l.get(db).toString().equals("work_info"))
@@ -453,11 +461,11 @@ public class SyaryoObjectFormatting {
         for (String sbn : map.keySet()) {
             List<String> list = map.get(sbn);
             for (int i : kosu) {
-                if (!(list.get(i).equals("None") || list.get(i).equals(""))) {
+                if (!list.get(i).equals("None")) {
                     list.set(i, String.valueOf(Double.valueOf(list.get(i)).floatValue()));
                 }
             }
-            if (!(list.get(price).equals("None") || list.get(price).equals(""))) {
+            if (!list.get(price).equals("None")) {
                 list.set(price, String.valueOf(Double.valueOf(list.get(price)).intValue()));
             }
         }
@@ -467,7 +475,7 @@ public class SyaryoObjectFormatting {
 
     private static Map formParts(Map<String, List> parts, List indexList, List partsOrder) {
         if (parts == null) {
-            //System.out.println("Not found Work!");
+            //System.out.println("Not found Parts!");
             return null;
         }
 
@@ -481,11 +489,15 @@ public class SyaryoObjectFormatting {
             //差分
             List diff = sbnList.stream().filter(s -> !partsOrder.contains(s)).collect(Collectors.toList());
             
-            System.out.println("order:" + partsOrder);
-            System.out.println("parts:" + sbnList);
-            System.out.println("受注作番と作業の発行数が違う");
-            System.out.println("差分[parts-order]:"+diff);
-            
+            //System.out.println("order:" + partsOrder);
+            //System.out.println("parts:" + sbnList);
+            //System.out.println("受注作番と作業の発行数が違う");
+            //System.out.println(currentKey+",差分[parts-order],"+diff);
+            /*if(!diff.isEmpty())
+                diff.stream()
+                    .map(s -> currentKey+","+parts.get(s).get(indexList.indexOf("KSYCD"))+","+s+","+parts.get(s).get(indexList.indexOf("LAST_UPD_DAYT")))
+                    .forEach(System.out::println);
+            */
             //受注にない作番を削除 (4月中に売り上げが完了していないもの)
             sbnList = sbnList.stream().filter(s -> !diff.contains(s)).collect(Collectors.toList());
         }
@@ -500,10 +512,10 @@ public class SyaryoObjectFormatting {
                 .filter(s -> s.contains(sbn))
                 .collect(Collectors.toList());
 
-            //KOMPAS 受注テーブル情報が存在するときは取り出す
+            //KOMPAS 部品情報が存在するときは取り出す
             Optional<List> kom = sbnGroup.stream()
                 .map(s -> parts.get(s))
-                .filter(l -> l.get(db).toString().equals("service"))
+                .filter(l -> l.get(db).toString().equals("parts"))
                 .findFirst();
             if (kom.isPresent()) {
                 sbnGroup.stream()
@@ -525,7 +537,7 @@ public class SyaryoObjectFormatting {
                 cancel.add(sbn);
             }
 
-            if (!(list.get(price).equals("None") || list.get(price).equals(""))) {
+            if (!list.get(price).equals("None")) {
                 list.set(price, String.valueOf(Double.valueOf(list.get(price)).intValue()));
             }
         }
@@ -533,7 +545,58 @@ public class SyaryoObjectFormatting {
 
         return map;
     }
+    
+    private static Map formSMR(Map<String, List> smr, List indexList) {
+        if (smr == null) {
+            //System.out.println("Not found Work!");
+            return null;
+        }
+        
+        int smridx = indexList.indexOf("SVC_MTR");
+        
+        //日付重複除去
+        List<String> dateList = smr.keySet().stream()
+            .filter(s -> !s.equals("None")) //日付が存在しない
+            .map(s -> s.split("#")[0])
+            .distinct()
+            .collect(Collectors.toList());
 
+        Map<String, List<String>> map = new LinkedHashMap();
+
+        for (String date : dateList) {
+            String stdate = date;
+            //重複日付を取り出す
+            List<String> dateGroup = smr.keySet().stream()
+                .filter(s -> s.contains(stdate))
+                .filter(s -> !smr.get(s).get(smridx).equals("None")) //SMRが存在しない
+                .collect(Collectors.toList());
+            
+            //欠損データのみのため
+            if(dateGroup.isEmpty())
+                continue;
+            
+            if(date.length() > 8)
+                date = date.substring(0, 8);
+            
+            for(String dg : dateGroup){
+                List list = smr.get(dg);
+                
+                if(map.get(date) == null){
+                    map.put(date, list);
+                }else{
+                    if(Float.valueOf(map.get(date).get(smridx)) < Float.valueOf(list.get(smridx).toString()))
+                        map.put(date, list);
+                }
+            }
+            
+            //整形処理
+            map.get(date).set(smridx, map.get(date).get(smridx).split("\\.")[0]);
+        }
+
+        return map;
+    }
+    
+    
     //Util
     private static Map<String, List> index() {
         Map<String, Map<String, List<String>>> index = new MapIndexToJSON().reader(INDEXPATH);
