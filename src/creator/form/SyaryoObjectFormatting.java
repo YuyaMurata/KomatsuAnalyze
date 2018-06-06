@@ -48,7 +48,8 @@ public class SyaryoObjectFormatting {
 
         int n = 0;
         for (String key : syaryoMap.keySet()) {
-            //System.out.println(key);
+            System.out.println(key);
+            
             SyaryoObject4 syaryo = syaryoMap.get(key);
             syaryo.decompress();
 
@@ -77,13 +78,11 @@ public class SyaryoObjectFormatting {
             //作業
             newMap = formWork(syaryo.get("作業"), dataIndex.get("作業"), rule.getWORKID());
             syaryo.map.put("作業", newMap);
-            
-            if(check)
-                System.out.println(key);
 
             //部品
-            //newMap = formParts(syaryo.get("部品"), dataIndex.get("部品"), rule.getPARTSID());
-            //syaryo.map.put("部品", newMap);
+            newMap = formParts(syaryo.get("部品"), dataIndex.get("部品"), rule.getPARTSID());
+            syaryo.map.put("部品", newMap);
+            
             syaryo.compress(true);
             n++;
 
@@ -394,13 +393,11 @@ public class SyaryoObjectFormatting {
         return map;
     }
     
-    private static Boolean check;
     private static Map formWork(Map<String, List> work, List indexList, List workOrder) {
         if (work == null) {
             //System.out.println("Not found Work!");
             return null;
         }
-        check = false;
 
         //作番重複除去
         List<String> sbnList = work.keySet().stream()
@@ -413,15 +410,11 @@ public class SyaryoObjectFormatting {
             List diff = sbnList.stream().filter(s -> !workOrder.contains(s)).collect(Collectors.toList());
             //System.out.println("order:" + workOrder);
             //System.out.println("work:" + sbnList);
-            int date = indexList.indexOf("SGYO_SJDAY");
-            for(Object sbn : diff)
-                if(!work.get(sbn).get(date).toString().equals(""))
-                    if(Integer.valueOf(work.get(sbn).get(date).toString()) < 20170401)
-                        check = true;
-            if(check){
-                System.out.println("受注作番と作業の発行数が違う");
-                System.out.println("差分[work-order]:"+diff);
-            }
+            System.out.println("受注作番と作業の発行数が違う");
+            System.out.println("差分[work-order]:"+diff);
+            
+            //受注にない作番を削除 (4月中に売り上げが完了していないもの)
+            sbnList = sbnList.stream().filter(s -> !diff.contains(s)).collect(Collectors.toList());
         }
 
         Map<String, List<String>> map = new LinkedHashMap();
@@ -485,9 +478,16 @@ public class SyaryoObjectFormatting {
             .collect(Collectors.toList());
 
         if (sbnList.size() != partsOrder.size()) {
-            System.out.println("受注作番と部品の発行数が違う");
+            //差分
+            List diff = sbnList.stream().filter(s -> !partsOrder.contains(s)).collect(Collectors.toList());
+            
             System.out.println("order:" + partsOrder);
             System.out.println("parts:" + sbnList);
+            System.out.println("受注作番と作業の発行数が違う");
+            System.out.println("差分[parts-order]:"+diff);
+            
+            //受注にない作番を削除 (4月中に売り上げが完了していないもの)
+            sbnList = sbnList.stream().filter(s -> !diff.contains(s)).collect(Collectors.toList());
         }
 
         Map<String, List<String>> map = new LinkedHashMap();
