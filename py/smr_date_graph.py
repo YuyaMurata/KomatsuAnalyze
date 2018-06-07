@@ -13,5 +13,6 @@ print(data['Date'])
 
 # 折れ線グラフを出力
 data.plot(x='Date', y='SMR', marker='o')
+data.plot(x='Date', y='MA', marker='o', c='g')
 
 plt.show()

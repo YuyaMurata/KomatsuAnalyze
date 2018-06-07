@@ -5,6 +5,7 @@
  */
 package viewer.easy;
 
+import analyze.MovingAverage;
 import command.py.PythonCommand;
 import creator.create.KomatsuDataParameter;
 import file.CSVFileReadWrite;
@@ -454,12 +455,17 @@ public class EasyViewerFXMLController implements Initializable {
         currentSyaryo.compress(true);
         if(map == null)
             return ;
+        
+        //MA
+        List ma = MovingAverage.avg(map.values().stream()
+                                .map(s -> s.get(2)).collect(Collectors.toList()), 5);
                 
         //CSVFile 生成
         try(PrintWriter csv = CSVFileReadWrite.writer(KomatsuDataParameter.GRAPH_TEMP_FILE)){
-            csv.println("Date,SMR");
+            csv.println("Date,SMR,MA");
+            int i=0;
             for(String date : map.keySet()){
-                csv.println(date+","+map.get(date).get(2));
+                csv.println(date+","+map.get(date).get(2)+","+ma.get(i++));
             }
         }
         
