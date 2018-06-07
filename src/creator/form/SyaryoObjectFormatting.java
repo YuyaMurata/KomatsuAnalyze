@@ -6,7 +6,10 @@
 package creator.form;
 
 import creator.create.KomatsuDataParameter;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -14,7 +17,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import json.MapIndexToJSON;
 import json.SyaryoToZip3;
 import obj.SyaryoObject4;
@@ -556,13 +558,12 @@ public class SyaryoObjectFormatting {
         
         //日付重複除去
         List<String> dateList = smr.keySet().stream()
-            .filter(s -> !s.equals("None")) //日付が存在しない
+            .filter(s -> !s.contains("None")) //日付が存在しない
             .map(s -> s.split("#")[0])
             .distinct()
             .collect(Collectors.toList());
-
+        
         Map<String, List<String>> map = new TreeMap();
-
         for (String date : dateList) {
             String stdate = date;
             //重複日付を取り出す
@@ -589,13 +590,35 @@ public class SyaryoObjectFormatting {
                 }
             }
             
-            //異常データの排除
-            //List sortList = map.entrySet().stream().sorted(Map.Entry.comparingByValue(cmp))
-            
             //整形処理
             map.get(date).set(smridx, map.get(date).get(smridx).split("\\.")[0]);
         }
-
+        
+        //異常データの排除
+        /*Map<String, Integer> sortMap = map.entrySet().stream()
+                                            .sorted(Map.Entry.comparingByKey())
+                                            .collect(Collectors.toMap(e -> e.getKey(), e  -> Integer.valueOf(e.getValue().get(smridx)), (e, e2) -> e, LinkedHashMap::new));
+        //System.out.println(sortMap);
+        List<String> sortList = sortMap.entrySet().stream()
+                                    .sorted(Map.Entry.comparingByValue())
+                                    .map(e -> e.getKey())
+                                    .collect(Collectors.toList());
+        //System.out.println(sortList);
+        Deque<String> q = new ArrayDeque<String>();
+        for(String date : sortList){
+            if(!q.isEmpty())
+                while(Integer.valueOf(q.getLast()) > Integer.valueOf(date)){
+                    q.removeLast();
+                    if(q.isEmpty())
+                        break;
+                }
+            q.addLast(date);
+        }
+        //System.out.println(q);
+        map = map.entrySet().stream()
+                        .filter(e -> q.contains(e.getKey()))
+                        .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+                        */
         return map;
     }
     
