@@ -5,6 +5,7 @@
  */
 package creator.create;
 
+import param.KomatsuDataParameter;
 import creator.template.SimpleTemplate;
 import db.HiveDB;
 import db.field.EQP;

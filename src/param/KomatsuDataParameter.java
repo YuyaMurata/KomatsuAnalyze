@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package creator.create;
+package param;
 
 import java.util.Arrays;
 import java.util.List;
@@ -56,4 +56,7 @@ public interface KomatsuDataParameter {
         "U3243614",
         "UJ132824"
     });
+    
+    //R
+    public static String R_FUNC_PATH = "R\\KMRFunction.R";
 }

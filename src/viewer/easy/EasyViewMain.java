@@ -11,23 +11,31 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import program.r.R;
 
 /**
  *
  * @author kaeru_yuya
  */
-public class EasyViewMain extends Application{
+public class EasyViewMain extends Application {
+
     @Override
-	public void start(Stage stage) throws Exception {
-		Parent root = FXMLLoader.load(getClass().getResource("EasyViewerFXML.fxml"));
-		Scene scene = new Scene(root);
+    public void start(Stage stage) throws Exception {
+        Parent root = FXMLLoader.load(getClass().getResource("EasyViewerFXML.fxml"));
+        Scene scene = new Scene(root);
 
-		stage.setTitle("Easy View Ver.0a");
-		stage.setScene(scene);
-		stage.show();
-	}
+        stage.setTitle("Easy View Ver.0a");
+        stage.setScene(scene);
+        stage.show();
 
-	public static void main(String[] args) {
-		launch(args);
-	}
+        stage.showingProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue == true && newValue == false) {
+                R.close();
+            }
+        });
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
 }

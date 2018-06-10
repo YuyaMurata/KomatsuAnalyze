@@ -5,7 +5,7 @@
  */
 package creator.form;
 
-import creator.create.KomatsuDataParameter;
+import param.KomatsuDataParameter;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -5,7 +5,7 @@
  */
 package creator.form;
 
-import creator.create.KomatsuDataParameter;
+import param.KomatsuDataParameter;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import json.MapIndexToJSON;
 import json.SyaryoToZip3;
 import obj.SyaryoObject4;
+import program.r.R;
 
 /**
  *
@@ -595,10 +596,11 @@ public class SyaryoObjectFormatting {
         }
         
         //異常データの排除
-        /*Map<String, Integer> sortMap = map.entrySet().stream()
-                                            .sorted(Map.Entry.comparingByKey())
-                                            .collect(Collectors.toMap(e -> e.getKey(), e  -> Integer.valueOf(e.getValue().get(smridx)), (e, e2) -> e, LinkedHashMap::new));
-        //System.out.println(sortMap);
+        //Map<String, Integer> sortMap = map.entrySet().stream()
+        //                                    .sorted(Map.Entry.comparingByKey())
+        //                                    .collect(Collectors.toMap(e -> e.getKey(), e  -> Integer.valueOf(e.getValue().get(smridx)), (e, e2) -> e, LinkedHashMap::new));
+        //List list = R.getInstance().detectOuters(sortMap.keySet().stream().collect(Collectors.toList()));
+        /*//System.out.println(sortMap);
         List<String> sortList = sortMap.entrySet().stream()
                                     .sorted(Map.Entry.comparingByValue())
                                     .map(e -> e.getKey())
@@ -615,10 +617,11 @@ public class SyaryoObjectFormatting {
             q.addLast(date);
         }
         //System.out.println(q);
-        map = map.entrySet().stream()
-                        .filter(e -> q.contains(e.getKey()))
-                        .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
-                        */
+        */
+        //map = map.entrySet().stream()
+        //                .filter(e -> list.contains(e.getValue().get(2)))
+        //                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+
         return map;
     }
     

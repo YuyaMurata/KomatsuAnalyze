@@ -6,8 +6,8 @@
 package viewer.easy;
 
 import analyze.MovingAverage;
-import command.py.PythonCommand;
-import creator.create.KomatsuDataParameter;
+import program.py.PythonCommand;
+import param.KomatsuDataParameter;
 import file.CSVFileReadWrite;
 import java.io.BufferedReader;
 import java.io.File;
@@ -45,6 +45,7 @@ import javafx.stage.FileChooser;
 import json.SyaryoToZip3;
 //import obj.SyaryoObject3;
 import obj.SyaryoObject4;
+import program.r.R;
 
 /**
  * FXML Controller class
@@ -457,15 +458,18 @@ public class EasyViewerFXMLController implements Initializable {
             return ;
         
         //MA
-        List ma = MovingAverage.avg(map.values().stream()
-                                .map(s -> s.get(2)).collect(Collectors.toList()), 5);
-                
+        List smr =map.values().stream()
+                                .map(s -> s.get(2)).collect(Collectors.toList());
+        List ma = MovingAverage.avg(smr, 5);
+        List sgtest = R.getInstance().detectOuters(smr);
+            
         //CSVFile 生成
         try(PrintWriter csv = CSVFileReadWrite.writer(KomatsuDataParameter.GRAPH_TEMP_FILE)){
-            csv.println("Date,SMR,MA");
+            csv.println("Date,SMR,MA(5),SGTest");
             int i=0;
             for(String date : map.keySet()){
-                csv.println(date+","+map.get(date).get(2)+","+ma.get(i++));
+                csv.println(date+","+smr.get(i)+","+ma.get(i)+","+sgtest.get(i));
+                i++;
             }
         }
         
