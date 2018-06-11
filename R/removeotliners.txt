@@ -10,6 +10,9 @@ remove.outliers <- function(x, conf.level = 0.95)
     }
     
     r <- range(x)
+    if(r[1] == r[2]){
+      break
+    }
     t <- abs(r - mean(x)) / sd(x)
     q <- sqrt((n - 2) / ((n - 1) ^ 2 / t ^ 2 / n - 1))
     p <- n * pt(q, n - 2, lower.tail = FALSE)

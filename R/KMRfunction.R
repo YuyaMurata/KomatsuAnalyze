@@ -9,10 +9,17 @@ remove.outliers <- function(x, conf.level = 0.95)
       break
     }
     
+    
     r <- range(x)
+    if(r[1] == r[2])
+    	break;
+    	
     t <- abs(r - mean(x)) / sd(x)
     q <- sqrt((n - 2) / ((n - 1) ^ 2 / t ^ 2 / n - 1))
+    if(is.nan(q[1]) || is.nan(q[2]))
+    	break;
     p <- n * pt(q, n - 2, lower.tail = FALSE)
+    
     if (t[1] < t[2]) {
       if (p[2] < 1 - conf.level) {
         del.val <- c(del.val, r[2])

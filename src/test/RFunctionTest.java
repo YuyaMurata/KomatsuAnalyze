@@ -7,6 +7,7 @@ package test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import program.r.R;
 
 /**
@@ -18,14 +19,16 @@ public class RFunctionTest {
         R r = R.getInstance();
         
         List s = new ArrayList();
+        List t = new ArrayList();
         for(int i=0; i < 100; i++){
             if(i % 10 == 0)
                 s.add(i * 100);
             else
                 s.add(i);
+            t.add(i);
         }
         
-        List results = r.detectOuters(s);
+        Map results = r.detectOuters(t, s);
         System.out.println(results);
     }
 }

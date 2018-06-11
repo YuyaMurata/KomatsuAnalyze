@@ -15,7 +15,8 @@ print(data['Date'])
 # 折れ線グラフを出力
 plt.plot(data['Date'], data['SMR'], marker='o', label='SMR')
 plt.plot(data['Date'], data['MA(5)'], alpha=0.5, marker='x', linestyle="--", label='MA(5)')
-plt.plot(data['Date'], data['SGTest'], alpha=0.5, linestyle="--", label='SGTest')
+plt.plot(data['Date'], data['REG'], alpha=0.5, linestyle="--", label='REG')
+data.plot(x='Date', y='SGTest', alpha=1.0, linestyle="--", label='SGTest')
 
 plt.legend()
 plt.show()

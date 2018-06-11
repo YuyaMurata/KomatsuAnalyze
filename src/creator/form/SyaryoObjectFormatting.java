@@ -565,6 +565,7 @@ public class SyaryoObjectFormatting {
             .collect(Collectors.toList());
         
         Map<String, List<String>> map = new TreeMap();
+        Boolean zeroflg = false;
         for (String date : dateList) {
             String stdate = date;
             //重複日付を取り出す
@@ -593,6 +594,12 @@ public class SyaryoObjectFormatting {
             
             //整形処理
             map.get(date).set(smridx, map.get(date).get(smridx).split("\\.")[0]);
+            if(map.get(date).get(smridx).equals("0")){
+                if(zeroflg)
+                    map.remove(date);
+                else 
+                    zeroflg = true;
+            }
         }
         
         //異常データの排除

@@ -45,6 +45,7 @@ import javafx.stage.FileChooser;
 import json.SyaryoToZip3;
 //import obj.SyaryoObject3;
 import obj.SyaryoObject4;
+import org.apache.commons.math3.stat.regression.SimpleRegression;
 import program.r.R;
 
 /**
@@ -460,15 +461,24 @@ public class EasyViewerFXMLController implements Initializable {
         //MA
         List smr =map.values().stream()
                                 .map(s -> s.get(2)).collect(Collectors.toList());
+        List dates = map.keySet().stream().collect(Collectors.toList());
         List ma = MovingAverage.avg(smr, 5);
-        List sgtest = R.getInstance().detectOuters(smr);
+        Map<String, String> reg = R.getInstance().residuals(dates, smr);
+        List res = new ArrayList();
+        for(String d : reg.keySet()){
+            String c = String.valueOf(Double.valueOf(Double.valueOf(reg.get(d)) - Double.valueOf(smr.get(dates.indexOf(d)).toString())).intValue());
+            res.add(c);
+        }
             
+        Map sgtest = R.getInstance().detectOuters(dates, res);
+        
         //CSVFile 生成
         try(PrintWriter csv = CSVFileReadWrite.writer(KomatsuDataParameter.GRAPH_TEMP_FILE)){
-            csv.println("Date,SMR,MA(5),SGTest");
+            csv.println("Date,SMR,MA(5),REG,SGTest");
             int i=0;
             for(String date : map.keySet()){
-                csv.println(date+","+smr.get(i)+","+ma.get(i)+","+sgtest.get(i));
+                String sg = sgtest.get(date).equals("NaN")?"NaN":smr.get(i).toString();
+                csv.println(date+","+smr.get(i)+","+ma.get(i)+","+reg.get(date)+","+sg);
                 i++;
             }
         }
