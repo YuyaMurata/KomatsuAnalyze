@@ -14,6 +14,15 @@ import java.util.List;
  * @author zz17390
  */
 public class DataRejectRule {
+    String newd;
+    public String getNew(){
+        return newd;
+    }
+    
+    public void addNew(String nd){
+        this.newd = nd;
+    }
+    
     List kuec = new ArrayList();
     public List getKUEC(){
         return kuec;

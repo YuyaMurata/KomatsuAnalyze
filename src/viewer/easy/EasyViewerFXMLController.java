@@ -14,13 +14,16 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -463,27 +466,69 @@ public class EasyViewerFXMLController implements Initializable {
                                 .map(s -> s.get(2)).collect(Collectors.toList());
         List dates = map.keySet().stream().collect(Collectors.toList());
         List ma = MovingAverage.avg(smr, 5);
+        
+        //Regression
         Map<String, String> reg = R.getInstance().residuals(dates, smr);
         List res = new ArrayList();
         for(String d : reg.keySet()){
             String c = String.valueOf(Double.valueOf(Double.valueOf(reg.get(d)) - Double.valueOf(smr.get(dates.indexOf(d)).toString())).intValue());
             res.add(c);
         }
-            
-        Map sgtest = R.getInstance().detectOuters(dates, res);
+        Map<String, String> sgtest = R.getInstance().detectOuters(dates, res);
+        for(String date : sgtest.keySet())
+            if(!sgtest.get(date).equals("NaN"))
+                sgtest.put(date, map.get(date).get(2).toString());
+        Map resultMap = rejectData(sgtest);
         
         //CSVFile 生成
         try(PrintWriter csv = CSVFileReadWrite.writer(KomatsuDataParameter.GRAPH_TEMP_FILE)){
-            csv.println("Date,SMR,MA(5),REG,SGTest");
+            csv.println("Date,SMR,MA(5),REG,SGTest,Result");
             int i=0;
             for(String date : map.keySet()){
-                String sg = sgtest.get(date).equals("NaN")?"NaN":smr.get(i).toString();
-                csv.println(date+","+smr.get(i)+","+ma.get(i)+","+reg.get(date)+","+sg);
+                csv.println(date+","+smr.get(i)+","+ma.get(i)+","+reg.get(date)+","+sgtest.get(date)+","+resultMap.get(date));
                 i++;
             }
         }
         
         //Graph Python 実行
         PythonCommand.py(KomatsuDataParameter.GRAPH_PY, KomatsuDataParameter.GRAPH_TEMP_FILE);
+    }
+    
+    private Map rejectData(Map<String, String> map){
+        Map newMap = new TreeMap();
+        
+        //異常データの排除
+        Map<String, Integer> sortMap = map.entrySet().stream()
+                                            .filter(e -> !e.getValue().equals("NaN"))
+                                            .sorted(Map.Entry.comparingByKey())
+                                            .collect(Collectors.toMap(e -> e.getKey(), e  -> Integer.valueOf(e.getValue()), (e, e2) -> e, LinkedHashMap::new));
+        //List list = R.getInstance().detectOuters(sortMap.keySet().stream().collect(Collectors.toList()));
+        System.out.println(sortMap);
+        List<String> sortList = sortMap.entrySet().stream()
+                                    .sorted(Map.Entry.comparingByValue())
+                                    .map(e -> e.getKey())
+                                    .collect(Collectors.toList());
+        System.out.println(sortList);
+        Deque<String> q = new ArrayDeque<String>();
+        for(String date : sortList){
+            if(!q.isEmpty())
+                while(Integer.valueOf(q.getLast()) > Integer.valueOf(date)){
+                    q.removeLast();
+                    if(q.isEmpty())
+                        break;
+                }
+            q.addLast(date);
+        }
+        
+        System.out.println(q);
+        
+        for(String date : map.keySet()){
+            if(q.contains(date))
+                newMap.put(date, sortMap.get(date).toString());
+            else
+                newMap.put(date, "NaN");
+        }
+        
+        return newMap;
     }
 }

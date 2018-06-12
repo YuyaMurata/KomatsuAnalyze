@@ -6,10 +6,7 @@
 package creator.form;
 
 import param.KomatsuDataParameter;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -20,7 +17,6 @@ import java.util.stream.Collectors;
 import json.MapIndexToJSON;
 import json.SyaryoToZip3;
 import obj.SyaryoObject4;
-import program.r.R;
 
 /**
  *
@@ -71,9 +67,10 @@ public class SyaryoObjectFormatting {
             //新車の整形
             newMap = formNew(syaryo.get("新車"), syaryo.get("生産"), syaryo.get("出荷"), dataIndex.get("新車"));
             syaryo.map.put("新車", newMap);
+            rule.addNew(newMap.keySet().stream().findFirst().get().toString());
 
             //中古車の整形
-            newMap = formUsed(syaryo.get("中古車"), dataIndex.get("中古車"), rule.getKUEC());
+            newMap = formUsed(syaryo.get("中古車"), dataIndex.get("中古車"), rule.getNew(), rule.getKUEC());
             syaryo.map.put("中古車", newMap);
 
             //受注
@@ -254,7 +251,7 @@ public class SyaryoObjectFormatting {
         return map;
     }
 
-    private static Map formUsed(Map<String, List> used, List indexList, List kuec) {
+    private static Map formUsed(Map<String, List> used, List indexList, String newd, List kuec) {
         if (used == null) {
             //System.out.println("Not found Used");
             return null;
@@ -273,10 +270,10 @@ public class SyaryoObjectFormatting {
         //修正しない
         if (used.size() == 1) {
             //KUEC売却後、使用ユーザー存在しない
-            if (kuec.size() > 0) {
+            if (kuec.size() > 0 || (Integer.valueOf(used.keySet().stream().findFirst().get()) <= Integer.valueOf(newd))) {
                 return null;
             }
-
+            
             List<String> list = used.values().stream().findFirst().get();
             if (list.get(hyomen).contains("+") || list.get(hyomen).contains("_")) {
                 for (int i = hyomen; i < list.size(); i++) {
@@ -296,6 +293,10 @@ public class SyaryoObjectFormatting {
             if (kuec.contains(d)) {
                 continue;
             }
+            
+            //新車より前に存在する中古車情報を削除
+            if(Integer.valueOf(date) <= Integer.valueOf(newd))
+                continue;
 
             if (!key.equals(d)) {
                 key = d;
