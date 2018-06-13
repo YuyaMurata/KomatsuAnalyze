@@ -5,8 +5,11 @@
  */
 package creator.form;
 
+import analyze.MovingAverage;
+import java.util.ArrayDeque;
 import param.KomatsuDataParameter;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -17,6 +20,7 @@ import java.util.stream.Collectors;
 import json.MapIndexToJSON;
 import json.SyaryoToZip3;
 import obj.SyaryoObject4;
+import program.r.R;
 
 /**
  *
@@ -45,7 +49,10 @@ public class SyaryoObjectFormatting {
 
         //本社コード
         Map<String, String> honsyIndex = new MapIndexToJSON().reader(INDEX_PATH);
-
+        
+        //車両の削除
+        rejectSyaryo(syaryoMap, new String[]{"UR", "GC"});
+        
         int n = 0;
         for (String key : syaryoMap.keySet()) {
             System.out.println(key);
@@ -89,6 +96,12 @@ public class SyaryoObjectFormatting {
             newMap = formSMR(syaryo.get("SMR"), dataIndex.get("SMR"));
             syaryo.map.put("SMR", newMap);
             
+            //Komtrax
+            formKomtrax(syaryo);
+            
+            //余計な情報を削除
+            formExtra(syaryo, new String[]{"最終更新日", "経歴", "国"});
+            
             syaryo.compress(true);
             n++;
 
@@ -96,11 +109,36 @@ public class SyaryoObjectFormatting {
                 System.out.println(n + "台処理");
             }
         }
-
+        
+        //R
+        R.close();
+        
         String outfile = OBJPATH + "syaryo_obj_" + kisy + "_form.bz2";
         zip3.write(outfile, syaryoMap);
     }
-
+    
+    private static void rejectSyaryo(Map<String, SyaryoObject4> syaryoMap, String[] company){
+        List<String> reject = new ArrayList();
+        for (String key : syaryoMap.keySet()) {
+            SyaryoObject4 syaryo = syaryoMap.get(key);
+            syaryo.decompress();
+            
+            //Delete Company
+            Optional check = syaryo.get("最終更新日").values().stream()
+                    .filter(list -> list.contains(company[0])
+                    || list.contains(company[1]))
+                    .findFirst();
+            
+            if(check.isPresent())
+                reject.add(key);
+            
+            syaryo.compress(true);
+        }
+        
+        for(String key : reject)
+            syaryoMap.remove(key);
+    }
+    
     private static Map formOwner(Map<String, List> owner, List indexList, Map<String, String> honsyIndex, DataRejectRule reject) {
         if (owner == null) {
             //System.out.println("Not found owner!");
@@ -182,17 +220,18 @@ public class SyaryoObjectFormatting {
         Map<String, List> map = new TreeMap();
         if (news == null) {
             //出荷情報を取得する処理
-            String date;
+            String date = "";
             if (deploy != null) {
                 date = deploy.keySet().stream().findFirst().get();
-            } else {
+            }
+            if(date.equals("") || date.equals("None")){
                 date = born.keySet().stream().findFirst().get();
             }
             List list = new ArrayList();
             for (Object s : indexList) {
                 list.add("None");
             }
-            map.put(date, list);
+            map.put(date.split("#")[0], list);
             return map;
         }
 
@@ -295,7 +334,7 @@ public class SyaryoObjectFormatting {
             }
             
             //新車より前に存在する中古車情報を削除
-            if(Integer.valueOf(date) <= Integer.valueOf(newd))
+            if(Integer.valueOf(d) <= Integer.valueOf(newd))
                 continue;
 
             if (!key.equals(d)) {
@@ -603,36 +642,44 @@ public class SyaryoObjectFormatting {
             }
         }
         
+        if(map.isEmpty())
+            return null;
+        
         //異常データの排除
-        //Map<String, Integer> sortMap = map.entrySet().stream()
-        //                                    .sorted(Map.Entry.comparingByKey())
-        //                                    .collect(Collectors.toMap(e -> e.getKey(), e  -> Integer.valueOf(e.getValue().get(smridx)), (e, e2) -> e, LinkedHashMap::new));
-        //List list = R.getInstance().detectOuters(sortMap.keySet().stream().collect(Collectors.toList()));
-        /*//System.out.println(sortMap);
-        List<String> sortList = sortMap.entrySet().stream()
-                                    .sorted(Map.Entry.comparingByValue())
-                                    .map(e -> e.getKey())
-                                    .collect(Collectors.toList());
-        //System.out.println(sortList);
-        Deque<String> q = new ArrayDeque<String>();
-        for(String date : sortList){
-            if(!q.isEmpty())
-                while(Integer.valueOf(q.getLast()) > Integer.valueOf(date)){
-                    q.removeLast();
-                    if(q.isEmpty())
-                        break;
-                }
-            q.addLast(date);
-        }
-        //System.out.println(q);
-        */
-        //map = map.entrySet().stream()
-        //                .filter(e -> list.contains(e.getValue().get(2)))
-        //                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+        map = rejectSMRData(map, smridx);
 
         return map;
     }
     
+    private static void formExtra(SyaryoObject4 syaryo, String[] removeInfo){
+        for(String remove : removeInfo)
+            syaryo.map.remove(remove);
+    }
+    
+    private static void formKomtrax(SyaryoObject4 syaryo){
+        //ALL
+        List<String> kmList = dataIndex.keySet().stream().filter(s -> s.contains("KOMTRAX")).collect(Collectors.toList());
+        for(String id : kmList){
+            if(syaryo.get(id) == null)
+                continue;
+            
+            //Formalize Date
+            Map newMap = new TreeMap();
+            String tmp = "";
+            for(String date : syaryo.get(id).keySet()){
+                String d = date.split("#")[0].split(" ")[0].replace("/", "");
+                String str = syaryo.get(id).get(date).toString();
+                
+                if(!tmp.equals(str))
+                    if(newMap.get(d) == null){
+                        newMap.put(d, syaryo.get(id).get(date));
+                        tmp = str;
+                    }
+            }
+            
+            syaryo.map.put(id, newMap);
+        }
+    }
     
     //Util
     private static Map<String, List> index() {
@@ -696,5 +743,64 @@ public class SyaryoObjectFormatting {
             map.put(d, dateMap.get(date));
         }
         return map;
+    }
+    
+    private static Map rejectSMRData(Map<String, List<String>> smr, int idx){
+        //MA
+        List smrList = smr.values().stream()
+                                .map(s -> s.get(idx)).collect(Collectors.toList());
+        List dates = smr.keySet().stream().collect(Collectors.toList());
+        //List ma = MovingAverage.avg(smr, 5);
+        
+        //Regression
+        Map<String, String> reg = R.getInstance().residuals(dates, smrList);
+        List res = new ArrayList();
+        for(String d : reg.keySet()){
+            String c = String.valueOf(Double.valueOf(Double.valueOf(reg.get(d)) - Double.valueOf(smrList.get(dates.indexOf(d)).toString())).intValue());
+            res.add(c);
+        }
+        Map<String, String> sgtest = R.getInstance().detectOuters(dates, res);
+        for(String date : sgtest.keySet())
+            if(!sgtest.get(date).equals("NaN"))
+                sgtest.put(date, smr.get(date).get(idx));
+        
+        //異常データの排除
+        Map<String, Integer> sortMap = sgtest.entrySet().stream()
+                                            .filter(e -> !e.getValue().equals("NaN"))
+                                            .sorted(Map.Entry.comparingByKey())
+                                            .collect(Collectors.toMap(e -> e.getKey(), e  -> Integer.valueOf(e.getValue()), (e, e2) -> e, LinkedHashMap::new));
+        //List list = R.getInstance().detectOuters(sortMap.keySet().stream().collect(Collectors.toList()));
+        //System.out.println(sortMap);
+        List<String> sortList = sortMap.entrySet().stream()
+                                    .sorted(Map.Entry.comparingByValue())
+                                    .map(e -> e.getKey())
+                                    .collect(Collectors.toList());
+        //System.out.println(sortList);
+        Deque<String> q = new ArrayDeque<String>();
+        for(String date : sortList){
+            if(!q.isEmpty())
+                while(Integer.valueOf(q.getLast()) > Integer.valueOf(date)){
+                    q.removeLast();
+                    if(q.isEmpty())
+                        break;
+                }
+            q.addLast(date);
+        }
+        
+        //System.out.println(q);
+        
+        Map<String, String> resultMap = new TreeMap<>();
+        for(String date : sgtest.keySet()){
+            if(q.contains(date))
+                resultMap.put(date, sortMap.get(date).toString());
+            else
+                resultMap.put(date, "NaN");
+        }
+        
+        for(String date : resultMap.keySet())
+            if(resultMap.get(date).equals("NaN"))
+                smr.remove(date);
+        
+        return smr;
     }
 }

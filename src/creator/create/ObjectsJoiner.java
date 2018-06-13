@@ -18,12 +18,16 @@ import obj.SyaryoObject4;
  * @author ZZ17390
  */
 public class ObjectsJoiner {
-    private static String KISY = "WA470";
+    private static String KISY = "PC138US";
     private static String PATH = KomatsuDataParameter.MIDDLEDATA_PATH;
     private static String OUTPATH = KomatsuDataParameter.OBJECT_PATH;
        
     public static void main(String[] args) {
-        create(KISY, false);
+        //1から結合
+        //create(KISY, false);
+        
+        //追加で結合
+        add(KISY, false);
     }
     
     public static Integer create(String kisy, Boolean iot){
@@ -44,6 +48,43 @@ public class ObjectsJoiner {
         
         //Syaryo Map
         Map<String, SyaryoObject4> syaryoMap = new ConcurrentHashMap<>();
+        
+        //Middle File
+        File[] flist = (new File(objPath)).listFiles();
+        for(File file : flist){
+            //IoTデータは統合しない処理
+            if(iot)
+                if(file.getName().contains("KOMTRAX"))
+                    continue;
+            
+            //統合処理
+            System.out.println(file.getName());
+            join(syaryoMap, zip3.read(file.getAbsolutePath()));
+        }
+        
+        zip3.write(filename, syaryoMap);
+        
+        return syaryoMap.size();
+    }
+    
+    public static Integer add(String kisy, Boolean iot){
+        SyaryoToZip3 zip3 = new SyaryoToZip3();
+        String objPath = PATH+"\\"+kisy+"\\shuffle\\";
+        String syaryoPath = OUTPATH;
+        String filename = syaryoPath+"syaryo_obj_"+kisy+".bz2";
+        
+        //Folder
+        if(!(new File(syaryoPath)).exists())
+            (new File(syaryoPath)).mkdir();
+        
+        //Filec Check
+        if(!(new File(filename)).exists()){
+            System.out.println("not exists file " + filename);
+            return -1;
+        }
+        
+        //Syaryo Map
+        Map<String, SyaryoObject4> syaryoMap = zip3.read(filename);
         
         //Middle File
         File[] flist = (new File(objPath)).listFiles();

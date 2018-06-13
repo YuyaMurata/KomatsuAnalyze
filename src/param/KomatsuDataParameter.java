@@ -31,6 +31,7 @@ public interface KomatsuDataParameter {
     public static String SHUFFLE_FORMAT_PATH = "index\\shuffle_format.json";
     public static String SETTING_GETDATA_PATH = "index\\syaryo_data_index.csv";
     public static String CUSTOMER_INDEX_PATH = "index\\customer_index.json";
+    public static String SUMMARY_PATH = "summary\\";
 
     //EasyViewer
     public static String SYARYOOBJECT_FDPATH = "syaryo\\";

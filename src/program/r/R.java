@@ -50,11 +50,11 @@ public class R {
         
         //List<String> trend = trends(time, series);
         String x = "x <- c(" + series.stream().collect(Collectors.joining(",")) + ")";
-        System.out.println(x);
+        //System.out.println(x);
         REXP result = engine.eval(x);
-        System.out.println(result);
+        //System.out.println(result);
         result = engine.eval("remove.outliers(x)");
-        System.out.println(result);
+        //System.out.println(result);
 
         double arr[] = result.asVector().at(1).asDoubleArray();
         if (arr != null) {
@@ -68,10 +68,10 @@ public class R {
             map.put(time.get(i), series.get(i));
         }
 
-        System.out.println(series);
+        //System.out.println(series);
         for (Object d : outers) {
             int i = series.indexOf(d);
-            System.out.println(d+":"+i);
+            //System.out.println(d+":"+i);
             map.put(time.get(i), "NaN");
         }
 
@@ -122,7 +122,7 @@ public class R {
             sr.addData(Double.valueOf(day), Double.valueOf(series.get(i).toString()));
         }
         
-        System.out.println("y="+sr.getSlope()+"x"+sr.getIntercept());
+        //System.out.println("y="+sr.getSlope()+"x"+sr.getIntercept());
         Map map = new TreeMap();
         for(Object d : idx){
             Long day = diffDate(t0, d.toString());

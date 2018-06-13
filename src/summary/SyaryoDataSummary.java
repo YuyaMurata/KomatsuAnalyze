@@ -6,16 +6,16 @@
 package summary;
 
 import file.CSVFileReadWrite;
+import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import json.SyaryoObjToJson;
-import json.SyaryoToZip0;
 import json.SyaryoToZip3;
-import obj.SyaryoObject2;
-import obj.SyaryoObject3;
+import obj.SyaryoObject4;
+import param.KomatsuDataParameter;
 
 /**
  *
@@ -24,25 +24,35 @@ import obj.SyaryoObject3;
 public class SyaryoDataSummary {
 
     private static String kisy = "PC138US";
-    private static String path = "..\\KomatsuData\\車両テンプレート\\" + kisy + "\\";
-
+    private static String path = KomatsuDataParameter.OBJECT_PATH;
+    private static String outpath = KomatsuDataParameter.SUMMARY_PATH+kisy+"\\";
+    
+    
     public static void main(String[] args) {
-
-        SyaryoObject3 sample = null;
+        SyaryoObject4 sample = null;
         int size = 0;
-
-        String filename = "json\\syaryo_obj_" + kisy + "_form.bz2";
-        Map<String, SyaryoObject3> syaryoMap = new SyaryoToZip3().read(filename);
+        
+        //Create Folder
+        if(!(new File(outpath)).exists())
+            (new File(outpath)).mkdirs();
+        
+        String filename = path + "syaryo_obj_" + kisy + ".bz2";
+        Map<String, SyaryoObject4> syaryoMap = new SyaryoToZip3().read(filename);
         
         //Syaryo Data Check
         int cnt = 0;
         Map<Object, Integer> dataSizeMap = new HashMap();
         Map<Object, Integer> numSyaryoMap = new HashMap();
-        for(SyaryoObject3 syaryo : syaryoMap.values()){
+        for(SyaryoObject4 syaryo : syaryoMap.values()){
             syaryo.decompress();
             int total = 0;
-            for(Object key : syaryo.getAll().keySet()){
-                int s = syaryo.getAll().get(key).size();
+            for(Object key : syaryo.map.keySet()){
+                if(syaryo.get(key.toString()) == null){
+                    System.out.println(syaryo.name+":"+key.toString());
+                    continue;
+                }
+                
+                int s = syaryo.get(key.toString()).size();
                 if(dataSizeMap.get(key) == null){
                     dataSizeMap.put(key, s);
                     numSyaryoMap.put(key, 1);
@@ -52,10 +62,12 @@ public class SyaryoDataSummary {
                 }
                 total = total + s;
             }
+            
             if(total > size){
                 if(sample != null)
                     sample.compress(false);
                 sample = syaryo;
+                size = total;
             }else
                 syaryo.compress(false);
             
@@ -64,7 +76,7 @@ public class SyaryoDataSummary {
         }
         
         //Summary Output
-        try (PrintWriter pw = CSVFileReadWrite.writer(path + kisy + "_summary.csv")) {
+        try (PrintWriter pw = CSVFileReadWrite.writer(outpath + kisy + "_summary.csv")) {
             pw.println(kisy+",:,"+syaryoMap.size());
             
             List head = new ArrayList();head.add("ヘッダ");
@@ -84,6 +96,6 @@ public class SyaryoDataSummary {
         //1Sample SyaryoObject
         Map map = new HashMap();
         map.put(sample.name, sample);
-        new SyaryoObjToJson().write(path + kisy + "_sample.json", map);
+        new SyaryoObjToJson().write(outpath + kisy + "_sample.json", map);
     }
 }
