@@ -5,7 +5,6 @@
  */
 package creator.form;
 
-import analyze.MovingAverage;
 import java.util.ArrayDeque;
 import param.KomatsuDataParameter;
 import java.util.ArrayList;
