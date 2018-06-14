@@ -49,7 +49,7 @@ public class DistanceCulc {
 		return distance;
 	}
         
-        public Double compValue(String str) {
+        public static Double compValue(String str) {
 		//変換
 		str = str.replace("N", "").replace("S", "-").replace("E", "").replace("W", "-");
 

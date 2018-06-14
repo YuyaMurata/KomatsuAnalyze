@@ -5,19 +5,14 @@
  */
 package export;
 
-import static export.DeviceMaintenance.extractDeviceMaintenance;
 import file.CSVFileReadWrite;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import json.JsonToSyaryoObj;
-import json.SyaryoToZip0;
-import obj.SyaryoElements;
-import obj.SyaryoObject2;
+import json.SyaryoToZip3;
+import obj.SyaryoObject4;
 
 /**
  *
@@ -28,8 +23,8 @@ public class AccidentData {
     private static String kisy = "PC138US";
 
     public static void main(String[] args) {
-        String filename = "json\\syaryo_obj_" + kisy + "_form";
-        Map<String, SyaryoObject2> syaryoMap = new SyaryoToZip0().readObject(filename);
+        String filename = "syaryo\\syaryo_obj_" + kisy + "_form.bz2";
+        Map<String, SyaryoObject4> syaryoMap = new SyaryoToZip3().read(filename);
 
         String outputname = "accident_" + kisy + ".csv";
         try (PrintWriter csv = CSVFileReadWrite.writer(outputname)) {
@@ -37,50 +32,44 @@ public class AccidentData {
         }
     }
 
-    public static void extractAccident(Map<String, SyaryoObject2> syaryoMap, PrintWriter csv) {
+    public static void extractAccident(Map<String, SyaryoObject4> syaryoMap, PrintWriter csv) {
         int cnt = 0;
 
-        csv.println("Company,ID,Kisy,Type,業種コード,経年,SMR,作番,売上区分,金額,エラーコード,エラー種類,概要");
-        for (SyaryoObject2 syaryo : syaryoMap.values()) {
+        csv.println("ID,SMR,金額,エラーコード,エラー種類,概要");
+        for (SyaryoObject4 syaryo : syaryoMap.values()) {
             syaryo.decompress();
 
             cnt++;
-            if (syaryo.getOrder() == null) {
+            if (syaryo.get("受注") == null) {
                 System.out.println(syaryo.getName());
                 syaryo.compress(false);
                 continue;
             }
 
-            List<List> accident = syaryo.getOrder().values().stream()
-                .filter(s -> s.get(SyaryoElements.Order.Summary.getNo()).toString().contains("横転")
-                || s.get(SyaryoElements.Order.Summary.getNo()).toString().contains("水没")
-                || s.get(SyaryoElements.Order.Summary.getNo()).toString().contains("横転")
-                || s.get(SyaryoElements.Order.Summary.getNo()).toString().contains("転倒"))
+            List<List> accident = syaryo.get("受注").values().stream()
+                .filter(s -> s.get(10).toString().contains("横転")
+                || s.get(10).toString().contains("水没")
+                || s.get(10).toString().contains("横転")
+                || s.get(10).toString().contains("転倒"))
                 .collect(Collectors.toList());
 
-            if (accident == null || accident.isEmpty()) {
+            if (accident == null || accident.isEmpty() || syaryo.get("KOMTRAX_SMR") == null) {
                 syaryo.compress(false);
                 continue;
             }
 
-            TreeMap<Integer, String> gyousyuCode = new TreeMap();
-            for (String date : syaryo.getOwner().keySet()) {
-                gyousyuCode.put(Integer.valueOf(date.replace("/", "")),
-                    (String) syaryo.getOwner().get(date).get(SyaryoElements.Customer.Code.getNo()));
-            }
-
             TreeMap<Integer, String> smr = new TreeMap();
-            for (String date : syaryo.getSMR().keySet()) {
+            for (String date : syaryo.get("KOMTRAX_SMR").keySet()) {
                 smr.put(Integer.valueOf(date.replace("/", "").split("#")[0]),
-                    (String) syaryo.getSMR().get(date).get(SyaryoElements.SMR._SMR.getNo()));
+                    (String) syaryo.get("KOMTRAX_SMR").get(date).get(0));
             }
 
             TreeMap<Integer, String> error = new TreeMap();
-            if (syaryo.getError() != null) {
-                for (String date : syaryo.getError().keySet()) {
+            if (syaryo.get("KOMTRAX_ERROR") != null) {
+                for (String date : syaryo.get("KOMTRAX_ERROR").keySet()) {
                     error.put(Integer.valueOf(date.replace("/", "").split("#")[0]),
-                        (String) syaryo.getError().get(date).get(SyaryoElements.Error.Code.getNo()) + ","
-                        + (String) syaryo.getError().get(date).get(SyaryoElements.Error.Kind.getNo()));
+                        (String) syaryo.get("KOMTRAX_ERROR").get(date).get(0) + ","
+                        + (String) syaryo.get("KOMTRAX_ERROR").get(date).get(2));
                 }
             } else {
                 error.put(0, "None,None");
@@ -88,35 +77,15 @@ public class AccidentData {
 
             StringBuilder sb = new StringBuilder();
             for (List list : accident) {
-                String date = (String) list.get(SyaryoElements.Order.Date.getNo());
+                String date = (String) list.get(4);
                 Integer date_int = Integer.valueOf(date.replace("/", ""));
-                sb.append(list.get(SyaryoElements.Order.Company.getNo()));
-                sb.append(",");
                 sb.append(syaryo.getName());
-                sb.append(",");
-                sb.append(syaryo.getType());
-                sb.append(",");
-                sb.append(syaryo.getMachine());
-                sb.append(",'");
-                try {
-                    sb.append(gyousyuCode.floorEntry(date_int).getValue());
-                } catch (NullPointerException e) {
-                    sb.append(gyousyuCode.higherEntry(date_int).getValue());
-                }
-                sb.append(",");
-                sb.append(syaryo.getAge(date));
                 sb.append(",");
                 try {
                     sb.append(smr.floorEntry(date_int).getValue());
                 } catch (NullPointerException e) {
                     sb.append(smr.higherEntry(date_int).getValue());
                 }
-                sb.append(",");
-                sb.append(list.get(SyaryoElements.Order.ID.getNo()));
-                sb.append(",'");
-                sb.append(list.get(SyaryoElements.Order.FLAG.getNo()));
-                sb.append(",");
-                sb.append(list.get(SyaryoElements.Order.Invoice.getNo()));
                 sb.append(",");
                 try {
                     sb.append(error.floorEntry(date_int).toString().split(",")[0]);
@@ -126,7 +95,7 @@ public class AccidentData {
                 } catch (NullPointerException e) {
                     sb.append("NA,NA,");
                 }
-                sb.append(list.get(SyaryoElements.Order.Summary.getNo()));
+                sb.append(list.get(10));
                 sb.append("\n");
             }
             csv.println(sb.toString());
