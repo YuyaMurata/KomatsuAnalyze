@@ -31,9 +31,8 @@ public class TemplateShuffle {
     private static String ROOTPATH_SIDX = KomatsuDataParameter.TEMPLATE_PATH;
 
     public static void main(String[] args) {
-        for (String kisy : kisyList) {
-            create(kisy);
-        }
+        String kisy = "PC138US";
+        create(kisy);
     }
 
     public static void create(String kisy) {
@@ -240,7 +239,9 @@ public class TemplateShuffle {
             String s = cmap.get("c2").toString();
             if (s.contains("?")) {
                 cmap.put("c2", s.split("\\?")[0]);
-                cmap.put("data", s.split("\\?")[1]);
+                cmap.put("data", s.split("\\?")[1].split(":")[0]);
+                if(s.contains(":"))
+                    cmap.put("dataelse", s.split("\\?")[1].split(":")[1]);
             }
         }
         if (cmap.get("arith") != null) {
@@ -362,6 +363,10 @@ public class TemplateShuffle {
             //データ除外
             if (f.get("data") == null) {
                 return true;
+            }else if(f.get("dataelse") != null){
+                f.put("data", f.get("dataelse"));
+                table = f.get("data").split("\\.")[0];
+                col = Integer.valueOf(f.get("data").split("#")[1]);
             }
         } else {
             if (f.get("data") != null) {

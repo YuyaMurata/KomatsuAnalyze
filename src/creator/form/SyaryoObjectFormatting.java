@@ -96,6 +96,11 @@ public class SyaryoObjectFormatting {
             newMap = formSMR(syaryo.get("SMR"), dataIndex.get("SMR"));
             syaryo.map.put("SMR", newMap);
             
+            //AS
+            newMap = formAS(syaryo.get("オールサポート"), dataIndex.get("オールサポート"));
+            syaryo.map.put("オールサポート", newMap);
+            
+            
             //Komtrax
             formKomtrax(syaryo);
             
@@ -651,6 +656,25 @@ public class SyaryoObjectFormatting {
         return map;
     }
     
+    private static Map formAS(Map<String, List> as, List indexList){
+        if(as == null)
+            return null;
+        
+        int kaiyaku = indexList.indexOf("MK_KIYK");
+        
+        Map newMap = new TreeMap();
+        for(String date : as.keySet()){
+            String kiyk = as.get(date).get(kaiyaku).toString();
+            if(Integer.valueOf(date.split("#")[0]) <= Integer.valueOf(kiyk))
+                newMap.put(date.split("#")[0], as.get(date));
+        }
+        
+        if(newMap.isEmpty())
+            return null;
+        
+        return newMap;
+    }
+    
     private static void formExtra(SyaryoObject4 syaryo, String[] removeInfo){
         for(String remove : removeInfo)
             syaryo.map.remove(remove);
@@ -706,7 +730,7 @@ public class SyaryoObjectFormatting {
             }
 
             //List内の整形
-            list = list.stream().filter(le -> !(le.contains("=") || le.contains("<") || le.contains(">"))).collect(Collectors.toList());
+            list = list.stream().filter(le -> !(le.contains("=") || le.contains("<") || le.contains(">")) || le.contains("?")).collect(Collectors.toList());
             for (int i = 0; i < list.size(); i++) {
                 String str = list.get(i);
                 if (str.contains("#")) {

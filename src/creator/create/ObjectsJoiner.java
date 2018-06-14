@@ -24,10 +24,10 @@ public class ObjectsJoiner {
        
     public static void main(String[] args) {
         //1から結合
-        //create(KISY, false);
+        create(KISY, true);
         
         //追加で結合
-        add(KISY, false);
+        //add(KISY, false);
     }
     
     public static Integer create(String kisy, Boolean iot){
@@ -57,6 +57,9 @@ public class ObjectsJoiner {
                 if(file.getName().contains("KOMTRAX"))
                     continue;
             
+            if(!file.getName().contains(".bz2"))
+                continue;
+                
             //統合処理
             System.out.println(file.getName());
             join(syaryoMap, zip3.read(file.getAbsolutePath()));
@@ -90,8 +93,7 @@ public class ObjectsJoiner {
         File[] flist = (new File(objPath)).listFiles();
         for(File file : flist){
             //IoTデータは統合しない処理
-            if(iot)
-                if(file.getName().contains("KOMTRAX"))
+            if(!file.getName().contains("KOMTRAX"))
                     continue;
             
             //統合処理
