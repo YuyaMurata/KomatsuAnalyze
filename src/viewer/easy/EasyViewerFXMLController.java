@@ -50,6 +50,8 @@ import json.SyaryoToZip3;
 import obj.SyaryoObject4;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 import program.r.R;
+import viewer.graph.TimeSpreadChart;
+import viewer.service.ButtonService;
 
 /**
  * FXML Controller class
@@ -419,8 +421,8 @@ public class EasyViewerFXMLController implements Initializable {
     }
     
     private void graphMenuSettings(){
-        
         graph_menu.getItems().add("SMR");
+        graph_menu.getItems().add("KOMTRAX_SMR");
     }
 
     @FXML
@@ -446,6 +448,7 @@ public class EasyViewerFXMLController implements Initializable {
         selectOrder(event);
     }
 
+    ButtonService service = new ButtonService();
     @FXML
     private void graphAction(ActionEvent event) {
         String v = graph_menu.getValue();
@@ -453,25 +456,7 @@ public class EasyViewerFXMLController implements Initializable {
             return ;
         
         System.out.println(v);
-        if(currentSyaryo == null)
-            return ;
-        currentSyaryo.decompress();
-        Map<String, List> map = currentSyaryo.get(v);
-        currentSyaryo.compress(true);
-        if(map == null)
-            return ;
-        
-        //CSVFile 生成
-        try(PrintWriter csv = CSVFileReadWrite.writer(KomatsuDataParameter.GRAPH_TEMP_FILE)){
-            csv.println("Date,SMR");
-            int i=0;
-            for(String date : map.keySet()){
-                csv.println(date+","+map.get(date).get(2));
-                i++;
-            }
-        }
-        
-        //Graph Python 実行
-        PythonCommand.py(KomatsuDataParameter.GRAPH_PY, KomatsuDataParameter.GRAPH_TEMP_FILE);
+        service.setInfo(v, currentSyaryo);
+        service.restart();
     }
 }

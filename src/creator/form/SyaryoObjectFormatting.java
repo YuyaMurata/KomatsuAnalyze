@@ -5,6 +5,7 @@
  */
 package creator.form;
 
+import index.SyaryoObjectElementsIndex;
 import java.util.ArrayDeque;
 import param.KomatsuDataParameter;
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class SyaryoObjectFormatting {
 
     public static void main(String[] args) {
         //Data Index
-        dataIndex = index();
+        dataIndex = SyaryoObjectElementsIndex.getInstance().getIndex();
 
         form(KISY);
     }
@@ -54,7 +55,7 @@ public class SyaryoObjectFormatting {
         
         int n = 0;
         for (String key : syaryoMap.keySet()) {
-            System.out.println(key);
+            //System.out.println(key);
             currentKey = key;
             
             SyaryoObject4 syaryo = syaryoMap.get(key);
@@ -99,6 +100,22 @@ public class SyaryoObjectFormatting {
             newMap = formAS(syaryo.get("オールサポート"), dataIndex.get("オールサポート"));
             syaryo.map.put("オールサポート", newMap);
             
+            //check komtrax
+            int err = 0;
+            if(syaryo.get("KOMTRAX_SMR") != null){
+                int tmp = -1;
+                for(String date : syaryo.get("KOMTRAX_SMR").keySet()){
+                    int s = Integer.valueOf(syaryo.get("KOMTRAX_SMR").get(date).get(0).toString());
+                    if(tmp > s){
+                        err++;
+                    }   
+                    tmp = s;
+                }
+            }
+            if(err > 0){
+                if(syaryo.get("オールサポート") != null)
+                    System.out.println(syaryo.getName()+","+err);
+            }
             
             //Komtrax
             formKomtrax(syaryo);

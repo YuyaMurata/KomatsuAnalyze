@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 import matplotlib.dates as mdates
+import linecache
 
 print(os.getcwd())
 
@@ -14,7 +15,7 @@ filename = 'py/csv/graph_temp.csv'
 #plt.show()
 
 dateparse = lambda x: pd.datetime.strptime(x, '%Y%m%d')
-data = pd.read_csv(filename, parse_dates=['Date'], date_parser=dateparse)
+data = pd.read_csv(filename, parse_dates=['Date'], header=1, date_parser=dateparse)
 print(data.dtypes)
 
 # 折れ線グラフを出力
@@ -34,5 +35,8 @@ data.plot(x='Date', y='SMR', alpha=1.0, marker='o', label='SMR')
 #data = data.dropna()
 #data.plot(x='Date', y='Result', alpha=1.0, marker='o', label='Result')
 
+syaryo = linecache.getline(filename, int(1))
+print(syaryo)
+plt.title(syaryo.replace('Syaryo,', ''),size=10)
 plt.legend()
 plt.show()
