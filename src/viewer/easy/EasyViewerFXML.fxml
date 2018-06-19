@@ -18,6 +18,12 @@
                     <MenuItem fx:id="import_json" mnemonicParsing="false" onAction="#loadJSONFile" text="Import" />
                   </items>
                 </Menu>
+                  <Menu mnemonicParsing="false" text="Graph AllData">
+                     <items>
+                        <MenuItem fx:id="smr_plot" mnemonicParsing="false" onAction="#plotSMR" text="SMR" />
+                        <MenuItem fx:id="smr_hist" mnemonicParsing="false" onAction="#histSMR" text="SMR Hist" />
+                     </items>
+                  </Menu>
               </menus>
             </MenuBar>
             <HBox prefHeight="378.0" prefWidth="600.0" VBox.vgrow="ALWAYS">
@@ -28,7 +34,7 @@
                            <children>
                               <ComboBox fx:id="datafilter" maxWidth="200.0" minWidth="136.0" onAction="#selectFilter" prefHeight="23.0" prefWidth="147.0" promptText="ALL" />
                               <ToggleButton fx:id="filter_button" mnemonicParsing="false" onAction="#onFilter" prefHeight="23.0" prefWidth="36.0" text="NF" />
-                              <ToggleButton fx:id="order_button" mnemonicParsing="false" onAction="#onOrder" text="A" />
+                              <ToggleButton fx:id="order_button" mnemonicParsing="false" onAction="#onOrder" text="N" />
                            </children>
                         </HBox>
                         <ListView fx:id="keylist" maxWidth="200.0" minWidth="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">

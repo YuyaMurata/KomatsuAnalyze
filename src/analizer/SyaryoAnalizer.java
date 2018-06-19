@@ -8,13 +8,12 @@ package analizer;
 import index.SyaryoObjectElementsIndex;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Map;
 import java.util.stream.Collectors;
+import json.SyaryoToZip3;
 import obj.SyaryoObject4;
 
 /**
@@ -74,12 +73,28 @@ public class SyaryoAnalizer {
             lifestop = syaryo.get("廃車").keySet().stream().findFirst().get();
         }
         
+        //Number
+        numOwners = ((Long)getValue("顧客", "KKYKCD", false).stream().distinct().count()).intValue();
+        numOrders = syaryo.get("受注").size();
+        numParts = syaryo.get("部品").size();
+        numWorks = syaryo.get("作業").size();
+        maxSMR = Integer.valueOf(getValue(getSMR(syaryo)[0], getSMR(syaryo)[1], true).get(getValue(getSMR(syaryo)[0], getSMR(syaryo)[1], true).size()-1));
+        
         //Life
         lifestart = syaryo.get("新車").keySet().stream().findFirst().get();
         currentLife = getValue("受注", "ODDAY", true).get(numOrders-1);
-        currentAge_day = 0;
+        currentAge_day = age(lifestart, "20170501"); //データ受領日(データによって数日ずれている)
         
         syaryo.compress(true);
+    }
+    
+    public String[] getSMR(SyaryoObject4 syaryo){
+        if(syaryo.get("KOMTRAX_SMR") != null)
+            return new String[]{"KOMTRAX_SMR", "SMR_VALUE"};
+        else
+            if(syaryo.get("SMR") != null)
+                return new String[]{"SMR", "SVC_MTR"};
+        return null;
     }
     
     public List<String> getValue(String key, String index, Boolean sorted){
@@ -103,5 +118,11 @@ public class SyaryoAnalizer {
             ex.printStackTrace();
             return null;
         }
+    }
+    
+    
+    public static void main(String[] args) {
+        Map<String, SyaryoObject4> syaryoMap = new SyaryoToZip3().read("syaryo_obj_PC13US_form.bz2");
+        SyaryoAnalizer analize = new SyaryoAnalizer(syaryoMap.get("PC138US-10-40651"));
     }
 }

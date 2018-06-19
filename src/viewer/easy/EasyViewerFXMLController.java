@@ -5,25 +5,17 @@
  */
 package viewer.easy;
 
-import analyze.MovingAverage;
-import program.py.PythonCommand;
 import param.KomatsuDataParameter;
 import file.CSVFileReadWrite;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.URL;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -48,9 +40,6 @@ import javafx.stage.FileChooser;
 import json.SyaryoToZip3;
 //import obj.SyaryoObject3;
 import obj.SyaryoObject4;
-import org.apache.commons.math3.stat.regression.SimpleRegression;
-import program.r.R;
-import viewer.graph.TimeSpreadChart;
 import viewer.service.ButtonService;
 
 /**
@@ -163,9 +152,13 @@ public class EasyViewerFXMLController implements Initializable {
     private Button graph_button;
     @FXML
     private ComboBox<String> graph_menu;
-    
+
     private SyaryoObject4 currentSyaryo;
-    
+    @FXML
+    private MenuItem smr_plot;
+    @FXML
+    private MenuItem smr_hist;
+
     /**
      * Initializes the controller class.
      */
@@ -192,11 +185,12 @@ public class EasyViewerFXMLController implements Initializable {
     //Selected Machine
     public void machineHistorySelected(Integer index) {
         System.out.println("Selection in the listView is : " + index);
-        if(index < 0)
+        if (index < 0) {
             return;
+        }
         String name = keylist.getItems().get(index).toString();
         currentSyaryo = (SyaryoObject4) syaryoMap.get(name);
-        index_number_label.setText(String.valueOf(index+1));
+        index_number_label.setText(String.valueOf(index + 1));
         id_label.setText(name);
 
         //データの設定
@@ -244,7 +238,7 @@ public class EasyViewerFXMLController implements Initializable {
         str = textdump(syaryo.get(care.getText().split(" ")[0].replace("×", "")));
         viewarea_care.setText(str2[1] + "\n\n" + str[1]);
         care.setText(check(care.getText(), str));
-        
+
         str = textdump(syaryo.get(support.getText().split(" ")[0].replace("×", "")));
         viewarea_support.setText(str[1]);
         support.setText(check(support.getText(), str));
@@ -292,7 +286,7 @@ public class EasyViewerFXMLController implements Initializable {
         if (datastr[1] == null) {
             return "×" + title.split(" ")[0].replace("×", "");
         } else {
-            return title.split(" ")[0].replace("×", "")+" "+datastr[0];
+            return title.split(" ")[0].replace("×", "") + " " + datastr[0];
         }
     }
 
@@ -300,7 +294,7 @@ public class EasyViewerFXMLController implements Initializable {
         if (m == null) {
             return new String[]{"", null};
         }
-        
+
         StringBuilder sb = new StringBuilder();
         for (String d : m.keySet()) {
             sb.append(d);
@@ -321,6 +315,9 @@ public class EasyViewerFXMLController implements Initializable {
             syaryoMap = loadSyaryoMap(file);
             updateKeyList(new ArrayList(new TreeSet(syaryoMap.keySet())));
         }
+        
+        //Filter Initialize
+        initializeFilter(true);
     }
 
     private Map loadSyaryoMap(File file) {
@@ -331,61 +328,52 @@ public class EasyViewerFXMLController implements Initializable {
     private void updateKeyList(List keys) {
         ObservableList list = FXCollections.observableArrayList(keys);
         keylist.setItems(list);
-        number_syaryo_label.setText(keylist.getItems().size()+" / "+syaryoMap.size());
+        number_syaryo_label.setText(keylist.getItems().size() + " / " + syaryoMap.size());
     }
-
+    
+    private void initializeFilter(Boolean f){
+        //Select Filter
+        if(f)
+            datafilter.getSelectionModel().select(0);
+        
+        //Order Initialize
+        order_button.setSelected(false);
+        order_button.setText("N");
+        
+        //Filter Button Initialize
+        filter_button.setSelected(false);
+        filter_button.setText("NF");
+    }
+    
     private static Map currentFilterMap;
     @FXML
     private void selectFilter(ActionEvent event) {
         System.out.println("Selection in the listView is : " + datafilter.getValue());
-        String filter = datafilter.getValue();
+        currentFilterMap = null;
         
-        final Map<String, Object> datafilterList = new ConcurrentHashMap();
-        if(filter.equals("ALL")){
-            datafilterList.putAll(syaryoMap);
-        }
-        else if(filter_button.isSelected()){
-            syaryoMap.values().parallelStream()
-                .forEach(s ->{
-                    s.decompress();
-                    if(s.get(filter) != null)
-                        datafilterList.put(s.getName(), s.get(filter).size());
-                    s.compress(true);
-                });
-            filter_button.setText("EF");
-        }else{
-            syaryoMap.values().parallelStream()
-                .forEach(s ->{
-                    s.decompress();
-                    if(s.get(filter) == null)
-                        datafilterList.put(s.getName(), 0);
-                    s.compress(true);
-                });
-            filter_button.setText("DF");
-        }
+        //Filter Button Initialize
+        initializeFilter(false);
         
-        //更新処理
-        if(keylist.getItems() != datafilterList)
-            updateKeyList((new ArrayList(new TreeSet(datafilterList.keySet()))));
-        
-        currentFilterMap = datafilterList;
+        //Filter Button
+        filter_button.setSelected(true);
+        onFilter(event);
     }
-    
+
     private void selectOrder(ActionEvent event) {
         List list;
-        if(datafilter.getValue().equals("ALL") || currentFilterMap == null)
-            return ;
-        else if(order_button.isSelected()){
+        if (datafilter.getValue().equals("ALL") || currentFilterMap == null) {
+            return;
+        } else if (order_button.isSelected()) {
             list = (List) currentFilterMap.entrySet().stream()
-                                    .sorted(Map.Entry.comparingByValue().reversed())
-                                    .map(s -> ((Map.Entry)s).getKey().toString())
-                                    .collect(Collectors.toList());
+                .sorted(Map.Entry.comparingByValue().reversed())
+                .map(s -> ((Map.Entry) s).getKey().toString())
+                .collect(Collectors.toList());
             order_button.setText("D");
-        }else{
+        } else {
             list = (List) currentFilterMap.entrySet().stream()
-                                    .sorted(Map.Entry.comparingByValue())
-                                    .map(s -> ((Map.Entry)s).getKey().toString())
-                                    .collect(Collectors.toList());
+                .sorted(Map.Entry.comparingByValue())
+                .map(s -> ((Map.Entry) s).getKey().toString())
+                .collect(Collectors.toList());
             order_button.setText("A");
         }
         //更新処理
@@ -399,28 +387,29 @@ public class EasyViewerFXMLController implements Initializable {
         content.putString(id_label.getText());
         clipboard.setContent(content);
     }
-    
-    private void dataFilterSettings(String file){
+
+    private void dataFilterSettings(String file) {
         List<String> list = new ArrayList<>();
-        try(BufferedReader br = CSVFileReadWrite.reader(file)){
+        try (BufferedReader br = CSVFileReadWrite.reader(file)) {
             //header
             String line = br.readLine();
-            
-            while((line = br.readLine()) != null){
-                if(line.contains("ALL"))
+
+            while ((line = br.readLine()) != null) {
+                if (line.contains("ALL")) {
                     list.add(line);
-                else
+                } else {
                     list.add(line);
+                }
             }
-            
+
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        
+
         datafilter.getItems().addAll(list);
     }
-    
-    private void graphMenuSettings(){
+
+    private void graphMenuSettings() {
         graph_menu.getItems().add("SMR");
         graph_menu.getItems().add("KOMTRAX_SMR");
     }
@@ -430,7 +419,7 @@ public class EasyViewerFXMLController implements Initializable {
         Clipboard clipboard = Clipboard.getSystemClipboard();
         ClipboardContent content = new ClipboardContent();
         StringBuilder sb = new StringBuilder();
-        for(Object id : keylist.getItems()){
+        for (Object id : keylist.getItems()) {
             sb.append(id);
             sb.append("\n");
         }
@@ -440,7 +429,43 @@ public class EasyViewerFXMLController implements Initializable {
 
     @FXML
     private void onFilter(ActionEvent event) {
-        selectFilter(event);
+        filtering(datafilter.getValue(), filter_button.isSelected());
+    }
+
+    //Curent Filter
+    private Map enableFilterMap;
+    private Map disableFilterMap;
+    private void filtering(String filter, Boolean btnEnDis) {
+        if (filter.equals("ALL")) {
+            updateKeyList((new ArrayList(new TreeSet(syaryoMap.keySet()))));
+            return ;
+        }
+        
+        if (currentFilterMap == null) {
+            enableFilterMap = new ConcurrentHashMap();
+            disableFilterMap = new ConcurrentHashMap();
+            syaryoMap.values().parallelStream()
+                .forEach(s -> {
+                    s.decompress();
+                    if (s.get(filter) != null) {
+                        enableFilterMap.put(s.getName(), s.get(filter).size());
+                    } else {
+                        disableFilterMap.put(s.getName(), 0);
+                    }
+                    s.compress(true);
+                });
+        }
+
+        if (btnEnDis) {
+            currentFilterMap = enableFilterMap;
+            filter_button.setText("EN");
+        } else {
+            currentFilterMap = disableFilterMap;
+            filter_button.setText("DS");
+        }
+
+        //更新処理
+        updateKeyList((new ArrayList(new TreeSet(currentFilterMap.keySet()))));
     }
 
     @FXML
@@ -449,14 +474,26 @@ public class EasyViewerFXMLController implements Initializable {
     }
 
     ButtonService service = new ButtonService();
+
     @FXML
     private void graphAction(ActionEvent event) {
         String v = graph_menu.getValue();
-        if(v == null)
-            return ;
-        
+        if (v == null) {
+            return;
+        }
+
         System.out.println(v);
         service.setInfo(v, currentSyaryo);
         service.restart();
+    }
+
+    @FXML
+    private void plotSMR(ActionEvent event) {
+        keylist.getItems();
+    }
+
+    @FXML
+    private void histSMR(ActionEvent event) {
+        keylist.getItems();
     }
 }
