@@ -42,8 +42,21 @@ public class DataRejectRule {
         return work;
     }
     
+    public void addWORKID(String id){
+        work.add(id);
+    }
+    
     List parts = new ArrayList();
     public List getPARTSID(){
         return parts;
+    }
+    
+    public void addPARTSID(String id){
+        parts.add(id);
+    }
+    
+    String currentDate = "0";
+    public void currentDATE(String date){
+        currentDate = date;
     }
 }

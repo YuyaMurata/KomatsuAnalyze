@@ -16,8 +16,8 @@ public class AllExecProcess {
     private static String[] kisyList = KomatsuDataParameter.KISY_LIST;
 
     public static void main(String[] args) {
-        String  kisy = "PC138US";
-        //for (String kisy : kisyList) {
+        //String  kisy = "PC138US";
+        for (String kisy : kisyList) {
             Long start = System.currentTimeMillis();
             
             TemplateCreate.create(kisy);
@@ -41,6 +41,6 @@ public class AllExecProcess {
                                 "  TemplateShuffle:"+(st_shuffle-st_temp2obj)+"ms\n"+
                                 "  ObjectsJoiner:"+(st_join-st_shuffle)+"ms\n"+
                                 "---------------\n\n");
-        //}
+        }
     }
 }

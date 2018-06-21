@@ -8,6 +8,7 @@ package analizer;
 import index.SyaryoObjectElementsIndex;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -91,14 +92,19 @@ public class SyaryoAnalizer {
     public String[] getSMR(SyaryoObject4 syaryo){
         if(syaryo.get("KOMTRAX_SMR") != null)
             return new String[]{"KOMTRAX_SMR", "SMR_VALUE"};
+        else if(syaryo.get("SMR") != null)
+            return new String[]{"SMR", "SVC_MTR"};
         else
-            if(syaryo.get("SMR") != null)
-                return new String[]{"SMR", "SVC_MTR"};
-        return null;
+            return new String[]{"NULL", "NULL"};
     }
     
     public List<String> getValue(String key, String index, Boolean sorted){
         int idx = SyaryoObjectElementsIndex.getInstance().getIndex(key).indexOf(index);
+        
+        //例外処理
+        if(idx == -1)
+            return Arrays.asList(new String[]{"NaN", "NaN"});
+        
         List list = syaryo.get(key).values().stream().map(l -> l.get(idx)).collect(Collectors.toList());
         
         if(sorted)
@@ -120,9 +126,32 @@ public class SyaryoAnalizer {
         }
     }
     
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("syaryo:"+syaryo.getName()+" Analize:\n");
+        sb.append(" kind = "+kind+"\n");
+        sb.append(" type = "+type+"\n");
+        sb.append(" no = "+no+"\n");
+        sb.append(" used = "+used+"\n");
+        sb.append(" komtrax = "+komtrax+"\n");
+        sb.append(" allsupport = "+allsupport+"\n");
+        sb.append(" dead = "+dead+"\n");
+        sb.append(" lifestart = "+lifestart+"\n");
+        sb.append(" lifestop = "+lifestop+"\n");
+        sb.append(" currentLife = "+currentLife+"\n");
+        sb.append(" currentAge_day = "+currentAge_day+"\n");
+        sb.append(" usedlife = "+(usedlife!=null?Arrays.asList():"[]")+"\n");
+        sb.append(" numOwners = "+numOwners+"\n");
+        sb.append(" numOrders = "+numOrders+"\n");
+        sb.append(" numParts = "+numParts+"\n");
+        sb.append(" numWorks = "+numWorks+"\n");
+        sb.append(" maxSMR = "+maxSMR+"\n");
+        return sb.toString();
+    }
     
     public static void main(String[] args) {
-        Map<String, SyaryoObject4> syaryoMap = new SyaryoToZip3().read("syaryo_obj_PC13US_form.bz2");
+        Map<String, SyaryoObject4> syaryoMap = new SyaryoToZip3().read("syaryo\\syaryo_obj_PC138US_form.bz2");
         SyaryoAnalizer analize = new SyaryoAnalizer(syaryoMap.get("PC138US-10-40651"));
+        System.out.println(analize.toString());
     }
 }
