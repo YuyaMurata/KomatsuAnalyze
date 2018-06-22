@@ -27,7 +27,7 @@ public class ObjectsJoiner {
         //create(KISY, true);
         
         //追加で結合
-        //add(KISY, false);
+        add(KISY, false);
     }
     
     public static Integer create(String kisy, Boolean iot){

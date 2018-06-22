@@ -55,7 +55,7 @@ public class SyaryoObjectFormatting {
         
         int n = 0;
         for (String key : syaryoMap.keySet()) {
-            System.out.println(key);
+            //System.out.println(key);
             currentKey = key;
             
             SyaryoObject4 syaryo = syaryoMap.get(key);
@@ -178,7 +178,14 @@ public class SyaryoObjectFormatting {
         Integer company = indexList.indexOf("KSYCD");
         Integer ownerID = indexList.indexOf("NNSCD");
         Integer ownerName = indexList.indexOf("NNSK_NM_1");
-
+        
+        owner.values().stream()
+                .filter(o -> (o.get(ownerName).toString().contains("住商") || 
+                    o.get(ownerName).toString().contains("ファイナンス") || 
+                    o.get(ownerName).toString().contains("三井") || 
+                    o.get(ownerName).toString().contains("住友"))).forEach(e -> System.out.println(currentKey));
+        
+        
         //日付データ揃え
         owner = dateFormalize(owner);
         //本社コード揃え
@@ -435,6 +442,11 @@ public class SyaryoObjectFormatting {
         //日付ソート
         int date = indexList.indexOf("ODDAY");
         //System.out.println(order);
+        //確認
+        /*order.entrySet().stream()
+                    .filter(e -> e.getValue().get(date).equals("None"))
+                    .forEach(e -> System.out.println(currentKey+":"+e.getKey()));
+        */    
         Map<String, Integer> sortMap = order.entrySet().stream()
                     .filter(e -> !e.getValue().get(date).equals("None"))
                     .collect(Collectors.toMap(e -> e.getKey(), e -> Integer.valueOf(e.getValue().get(date).toString())));
