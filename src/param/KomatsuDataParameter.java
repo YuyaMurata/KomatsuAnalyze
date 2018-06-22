@@ -60,4 +60,8 @@ public interface KomatsuDataParameter {
     
     //R
     public static String R_FUNC_PATH = "R\\KMRFunction.R";
+    
+    //エラー紐付け処理時のデータソース
+    String[] ERR_SOURCE = new String[]{"kom_order", "parts", "work"};
+    String ERR_DATAPROCESS_PATH = "error_proc\\";
 }
