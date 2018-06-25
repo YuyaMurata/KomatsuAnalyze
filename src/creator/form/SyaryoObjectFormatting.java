@@ -55,7 +55,7 @@ public class SyaryoObjectFormatting {
         
         int n = 0;
         for (String key : syaryoMap.keySet()) {
-            //System.out.println(key);
+            System.out.println(key);
             currentKey = key;
             
             SyaryoObject4 syaryo = syaryoMap.get(key);
@@ -120,17 +120,14 @@ public class SyaryoObjectFormatting {
                 }
             }
             
-            //KOMTRAX ERROR
-            if(err > 0){
-                if(syaryo.get("オールサポート") != null)
-                    System.out.println(syaryo.getName()+","+err);
-            }
-            
             //Komtrax
             formKomtrax(syaryo);
             
             //余計な情報を削除
             formExtra(syaryo, new String[]{"最終更新日", "経歴", "国"});
+            
+            //データ順序
+            
             
             syaryo.compress(true);
             n++;
@@ -179,12 +176,13 @@ public class SyaryoObjectFormatting {
         Integer ownerID = indexList.indexOf("NNSCD");
         Integer ownerName = indexList.indexOf("NNSK_NM_1");
         
+        /*使用顧客情報の確認
         owner.values().stream()
                 .filter(o -> (o.get(ownerName).toString().contains("住商") || 
                     o.get(ownerName).toString().contains("ファイナンス") || 
                     o.get(ownerName).toString().contains("三井") || 
                     o.get(ownerName).toString().contains("住友"))).forEach(e -> System.out.println(currentKey));
-        
+        */
         
         //日付データ揃え
         owner = dateFormalize(owner);
@@ -773,6 +771,14 @@ public class SyaryoObjectFormatting {
             
             syaryo.map.put(id, newMap);
         }
+    }
+    
+    private static void formDataOrder(SyaryoObject4 syaryo){
+        Map map = new LinkedHashMap();
+        for(String key : KomatsuDataParameter.DATA_ORDER){
+            map.put(key, syaryo.get(key));
+        }
+        syaryo.map = map;
     }
     
     //Util

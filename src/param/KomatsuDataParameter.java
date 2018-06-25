@@ -40,6 +40,30 @@ public interface KomatsuDataParameter {
     public static String GRAPH_TEMP_FILE = "py\\csv\\graph_temp.csv";
 
     //Formalize
+    //データ順序
+    public static List<String> DATA_ORDER = Arrays.asList(new String[]{
+        "生産",
+        "仕様",
+        "詳細",
+        "出荷",
+        "新車",
+        "中古車",
+        "顧客",
+        "SMR",
+        "受注",
+        "作業",
+        "部品",
+        "コマツケア",
+        "コマツケア前受け金",
+        "オールサポート",
+        "KOMTRAX_SMR",
+        "KOMTRAX_ACT_DATA",
+        "KOMTRAX_GPS",
+        "KOMTRAX_FUEL_CONSUME",
+        "KOMTRAX_ERROR",
+        "廃車"
+    });
+    //KUECコード
     public static List KUEC_LIST = Arrays.asList(new String[]{
         "C4410486",
         "E4800520",
@@ -62,6 +86,6 @@ public interface KomatsuDataParameter {
     public static String R_FUNC_PATH = "R\\KMRFunction.R";
     
     //エラー紐付け処理時のデータソース
-    String[] ERR_SOURCE = new String[]{"kom_order", "parts", "work"};
+    String[] ERR_SOURCE = new String[]{"kom_order", "parts", "work", "service"};
     String ERR_DATAPROCESS_PATH = "error_proc\\";
 }
