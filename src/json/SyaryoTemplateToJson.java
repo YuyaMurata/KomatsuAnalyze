@@ -35,7 +35,8 @@ public class SyaryoTemplateToJson {
 			syaryoMap = gson.fromJson(reader, type);
             
             //setting
-            syaryoMap.values().stream().forEach(s -> s.setting());
+            if(!filename.contains("error"))
+                syaryoMap.values().stream().forEach(s -> s.setting());
             
 		} catch (Exception e) {
 			return null;
@@ -45,6 +46,9 @@ public class SyaryoTemplateToJson {
 	}
     
     public void write(String filename, Map syaryoMap){
+        if(syaryoMap == null)
+            return ;
+        
         try(JsonWriter writer = new JsonWriter(new BufferedWriter(new FileWriter(filename)))){
             writer.setIndent("  ");
             

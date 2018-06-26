@@ -54,7 +54,7 @@ public class ExportErrorData {
         Map allsyaryo = syaryoindex(json);
         
         for (String errsource : ERR_SOURCE) {
-            String filename = OUTPATH + errsource + "_.json";
+            String filename = OUTPATH + errsource + "_error.json";
             json.write(
                 filename,
                 outError(allsyaryo, index, errsource)
@@ -106,8 +106,12 @@ public class ExportErrorData {
     //エラーデータ出力
     private static Map outError(Map all, Map<String, List> layoutIndex, String errsource) {
         Map<String, SimpleTemplate> map = new HashMap();
-
-        try (Connection con = HiveDB.getConnection()) {
+        
+        if((new File(OUTPATH+errsource+"_error.csv")).exists())
+            return null;
+        
+        try (PrintWriter csv = CSVFileReadWrite.writer(OUTPATH+errsource+"_error.csv");
+            Connection con = HiveDB.getConnection()) {
             List<String> code = layoutIndex.get(errsource);
             String join = code.get(code.size() - 1);
             code = code.subList(0, code.size() - 1);
@@ -146,19 +150,27 @@ public class ExportErrorData {
                     //Exists Syaryo!
                     continue;
                 }
-
-                name = content.get(code.indexOf("KISY")) + "-" + content.get(code.indexOf("KIBAN"));
+                
+                //エラー機種用テンプレート
+                if(errsource.equals("kom_order")){
+                    //Name
+                    String skisy = res.getString(EQP.Syaryo.KISY.get());
+                    String type = res.getString(EQP.Syaryo.TYP.get());
+                    String s_type = res.getString(EQP.Syaryo.SYHK.get());
+                    String kiban = res.getString(EQP.Syaryo.KIBAN.get());
+                    
+                    name = skisy+"-"+type+"-"+s_type+"-"+kiban;
+                    
+                    SimpleTemplate temp = map.get(name);
+                    if(temp == null)
+                        map.put(name, new SimpleTemplate("1"));
+                    else
+                        temp.name.set(0, String.valueOf(Integer.valueOf(temp.name.get(0))+1));
+                }
 
                 //エラーデータ出力
-                SimpleTemplate syaryo = map.get(name);
-                if (syaryo == null) {
-                    syaryo = new SimpleTemplate(name);
-                }
-                syaryo.add(errsource, String.join(",", content));
-                //csv.println(String.join(",", content));
+                csv.println(String.join(",", content));
                 //System.out.println(String.join(",", content));
-
-                map.put(name, syaryo);
 
                 n++;
                 if (n % 10000 == 0) {

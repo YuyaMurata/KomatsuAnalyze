@@ -125,9 +125,7 @@ public class SyaryoObjectFormatting {
             
             //余計な情報を削除
             formExtra(syaryo, new String[]{"最終更新日", "経歴", "国"});
-            
-            //データ順序
-            
+            removeEmptyObject(syaryo);
             
             syaryo.compress(true);
             n++;
@@ -773,14 +771,6 @@ public class SyaryoObjectFormatting {
         }
     }
     
-    private static void formDataOrder(SyaryoObject4 syaryo){
-        Map map = new LinkedHashMap();
-        for(String key : KomatsuDataParameter.DATA_ORDER){
-            map.put(key, syaryo.get(key));
-        }
-        syaryo.map = map;
-    }
-    
     //Util
     private static Map<String, List> index() {
         Map<String, Map<String, List<String>>> index = new MapIndexToJSON().reader(INDEXPATH);
@@ -843,6 +833,18 @@ public class SyaryoObjectFormatting {
             map.put(d, dateMap.get(date));
         }
         return map;
+    }
+    
+    private static void removeEmptyObject(SyaryoObject4 syaryo){
+        List deleteKey = new ArrayList();
+        for(Object key : syaryo.map.keySet()){
+            if(syaryo.get(key.toString()) != null)
+                if(syaryo.get(key.toString()).isEmpty())
+                    deleteKey.add(key);
+        }
+        
+        for(Object dkey : deleteKey)
+            syaryo.map.remove(dkey);
     }
     
     private static Map rejectSMRData(Map<String, List<String>> smr, int idx){

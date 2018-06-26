@@ -5,6 +5,7 @@
  */
 package viewer.easy;
 
+import creator.template.SimpleTemplate;
 import param.KomatsuDataParameter;
 import file.CSVFileReadWrite;
 import java.io.BufferedReader;
@@ -37,6 +38,8 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.stage.FileChooser;
+import json.JsonToSyaryoTemplate;
+import json.SyaryoTemplateToJson;
 import json.SyaryoToZip3;
 //import obj.SyaryoObject3;
 import obj.SyaryoObject4;
@@ -58,6 +61,8 @@ public class EasyViewerFXMLController implements Initializable {
     private Accordion viewarea;
 
     private Map<String, SyaryoObject4> syaryoMap;
+    private Map<String, SimpleTemplate> simpleMap;
+    
     @FXML
     private TitledPane spec;
     @FXML
@@ -154,6 +159,8 @@ public class EasyViewerFXMLController implements Initializable {
     private ComboBox<String> graph_menu;
 
     private SyaryoObject4 currentSyaryo;
+    private String currentFile;
+    
     @FXML
     private MenuItem smr_plot;
     @FXML
@@ -189,9 +196,15 @@ public class EasyViewerFXMLController implements Initializable {
             return;
         }
         String name = keylist.getItems().get(index).toString();
-        currentSyaryo = (SyaryoObject4) syaryoMap.get(name);
+        
+        if(currentFile.contains(".json")){
+            SimpleTemplate temp = simpleMap.get(name);
+            id_label.setText(temp.name.get(0));
+            return ;
+        }
+        currentSyaryo = syaryoMap.get(name);
         index_number_label.setText(String.valueOf(index + 1));
-        id_label.setText(name);
+        id_label.setText(currentSyaryo.getName());
 
         //データの設定
         settingData(currentSyaryo);
@@ -322,7 +335,15 @@ public class EasyViewerFXMLController implements Initializable {
 
     private Map loadSyaryoMap(File file) {
         System.out.println(file.getName());
-        return new SyaryoToZip3().read(file.getAbsolutePath());
+        currentFile = file.getName();
+        
+        if(file.getName().contains(".bz2"))
+            return new SyaryoToZip3().read(file.getAbsolutePath());
+        else{
+            //車両名の確認のみに制限される
+            simpleMap = new SyaryoTemplateToJson().reader(file.getAbsolutePath());
+            return new JsonToSyaryoTemplate().reader(file.getAbsolutePath());
+        }
     }
 
     private void updateKeyList(List keys) {

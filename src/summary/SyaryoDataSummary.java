@@ -82,7 +82,9 @@ public class SyaryoDataSummary {
             List head = new ArrayList();head.add("ヘッダ");
             List data = new ArrayList();data.add("データ数");
             List num = new ArrayList();num.add("車両数");
-            for(Object header : dataSizeMap.keySet()){
+            for(String header : KomatsuDataParameter.DATA_ORDER){
+                if(dataSizeMap.get(header) == null)
+                    continue;
                 head.add(header);
                 data.add(dataSizeMap.get(header).toString());
                 num.add(numSyaryoMap.get(header).toString());

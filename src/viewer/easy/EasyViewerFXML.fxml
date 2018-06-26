@@ -83,6 +83,11 @@
                            <content>
                               <Accordion VBox.vgrow="ALWAYS">
                                 <panes>
+                                    <TitledPane fx:id="product" animated="false" text="生産">
+                                       <content>
+                                          <TextArea fx:id="viewarea_product" editable="false" prefHeight="200.0" prefWidth="200.0" />
+                                       </content>
+                                    </TitledPane>
                                     <TitledPane fx:id="spec" animated="false" text="仕様">
                                        <content>
                                           <TextArea fx:id="viewarea_spec" editable="false" prefHeight="200.0" prefWidth="200.0" />
@@ -93,19 +98,9 @@
                                           <TextArea fx:id="viewarea_detail" editable="false" prefHeight="200.0" prefWidth="200.0" />
                                        </content>
                                     </TitledPane>
-                                    <TitledPane fx:id="product" animated="false" text="生産">
-                                       <content>
-                                          <TextArea fx:id="viewarea_product" editable="false" prefHeight="200.0" prefWidth="200.0" />
-                                       </content>
-                                    </TitledPane>
                                     <TitledPane fx:id="deploy" animated="false" text="出荷">
                                        <content>
                                           <TextArea fx:id="viewarea_deploy" editable="false" prefHeight="200.0" prefWidth="200.0" />
-                                       </content>
-                                    </TitledPane>
-                                    <TitledPane fx:id="dead" animated="false" text="廃車">
-                                       <content>
-                                          <TextArea fx:id="viewarea_dead" editable="false" prefHeight="200.0" prefWidth="200.0" />
                                        </content>
                                     </TitledPane>
                                     <TitledPane fx:id="news" animated="false" text="新車">
@@ -123,14 +118,9 @@
                                           <TextArea fx:id="viewarea_owner" editable="false" prefHeight="200.0" prefWidth="200.0" />
                                        </content>
                                     </TitledPane>
-                                    <TitledPane fx:id="care" animated="false" text="コマツケア">
+                                    <TitledPane fx:id="smr" animated="false" text="SMR">
                                        <content>
-                                          <TextArea fx:id="viewarea_care" editable="false" prefHeight="200.0" prefWidth="200.0" />
-                                       </content>
-                                    </TitledPane>
-                                    <TitledPane fx:id="support" animated="false" text="オールサポート">
-                                       <content>
-                                          <TextArea fx:id="viewarea_support" editable="false" prefHeight="200.0" prefWidth="200.0" />
+                                          <TextArea fx:id="viewarea_smr" editable="false" prefHeight="158.0" prefWidth="526.0" />
                                        </content>
                                     </TitledPane>
                                     <TitledPane fx:id="order" animated="false" text="受注">
@@ -148,9 +138,14 @@
                                           <TextArea fx:id="viewarea_parts" editable="false" prefHeight="200.0" prefWidth="200.0" />
                                        </content>
                                     </TitledPane>
-                                    <TitledPane fx:id="smr" animated="false" text="SMR">
+                                    <TitledPane fx:id="care" animated="false" text="コマツケア">
                                        <content>
-                                          <TextArea fx:id="viewarea_smr" editable="false" prefHeight="158.0" prefWidth="526.0" />
+                                          <TextArea fx:id="viewarea_care" editable="false" prefHeight="200.0" prefWidth="200.0" />
+                                       </content>
+                                    </TitledPane>
+                                    <TitledPane fx:id="support" animated="false" text="オールサポート">
+                                       <content>
+                                          <TextArea fx:id="viewarea_support" editable="false" prefHeight="200.0" prefWidth="200.0" />
                                        </content>
                                     </TitledPane>
                                     <TitledPane fx:id="kmsmr" animated="false" text="KOMTRAX_SMR">
@@ -158,9 +153,19 @@
                                           <TextArea fx:id="viewarea_kmsmr" editable="false" prefHeight="200.0" prefWidth="200.0" />
                                        </content>
                                     </TitledPane>
+                                    <TitledPane fx:id="kmact" animated="false" text="KOMTRAX_ACT_DATA">
+                                       <content>
+                                          <TextArea fx:id="viewarea_kmact" editable="false" prefHeight="200.0" prefWidth="200.0" />
+                                       </content>
+                                    </TitledPane>
                                     <TitledPane fx:id="kmgps" animated="false" text="KOMTRAX_GPS">
                                        <content>
                                           <TextArea fx:id="viewarea_kmgps" editable="false" prefHeight="200.0" prefWidth="200.0" />
+                                       </content>
+                                    </TitledPane>
+                                    <TitledPane fx:id="kmfuel" animated="false" text="KOMTRAX_FUEL_CONSUME">
+                                       <content>
+                                          <TextArea fx:id="viewarea_kmfuel" editable="false" prefHeight="200.0" prefWidth="200.0" />
                                        </content>
                                     </TitledPane>
                                     <TitledPane fx:id="kmerror" animated="false" text="KOMTRAX_ERROR">
@@ -168,14 +173,9 @@
                                           <TextArea fx:id="viewarea_kmerror" editable="false" prefHeight="200.0" prefWidth="200.0" />
                                        </content>
                                     </TitledPane>
-                                    <TitledPane fx:id="kmact" animated="false" text="KOMTRAX_ACT_DATA">
+                                    <TitledPane fx:id="dead" animated="false" text="廃車">
                                        <content>
-                                          <TextArea fx:id="viewarea_kmact" editable="false" prefHeight="200.0" prefWidth="200.0" />
-                                       </content>
-                                    </TitledPane>
-                                    <TitledPane fx:id="kmfuel" animated="false" text="KOMTRAX_FUEL_CONSUME">
-                                       <content>
-                                          <TextArea fx:id="viewarea_kmfuel" editable="false" prefHeight="200.0" prefWidth="200.0" />
+                                          <TextArea fx:id="viewarea_dead" editable="false" prefHeight="200.0" prefWidth="200.0" />
                                        </content>
                                     </TitledPane>
                                 </panes>
