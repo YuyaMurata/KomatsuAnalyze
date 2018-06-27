@@ -180,8 +180,8 @@ public class ExportErrorData {
                 }*/
                 
                 //Name
-                String skisy = res.getString(EQP.Syaryo.KISY.get());
-                String kiban = res.getString(EQP.Syaryo.KIBAN.get());
+                String skisy = content.get(code.indexOf("KISY"));
+                String kiban = content.get(code.indexOf("KIBAN"));
                     
                 name = skisy+"-"+kiban;
                 SimpleTemplate temp = map.get(name);
