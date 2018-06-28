@@ -61,7 +61,8 @@ public interface KomatsuDataParameter {
         "KOMTRAX_GPS",
         "KOMTRAX_FUEL_CONSUME",
         "KOMTRAX_ERROR",
-        "廃車"
+        "廃車",
+        "経歴"
     });
     //KUECコード
     public static List KUEC_LIST = Arrays.asList(new String[]{

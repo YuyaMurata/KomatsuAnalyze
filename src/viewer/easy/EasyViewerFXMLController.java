@@ -64,85 +64,9 @@ public class EasyViewerFXMLController implements Initializable {
     private Map<String, SimpleTemplate> simpleMap;
     
     @FXML
-    private TitledPane spec;
-    @FXML
-    private TextArea viewarea_spec;
-    @FXML
-    private TitledPane detail;
-    @FXML
-    private TextArea viewarea_detail;
-    @FXML
-    private TitledPane product;
-    @FXML
-    private TextArea viewarea_product;
-    @FXML
-    private TitledPane deploy;
-    @FXML
-    private TextArea viewarea_deploy;
-    @FXML
-    private TitledPane dead;
-    @FXML
-    private TextArea viewarea_dead;
-    @FXML
-    private TitledPane news;
-    @FXML
-    private TextArea viewarea_news;
-    @FXML
-    private TitledPane used;
-    @FXML
-    private TextArea viewarea_used;
-    @FXML
-    private TitledPane owner;
-    @FXML
-    private TextArea viewarea_owner;
-    @FXML
-    private TitledPane care;
-    @FXML
-    private TextArea viewarea_care;
-    @FXML
-    private TitledPane support;
-    @FXML
-    private TextArea viewarea_support;
-    @FXML
-    private TitledPane order;
-    @FXML
-    private TextArea viewarea_order;
-    @FXML
-    private TitledPane work;
-    @FXML
-    private TextArea viewarea_work;
-    @FXML
-    private TitledPane parts;
-    @FXML
-    private TextArea viewarea_parts;
-    @FXML
-    private TitledPane smr;
-    @FXML
-    private TextArea viewarea_smr;
-    @FXML
-    private TitledPane kmsmr;
-    @FXML
-    private TextArea viewarea_kmsmr;
-    @FXML
-    private TitledPane kmgps;
-    @FXML
-    private TextArea viewarea_kmgps;
-    @FXML
-    private TitledPane kmerror;
-    @FXML
-    private TextArea viewarea_kmerror;
-    @FXML
     private Label id_label;
     @FXML
     private ComboBox<String> datafilter;
-    @FXML
-    private TitledPane kmact;
-    @FXML
-    private TextArea viewarea_kmact;
-    @FXML
-    private TitledPane kmfuel;
-    @FXML
-    private TextArea viewarea_kmfuel;
     @FXML
     private MenuItem rightClick_copy;
     @FXML
@@ -165,6 +89,8 @@ public class EasyViewerFXMLController implements Initializable {
     private MenuItem smr_plot;
     @FXML
     private MenuItem smr_hist;
+    @FXML
+    private Accordion dataAccordion;
 
     /**
      * Initializes the controller class.
@@ -176,6 +102,7 @@ public class EasyViewerFXMLController implements Initializable {
         machineListInitialize();
         dataFilterSettings(KomatsuDataParameter.SETTING_DATAFILETER_PATH);
         graphMenuSettings();
+        initializeAccordion();
     }
 
     public void machineListInitialize() {
@@ -209,89 +136,35 @@ public class EasyViewerFXMLController implements Initializable {
         //データの設定
         settingData(currentSyaryo);
     }
-
+    
+    private void initializeAccordion(){
+        TitledPane[] tps = new TitledPane[KomatsuDataParameter.DATA_ORDER.size()];
+        TextArea[] tes = new TextArea[KomatsuDataParameter.DATA_ORDER.size()];
+        
+        int i = 0;
+        for(String data : KomatsuDataParameter.DATA_ORDER){
+            tes[i] = new TextArea();
+            tps[i] = new TitledPane(data, tes[i]);
+            i++;
+        }
+        
+        dataAccordion.getPanes().clear();
+        dataAccordion.getPanes().addAll(tps);
+    }
+    
     //アコーディオンの設定
     private void settingData(SyaryoObject4 syaryo) {
         syaryo.decompress();
 
-        String[] str;
-        str = textdump(syaryo.get(spec.getText().split(" ")[0].replace("×", "")));
-        viewarea_spec.setText(str[1]);
-        spec.setText(check(spec.getText(), str));
-
-        str = textdump(syaryo.get(detail.getText().split(" ")[0].replace("×", "")));
-        viewarea_detail.setText(str[1]);
-        detail.setText(check(detail.getText(), str));
-
-        str = textdump(syaryo.get(product.getText().split(" ")[0].replace("×", "")));
-        viewarea_product.setText(str[1]);
-        product.setText(check(product.getText(), str));
-
-        str = textdump(syaryo.get(deploy.getText().split(" ")[0].replace("×", "")));
-        viewarea_deploy.setText(str[1]);
-        deploy.setText(check(deploy.getText(), str));
-
-        str = textdump(syaryo.get(dead.getText().split(" ")[0].replace("×", "")));
-        viewarea_dead.setText(str[1]);
-        dead.setText(check(dead.getText(), str));
-
-        str = textdump(syaryo.get(news.getText().split(" ")[0].replace("×", "")));
-        viewarea_news.setText(str[1]);
-        news.setText(check(news.getText(), str));
-
-        str = textdump(syaryo.get(used.getText().split(" ")[0].replace("×", "")));
-        viewarea_used.setText(str[1]);
-        used.setText(check(used.getText(), str));
-
-        str = textdump(syaryo.get(owner.getText().split(" ")[0].replace("×", "")));
-        viewarea_owner.setText(str[1]);
-        owner.setText(check(owner.getText(), str));
-
-        String[] str2 = textdump(syaryo.get("コマツケア前受け金"));
-        str = textdump(syaryo.get(care.getText().split(" ")[0].replace("×", "")));
-        viewarea_care.setText(str2[1] + "\n\n" + str[1]);
-        care.setText(check(care.getText(), str));
-
-        str = textdump(syaryo.get(support.getText().split(" ")[0].replace("×", "")));
-        viewarea_support.setText(str[1]);
-        support.setText(check(support.getText(), str));
-
-        str = textdump(syaryo.get(order.getText().split(" ")[0].replace("×", "")));
-        viewarea_order.setText(str[1]);
-        order.setText(check(order.getText(), str));
-
-        str = textdump(syaryo.get(work.getText().split(" ")[0].replace("×", "")));
-        viewarea_work.setText(str[1]);
-        work.setText(check(work.getText(), str));
-
-        str = textdump(syaryo.get(parts.getText().split(" ")[0].replace("×", "")));
-        viewarea_parts.setText(str[1]);
-        parts.setText(check(parts.getText(), str));
-
-        str = textdump(syaryo.get(smr.getText().split(" ")[0].replace("×", "")));
-        viewarea_smr.setText(str[1]);
-        smr.setText(check(smr.getText(), str));
-
-        str = textdump(syaryo.get(kmsmr.getText().split(" ")[0].replace("×", "")));
-        viewarea_kmsmr.setText(str[1]);
-        kmsmr.setText(check(kmsmr.getText(), str));
-
-        str = textdump(syaryo.get(kmgps.getText().split(" ")[0].replace("×", "")));
-        viewarea_kmgps.setText(str[1]);
-        kmgps.setText(check(kmgps.getText(), str));
-
-        str = textdump(syaryo.get(kmerror.getText().split(" ")[0].replace("×", "")));
-        viewarea_kmerror.setText(str[1]);
-        kmerror.setText(check(kmerror.getText(), str));
-
-        str = textdump(syaryo.get(kmact.getText().split(" ")[0].replace("×", "")));
-        viewarea_kmact.setText(str[1]);
-        kmact.setText(check(kmact.getText(), str));
-
-        str = textdump(syaryo.get(kmfuel.getText().split(" ")[0].replace("×", "")));
-        viewarea_kmfuel.setText(str[1]);
-        kmfuel.setText(check(kmfuel.getText(), str));
-
+        int i=0;
+        for(String data : KomatsuDataParameter.DATA_ORDER){
+            TitledPane title = dataAccordion.getPanes().get(i);
+            String[] str;
+            str = textdump(syaryo.get(title.getText().split(" ")[0].replace("×", "")));
+            ((TextArea)title.getContent()).setText(str[1]);
+            title.setText(check(title.getText(), str));
+            i++;
+        }
         syaryo.compress(true);
     }
 

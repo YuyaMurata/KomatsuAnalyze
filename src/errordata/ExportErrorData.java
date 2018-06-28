@@ -151,7 +151,7 @@ public class ExportErrorData {
                 }
                 
                 //エラー機種用テンプレート
-                /*if(errsource.equals("kom_order")){
+                if(errsource.equals("kom_order")){
                     //Name
                     String skisy = res.getString(EQP.Syaryo.KISY.get());
                     String type = res.getString(EQP.Syaryo.TYP.get());
@@ -177,22 +177,10 @@ public class ExportErrorData {
                         map.put(name, new SimpleTemplate("1"));
                     else
                         temp.name.set(0, String.valueOf(Integer.valueOf(temp.name.get(0))+1));
-                }*/
+                }
                 
-                //Name
-                String skisy = content.get(code.indexOf("KISY"));
-                String kiban = content.get(code.indexOf("KIBAN"));
-                    
-                name = skisy+"-"+kiban;
-                SimpleTemplate temp = map.get(name);
-                if(temp == null)
-                    temp = new SimpleTemplate(name);
-                
-                temp.add(errsource, String.join(",", content));
-                map.put(name, temp);
-
                 //エラーデータ出力
-                //csv.println(String.join(",", content));
+                csv.println(String.join(",", content));
                 //System.out.println(String.join(",", content));
 
                 n++;
