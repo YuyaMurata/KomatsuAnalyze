@@ -177,6 +177,9 @@ public class SyaryoObjectFormatting {
         Integer company = indexList.indexOf("KSYCD");
         Integer ownerID = indexList.indexOf("NNSCD");
         Integer ownerName = indexList.indexOf("NNSK_NM_1");
+        
+        Integer hist_cid = indexHisList.indexOf("HY_KKYKCD");
+        Integer syareki = indexHisList.indexOf("SYRK_KBN");
 
         /*使用顧客情報の確認
         owner.values().stream()
@@ -201,27 +204,16 @@ public class SyaryoObjectFormatting {
 
             list.set(ownerID, id);
         }
-
-        //経歴情報から特定の顧客を排除
-        if (history != null) {
-            Integer db = indexList.indexOf("sell");
-            //System.out.println(currentKey+","+history);
-            Map<String, List> removeOwner = owner;
-            int syareki = indexHisList.indexOf("SYRK_KBN");
-            List remove = new ArrayList();
-            history.entrySet().stream()
-                .filter(hist -> hist.getValue().get(syareki).equals("1D") || hist.getValue().get(syareki).equals("8C"))
-                .filter(hist -> removeOwner.get(hist.getKey()) != null)
-                .map(hist -> removeOwner.entrySet().stream()
-                                        .filter(own -> own.getValue().get(db).equals("syaryo"))
-                                        .filter(own -> own.getKey().contains(hist.getKey()))
-                                        .filter(own -> own.getValue().get(company).equals(hist.getValue().get(company)))
-                                        .map(own -> hist.getValue().get(company)+","+hist.getValue().get(syareki)+","+own.getValue().get(ownerID))
-                                        .distinct()
-                                        .collect(Collectors.toList()))
-                .forEach(l -> remove.addAll(l));
-            if(!remove.isEmpty())
-                System.out.println(currentKey + "," + String.join(",", remove));
+        for (String d : history.keySet()) {
+            List list = history.get(d);
+            String com = list.get(company).toString();
+            String id = list.get(hist_cid).toString();
+            
+            if (honsyIndex.get(com + "_" + id) != null) {
+                id = honsyIndex.get(com + "_" + id).split("_")[0];
+            }
+            
+            list.set(hist_cid, id);
         }
 
         //ID重複排除 ##排除
@@ -234,6 +226,27 @@ public class SyaryoObjectFormatting {
             .collect(Collectors.toList());
         //System.out.println(owners);
         owners = exSeqDuplicate(owners);
+        
+        //経歴情報から特定の顧客を排除
+        if(history != null){
+            if(history.size() > 1){
+                //繰り返し検知 3以上繰り返したもの
+                Boolean cycle = false;
+                
+                for(String date : history.keySet()){
+                    String id = history.get(date).get(hist_cid).toString();
+                    long cnt = owners.stream().filter(own -> own.equals(id)).count();
+                    if(cnt > 2)
+                        cycle = true;
+                }
+                
+                if(cycle){
+                    System.out.println(currentKey + "," + history);
+                
+                    //System.exit(0);
+                }
+            }
+        }
 
         if (owners.isEmpty()) {
             //System.out.println("使用顧客が存在しない車両(後で削除)");
