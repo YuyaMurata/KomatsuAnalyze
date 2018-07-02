@@ -25,9 +25,9 @@ public class PythonCommand {
         try {
             out = execCommand(new String[]{"python", file.getAbsolutePath()});
             //Python出力
-            //System.out.println(out[0]);
-            //System.out.println(out[1]);
-            //System.out.println(out[2]);
+            System.out.println(out[0]);
+            System.out.println(out[1]);
+            System.out.println(out[2]);
         } catch (IOException ex) {
         } catch (InterruptedException ex) {
         }

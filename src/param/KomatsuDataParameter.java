@@ -32,7 +32,8 @@ public interface KomatsuDataParameter {
     public static String SETTING_GETDATA_PATH = "index\\syaryo_data_index.csv";
     public static String CUSTOMER_INDEX_PATH = "index\\customer_index.json";
     public static String SUMMARY_PATH = "summary\\";
-
+    public static String PRODUCT_SOURCE = "index\\product_201703.csv";
+    
     //EasyViewer
     public static String SYARYOOBJECT_FDPATH = "syaryo\\";
     public static String SETTING_DATAFILETER_PATH = "index\\easyviwer_datafilter.csv";
@@ -40,6 +41,7 @@ public interface KomatsuDataParameter {
     public static String GRAPH_TEMP_FILE = "py\\csv\\graph_temp.csv";
 
     //Formalize
+    public static String PRODUCT_INDEXPATH = "index\\product_index.json";
     //データ順序
     public static List<String> DATA_ORDER = Arrays.asList(new String[]{
         "生産",

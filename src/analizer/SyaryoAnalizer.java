@@ -55,7 +55,7 @@ public class SyaryoAnalizer {
         this.no = syaryo.getName().split("-")[2];
         
         //Status
-        if(syaryo.get("KOMTRAX_SMR") != null)
+        if(syaryo.get("KOMTRAX_SMR") != null || syaryo.get("仕様").get("1").get(0).equals("1"))
             komtrax = true;
         if(syaryo.get("中古車") != null){
             used = true;
@@ -79,12 +79,16 @@ public class SyaryoAnalizer {
         numOrders = syaryo.get("受注").size();
         numParts = syaryo.get("部品").size();
         numWorks = syaryo.get("作業").size();
+        System.out.println(getValue(getSMR(syaryo)[0], getSMR(syaryo)[1], true));
         maxSMR = Integer.valueOf(getValue(getSMR(syaryo)[0], getSMR(syaryo)[1], true).get(getValue(getSMR(syaryo)[0], getSMR(syaryo)[1], true).size()-1));
         
         //Life
         lifestart = syaryo.get("新車").keySet().stream().findFirst().get();
         currentLife = getValue("受注", "ODDAY", true).get(numOrders-1);
-        currentAge_day = age(lifestart, "20170501"); //データ受領日(データによって数日ずれている)
+        if(!dead)
+            currentAge_day = age(lifestart, "20170501"); //データ受領日(データによって数日ずれている)
+        else
+            currentAge_day = age(lifestart, lifestop); //廃車日
         
         syaryo.compress(true);
     }
@@ -108,7 +112,7 @@ public class SyaryoAnalizer {
         List list = syaryo.get(key).values().stream().map(l -> l.get(idx)).collect(Collectors.toList());
         
         if(sorted)
-            list.sort(Comparator.naturalOrder());
+            list = (List) list.stream().map(v -> Integer.valueOf(v.toString())).sorted().map(v -> v.toString()).collect(Collectors.toList());
         
         return list;
     }

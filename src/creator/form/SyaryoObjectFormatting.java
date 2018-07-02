@@ -31,7 +31,8 @@ public class SyaryoObjectFormatting {
     private static String KISY = "PC138US";
     private static String INDEXPATH = KomatsuDataParameter.SHUFFLE_FORMAT_PATH;
     private static String OBJPATH = KomatsuDataParameter.OBJECT_PATH;
-    private static String INDEX_PATH = KomatsuDataParameter.CUSTOMER_INDEX_PATH;
+    private static String HONSY_INDEXPATH = KomatsuDataParameter.CUSTOMER_INDEX_PATH;
+    private static String PRODUCT_INDEXPATH = KomatsuDataParameter.PRODUCT_INDEXPATH;
     private static Map<String, List> dataIndex;
 
     public static void main(String[] args) {
@@ -49,10 +50,13 @@ public class SyaryoObjectFormatting {
         Map<String, SyaryoObject4> syaryoMap = zip3.read(filename);
 
         //本社コード
-        Map<String, String> honsyIndex = new MapIndexToJSON().reader(INDEX_PATH);
+        Map<String, String> honsyIndex = new MapIndexToJSON().reader(HONSY_INDEXPATH);
+
+        //生産日情報
+        Map<String, String> productIndex = new MapIndexToJSON().reader(PRODUCT_INDEXPATH);
 
         //車両の削除
-        rejectSyaryo(syaryoMap, new String[]{"UR", "GC"});
+        rejectSyaryo(syaryoMap, new String[]{"company,UR", "company,GC", "新車,20170501"});
 
         int n = 0;
         for (String key : syaryoMap.keySet()) {
@@ -67,6 +71,13 @@ public class SyaryoObjectFormatting {
 
             //整形後出力するMap
             Map newMap;
+
+            //日付ズレの補正 閾値以降のデータを削除
+            formDate(syaryo, dataIndex.get("受注"), 20170501);
+
+            //生産の整形
+            newMap = formProduct(syaryo.get("生産"), productIndex, syaryo.getName());
+            syaryo.map.put("生産", newMap);
 
             //顧客の整形
             newMap = formOwner(syaryo.get("顧客"), dataIndex.get("顧客"), honsyIndex, syaryo.get("経歴"), dataIndex.get("経歴"), rule);
@@ -144,28 +155,61 @@ public class SyaryoObjectFormatting {
         zip3.write(outfile, syaryoMap);
     }
 
-    private static void rejectSyaryo(Map<String, SyaryoObject4> syaryoMap, String[] company) {
+    private static void rejectSyaryo(Map<String, SyaryoObject4> syaryoMap, String[] deleteRule) {
         List<String> reject = new ArrayList();
         for (String key : syaryoMap.keySet()) {
             SyaryoObject4 syaryo = syaryoMap.get(key);
             syaryo.decompress();
 
-            //Delete Company
-            Optional check = syaryo.get("最終更新日").values().stream()
-                .filter(list -> list.contains(company[0])
-                || list.contains(company[1]))
-                .findFirst();
-
-            if (check.isPresent()) {
-                reject.add(key);
+            for (String rule : deleteRule) {
+                Optional check;
+                
+                String data = rule.split(",")[0];
+                String value = rule.split(",")[1];
+                
+                if (data.equals("company")) {
+                    //Delete Company
+                    check = syaryo.get("最終更新日").values().stream()
+                        .filter(list -> list.contains(value)) //Company
+                        .findFirst();
+                } else {
+                    //Delete 新車 日付閾値以降のデータ削除
+                    if(syaryo.get(data) == null)
+                        data = "生産";
+                    check = syaryo.get(data).keySet().stream()
+                        .filter(k -> Integer.valueOf(k.split("#")[0].replace("/", "")) >= Integer.valueOf(value))
+                        .findFirst();
+                }
+                
+                if (check.isPresent()) {
+                    System.out.println(data+":"+key);
+                    reject.add(key);
+                }
             }
-
             syaryo.compress(true);
         }
 
+        System.out.println("カンパニ、日付で削除される車両数:"+reject.size());
         for (String key : reject) {
             syaryoMap.remove(key);
         }
+    }
+
+    private static Map formProduct(Map<String, List> product, Map<String, String> index, String name) {
+        Map<String, List> map = new TreeMap();
+        String id = name.split("-")[0] + "-" + name.split("-")[2];
+        String date = product.keySet().stream().findFirst().get();
+        String pdate = index.get(id);
+        if (pdate != null) {
+            if (Integer.valueOf(date) < Integer.valueOf(pdate)) {
+                map.put(pdate, product.get(date));
+                System.out.println(currentKey + ":生産-" + pdate + " 異常:" + date);
+            }
+        } else {
+            map.put(date, product.get(date));
+        }
+
+        return map;
     }
 
     private static Map formOwner(Map<String, List> owner, List indexList, Map<String, String> honsyIndex, Map<String, List> history, List indexHisList, DataRejectRule reject) {
@@ -177,7 +221,7 @@ public class SyaryoObjectFormatting {
         Integer company = indexList.indexOf("KSYCD");
         Integer ownerID = indexList.indexOf("NNSCD");
         Integer ownerName = indexList.indexOf("NNSK_NM_1");
-        
+
         Integer hist_cid = indexHisList.indexOf("HY_KKYKCD");
         Integer syareki = indexHisList.indexOf("SYRK_KBN");
 
@@ -208,11 +252,11 @@ public class SyaryoObjectFormatting {
             List list = history.get(d);
             String com = list.get(company).toString();
             String id = list.get(hist_cid).toString();
-            
+
             if (honsyIndex.get(com + "_" + id) != null) {
                 id = honsyIndex.get(com + "_" + id).split("_")[0];
             }
-            
+
             list.set(hist_cid, id);
         }
 
@@ -226,23 +270,24 @@ public class SyaryoObjectFormatting {
             .collect(Collectors.toList());
         //System.out.println(owners);
         owners = exSeqDuplicate(owners);
-        
+
         //経歴情報から特定の顧客を排除
-        if(history != null){
-            if(history.size() > 1){
+        if (history != null) {
+            if (history.size() > 1) {
                 //繰り返し検知 3以上繰り返したもの
                 Boolean cycle = false;
-                
-                for(String date : history.keySet()){
+
+                for (String date : history.keySet()) {
                     String id = history.get(date).get(hist_cid).toString();
                     long cnt = owners.stream().filter(own -> own.equals(id)).count();
-                    if(cnt > 2)
+                    if (cnt > 2) {
                         cycle = true;
+                    }
                 }
-                
-                if(cycle){
+
+                if (cycle) {
                     System.out.println(currentKey + "," + history);
-                
+
                     //System.exit(0);
                 }
             }
@@ -733,6 +778,45 @@ public class SyaryoObjectFormatting {
     private static void formExtra(SyaryoObject4 syaryo, String[] removeInfo) {
         for (String remove : removeInfo) {
             syaryo.map.remove(remove);
+        }
+    }
+
+    private static void formDate(SyaryoObject4 syaryo, List indexList, Integer date) {
+        for (Object key : syaryo.map.keySet()) {
+            Map<String, List> map = syaryo.get(key.toString());
+            if (map == null) {
+                continue;
+            }
+
+            List remove;
+
+            //日付情報をキーにもたない場合は無視
+            try {
+                if (key.toString().equals("受注")) {
+                    int date_idx = indexList.indexOf("ODDAY");
+                    remove = map.entrySet().stream()
+                        .filter(v -> !v.getValue().get(date_idx).equals("None"))
+                        .filter(v -> Integer.valueOf(v.getValue().get(date_idx).toString().split("#")[0].replace("/", "")) >= date)
+                        .map(v -> v.getKey())
+                        .collect(Collectors.toList());
+                } else {
+                    remove = map.keySet().stream()
+                        .filter(v -> Integer.valueOf(v.split("#")[0].replace("/", "")) >= date)
+                        .collect(Collectors.toList());
+                }
+                if (remove.isEmpty()) {
+                    continue;
+                }
+            } catch (NumberFormatException e) {
+                continue;
+            }
+
+            System.out.println(currentKey + ":" + key + " - " + remove);
+            for (Object removeDate : remove) {
+                map.remove(removeDate.toString());
+            }
+
+            syaryo.map.put(key.toString(), map);
         }
     }
 

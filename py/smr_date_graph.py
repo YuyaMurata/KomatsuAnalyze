@@ -21,7 +21,7 @@ data.index = pd.to_datetime(data.index, format='%Y%m%d')
 print(data)
 print(data.index)
 
-data.plot(marker='o', data.plot(marker='o', ms=3))
+data.plot(marker='o', ms=3)
 plt.gcf().autofmt_xdate()
 
 #plt.plot(data['Date'], data['SMR'], marker='o', label='SMR')
