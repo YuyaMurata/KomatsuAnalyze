@@ -801,7 +801,7 @@ public class SyaryoObjectFormatting {
                         .collect(Collectors.toList());
                 } else {
                     remove = map.keySet().stream()
-                        .filter(v -> Integer.valueOf(v.split("#")[0].replace("/", "")) >= date)
+                        .filter(v -> Integer.valueOf(v.split("#")[0].split(" ")[0].replace("/", "")) >= date)
                         .collect(Collectors.toList());
                 }
                 if (remove.isEmpty()) {
