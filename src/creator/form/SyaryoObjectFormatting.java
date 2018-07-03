@@ -155,6 +155,7 @@ public class SyaryoObjectFormatting {
         zip3.write(outfile, syaryoMap);
     }
 
+    //車両の削除
     private static void rejectSyaryo(Map<String, SyaryoObject4> syaryoMap, String[] deleteRule) {
         List<String> reject = new ArrayList();
         for (String key : syaryoMap.keySet()) {
@@ -182,7 +183,7 @@ public class SyaryoObjectFormatting {
                 }
                 
                 if (check.isPresent()) {
-                    System.out.println(data+":"+key);
+                    //System.out.println(data+":"+key);
                     reject.add(key);
                 }
             }
@@ -271,8 +272,8 @@ public class SyaryoObjectFormatting {
         //System.out.println(owners);
         owners = exSeqDuplicate(owners);
 
-        //経歴情報から特定の顧客を排除
-        if (history != null) {
+        //経歴情報から特定の顧客を排除 (車両ごとにパターンが異なるため不可能?)
+        /*if (history != null) {
             if (history.size() > 1) {
                 //繰り返し検知 3以上繰り返したもの
                 Boolean cycle = false;
@@ -291,7 +292,7 @@ public class SyaryoObjectFormatting {
                     //System.exit(0);
                 }
             }
-        }
+        }*/
 
         if (owners.isEmpty()) {
             //System.out.println("使用顧客が存在しない車両(後で削除)");
@@ -795,19 +796,25 @@ public class SyaryoObjectFormatting {
                 if (key.toString().equals("受注")) {
                     int date_idx = indexList.indexOf("ODDAY");
                     remove = map.entrySet().stream()
-                        .filter(v -> !v.getValue().get(date_idx).equals("None"))
+                        .filter(v -> !v.getValue().get(date_idx).toString().contains("None"))
                         .filter(v -> Integer.valueOf(v.getValue().get(date_idx).toString().split("#")[0].replace("/", "")) >= date)
                         .map(v -> v.getKey())
                         .collect(Collectors.toList());
                 } else {
                     remove = map.keySet().stream()
-                        .filter(v -> Integer.valueOf(v.split("#")[0].split(" ")[0].replace("/", "")) >= date)
+                        .filter(v -> !v.contains("None"))
+                        .filter(v -> Integer.valueOf(v.split("#")[0].split(" ")[0].replace("/", "").substring(0, 8)) >= date)
                         .collect(Collectors.toList());
                 }
                 if (remove.isEmpty()) {
                     continue;
                 }
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException | StringIndexOutOfBoundsException se) {
+                if(key.equals("SMR")){
+                    System.out.println(key+":");
+                    map.keySet().stream().forEach(System.out::println);
+                    se.printStackTrace();
+                }
                 continue;
             }
 
@@ -845,46 +852,6 @@ public class SyaryoObjectFormatting {
 
             syaryo.map.put(id, newMap);
         }
-    }
-
-    //Util
-    private static Map<String, List> index() {
-        Map<String, Map<String, List<String>>> index = new MapIndexToJSON().reader(INDEXPATH);
-        Map<String, List> formIndex = new HashMap();
-
-        for (String key : index.keySet()) {
-            List<String> list = new ArrayList();
-            List<String> list2 = new ArrayList();
-            int n = 0;
-            for (Object id : index.get(key).keySet()) {
-                int s = index.get(key).get(id).stream().mapToInt(le -> le.contains("#") ? 1 : 0).sum();
-                if (s == index.get(key).get(id).size()) {
-                    list = index.get(key).get(id);
-                }
-                if (n < s) {
-                    list2 = index.get(key).get(id);
-                    n = s;
-                }
-            }
-
-            if (list.isEmpty()) {
-                list = list2;
-            }
-
-            //List内の整形
-            list = list.stream().filter(le -> !(le.contains("=") || le.contains("<") || le.contains(">")) || le.contains("?")).collect(Collectors.toList());
-            for (int i = 0; i < list.size(); i++) {
-                String str = list.get(i);
-                if (str.contains("#")) {
-                    str = str.split("#")[0].split("\\.")[1];
-                }
-                list.set(i, str);
-            }
-
-            formIndex.put(key, list);
-        }
-        formIndex.entrySet().stream().map(e -> e.getKey() + ":" + e.getValue()).forEach(System.out::println);
-        return formIndex;
     }
 
     private static List exSeqDuplicate(List<String> dupList) {

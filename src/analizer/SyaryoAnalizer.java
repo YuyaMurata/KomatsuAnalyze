@@ -39,7 +39,7 @@ public class SyaryoAnalizer {
     public Integer numOrders = -1;
     public Integer numParts = -1;
     public Integer numWorks = -1;
-    public Integer maxSMR = -1;
+    public Integer[] maxSMR = new Integer[]{-1, -1};
     
     public SyaryoAnalizer(SyaryoObject4 syaryo){
         this.syaryo = syaryo;
@@ -80,7 +80,8 @@ public class SyaryoAnalizer {
         numParts = syaryo.get("部品").size();
         numWorks = syaryo.get("作業").size();
         System.out.println(getValue(getSMR(syaryo)[0], getSMR(syaryo)[1], true));
-        maxSMR = Integer.valueOf(getValue(getSMR(syaryo)[0], getSMR(syaryo)[1], true).get(getValue(getSMR(syaryo)[0], getSMR(syaryo)[1], true).size()-1));
+        maxSMR[0] = Integer.valueOf(getValue(getSMR(syaryo)[0], "-1", true).get(getValue(getSMR(syaryo)[0], "-1", true).size()-1));
+        maxSMR[1] = Integer.valueOf(getValue(getSMR(syaryo)[0], getSMR(syaryo)[1], true).get(getValue(getSMR(syaryo)[0], getSMR(syaryo)[1], true).size()-1));
         
         //Life
         lifestart = syaryo.get("新車").keySet().stream().findFirst().get();
@@ -103,9 +104,18 @@ public class SyaryoAnalizer {
     }
     
     public List<String> getValue(String key, String index, Boolean sorted){
+        //例外処理1
+        if(syaryo.get(key) == null)
+            return Arrays.asList(new String[]{"NaN", "NaN"});
+        
+        if(index.equals("-1")){
+            List list = syaryo.get(key).keySet().stream().collect(Collectors.toList());
+            return list;
+        }
+        
         int idx = SyaryoObjectElementsIndex.getInstance().getIndex(key).indexOf(index);
         
-        //例外処理
+        //例外処理2
         if(idx == -1)
             return Arrays.asList(new String[]{"NaN", "NaN"});
         
@@ -149,7 +159,7 @@ public class SyaryoAnalizer {
         sb.append(" numOrders = "+numOrders+"\n");
         sb.append(" numParts = "+numParts+"\n");
         sb.append(" numWorks = "+numWorks+"\n");
-        sb.append(" maxSMR = "+maxSMR+"\n");
+        sb.append(" maxSMR = "+Arrays.asList(maxSMR)+"\n");
         return sb.toString();
     }
     
