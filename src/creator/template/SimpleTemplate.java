@@ -54,6 +54,10 @@ public class SimpleTemplate {
         return validate.get(kisy+"-"+kiban);
     }
     
+    public static void removeValidate(){
+        validate = new HashMap();
+    }
+    
     public void setting(){
         validate.put(getShortName(), getName());
     }

@@ -36,7 +36,7 @@ public class SyaryoDataSummary {
         if(!(new File(outpath)).exists())
             (new File(outpath)).mkdirs();
         
-        String filename = path + "syaryo_obj_" + kisy + ".bz2";
+        String filename = path + "syaryo_obj_" + kisy + "_form.bz2";
         Map<String, SyaryoObject4> syaryoMap = new SyaryoToZip3().read(filename);
         
         //Syaryo Data Check

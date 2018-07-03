@@ -205,7 +205,8 @@ public class SyaryoObjectFormatting {
             if (Integer.valueOf(date) < Integer.valueOf(pdate)) {
                 map.put(pdate, product.get(date));
                 System.out.println(currentKey + ":生産-" + pdate + " 異常:" + date);
-            }
+            }else
+                map.put(date, product.get(date));
         } else {
             map.put(date, product.get(date));
         }
@@ -810,15 +811,10 @@ public class SyaryoObjectFormatting {
                     continue;
                 }
             } catch (NumberFormatException | StringIndexOutOfBoundsException se) {
-                if(key.equals("SMR")){
-                    System.out.println(key+":");
-                    map.keySet().stream().forEach(System.out::println);
-                    se.printStackTrace();
-                }
                 continue;
             }
 
-            System.out.println(currentKey + ":" + key + " - " + remove);
+            //System.out.println(currentKey + ":" + key + " - " + remove);
             for (Object removeDate : remove) {
                 map.remove(removeDate.toString());
             }
