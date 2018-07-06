@@ -31,7 +31,7 @@ public class SyaryoObjectFormatting {
     private static String KISY = "PC138US";
     private static String INDEXPATH = KomatsuDataParameter.SHUFFLE_FORMAT_PATH;
     private static String OBJPATH = KomatsuDataParameter.OBJECT_PATH;
-    private static String HONSY_INDEXPATH = KomatsuDataParameter.CUSTOMER_INDEX_PATH;
+    private static String HONSY_INDEXPATH = KomatsuDataParameter.HONSYA_INDEX_PATH;
     private static String PRODUCT_INDEXPATH = KomatsuDataParameter.PRODUCT_INDEXPATH;
     private static Map<String, List> dataIndex;
 
@@ -314,7 +314,7 @@ public class SyaryoObjectFormatting {
                 }
             }
         }
-
+       
         return map;
     }
 

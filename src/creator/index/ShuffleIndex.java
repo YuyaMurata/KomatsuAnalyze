@@ -26,6 +26,7 @@ public class ShuffleIndex {
     private static Map createShuffleMap(){
         Map map = new HashMap();
         Map<String, List<String>> layoutMap = TemplateCreate.index();
+        layoutMap.putAll(CustomerIndex.layoutIndex());
         System.out.println(layoutMap);
         
         for(String key : layoutMap.keySet()){

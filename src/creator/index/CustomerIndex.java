@@ -21,13 +21,15 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import json.MapIndexToJSON;
+import param.KomatsuDataParameter;
 
 /**
  *
  * @author ZZ17390
  */
 public class CustomerIndex {
-    private static String INDEX_PATH = "index\\customer_data_index.csv";
+    private static String INDEX_PATH = KomatsuDataParameter.SETTING_GECUSTTDATA_PATH;
+    private static String OUTPATH = KomatsuDataParameter.CUSTOMER_INDEX_PATH;
     private static List<String> codelist = new ArrayList<>();
     
     public static void main(String[] args) {
@@ -65,7 +67,7 @@ public class CustomerIndex {
 
             System.out.println("Total Created CutomerIndex = " + n);
             
-            new MapIndexToJSON().write("customer_data_index.json", customerIndex);
+            new MapIndexToJSON().write(OUTPATH, customerIndex);
         } catch (SQLException sqlex) {
             sqlex.printStackTrace();
         }
@@ -102,7 +104,7 @@ public class CustomerIndex {
     }
     
     //Set Layout Index
-    private static Map index() {
+    public static Map index() {
         try (BufferedReader br = CSVFileReadWrite.readerSJIS(INDEX_PATH)) {
             String line;
             Map index = new HashMap();
@@ -143,5 +145,22 @@ public class CustomerIndex {
             ex.printStackTrace();
         }
         return null;
+    }
+    
+    //Set ShuffleLayout
+    public static Map layoutIndex(){
+        Map<String, List> layoutIndex = index();
+        Map<String, List> index = new HashMap<>();
+        
+        List<String> cust_com = layoutIndex.get("customer_common");
+        List<String> cust = layoutIndex.get("customer");
+        cust.remove("KSYCD");
+        cust.remove("KKYKCD");
+        cust_com = cust_com.stream().filter(s -> !s.contains("JOIN(TO)")).collect(Collectors.toList());
+        
+        cust_com.addAll(cust);
+        index.put("customer", cust_com);
+        
+        return index;
     }
 }

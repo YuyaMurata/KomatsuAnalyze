@@ -30,7 +30,9 @@ public interface KomatsuDataParameter {
     public static String OBJECT_PATH = "syaryo\\";
     public static String SHUFFLE_FORMAT_PATH = "index\\shuffle_format.json";
     public static String SETTING_GETDATA_PATH = "index\\syaryo_data_index.csv";
-    public static String CUSTOMER_INDEX_PATH = "index\\customer_index.json";
+    public static String SETTING_GECUSTTDATA_PATH = "index\\customer_data_index.csv";
+    public static String CUSTOMER_INDEX_PATH = "index\\customer_data_index.json";
+    public static String HONSYA_INDEX_PATH = "index\\honsya_index.json";
     public static String SUMMARY_PATH = "summary\\";
     public static String PRODUCT_SOURCE = "index\\product_201703.csv";
     
@@ -89,6 +91,9 @@ public interface KomatsuDataParameter {
     public static String R_FUNC_PATH = "R\\KMRFunction.R";
     
     //エラー紐付け処理時のデータソース
-    String[] ERR_SOURCE = new String[]{"kom_order", "parts", "work_info", "service"};
-    String ERR_DATAPROCESS_PATH = "error_proc\\";
+    public static String[] ERR_SOURCE = new String[]{"kom_order", "parts", "work_info", "service"};
+    public static String ERR_DATAPROCESS_PATH = "error_proc\\";
+    
+    //認証関連
+    public static String AUTH_PATH = "index\\autholize.json";
 }

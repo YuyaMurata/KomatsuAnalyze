@@ -255,7 +255,7 @@ public class TemplateCreate {
             return map;
         }
 
-        private static String createSQL(String table, List<String> code, String kisy) {
+        public static String createSQL(String table, List<String> code, String kisy) {
             StringBuilder sb = new StringBuilder("select ");
             for (String c : code) {
                 sb.append(c).append(",");
@@ -269,7 +269,7 @@ public class TemplateCreate {
             return sb.toString();
         }
 
-        private static String createSQL(String table, List<String> code, String kisy, String join) {
+        public static String createSQL(String table, List<String> code, String kisy, String join) {
             StringBuilder sb = new StringBuilder("select ");
             sb.append("b.KISY,b.KIBAN,");
             for (String c : code) {
