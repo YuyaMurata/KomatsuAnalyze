@@ -6,17 +6,12 @@
 package check;
 
 import creator.create.TemplateCreate;
-import static creator.create.TemplateCreate.createSQL;
-import static creator.create.TemplateCreate.index;
 import creator.template.SimpleTemplate;
 import db.HiveDB;
 import static db.HiveDB.getConnection;
 import db.field.EQP;
-import db.field.Komtrax;
 import file.CSVFileReadWrite;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -24,11 +19,9 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import json.SyaryoTemplateToJson;
 import param.KomatsuDataParameter;
 
@@ -48,25 +41,25 @@ public class DBCount {
         }
 
         //ALL
-        Map<String, Integer[]> all = null;//allCount();
+        Map<String, Integer[]> all = allCount();
 
         //Komatsu
         Map index = syaryoindex(new SyaryoTemplateToJson());
         Map<String, Integer[]> komatsu = syaryoCount(index, true);
 
-        System.out.println(komatsu);
+        System.out.println(komatsu.keySet());
 
         //Other
         SimpleTemplate.removeValidate();
         index = othersyaryoindex(new SyaryoTemplateToJson());
         Map<String, Integer[]> other = syaryoCount(index, true);
 
-        System.out.println(other);
+        System.out.println(other.keySet());
 
         //Error
         index = syaryoindex(new SyaryoTemplateToJson());
         Map<String, Integer[]> error = syaryoCount(index, false);
-        System.out.println(error);
+        System.out.println(error.keySet());
 
         try (PrintWriter pw = CSVFileReadWrite.writer(OUTPATH + "db_count.csv")) {
             //header
@@ -87,28 +80,20 @@ public class DBCount {
             for (String tb : all.keySet()) {
                 data += "," + all.get(tb)[0];
                 number += "," + all.get(tb)[1];
-            }
-            pw.println(data);
-            pw.println(number);
-
-            for (String tb : all.keySet()) {
                 kdata += "," + komatsu.get(tb)[0];
                 knumber += "," + komatsu.get(tb)[1];
-            }
-            pw.println(kdata);
-            pw.println(knumber);
-
-            for (String tb : all.keySet()) {
                 odata += "," + other.get(tb)[0];
                 onumber += "," + other.get(tb)[1];
-            }
-            pw.println(odata);
-            pw.println(onumber);
-
-            for (String tb : all.keySet()) {
                 edata += "," + error.get(tb)[0];
                 enumber += "," + error.get(tb)[1];
             }
+            
+            pw.println(data);
+            pw.println(number);
+            pw.println(kdata);
+            pw.println(knumber);
+            pw.println(odata);
+            pw.println(onumber);
             pw.println(edata);
             pw.println(enumber);
         }
@@ -117,10 +102,10 @@ public class DBCount {
     }
 
     private static List<String> tableList() {
-        List list = new ArrayList();
+        List list = new ArrayList(TemplateCreate.index().keySet());
 
         //ALL
-        for (HiveDB.TABLE table : HiveDB.TABLE.values()) {
+        /*for (HiveDB.TABLE table : HiveDB.TABLE.values()) {
             if (table.get().equals("komtrax")) {
                 for (Komtrax.TABLE kmtable : Komtrax.TABLE.values()) {
                     list.add(kmtable.get());
@@ -128,8 +113,7 @@ public class DBCount {
             } else {
                 list.add(table.get());
             }
-        }
-
+        }*/
         return list;
     }
 
@@ -189,9 +173,7 @@ public class DBCount {
                 String sql = "select kisy, kiban from " + table;
                 if (code != null) {
                     String join = code.get(code.size() - 1);
-                    if (join.equals("None")) {
-                        sql = createSQL(table, code, "");
-                    } else {
+                    if (!join.equals("None")){
                         sql = createSQL(table, code, "", join);
                         code.add(0, "KISY");
                         code.add(1, "KIBAN");
@@ -218,7 +200,8 @@ public class DBCount {
                     } else {
                         if (name != null) {
                             continue;
-                        }
+                        }else
+                            name = kisy+"-"+kiban;
                     }
 
                     numSyaryo.put(name, true);
@@ -322,5 +305,27 @@ public class DBCount {
         System.out.println("Other Syaryo:" + index.size());
         json.write(file.getAbsolutePath(), index);
         return index;
+    }
+
+    public static String createSQL(String table, List<String> code, String kisy, String join) {
+        StringBuilder sb = new StringBuilder("select ");
+        sb.append("b.KISY,b.KIBAN");
+        sb.append(" from ");
+        sb.append(table).append(" a");
+
+        //JOIN
+        String[] j = join.split(",");
+        sb.append(" join ").append(j[1]).append(" b on (");
+        for (int i = 2; i < j.length; i++) {
+            sb.append("a.").append(j[i]).append("=")
+                .append("b.").append(j[i]).append(" and ");
+        }
+        sb.delete(sb.length() - 5, sb.length()).append(")");
+
+        if (kisy.length() > 0) {
+            sb.append(" where b.kisy='").append(kisy).append("'");
+        }
+
+        return sb.toString();
     }
 }

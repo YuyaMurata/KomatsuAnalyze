@@ -5,6 +5,8 @@
  */
 package creator.create;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import param.KomatsuDataParameter;
 
 /**
@@ -16,6 +18,13 @@ public class AllExecProcess {
     private static String[] kisyList = KomatsuDataParameter.KISY_LIST;
 
     public static void main(String[] args) {
+        
+        //5h後に実行
+        try {
+            Thread.sleep(14400000);
+        } catch (InterruptedException ex) {
+        }
+        
         //String  kisy = "PC138US";
         for (String kisy : kisyList) {
             Long start = System.currentTimeMillis();

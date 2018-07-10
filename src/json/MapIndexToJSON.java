@@ -17,6 +17,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,9 +37,25 @@ public class MapIndexToJSON {
         }
     }
     
-    public Map reader(String filename) {
+    public Map readerSJIS(String filename) {
 		Map<String, String> index;
         try (JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(new FileInputStream(filename), "SJIS")))) {
+
+			Type type = new TypeToken<Map>() {
+			}.getType();
+
+			Gson gson = new Gson();
+			index = gson.fromJson(reader, type);
+		} catch (Exception e) {
+			e.printStackTrace();
+            return null;
+		}
+        
+        return index;
+	}
+    public Map reader(String filename) {
+		Map<String, String> index;
+        try (JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(new FileInputStream(filename))))) {
 
 			Type type = new TypeToken<Map>() {
 			}.getType();

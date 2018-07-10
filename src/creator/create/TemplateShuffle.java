@@ -5,6 +5,7 @@
  */
 package creator.create;
 
+import creator.map.ReadShuffleData;
 import param.KomatsuDataParameter;
 import java.io.File;
 import java.text.DecimalFormat;
@@ -55,7 +56,9 @@ public class TemplateShuffle {
         Map<String, Map<String, List>> map = index();
         SyaryoToZip3 zip = new SyaryoToZip3();
         List<String> syaryoIndex = new ArrayList(new SyaryoTemplateToJson().reader(SINDEXPATH).keySet());
-
+        
+        ReadShuffleData shuffle = new ReadShuffleData(FILEPATH, kisy);
+        
         //抽出する分類名を設定　e.g. 顧客
         for (String key : map.keySet()) {
             //File check
@@ -68,7 +71,7 @@ public class TemplateShuffle {
             System.out.println("Shuffle = " + key);
             Map<String, List> dataFormatMap = map.get(key);
             Map<String, SyaryoObject4> shuffleMap = new TreeMap();
-
+            
             List notRegisterList = new ArrayList();
 
             //抽出するFormatIndexGroupを設定 e.g. as_keiyaku テーブル
@@ -78,48 +81,18 @@ public class TemplateShuffle {
                     System.err.println("Error shuffle format contained NULL!");
                     System.exit(0);
                 }
-
-                //抽出に必要なテーブルリストを取得
-                List<String> readList = getDataFormat.stream()
-                    .filter(s -> s.contains("."))
-                    .map(s -> s.split("\\.")[0])
-                    .distinct()
-                    .collect(Collectors.toList());
-                //上記からファイルを読み込む
-                Map<String, Map<String, SyaryoObject4>> readFile = new HashMap();
-                for (String f : readList) {
-                    if (!(new File(FILEPATH + "syaryo_mid_" + kisy + "_" + f + ".bz2")).exists()) {
-                        continue;
-                    }
-                    readFile.put(f, zip.read(FILEPATH + "syaryo_mid_" + kisy + "_" + f + ".bz2"));
-                }
+                
+                //Set DataList subKeyはセットしない
+                shuffle.setDataList(key, getDataFormat);
+                
                 //例外処理 必要ファイルを読み込めなかったら処理を実行しない
-                if (readFile.size() != readList.size()) {
+                if (shuffle.check())
                     continue;
-                }
 
                 //車両ごとにデータを抽出
                 for (String id : syaryoIndex) {
-                    //読み込むファイルにIDが存在しなければ飛ばす
-                    Boolean flg = false;
-                    String table = "";
-                    for (String f : readFile.keySet()) {
-                        if (readFile.get(f).get(id) == null) {
-                            table += f;
-                            flg = true;
-                        } else {
-                            table += ",exist " + f + ",";
-                        }
-                    }
-                    if (flg) {
-                        notRegisterList.add(id + " : " + table);
+                    if(shuffle.setData(id))
                         continue;
-                    }
-
-                    //ファイルから特定IDのデータ郡を抽出
-                    // readMap = {table : [[TargetID Data1], [TargetID Data2] ...]}
-                    Map<String, List<List>> readMap = idExtractList(id, readFile);
-                    //System.out.println(id + ":" + readMap);
 
                     //Shuffle車両の登録
                     SyaryoObject4 shuffleSyaryo = shuffleMap.get(id);
@@ -134,17 +107,17 @@ public class TemplateShuffle {
                     }
 
                     //データリストへの整形処理
-                    for (int i = 0; i < readMap.get(readMap.keySet().stream().findFirst().get()).size(); i++) {
+                    for (int i = 0; i < shuffle.size(); i++) {
                         //Subkeyの設定
                         String recID = subKey;
                         if (subKey.contains("#")) {
                             String recIDTable = subKey.split("\\.")[0];
                             Integer recIDIDX = Integer.valueOf(subKey.split("#")[1]);
-                            recID = readMap.get(recIDTable).get(i).get(recIDIDX).toString();
+                            recID = shuffle.getSubKey(recIDTable, i, recIDIDX);
                         }
 
                         //車両情報の整形
-                        List update = format(getDataFormat, i, readMap);
+                        List update = format(getDataFormat, i, shuffle);
                         
                         //車両情報を更新
                         if (update != null) {
@@ -156,7 +129,7 @@ public class TemplateShuffle {
                         } else {
                             if (subKey.contains("#")) {
                                 String recIDTable = subKey.split("\\.")[0];
-                                System.out.println("ID=" + shuffleSyaryo.getName() + " 除外データ(" + recIDTable + "):" + readMap.get(recIDTable).get(i));
+                                System.out.println("ID=" + shuffleSyaryo.getName() + " 除外データ(" + recIDTable + "):" + shuffle.getRow(recIDTable,i));
                             } else {
                                 System.out.println("ID=" + shuffleSyaryo.getName() + " 除外データ(" + key + "):" + getDataFormat);
                             }
@@ -168,7 +141,7 @@ public class TemplateShuffle {
                     if (!shuffleSyaryo.get(key).isEmpty()) {
                         shuffleMap.put(shuffleSyaryo.getName(), shuffleSyaryo);
                     } else {
-                        notRegisterList.add(id + " : " + table + "(empty data)");
+                        notRegisterList.add(id + " : " + subKey.split("\\.")[0] + "(empty data)");
                     }
                     shuffleSyaryo.compress(true);
                 }
@@ -195,6 +168,38 @@ public class TemplateShuffle {
         return new MapIndexToJSON().reader(INDEXPATH);
     }
 
+    private static List format(List<String> formatData, int idx, ReadShuffleData shuffle) {
+        List<Map<String, String>> formatList = new ArrayList<>();
+
+        for (String g : formatData) {
+            Map<String, String> getData = check(g);
+            formatList.add(getData);
+        }
+
+        //データ列を進める処理
+        Boolean flg = false;
+        List dataList = new ArrayList();
+        for (Map<String, String> f : formatList) {
+            if (f.get("condition") != null) {
+                flg = comp(f, idx, shuffle, dataList);
+            } else if (f.get("arith") != null) {
+                flg = arith(f, idx, shuffle, dataList);
+            } else if (f.get("data") != null) {
+                flg = data(f, idx, shuffle, dataList);
+            }
+
+            if (flg) {
+                return null;
+            }
+        }
+        
+        //空情報のみ格納されていたときの処理
+        if(!dataList.stream().filter(d -> !d.equals("")).findFirst().isPresent())
+            return null;
+        
+        return dataList;
+    }
+    
     private static Map check(String d) {
         Map cmap = new HashMap();
         //System.out.println(d);
@@ -252,58 +257,6 @@ public class TemplateShuffle {
         return cmap;
     }
 
-    //テンプレートファイルからターゲット車両のリストデータを抽出する
-    private static Map<String, List<List>> idExtractList(String target, Map<String, Map<String, SyaryoObject4>> readFile) {
-        Map extract = new HashMap();
-        for (String table : readFile.keySet()) {
-            List<List<String>> data = new ArrayList<>();
-
-            SyaryoObject4 targetSyaryo = readFile.get(table).get(target);
-            targetSyaryo.decompress();
-
-            for (Object list : targetSyaryo.map.values()) {
-                data.add((List<String>) list);
-            }
-
-            targetSyaryo.compress(false);
-            extract.put(table, data);
-        }
-
-        return extract;
-    }
-
-    private static List format(List<String> formatData, int idx, Map<String, List<List>> readMap) {
-        List<Map<String, String>> formatList = new ArrayList<>();
-
-        for (String g : formatData) {
-            Map<String, String> getData = check(g);
-            formatList.add(getData);
-        }
-
-        //データ列を進める処理
-        Boolean flg = false;
-        List dataList = new ArrayList();
-        for (Map<String, String> f : formatList) {
-            if (f.get("condition") != null) {
-                flg = comp(f, idx, readMap, dataList);
-            } else if (f.get("arith") != null) {
-                flg = arith(f, idx, readMap, dataList);
-            } else if (f.get("data") != null) {
-                flg = data(f, idx, readMap, dataList);
-            }
-
-            if (flg) {
-                return null;
-            }
-        }
-        
-        //空情報のみ格納されていたときの処理
-        if(!dataList.stream().filter(d -> !d.equals("")).findFirst().isPresent())
-            return null;
-        
-        return dataList;
-    }
-
     private static DecimalFormat df = new DecimalFormat("0000");
 
     private static String dup(String key, Map map) {
@@ -316,12 +269,14 @@ public class TemplateShuffle {
     }
 
     //Adding Simple Formtat : key="data"
-    private static Boolean data(Map<String, String> f, int row, Map<String, List<List>> readMap, List dataList) {
+    private static Boolean data(Map<String, String> f, int row, ReadShuffleData shuffle, List dataList) {
         //データ抽出
         String table = null;
+        String elm = null;
         Integer col = null;
         if (f.get("data").contains("#")) {
             table = f.get("data").split("\\.")[0];
+            elm = f.get("data").split("\\.")[1].split("#")[0];
             col = Integer.valueOf(f.get("data").split("#")[1]);
         }
 
@@ -329,7 +284,7 @@ public class TemplateShuffle {
         if (col != null) {
             //System.out.println(f);
             //System.out.println(readMap.get(table).get(row));
-            dataList.add(readMap.get(table).get(row).get(col));
+            dataList.add(shuffle.getData(table, row, elm, col));
         } else {
             dataList.add(f.get("data"));
         }
@@ -338,7 +293,7 @@ public class TemplateShuffle {
     }
 
     //Adding Arithmatic Data : key="arith"
-    private static Boolean arith(Map<String, String> f, int row, Map<String, List<List>> readMap, List dataList) {
+    private static Boolean arith(Map<String, String> f, int row, ReadShuffleData shuffle, List dataList) {
         //key="arith"
         String table = null;
         if (f.get("v1").contains("#")) {
@@ -346,36 +301,40 @@ public class TemplateShuffle {
         }
 
         //計算結果を車両情報に追加
-        dataList.add(calc(f.get("arith"), f.get("v1"), f.get("v2"), readMap.get(table).get(row)).toString());
+        dataList.add(calc(f.get("arith"), f.get("v1"), f.get("v2"), shuffle.getRow(table, row)).toString());
 
         return false;
     }
 
-    private static Boolean comp(Map<String, String> f, int row, Map<String, List<List>> readMap, List dataList) {
+    private static Boolean comp(Map<String, String> f, int row, ReadShuffleData shuffle, List dataList) {
         String table = null;
+        String elm = null;
         Integer col = null;
         if (f.get("c1").contains("#")) {
             table = f.get("c1").split("\\.")[0];
+            elm = f.get("c1").split("\\.")[1].split("#")[0];
             col = Integer.valueOf(f.get("c1").split("#")[1]);
         }
 
-        if (!compare(f.get("condition"), f.get("c1"), f.get("c2"), readMap.get(table).get(row))) {
+        if (!compare(f.get("condition"), f.get("c1"), f.get("c2"), shuffle.getRow(table, row))) {
             //データ除外
             if (f.get("data") == null) {
                 return true;
             }else if(f.get("dataelse") != null){
                 f.put("data", f.get("dataelse"));
                 table = f.get("data").split("\\.")[0];
+                elm = f.get("data").split("\\.")[1].split("#")[0];
                 col = Integer.valueOf(f.get("data").split("#")[1]);
             }
         } else {
             if (f.get("data") != null) {
                 table = f.get("data").split("\\.")[0];
+                elm = f.get("c1").split("\\.")[1].split("#")[0];
                 col = Integer.valueOf(f.get("data").split("#")[1]);
             }
         }
         if (f.get("data") != null) {
-            dataList.add(readMap.get(table).get(row).get(col));
+            dataList.add(shuffle.getData(table, row, elm, col));
         }
 
         return false;
@@ -387,6 +346,7 @@ public class TemplateShuffle {
             v2 = ref.get(Integer.valueOf(v2.split("#")[1]));
         }
 
+        try{
         switch (op) {
             case "+":
                 return Integer.valueOf(v1) + Integer.valueOf(v2);
@@ -403,6 +363,11 @@ public class TemplateShuffle {
             default:
                 System.out.println("Arithmatic Error! " + op);
                 return null;
+        }}catch(Exception e){
+            e.printStackTrace();
+            System.out.println(v1+" "+op+" "+v2 + ":" +ref);
+            System.exit(0);
+            return null;
         }
     }
 
