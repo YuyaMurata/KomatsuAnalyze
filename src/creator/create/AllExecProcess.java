@@ -19,12 +19,6 @@ public class AllExecProcess {
 
     public static void main(String[] args) {
         
-        //5h後に実行
-        try {
-            Thread.sleep(14400000);
-        } catch (InterruptedException ex) {
-        }
-        
         //String  kisy = "PC138US";
         for (String kisy : kisyList) {
             Long start = System.currentTimeMillis();
