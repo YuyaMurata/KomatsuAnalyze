@@ -26,8 +26,8 @@ public class GoogleMapTest {
     public static void main(String[] args) throws ApiException, InterruptedException, IOException, IOException {
         Map map = new MapIndexToJSON().reader(KomatsuDataParameter.AUTH_PATH);
         System.out.println(map);
-        System.setProperty("https.proxyHost", ((List)map.get("proxy")).get(0).toString());
-        System.setProperty("https.proxyPort", ((List)map.get("proxy")).get(1).toString());
+        //System.setProperty("https.proxyHost", ((List)map.get("proxy")).get(0).toString());
+        //System.setProperty("https.proxyPort", ((List)map.get("proxy")).get(1).toString());
         
         GeoApiContext context = new GeoApiContext.Builder()
             .apiKey(map.get("apikey").toString())
