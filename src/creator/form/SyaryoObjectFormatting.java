@@ -28,7 +28,7 @@ import program.r.R;
  */
 public class SyaryoObjectFormatting {
 
-    private static String KISY = "PC138US";
+    private static String KISY = "PC200";
     private static String INDEXPATH = KomatsuDataParameter.SHUFFLE_FORMAT_PATH;
     private static String OBJPATH = KomatsuDataParameter.OBJECT_PATH;
     private static String HONSY_INDEXPATH = KomatsuDataParameter.HONSYA_INDEX_PATH;
