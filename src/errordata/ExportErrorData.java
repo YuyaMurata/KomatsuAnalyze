@@ -52,6 +52,8 @@ public class ExportErrorData {
         
         //SyaryoIndex
         Map allsyaryo = syaryoindex(json);
+        Map othersyaryo = othersyaryoindex(json);
+        comparisonSyaryo(allsyaryo, othersyaryo);
         
         for (String errsource : ERR_SOURCE) {
             String filename = OUTPATH + errsource + "_error.json";
@@ -193,6 +195,58 @@ public class ExportErrorData {
         }
         
         return map;
+    }
+    
+    private static void comparisonSyaryo(Map all, Map other){
+        System.out.println("Comparison all and others.");
+        System.out.println("KOMPAS登録名,工場登録名");
+        for(Object name : all.keySet()){
+            SimpleTemplate simple = (SimpleTemplate) all.get(name);
+            String n = SimpleTemplate.check(simple.getShortName().split("-")[0], simple.getShortName().split("-")[1]);
+            if(other.get(n) != null)
+                System.out.println(n+","+name);
+        }
+    }
+    
+    //Set Other Corp. Syaryo Index
+    private static Map othersyaryoindex(SyaryoTemplateToJson json) {
+        Map index = new HashMap();
+        File file = new File(OUTPATH + "othersyaryo_index.json");
+        if (file.exists()) {
+            return json.reader(file.getAbsolutePath());
+        }
+
+        try (Connection con = HiveDB.getConnection()) {
+            Statement stmt = con.createStatement();
+            String temp_sql = "select e.kisy, e.typ, e.syhk, e.kiban "
+                + "from SYARYO e where MAKR_KBN not rlike '^A.*'";
+            System.out.println("Running: " + temp_sql);
+            ResultSet res = stmt.executeQuery(temp_sql);
+
+            int n = 0;
+            while (res.next()) {
+                n++;
+
+                //Name
+                String skisy = res.getString(EQP.Syaryo.KISY.get());
+                String type = res.getString(EQP.Syaryo.TYP.get());
+                String s_type = res.getString(EQP.Syaryo.SYHK.get());
+                String kiban = res.getString(EQP.Syaryo.KIBAN.get());
+
+                //SimpleTemplate
+                SimpleTemplate temp = new SimpleTemplate(skisy, type, s_type, kiban);
+                index.put(temp.getName(), temp);
+
+                if (n % 1000 == 0) {
+                    System.out.println(n + " 台処理");
+                }
+            }
+        } catch (SQLException ex) {
+        }
+
+        System.out.println("Other Syaryo:" + index.size());
+        json.write(file.getAbsolutePath(), index);
+        return index;
     }
 
     //SQL

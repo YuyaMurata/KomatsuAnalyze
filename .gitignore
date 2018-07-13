@@ -16,4 +16,5 @@
 *.db
 *.gz
 *.bz2
+*.7z
 project.properties
