@@ -306,6 +306,8 @@ public class EasyViewerFXMLController implements Initializable {
     private void graphMenuSettings() {
         graph_menu.getItems().add("SMR");
         graph_menu.getItems().add("KOMTRAX_SMR");
+        graph_menu.getItems().add("KOMTRAX_ERROR");
+        graph_menu.getItems().add("KOMTRAX_FUEL_CONSUME");
     }
 
     @FXML
@@ -368,7 +370,6 @@ public class EasyViewerFXMLController implements Initializable {
     }
 
     ButtonService service = new ButtonService();
-
     @FXML
     private void graphAction(ActionEvent event) {
         String v = graph_menu.getValue();

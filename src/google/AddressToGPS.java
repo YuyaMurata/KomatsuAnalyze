@@ -13,8 +13,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import json.MapIndexToJSON;
 import param.KomatsuDataParameter;
 
@@ -32,8 +30,8 @@ public class AddressToGPS {
         System.out.println(map);
 
         //Proxy
-        System.setProperty("https.proxyHost", ((List) map.get("proxy")).get(0).toString());
-        System.setProperty("https.proxyPort", ((List) map.get("proxy")).get(1).toString());
+        //System.setProperty("https.proxyHost", ((List) map.get("proxy")).get(0).toString());
+        //System.setProperty("https.proxyPort", ((List) map.get("proxy")).get(1).toString());
 
         context = new GeoApiContext.Builder()
             .apiKey(map.get("apikey").toString())

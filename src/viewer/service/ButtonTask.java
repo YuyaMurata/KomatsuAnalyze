@@ -31,7 +31,7 @@ public class ButtonTask extends Task<Void>{
         if(map == null)
             return null;
         
-        new TimeSpreadChart().graph(ButtonService.smenu, "Date,SMR", ButtonService.syaryo);
+        new TimeSpreadChart().graph(ButtonService.smenu, ButtonService.syaryo);
         
         ButtonService.syaryo.compress(true);
             

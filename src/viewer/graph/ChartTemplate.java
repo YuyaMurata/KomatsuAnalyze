@@ -20,7 +20,6 @@ import program.py.PythonCommand;
  */
 public abstract class ChartTemplate{
     public String graphProgramPath;
-    public String headers;
     public ChartTemplate() {
     }
     
@@ -28,7 +27,8 @@ public abstract class ChartTemplate{
         //CSVFile 生成
         try(PrintWriter csv = CSVFileReadWrite.writer(KomatsuDataParameter.GRAPH_TEMP_FILE)){
             csv.println("Syaryo,"+name);
-            csv.println(headers);
+            csv.println("Date,"+String.join(",", map.get("header")));
+            map.remove("header");
             int i=0;
             for(String date : map.keySet()){
                 List values = map.get(date);
@@ -49,11 +49,9 @@ public abstract class ChartTemplate{
         this.graphProgramPath = path;
     }
     
-    public abstract Map<String, List> graphFile(String select, String headers, SyaryoObject4 syaryo);
-    
-    public void graph(String select, String headers, SyaryoObject4 syaryo){
-        this.headers = headers;
-        Map<String, List> data = graphFile(select, headers, syaryo);
+    public abstract Map<String, List> graphFile(String select, SyaryoObject4 syaryo);  
+    public void graph(String select, SyaryoObject4 syaryo){
+        Map<String, List> data = graphFile(select, syaryo);
         if(data != null)
             chart(syaryo.getName(), data);
     }
