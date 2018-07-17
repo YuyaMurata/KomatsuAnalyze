@@ -11,7 +11,6 @@ import com.google.maps.errors.ApiException;
 import com.google.maps.model.GeocodingResult;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import json.MapIndexToJSON;
 import param.KomatsuDataParameter;
