@@ -36,7 +36,7 @@ public class SyaryoDataSummary {
         if(!(new File(outpath)).exists())
             (new File(outpath)).mkdirs();
         
-        String filename = path + "syaryo_obj_" + kisy + "_form.bz2";
+        String filename = path + "syaryo_obj_" + kisy + ".bz2";
         Map<String, SyaryoObject4> syaryoMap = new SyaryoToZip3().read(filename);
         
         //Syaryo Data Check
@@ -76,7 +76,7 @@ public class SyaryoDataSummary {
         }
         
         //Summary Output
-        try (PrintWriter pw = CSVFileReadWrite.writer(outpath + kisy + "_summary.csv")) {
+        try (PrintWriter pw = CSVFileReadWrite.writer(outpath + kisy + "_summary_raw.csv")) {
             pw.println(kisy+",:,"+syaryoMap.size());
             
             List head = new ArrayList();head.add("ヘッダ");
@@ -98,6 +98,6 @@ public class SyaryoDataSummary {
         //1Sample SyaryoObject
         Map map = new HashMap();
         map.put(sample.name, sample);
-        new SyaryoObjToJson().write(outpath + kisy + "_sample.json", map);
+        new SyaryoObjToJson().write(outpath + kisy + "_sample_raw.json", map);
     }
 }
