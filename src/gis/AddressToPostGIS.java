@@ -32,5 +32,7 @@ public class AddressToPostGIS {
             city = address.substring(0, address.indexOf("区"));
         String oaza = "";
         String block = "";
+        
+        return null;
     }
 }
