@@ -29,7 +29,7 @@ public class PostgresTest {
             // 接続
             //-----------------
             Class.forName("org.postgresql.Driver");
-            connection = DriverManager.getConnection("jdbc:postgresql://192.168.1.15:5432/gis", // "jdbc:postgresql://[場所(Domain)]:[ポート番号]/[DB名]"
+            connection = DriverManager.getConnection("jdbc:postgresql://192.168.1.12:5432/gis", // "jdbc:postgresql://[場所(Domain)]:[ポート番号]/[DB名]"
                     "kaeru", // ログインロール
                     "11m35584"); // パスワード
             statement = connection.createStatement();
