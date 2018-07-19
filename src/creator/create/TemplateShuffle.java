@@ -353,7 +353,7 @@ public class TemplateShuffle {
             case "-":
                 return Integer.valueOf(v1) - Integer.valueOf(v2);
             case "/":
-                return Integer.valueOf(v1) / Integer.valueOf(v2);
+                return Double.valueOf(v1) / Double.valueOf(v2);
             case "|":
                 if (v1.equals("Y") || v2.equals("Y")) {
                     return 1;
