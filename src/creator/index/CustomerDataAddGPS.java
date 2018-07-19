@@ -5,6 +5,7 @@
  */
 package creator.index;
 
+import gis.AddressToPostGIS;
 import google.AddressToGPS;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,19 +22,24 @@ public class CustomerDataAddGPS {
         int pref = 3;
         int address1 = 4;
         
-        AddressToGPS adgps = AddressToGPS.getInstance();
+        //AddressToGPS adgps = AddressToGPS.getInstance();
+        AddressToPostGIS adgps = AddressToPostGIS.getInstance();
         
         Map<String, String> custMap = new MapIndexToJSON().reader(filename);
         Map<String, String> map = new HashMap<>();
+        int n = 0;
         for(String id : custMap.keySet()){
             String[] data = custMap.get(id).split(",");
             String address = data[pref]+data[address1];
             
-            //Double[] gps = adgps.getGPS(address);
-            //String gpsstr = ","+gps[0]+","+gps[1];
-            
-            //System.out.println(address+gpsstr);
-            map.put(address, "");
+            Double[] gps = adgps.getGPS(data[pref], data[address1]);
+            if(gps == null){
+                continue;
+            }
+            String gpsstr = gps[0]+","+gps[1];
+            n++;
+            System.out.println(n+":"+address+","+gpsstr);
+            map.put(address, gpsstr);
         }
         
         map.keySet().stream().forEach(System.out::println);

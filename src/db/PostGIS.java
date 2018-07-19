@@ -43,7 +43,7 @@ public class PostGIS {
         }
         
         try {
-            return DriverManager.getConnection(PostGIS.DB.URL.get());
+            return DriverManager.getConnection(PostGIS.DB.URL.get(), "kaeru", "11m35584");
         } catch (SQLException ex) {
             ex.printStackTrace();
             System.exit(1);
