@@ -750,7 +750,7 @@ public class SyaryoObjectFormatting {
         }
 
         //異常データの排除
-        map = rejectSMRData(map, smridx);
+        //map = rejectSMRData(map, smridx);
 
         return map;
     }
@@ -890,6 +890,7 @@ public class SyaryoObjectFormatting {
     }
 
     private static Map rejectSMRData(Map<String, List<String>> smr, int idx) {
+        
         //MA
         List smrList = smr.values().stream()
             .map(s -> s.get(idx)).collect(Collectors.toList());

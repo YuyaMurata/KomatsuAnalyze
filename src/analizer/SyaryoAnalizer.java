@@ -127,8 +127,8 @@ public class SyaryoAnalizer {
         return list;
     }
     
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-    public Integer age(String start, String stop){
+    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+    public static Integer age(String start, String stop){
         try {
             Date st = sdf.parse(start);
             Date sp = sdf.parse(stop);
