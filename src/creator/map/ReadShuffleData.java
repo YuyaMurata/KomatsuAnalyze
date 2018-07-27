@@ -23,7 +23,6 @@ import param.KomatsuDataParameter;
  * @author ZZ17390
  */
 public class ReadShuffleData {
-    private static List<String> notRegisterList = new ArrayList<>();
     private Map<String, List<String>> custMap;
     private static SyaryoToZip3 zip = new SyaryoToZip3();
     private Map<String, Map<String, SyaryoObject4>> readFile;
@@ -66,11 +65,14 @@ public class ReadShuffleData {
             .map(s -> s.split("\\.")[0])
             .distinct()
             .collect(Collectors.toList());
+        
+        System.out.println(key+":"+getDataFormat);
 
         //上記からファイルを読み込む
         readFile = new HashMap();
         for (String f : readList) {
             if (!(new File(path + "syaryo_mid_" + kisy + "_" + f + ".bz2")).exists()) {
+                System.out.println("Not Found : " + path + "syaryo_mid_" + kisy + "_" + f + ".bz2");
                 continue;
             }
             readFile.put(f, zip.read(path + "syaryo_mid_" + kisy + "_" + f + ".bz2"));
@@ -79,7 +81,8 @@ public class ReadShuffleData {
         //例外処理 必要ファイルを読み込めなかったら処理を実行しない
         if (readFile.size() != readList.size()) {
             fileCheck = false;
-        }
+        }else
+            fileCheck=true;
     }
     
     String[] cid = new String[2];
@@ -163,9 +166,6 @@ public class ReadShuffleData {
             } else {
                 table += ",exist " + f + ",";
             }
-        }
-        if (flg) {
-            notRegisterList.add(id + " : " + table);
         }
         
         return flg;

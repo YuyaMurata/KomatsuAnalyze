@@ -86,9 +86,10 @@ public class TemplateShuffle {
                 shuffle.setDataList(key, getDataFormat);
                 
                 //例外処理 必要ファイルを読み込めなかったら処理を実行しない
-                if (shuffle.check())
+                if (shuffle.check()){
                     continue;
-
+                }
+                
                 //車両ごとにデータを抽出
                 for (String id : syaryoIndex) {
                     if(shuffle.setData(id))

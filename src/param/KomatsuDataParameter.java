@@ -60,6 +60,11 @@ public interface KomatsuDataParameter {
         "コマツケア",
         "コマツケア前受け金",
         "オールサポート",
+        "KOMTRAX_ACT_DATA",
+        "KOMTRAX_SMR",
+        "KOMTRAX_GPS",
+        "KOMTRAX_FUEL_CONSUME",
+        "KOMTRAX_ERROR",
         "KOMTRAX_ATT",
         "KOMTRAX_DIG",
         "KOMTRAX_HOIST",
@@ -68,11 +73,6 @@ public interface KomatsuDataParameter {
         "KOMTRAX_PUMP",
         "KOMTRAX_RUNNING",
         "KOMTRAX_ODOMETER",
-        "KOMTRAX_SMR",
-        "KOMTRAX_ACT_DATA",
-        "KOMTRAX_GPS",
-        "KOMTRAX_FUEL_CONSUME",
-        "KOMTRAX_ERROR",
         "廃車",
         "経歴"
     });

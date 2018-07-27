@@ -233,7 +233,7 @@ public class DBCount {
         try (Connection con = HiveDB.getConnection()) {
             Statement stmt = con.createStatement();
             String temp_sql = "select e.kisy, e.typ, e.syhk, e.kiban "
-                + "from EQP_SYARYO e where CNTRY_CD='JP'";
+                + "from EQP_SYARYO e";
 
             System.out.println("Running: " + temp_sql);
             ResultSet res = stmt.executeQuery(temp_sql);

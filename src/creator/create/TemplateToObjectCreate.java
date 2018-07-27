@@ -30,9 +30,8 @@ public class TemplateToObjectCreate {
     //private static String outpath = "middle\\"+kisy+"\\obj\\";
 
     public static void main(String[] args) {
-        for (String kisy : kisyList) {
-            create(kisy);
-        }
+        String kisy = "PC138US";
+        create(kisy);
     }
 
     public static void create(String kisy) {
