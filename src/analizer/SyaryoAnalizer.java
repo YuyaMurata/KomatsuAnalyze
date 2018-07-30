@@ -94,7 +94,7 @@ public class SyaryoAnalizer {
         syaryo.compress(true);
     }
     
-    public String[] getSMR(SyaryoObject4 syaryo){
+    private String[] getSMR(SyaryoObject4 syaryo){
         if(syaryo.get("KOMTRAX_SMR") != null)
             return new String[]{"KOMTRAX_SMR", "SMR_VALUE"};
         else if(syaryo.get("SMR") != null)

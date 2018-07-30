@@ -6,11 +6,15 @@
 package google.map;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import json.MapIndexToJSON;
+import param.KomatsuDataParameter;
 
 /**
  *
@@ -21,7 +25,7 @@ public class GoogleMapFXML extends Application {
 	@Override
 	public void start(Stage stage) throws IOException {
 		Parent root = FXMLLoader.load(getClass().getResource("/google/map/GoogleMapFXML.fxml"));
-
+        
 		Scene scene = new Scene(root);
 
 		stage.setTitle("GPS View");

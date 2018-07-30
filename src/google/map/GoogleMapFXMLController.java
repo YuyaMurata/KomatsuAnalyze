@@ -30,10 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.ResourceBundle;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.value.ObservableValue;
@@ -46,8 +42,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
-import json.JsonToSyaryoObj;
-import obj.SyaryoObject1;
+import json.MapIndexToJSON;
+import json.SyaryoToZip3;
+import obj.SyaryoObject4;
+import param.KomatsuDataParameter;
 
 /**
  * FXML Controller class
@@ -61,6 +59,8 @@ public class GoogleMapFXMLController implements Initializable {
 
 	private GoogleMap map;
 
+    private String PATH = KomatsuDataParameter.SYARYOOBJECT_FDPATH;
+    private String KISY = "PC138US";
 	private DecimalFormat formatter = new DecimalFormat("###.00000");
 	private DecimalFormat dateFormatter = new DecimalFormat("00");
 
@@ -77,6 +77,14 @@ public class GoogleMapFXMLController implements Initializable {
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
 		// TODO
+        Map map = new MapIndexToJSON().reader(KomatsuDataParameter.AUTH_PATH);
+        System.out.println(map);
+
+        //Proxy
+        System.setProperty("https.proxyHost", ((List) map.get("proxy")).get(0).toString());
+        System.setProperty("https.proxyPort", ((List) map.get("proxy")).get(1).toString());
+        //mapView = new GoogleMapView("en-US", (String) map.get("apikey"));
+        
 		mapView.addMapInializedListener(() -> configureMap());
 		dateSlider.valueProperty().addListener((ObservableValue<? extends Number> observ, Number oldVal, Number newVal) -> {
 			dateScroll(oldVal.doubleValue(), newVal.doubleValue());
@@ -85,7 +93,7 @@ public class GoogleMapFXMLController implements Initializable {
 
 	protected void configureMap() {
 		MapOptions mapOptions = new MapOptions();
-
+        
 		//Create Map
 		mapOptions.center(new LatLong(35.670889, 139.742127))
 			.mapType(MapTypeIdEnum.ROADMAP)
@@ -93,19 +101,19 @@ public class GoogleMapFXMLController implements Initializable {
 		map = mapView.createMap(mapOptions, false);
 
 		//Get Syaryo Data
-		Map<String, SyaryoObject1> syaryoMap = new JsonToSyaryoObj().reader("syaryo_obj_WA470_form.json");
-
-		String rule = "WA470-7-10180";
-		List<SyaryoObject1> syaryoList = syaryoMap.values().stream()
-			.filter(s -> s.getName().contains(rule))
-			.filter(s -> s.getGPS() != null)
-			.collect(Collectors.toList());
-		System.out.println("GPS車両 : " + syaryoList.size());
-
-		//allPoint(syaryoList);
-		timePoint(syaryoMap.get(rule));
-
+		Map<String, SyaryoObject4> syaryoMap = new SyaryoToZip3().read(PATH+"syaryo_obj_"+KISY+"_form.bz2");
+        
+        SyaryoObject4 syaryo = syaryoMap.get("PC138US-10-40651");
+        syaryo.decompress();
+        Map<String, List> gps = syaryo.get("KOMTRAX_GPS");
+		System.out.println("GPS車両 : " + gps.size());
+        //syaryo.compress(Boolean.FALSE);
+        
+		timePoint(syaryo.name, gps);
+        
 		sliderInitialize();
+        
+        System.out.println("start");
 	}
 
 	public void sliderInitialize() {
@@ -131,18 +139,17 @@ public class GoogleMapFXMLController implements Initializable {
 	}
 
 	MapPathData data;
+	public void timePoint(String name, Map<String, List> gps) {
+		System.out.println(name + ":" + gps.size());
+		data = new MapPathData(name);
 
-	public void timePoint(SyaryoObject1 syaryo) {
-		System.out.println(syaryo.getName() + ":" + syaryo.getGPS().size());
-		data = new MapPathData(syaryo.getName());
-
-		for (String gpsDate : syaryo.getGPS().keySet()) {
+		for (String gpsDate : gps.keySet()) {
 			if (gpsDate.contains("#")) {
 				continue;
 			}
-			String ymd = gpsDate.split(" ")[0].replace("/", "").substring(0, 8);
-
-			data.addData(Integer.valueOf(ymd), (String) syaryo.getGPS().get(gpsDate).get(0));
+			//String ymd = gpsDate.split(" ")[0].replace("/", "").substring(0, 8);
+            System.out.println(gpsDate+"-"+gps.get(gpsDate));
+			data.addData(Integer.valueOf(gpsDate), gps.get(gpsDate));
 		}
 
 	}

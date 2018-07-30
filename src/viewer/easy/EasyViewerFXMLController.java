@@ -283,24 +283,7 @@ public class EasyViewerFXMLController implements Initializable {
     }
 
     private void dataFilterSettings(String file) {
-        List<String> list = new ArrayList<>();
-        try (BufferedReader br = CSVFileReadWrite.reader(file)) {
-            //header
-            String line = br.readLine();
-
-            while ((line = br.readLine()) != null) {
-                if (line.contains("ALL")) {
-                    list.add(line);
-                } else {
-                    list.add(line);
-                }
-            }
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-
-        datafilter.getItems().addAll(list);
+        datafilter.getItems().addAll(KomatsuDataParameter.DATA_ORDER);
     }
 
     private void graphMenuSettings() {
@@ -308,6 +291,7 @@ public class EasyViewerFXMLController implements Initializable {
         graph_menu.getItems().add("KOMTRAX_SMR");
         graph_menu.getItems().add("KOMTRAX_ERROR");
         graph_menu.getItems().add("KOMTRAX_FUEL_CONSUME");
+        graph_menu.getItems().add("KOMTRAX_GPS");
     }
 
     @FXML

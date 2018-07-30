@@ -41,11 +41,13 @@ public class MapPathData {
         return "#000000";
     }
     
-    public void addData(Integer date, String latlong){
-        Double lat = compValue(latlong.split("_")[0]);
-        Double lon = compValue(latlong.split("_")[1]);
-        gps.put(date, gpsData.size()-1);
+    public void addData(Integer date, List<String> latlong){
+        Double lat = compValue(latlong.get(0));
+        Double lon = compValue(latlong.get(1));
+        LatLong ll = new LatLong(lat, lon);
+        System.out.println(ll.getLatitude());
         gpsData.add(new LatLong(lat, lon));
+        gps.put(date, gpsData.size()-1); 
     }
     
     public Integer first(){
