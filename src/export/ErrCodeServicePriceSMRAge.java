@@ -46,6 +46,7 @@ public class ErrCodeServicePriceSMRAge {
         
         //データ出力
         try(PrintWriter pw = CSVFileReadWrite.writer(filename)){
+            pw.println("SID,");
             for(SyaryoObject4 syaryo : analyzeSyaryo){
                 SyaryoAnalizer analyzer = new SyaryoAnalizer(syaryo);
                 

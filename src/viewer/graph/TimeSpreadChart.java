@@ -35,7 +35,7 @@ public class TimeSpreadChart extends ChartTemplate {
         for (String date : syaryo.get("SMR").keySet()) {
             List l = new ArrayList();
             l.add(syaryo.get("SMR").get(date).get(smridx));
-            data.put(date.split("#")[0], l);
+            data.put(date, l);
         }
 
         return data;
@@ -53,7 +53,7 @@ public class TimeSpreadChart extends ChartTemplate {
         for (String date : syaryo.get("KOMTRAX_SMR").keySet()) {
             List l = new ArrayList();
             l.add(syaryo.get("KOMTRAX_SMR").get(date).get(smridx));
-            data.put(date.split(" ")[0].replace("/", ""), l);
+            data.put(date, l);
         }
 
         return data;
@@ -71,7 +71,7 @@ public class TimeSpreadChart extends ChartTemplate {
         for (String date : syaryo.get("KOMTRAX_FUEL_CONSUME").keySet()) {
             List l = new ArrayList();
             l.add(syaryo.get("KOMTRAX_FUEL_CONSUME").get(date).get(fuelidx));
-            data.put(date.split(" ")[0].replace("/", ""), l);
+            data.put(date, l);
         }
 
         return data;
@@ -109,7 +109,7 @@ public class TimeSpreadChart extends ChartTemplate {
                         l.add(data.get(temp).get(code.indexOf(cd)));
                 }
             }
-            data.put(date.split(" ")[0].replace("/", ""), l);
+            data.put(date, l);
             temp = date;
         }
 

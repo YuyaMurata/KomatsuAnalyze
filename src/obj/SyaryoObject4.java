@@ -74,7 +74,12 @@ public class SyaryoObject4 implements Serializable {
 
     //Get
     public Map<String, List> get(String key) {
-        return (Map) map.get(key);
+        if(map == null)
+            decompress();
+        Map m = (Map) map.get(key);
+        if(mapData == null)
+            compress(true);
+        return m;
     }
 
     public void compress(Boolean flg) {

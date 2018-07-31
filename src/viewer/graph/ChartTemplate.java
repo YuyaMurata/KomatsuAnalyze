@@ -32,7 +32,7 @@ public abstract class ChartTemplate{
             int i=0;
             for(String date : map.keySet()){
                 List values = map.get(date);
-                StringBuilder sb = new StringBuilder(date);
+                StringBuilder sb = new StringBuilder(date.split("#")[0].split(" ")[0].replace("/", ""));
                 for(Object v : values){
                     sb.append(",");
                     sb.append(v);

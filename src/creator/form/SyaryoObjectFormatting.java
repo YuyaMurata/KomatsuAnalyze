@@ -6,6 +6,7 @@
 package creator.form;
 
 import index.SyaryoObjectElementsIndex;
+import java.text.DecimalFormat;
 import java.util.ArrayDeque;
 import param.KomatsuDataParameter;
 import java.util.ArrayList;
@@ -28,11 +29,12 @@ import program.r.R;
  */
 public class SyaryoObjectFormatting {
 
-    private static String KISY = "PC138US";
+    private static String KISY = "PC200";
     private static String INDEXPATH = KomatsuDataParameter.SHUFFLE_FORMAT_PATH;
     private static String OBJPATH = KomatsuDataParameter.OBJECT_PATH;
     private static String HONSY_INDEXPATH = KomatsuDataParameter.HONSYA_INDEX_PATH;
     private static String PRODUCT_INDEXPATH = KomatsuDataParameter.PRODUCT_INDEXPATH;
+    private static DecimalFormat df = new DecimalFormat("0000");
     private static Map<String, List> dataIndex;
 
     public static void main(String[] args) {
@@ -839,10 +841,9 @@ public class SyaryoObjectFormatting {
                 String str = syaryo.get(id).get(date).toString();
 
                 if (!tmp.equals(str)) {
-                    if (newMap.get(d) == null) {
-                        newMap.put(d, syaryo.get(id).get(date));
-                        tmp = str;
-                    }
+                    newMap.put(dup(d, newMap), syaryo.get(id).get(date));
+                    tmp = str;
+                    
                 }
             }
 
@@ -887,6 +888,15 @@ public class SyaryoObjectFormatting {
         for (Object dkey : deleteKey) {
             syaryo.map.remove(dkey);
         }
+    }
+    
+    private static String dup(String key, Map map) {
+        int cnt = 0;
+        String k = key;
+        while (map.get(k) != null) {
+            k = key + "#" + df.format(++cnt);
+        }
+        return k;
     }
 
     private static Map rejectSMRData(Map<String, List<String>> smr, int idx) {

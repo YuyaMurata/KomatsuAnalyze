@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -46,9 +47,12 @@ public class SyaryoAnalizer {
         settings(syaryo);
     }
     
+    public SyaryoObject4 get(){
+        SyaryoObject4 s = syaryo;
+        return s;
+    }
+    
     private void settings(SyaryoObject4 syaryo){
-        syaryo.decompress();
-        
         //Name
         this.kind = syaryo.getName().split("-")[0];
         this.type = syaryo.getName().split("-")[1];
@@ -74,12 +78,23 @@ public class SyaryoAnalizer {
             lifestop = syaryo.get("廃車").keySet().stream().findFirst().get();
         }
         
+        //受注日付
+        for(String sbn : syaryo.get("受注").keySet()){
+            String date = (String) syaryo.get("受注").get(sbn).get(4);
+            sbnDate.put(sbn, date);
+            
+            if(dateSBN.get(date) == null)
+                dateSBN.put(date, sbn);
+            else
+                dateSBN.put(date, dateSBN.get(date)+","+sbn);
+        }
+        
         //Number
         numOwners = ((Long)getValue("顧客", "KKYKCD", false).stream().distinct().count()).intValue();
         numOrders = syaryo.get("受注").size();
         numParts = syaryo.get("部品").size();
         numWorks = syaryo.get("作業").size();
-        System.out.println(getValue(getSMR(syaryo)[0], getSMR(syaryo)[1], true));
+        //System.out.println(getValue(getSMR(syaryo)[0], getSMR(syaryo)[1], true));
         maxSMR[0] = Integer.valueOf(getValue(getSMR(syaryo)[0], "-1", true).get(getValue(getSMR(syaryo)[0], "-1", true).size()-1));
         maxSMR[1] = Integer.valueOf(getValue(getSMR(syaryo)[0], getSMR(syaryo)[1], true).get(getValue(getSMR(syaryo)[0], getSMR(syaryo)[1], true).size()-1));
         
@@ -87,11 +102,9 @@ public class SyaryoAnalizer {
         lifestart = syaryo.get("新車").keySet().stream().findFirst().get();
         currentLife = getValue("受注", "ODDAY", true).get(numOrders-1);
         if(!dead)
-            currentAge_day = age(lifestart, "20170501"); //データ受領日(データによって数日ずれている)
+            currentAge_day = age("20170501"); //データ受領日(データによって数日ずれている)
         else
-            currentAge_day = age(lifestart, lifestop); //廃車日
-        
-        syaryo.compress(true);
+            currentAge_day = age(lifestop); //廃車日
     }
     
     private String[] getSMR(SyaryoObject4 syaryo){
@@ -101,6 +114,15 @@ public class SyaryoAnalizer {
             return new String[]{"SMR", "SVC_MTR"};
         else
             return new String[]{"NULL", "NULL"};
+    }
+    
+    private Map<String, String> sbnDate = new HashMap<>();
+    private Map<String, String> dateSBN = new HashMap<>();
+    public String getSBNDate(String sbn, Boolean sw){
+        if(sw)
+            return sbnDate.get(sbn.split("#")[0]);
+        else
+            return dateSBN.get(sbn.split("#")[0]);
     }
     
     public List<String> getValue(String key, String index, Boolean sorted){
@@ -128,7 +150,21 @@ public class SyaryoAnalizer {
     }
     
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-    public static Integer age(String start, String stop){
+    public Integer age(String stop){
+        String fstop = stop.split("#")[0];
+        
+        try {
+            Date st = sdf.parse(lifestart);
+            Date sp = sdf.parse(fstop);
+            Long age = (sp.getTime() - st.getTime()) / (1000 * 60 * 60 * 24);
+            return age.intValue();
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+    
+    public static Integer time(String start, String stop){
         try {
             Date st = sdf.parse(start);
             Date sp = sdf.parse(stop);

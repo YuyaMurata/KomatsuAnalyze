@@ -67,7 +67,7 @@ public class ExportIrregularData {
                             continue;
                         }
 
-                        int d = SyaryoAnalizer.age(temp, date);
+                        int d = SyaryoAnalizer.time(temp, date);
                         //稼働時間が下がった
                         if (tempSMR > value) {
                             down++;
@@ -100,7 +100,7 @@ public class ExportIrregularData {
                             continue;
                         }
 
-                        int d = SyaryoAnalizer.age(temp, date);
+                        int d = SyaryoAnalizer.time(temp, date);
                         //稼働時間が下がった
                         if (tempSMR > value) {
                             down++;
