@@ -45,7 +45,6 @@ public class SyaryoDataExistsCheck {
                 SyaryoObject4 syaryo = syaryoMap.get(name);
                 List<String> check = new ArrayList();
                 
-                syaryo.decompress();
                 check.add(syaryo.name);
                 
                 if(kmflg)

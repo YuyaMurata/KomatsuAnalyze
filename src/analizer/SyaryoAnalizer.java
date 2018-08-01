@@ -131,7 +131,7 @@ public class SyaryoAnalizer {
             return Arrays.asList(new String[]{"NaN", "NaN"});
         
         if(index.equals("-1")){
-            List list = syaryo.get(key).keySet().stream().collect(Collectors.toList());
+            List list = syaryo.get(key).keySet().stream().map(s -> s.split("#")[0]).collect(Collectors.toList());
             return list;
         }
         

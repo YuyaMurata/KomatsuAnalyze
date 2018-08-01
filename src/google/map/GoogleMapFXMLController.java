@@ -104,7 +104,7 @@ public class GoogleMapFXMLController implements Initializable {
 		Map<String, SyaryoObject4> syaryoMap = new SyaryoToZip3().read(PATH+"syaryo_obj_"+KISY+"_form.bz2");
         
         SyaryoObject4 syaryo = syaryoMap.get("PC138US-10-40651");
-        syaryo.decompress();
+ 
         Map<String, List> gps = syaryo.get("KOMTRAX_GPS");
 		System.out.println("GPS車両 : " + gps.size());
         //syaryo.compress(Boolean.FALSE);

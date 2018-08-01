@@ -25,15 +25,12 @@ public class ButtonTask extends Task<Void>{
             return null;
         }
         
-        ButtonService.syaryo.decompress();
         Map<String, List> map = ButtonService.syaryo.get(ButtonService.smenu);
 
         if(map == null)
             return null;
         
         new TimeSpreadChart().graph(ButtonService.smenu, ButtonService.syaryo);
-        
-        ButtonService.syaryo.compress(true);
             
         return null;
     }

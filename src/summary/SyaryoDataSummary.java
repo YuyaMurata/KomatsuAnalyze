@@ -44,9 +44,8 @@ public class SyaryoDataSummary {
         Map<Object, Integer> dataSizeMap = new HashMap();
         Map<Object, Integer> numSyaryoMap = new HashMap();
         for(SyaryoObject4 syaryo : syaryoMap.values()){
-            syaryo.decompress();
             int total = 0;
-            for(Object key : syaryo.map.keySet()){
+            for(Object key : syaryo.getMap().keySet()){
                 if(syaryo.get(key.toString()) == null){
                     System.out.println(syaryo.name+":"+key.toString());
                     continue;
@@ -65,11 +64,9 @@ public class SyaryoDataSummary {
             
             if(total > size){
                 if(sample != null)
-                    sample.compress(false);
                 sample = syaryo;
                 size = total;
-            }else
-                syaryo.compress(false);
+            }
             
             if((++cnt)%1000 == 0)
                 System.out.println(kisy+":"+cnt+"件処理");

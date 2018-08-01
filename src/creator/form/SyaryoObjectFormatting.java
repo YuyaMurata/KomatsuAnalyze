@@ -11,12 +11,12 @@ import java.util.ArrayDeque;
 import param.KomatsuDataParameter;
 import java.util.ArrayList;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import json.MapIndexToJSON;
 import json.SyaryoToZip3;
@@ -66,7 +66,7 @@ public class SyaryoObjectFormatting {
             currentKey = key;
 
             SyaryoObject4 syaryo = syaryoMap.get(key);
-            syaryo.decompress();
+            syaryo.startHighPerformaceAccess();
 
             //整形時のデータ削除ルールを設定
             DataRejectRule rule = new DataRejectRule();
@@ -79,24 +79,24 @@ public class SyaryoObjectFormatting {
 
             //生産の整形
             newMap = formProduct(syaryo.get("生産"), productIndex, syaryo.getName());
-            syaryo.map.put("生産", newMap);
+            syaryo.put("生産", newMap);
 
             //顧客の整形
             newMap = formOwner(syaryo.get("顧客"), dataIndex.get("顧客"), honsyIndex, syaryo.get("経歴"), dataIndex.get("経歴"), rule);
-            syaryo.map.put("顧客", newMap);
+            syaryo.put("顧客", newMap);
 
             //新車の整形
             newMap = formNew(syaryo.get("新車"), syaryo.get("生産"), syaryo.get("出荷"), dataIndex.get("新車"));
-            syaryo.map.put("新車", newMap);
+            syaryo.put("新車", newMap);
             rule.addNew(newMap.keySet().stream().findFirst().get().toString());
 
             //中古車の整形
             newMap = formUsed(syaryo.get("中古車"), dataIndex.get("中古車"), rule.getNew(), rule.getKUEC());
-            syaryo.map.put("中古車", newMap);
+            syaryo.put("中古車", newMap);
 
             //受注
             newMap = formOrder(syaryo.get("受注"), dataIndex.get("受注"), rule);
-            syaryo.map.put("受注", newMap);
+            syaryo.put("受注", newMap);
             List sbnList = null;
             if (syaryo.get("受注") != null) {
                 sbnList = new ArrayList(syaryo.get("受注").keySet());
@@ -104,23 +104,23 @@ public class SyaryoObjectFormatting {
 
             //廃車
             newMap = formDead(syaryo.get("廃車"), rule.currentDate, dataIndex.get("廃車"));
-            syaryo.map.put("廃車", newMap);
+            syaryo.put("廃車", newMap);
 
             //作業
             newMap = formWork(syaryo.get("作業"), sbnList, dataIndex.get("作業"), rule.getWORKID());
-            syaryo.map.put("作業", newMap);
+            syaryo.put("作業", newMap);
 
             //部品
             newMap = formParts(syaryo.get("部品"), sbnList, dataIndex.get("部品"), rule.getPARTSID());
-            syaryo.map.put("部品", newMap);
+            syaryo.put("部品", newMap);
 
             //SMR
             newMap = formSMR(syaryo.get("SMR"), dataIndex.get("SMR"));
-            syaryo.map.put("SMR", newMap);
+            syaryo.put("SMR", newMap);
 
             //AS
             newMap = formAS(syaryo.get("オールサポート"), dataIndex.get("オールサポート"));
-            syaryo.map.put("オールサポート", newMap);
+            syaryo.put("オールサポート", newMap);
 
             //check komtrax
             int err = 0;
@@ -142,7 +142,7 @@ public class SyaryoObjectFormatting {
             formExtra(syaryo, new String[]{"最終更新日", "国"});
             removeEmptyObject(syaryo);
 
-            syaryo.compress(true);
+            syaryo.stopHighPerformaceAccess();
             n++;
 
             if (n % 1000 == 0) {
@@ -159,10 +159,10 @@ public class SyaryoObjectFormatting {
 
     //車両の削除
     private static void rejectSyaryo(Map<String, SyaryoObject4> syaryoMap, String[] deleteRule) {
-        List<String> reject = new ArrayList();
-        for (String key : syaryoMap.keySet()) {
-            SyaryoObject4 syaryo = syaryoMap.get(key);
-            syaryo.decompress();
+        //List<String> reject = new ArrayList();
+        Map<String, Integer> reject = new ConcurrentHashMap();
+        syaryoMap.values().parallelStream().forEach(syaryo -> {
+            //SyaryoObject4 syaryo = syaryoMap.get(key);
 
             for (String rule : deleteRule) {
                 Optional check;
@@ -186,14 +186,14 @@ public class SyaryoObjectFormatting {
                 
                 if (check.isPresent()) {
                     //System.out.println(data+":"+key);
-                    reject.add(key);
+                    reject.put(syaryo.name, 0);
+                    //reject.add(key);
                 }
             }
-            syaryo.compress(true);
-        }
+        });
 
         System.out.println("カンパニ、日付で削除される車両数:"+reject.size());
-        for (String key : reject) {
+        for (String key : reject.keySet()) {
             syaryoMap.remove(key);
         }
     }
@@ -781,12 +781,12 @@ public class SyaryoObjectFormatting {
 
     private static void formExtra(SyaryoObject4 syaryo, String[] removeInfo) {
         for (String remove : removeInfo) {
-            syaryo.map.remove(remove);
+            syaryo.remove(remove);
         }
     }
 
     private static void formDate(SyaryoObject4 syaryo, List indexList, Integer date) {
-        for (Object key : syaryo.map.keySet()) {
+        for (Object key : syaryo.getMap().keySet()) {
             Map<String, List> map = syaryo.get(key.toString());
             if (map == null) {
                 continue;
@@ -821,7 +821,7 @@ public class SyaryoObjectFormatting {
                 map.remove(removeDate.toString());
             }
 
-            syaryo.map.put(key.toString(), map);
+            syaryo.put(key.toString(), map);
         }
     }
 
@@ -847,7 +847,7 @@ public class SyaryoObjectFormatting {
                 }
             }
 
-            syaryo.map.put(id, newMap);
+            syaryo.put(id, newMap);
         }
     }
 
@@ -877,7 +877,7 @@ public class SyaryoObjectFormatting {
 
     private static void removeEmptyObject(SyaryoObject4 syaryo) {
         List deleteKey = new ArrayList();
-        for (Object key : syaryo.map.keySet()) {
+        for (Object key : syaryo.getMap().keySet()) {
             if (syaryo.get(key.toString()) != null) {
                 if (syaryo.get(key.toString()).isEmpty()) {
                     deleteKey.add(key);
@@ -886,7 +886,7 @@ public class SyaryoObjectFormatting {
         }
 
         for (Object dkey : deleteKey) {
-            syaryo.map.remove(dkey);
+            syaryo.remove(dkey);
         }
     }
     

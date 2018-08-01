@@ -94,15 +94,12 @@ public class TemplateToObjectCreate {
                 SyaryoObject4 syaryoObj = new SyaryoObject4(s.getName());
                 syaryoObj.add(s.temp, fieldLen);
 
-                syaryoObj.compress(true);
-
                 syaryoMap.put(syaryoObj.getName(), syaryoObj);
             });
 
             SyaryoObject4 syaryo = syaryoMap.values().stream().findFirst().get();
-            syaryo.decompress();
             System.out.println(syaryo.dump());
-            syaryo.compress(true);
+            
             new SyaryoToZip3().write(FILENAME, syaryoMap);
 
             System.out.println(syaryoMap.size());

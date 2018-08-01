@@ -28,7 +28,7 @@ public class ExportData {
     //レイアウト
     private static Map<String, List> dataIndex = SyaryoObjectElementsIndex.getInstance().getIndex();
     private static String PATH = KomatsuDataParameter.SYARYOOBJECT_FDPATH;
-    private static String KISY = "PC138US";
+    private static String KISY = "PC200";
 
     public static void main(String[] args) {
         //ヘッダー設定
@@ -45,7 +45,8 @@ public class ExportData {
         Map<String, SyaryoObject4> map = new SyaryoToZip3().read(PATH + "syaryo_obj_" + KISY + "_form.bz2");
 
         //単体
-        uniExport("test.csv", headers, new SyaryoAnalizer(map.get("PC138US-8-20194")));
+        String name = "PC200-8N1-313582";
+        uniExport("ExportData_"+name+".csv", headers, new SyaryoAnalizer(map.get(name)));
 
         //複数
         //全部

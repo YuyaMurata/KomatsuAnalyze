@@ -35,13 +35,11 @@ public class ErrCodeServicePriceSMRAge {
         List<SyaryoObject4> analyzeSyaryo = new ArrayList();
         //分析対象を絞る
         for(SyaryoObject4 syaryo : syaryoMap.values()){
-            syaryo.decompress();
             if((syaryo.get("KOMTRAX_ERROR") != null) && 
                 (syaryo.get("受注") != null) &&
                 (syaryo.get("KOMTRAX_SMR") != null)){
                 analyzeSyaryo.add(syaryo);
             }
-            syaryo.compress(true);
         }
         
         //データ出力

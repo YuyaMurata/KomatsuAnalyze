@@ -6,7 +6,9 @@
 package param;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -24,6 +26,11 @@ public interface KomatsuDataParameter {
         "WA470",
         "PC10MR", "PC10UU", "PC18MR", "PC20MR", "PC20UU"
     };
+    
+    public static Map joinMap = new HashMap(){{
+        put("PC200", new String[]{"8", "8N1", "10"});
+        put("PC138US", new String[]{"2", "8", "10"});
+    }};
 
     public static String TEMPLATE_PATH = "template\\";
     public static String MIDDLEDATA_PATH = "middle\\";

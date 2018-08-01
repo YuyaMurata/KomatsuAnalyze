@@ -100,11 +100,10 @@ public class TemplateShuffle {
                     if (shuffleSyaryo == null) {
                         shuffleSyaryo = new SyaryoObject4(id);
                     }
-                    shuffleSyaryo.decompress();
 
                     //Shuffle車両が分類名を持たないときの処理
                     if (shuffleSyaryo.get(key) == null) {
-                        shuffleSyaryo.map.put(key, new TreeMap());
+                        shuffleSyaryo.put(key, new TreeMap());
                     }
 
                     //データリストへの整形処理
@@ -144,16 +143,13 @@ public class TemplateShuffle {
                     } else {
                         notRegisterList.add(id + " : " + subKey.split("\\.")[0] + "(empty data)");
                     }
-                    shuffleSyaryo.compress(true);
                 }
             }
 
             if (!shuffleMap.isEmpty()) {
                 //Check
                 SyaryoObject4 syaryo = shuffleMap.values().stream().findFirst().get();
-                syaryo.decompress();
                 System.out.println(syaryo.dump());
-                syaryo.compress(true);
                 System.out.println("Not Registerd = " + notRegisterList);
                 //Output
                 zip.write(filename, shuffleMap);

@@ -37,12 +37,10 @@ public class AccidentData {
 
         csv.println("SID,SMR,金額,概要");
         for (SyaryoObject4 syaryo : syaryoMap.values()) {
-            syaryo.decompress();
 
             cnt++;
             if (syaryo.get("受注") == null) {
                 System.out.println(syaryo.getName());
-                syaryo.compress(false);
                 continue;
             }
 
@@ -54,7 +52,6 @@ public class AccidentData {
                 .collect(Collectors.toMap(s -> s.getKey(), s -> s.getValue()));
 
             if (accident == null || accident.isEmpty() || syaryo.get("KOMTRAX_SMR") == null) {
-                syaryo.compress(false);
                 continue;
             }
 
@@ -87,7 +84,6 @@ public class AccidentData {
                 sb.append("\n");
             }
             csv.println(sb.toString());
-            syaryo.compress(false);
         }
     }
 }

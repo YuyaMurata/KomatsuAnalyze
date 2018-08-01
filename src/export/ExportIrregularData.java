@@ -47,7 +47,6 @@ public class ExportIrregularData {
                 String line = "";
 
                 SyaryoObject4 syaryo = syaryoMap.get(sid);
-                syaryo.decompress();
 
                 //SMR 評価
                 Map<String, List> smr = syaryo.get("SMR");
@@ -143,7 +142,6 @@ public class ExportIrregularData {
                 line = line + "," + sd;
 
                 csv.println(line);
-                syaryo.compress(false);
             }
         }
     }

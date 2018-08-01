@@ -7,10 +7,7 @@ package viewer.easy;
 
 import creator.template.SimpleTemplate;
 import param.KomatsuDataParameter;
-import file.CSVFileReadWrite;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -154,8 +151,6 @@ public class EasyViewerFXMLController implements Initializable {
     
     //アコーディオンの設定
     private void settingData(SyaryoObject4 syaryo) {
-        syaryo.decompress();
-
         int i=0;
         for(String data : KomatsuDataParameter.DATA_ORDER){
             TitledPane title = dataAccordion.getPanes().get(i);
@@ -165,7 +160,6 @@ public class EasyViewerFXMLController implements Initializable {
             title.setText(check(title.getText(), str));
             i++;
         }
-        syaryo.compress(true);
     }
 
     private String check(String title, String[] datastr) {
@@ -326,13 +320,12 @@ public class EasyViewerFXMLController implements Initializable {
             disableFilterMap = new ConcurrentHashMap();
             syaryoMap.values().parallelStream()
                 .forEach(s -> {
-                    s.decompress();
-                    if (s.get(filter) != null) {
-                        enableFilterMap.put(s.getName(), s.get(filter).size());
+                    Map data = s.get(filter);
+                    if (data != null) {
+                        enableFilterMap.put(s.getName(), data.size());
                     } else {
                         disableFilterMap.put(s.getName(), 0);
                     }
-                    s.compress(true);
                 });
         }
 

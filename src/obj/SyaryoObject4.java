@@ -23,10 +23,11 @@ public class SyaryoObject4 implements Serializable {
 
     private static final long serialVersionUID = 1L;
     public String name;
-    public byte[] mapData;
+    private byte[] mapData;
 
-    public transient Map map = new HashMap();
+    private transient Map map;
     private transient DecimalFormat dformat = new DecimalFormat("0000");
+    private transient Boolean performanceAccess = false;
 
     public SyaryoObject4(String name) {
         this.name = name;
@@ -51,38 +52,108 @@ public class SyaryoObject4 implements Serializable {
      * Add Data
      */
     public void add(Map template, int n) {
+        decompress();
         for (Object field : template.keySet()) {
             String[] lines = template.get(field).toString().split("\n");
 
             for (String line : lines) {
                 List<String> s = new ArrayList<>();
                 s.addAll(Arrays.asList(line.trim().split(",")));
-                while(n > s.size()) {
+                while (n > s.size()) {
                     s.add(" ");
                 }
                 map.put(key_no(field), s);
             }
         }
+        compress(true);
     }
 
     /**
-     * Get Data
+     * Read Data
      */
     public String getName() {
         return name;
     }
 
-    //Get
+    //Get Data
     public Map<String, List> get(String key) {
-        if(map == null)
+        if (map == null) {
             decompress();
+        }
         Map m = (Map) map.get(key);
-        if(mapData == null)
+        if (mapData == null) {
             compress(true);
+        }
         return m;
     }
 
-    public void compress(Boolean flg) {
+    //Get Map
+    public Map<String, List> getMap() {
+        if (map == null) {
+            decompress();
+        }
+        Map m = map;
+        if (mapData == null) {
+            compress(true);
+        }
+        return m;
+    }
+
+    /**
+     * Uodate Data
+     */
+    public void put(Object key, Object obj) {
+        if (map == null) {
+            decompress();
+        }
+        map.put(key, obj);
+        if (mapData == null) {
+            compress(true);
+        }
+    }
+
+    public void putAll(Map add) {
+        if (map == null) {
+            decompress();
+        }
+        map.putAll(add);
+        if (mapData == null) {
+            compress(true);
+        }
+    }
+
+    /*
+    * アクセス性能を向上させる(1車両ごとに呼び出す)
+     */
+    public void startHighPerformaceAccess() {
+        decompress();
+        performanceAccess = true;
+    }
+
+    public void stopHighPerformaceAccess() {
+        performanceAccess = false;
+        compress(true);
+    }
+
+    /**
+     * Delete
+     */
+    public void remove(Object key) {
+        if (map == null) {
+            decompress();
+        }
+        map.remove(key);
+        if (mapData == null) {
+            compress(true);
+        }
+    }
+
+    private void compress(Boolean flg) {
+        if (performanceAccess != null) {
+            if (performanceAccess) {
+                return;
+            }
+        }
         if (flg) {
             mapData = SnappyMap.toSnappy(map);
         }
@@ -91,7 +162,12 @@ public class SyaryoObject4 implements Serializable {
         }
     }
 
-    public void decompress() {
+    private void decompress() {
+        if (performanceAccess != null) {
+            if (performanceAccess) {
+                return;
+            }
+        }
         if (mapData != null) {
             map = SnappyMap.toMap(mapData);
             mapData = null;
@@ -103,6 +179,7 @@ public class SyaryoObject4 implements Serializable {
 
     //Dump
     public String dump() {
+        decompress();
         StringBuilder sb = new StringBuilder();
         sb.append(name);
         sb.append(":");
@@ -118,6 +195,7 @@ public class SyaryoObject4 implements Serializable {
                 sb.append(m.get(d));
             }
         }*/
+        compress(true);
 
         return sb.toString();
     }

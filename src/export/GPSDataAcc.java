@@ -37,7 +37,7 @@ public class GPSDataAcc {
         String id = "100";
         
         SyaryoObject4 syaryo = syaryoMap.get("PC138US-8-22337");
-        syaryo.decompress();
+
         Map<String, String> gps = new TreeMap<>();
         for(String date : syaryo.get("KOMTRAX_GPS").keySet()){
             String lat = DistanceCulc.compValue(syaryo.get("KOMTRAX_GPS").get(date).get(0).toString()).toString();

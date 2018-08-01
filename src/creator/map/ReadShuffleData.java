@@ -138,13 +138,11 @@ public class ReadShuffleData {
             List<List<String>> data = new ArrayList<>();
 
             SyaryoObject4 targetSyaryo = readFile.get(table).get(target);
-            targetSyaryo.decompress();
 
-            for (Object list : targetSyaryo.map.values()) {
+            for (Object list : targetSyaryo.getMap().values()) {
                 data.add((List<String>) list);
             }
 
-            targetSyaryo.compress(false);
             extract.put(table, data);
         }
 
