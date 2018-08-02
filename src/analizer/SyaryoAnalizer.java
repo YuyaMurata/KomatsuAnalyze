@@ -8,6 +8,9 @@ package analizer;
 import index.SyaryoObjectElementsIndex;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
@@ -17,6 +20,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import json.SyaryoToZip3;
 import obj.SyaryoObject4;
+import param.KomatsuDataParameter;
 
 /**
  *
@@ -41,10 +45,15 @@ public class SyaryoAnalizer {
     public Integer numParts = -1;
     public Integer numWorks = -1;
     public Integer[] maxSMR = new Integer[]{-1, -1};
+    private List<LocalDate[]> termAllSupport;
+    private static String DATE_FORMAT = KomatsuDataParameter.DATE_FORMAT;
+    private static Map<String, List> dataIndex = SyaryoObjectElementsIndex.getInstance().getIndex();
     
     public SyaryoAnalizer(SyaryoObject4 syaryo){
         this.syaryo = syaryo;
+        this.syaryo.startHighPerformaceAccess();
         settings(syaryo);
+        this.syaryo.stopHighPerformaceAccess();
     }
     
     public SyaryoObject4 get(){
@@ -73,6 +82,15 @@ public class SyaryoAnalizer {
         }
         if(syaryo.get("オールサポート") != null)
             allsupport = true;
+        if(allsupport){
+            termAllSupport = new ArrayList<>();
+            for(String st : syaryo.get("オールサポート").keySet()){
+                LocalDate start = LocalDate.parse(st, DateTimeFormatter.ofPattern(DATE_FORMAT));
+                LocalDate end = LocalDate.parse((String)syaryo.get("オールサポート").get(st).get(dataIndex.get("オールサポート").indexOf("MK_KIYK")), DateTimeFormatter.ofPattern(DATE_FORMAT));
+                termAllSupport.add(new LocalDate[]{start, end});
+            }
+        }
+        
         if(syaryo.get("廃車") != null){
             dead = true;
             lifestop = syaryo.get("廃車").keySet().stream().findFirst().get();
@@ -105,6 +123,8 @@ public class SyaryoAnalizer {
             currentAge_day = age("20170501"); //データ受領日(データによって数日ずれている)
         else
             currentAge_day = age(lifestop); //廃車日
+        
+        
     }
     
     private String[] getSMR(SyaryoObject4 syaryo){
@@ -149,7 +169,7 @@ public class SyaryoAnalizer {
         return list;
     }
     
-    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+    private static SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
     public Integer age(String stop){
         String fstop = stop.split("#")[0];
         
@@ -176,6 +196,15 @@ public class SyaryoAnalizer {
         }
     }
     
+    public Boolean checkAS(String d){
+        LocalDate date = LocalDate.parse(d, DateTimeFormatter.ofPattern(DATE_FORMAT));
+        for(LocalDate[] term : termAllSupport){
+            if(!(term[0].isAfter(date) || term[1].isBefore(date)))
+                return true;
+        }
+        return false;
+    }
+    
     public String toString(){
         StringBuilder sb = new StringBuilder();
         sb.append("syaryo:"+syaryo.getName()+" Analize:\n");
@@ -185,6 +214,7 @@ public class SyaryoAnalizer {
         sb.append(" used = "+used+"\n");
         sb.append(" komtrax = "+komtrax+"\n");
         sb.append(" allsupport = "+allsupport+"\n");
+        sb.append(" allsupport_term = "+(termAllSupport!=null?termAllSupport.stream().map(s -> Arrays.asList(s).toString()).collect(Collectors.joining(",")):"[]")+"\n");
         sb.append(" dead = "+dead+"\n");
         sb.append(" lifestart = "+lifestart+"\n");
         sb.append(" lifestop = "+lifestop+"\n");
@@ -201,7 +231,11 @@ public class SyaryoAnalizer {
     
     public static void main(String[] args) {
         Map<String, SyaryoObject4> syaryoMap = new SyaryoToZip3().read("syaryo\\syaryo_obj_PC138US_form.bz2");
-        SyaryoAnalizer analize = new SyaryoAnalizer(syaryoMap.get("PC138US-10-40651"));
+        SyaryoAnalizer analize = new SyaryoAnalizer(syaryoMap.get("PC138US-2-5322"));
         System.out.println(analize.toString());
+        
+        //Check
+        System.out.println("20110801:"+analize.checkAS("20110801"));
+        System.out.println("20110801:"+analize.checkAS("20340801"));
     }
 }

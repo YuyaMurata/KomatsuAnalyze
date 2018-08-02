@@ -29,18 +29,15 @@ import program.r.R;
  */
 public class SyaryoObjectFormatting {
 
-    private static String KISY = "PC200";
+    private static String KISY = "PC138US";
     private static String INDEXPATH = KomatsuDataParameter.SHUFFLE_FORMAT_PATH;
     private static String OBJPATH = KomatsuDataParameter.OBJECT_PATH;
     private static String HONSY_INDEXPATH = KomatsuDataParameter.HONSYA_INDEX_PATH;
     private static String PRODUCT_INDEXPATH = KomatsuDataParameter.PRODUCT_INDEXPATH;
     private static DecimalFormat df = new DecimalFormat("0000");
-    private static Map<String, List> dataIndex;
+    private static Map<String, List> dataIndex = SyaryoObjectElementsIndex.getInstance().getIndex();
 
     public static void main(String[] args) {
-        //Data Index
-        dataIndex = SyaryoObjectElementsIndex.getInstance().getIndex();
-
         form(KISY);
     }
 

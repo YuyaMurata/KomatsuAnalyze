@@ -51,6 +51,8 @@ public interface KomatsuDataParameter {
 
     //Formalize
     public static String PRODUCT_INDEXPATH = "index\\product_index.json";
+    public static String DATE_FORMAT = "yyyyMMdd";
+    
     //データ順序
     public static List<String> DATA_ORDER = Arrays.asList(new String[]{
         "生産",
