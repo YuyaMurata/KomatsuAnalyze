@@ -5,10 +5,12 @@
  */
 package param;
 
+import index.SyaryoObjectElementsIndex;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import json.MapIndexToJSON;
 
 /**
  *
@@ -49,6 +51,9 @@ public interface KomatsuDataParameter {
     public static String GRAPH_PY = "py\\smr_date_graph.py";
     public static String GRAPH_TEMP_FILE = "py\\csv\\graph_temp.csv";
 
+    //Layout
+    public static Map<String, List> DATALAYOUT_INDEX = SyaryoObjectElementsIndex.getInstance().getIndex();
+    
     //Formalize
     public static String PRODUCT_INDEXPATH = "index\\product_index.json";
     public static String DATE_FORMAT = "yyyyMMdd";
@@ -113,4 +118,8 @@ public interface KomatsuDataParameter {
     
     //認証関連
     public static String AUTH_PATH = "index\\autholize.json";
+    
+    //分析用
+    //オールサポート対象 パワーライン
+    public static Map POWERLINE = new MapIndexToJSON().reader("index\\allsupport_index.json");
 }
