@@ -27,7 +27,7 @@ import param.KomatsuDataParameter;
  *
  * @author ZZ17390
  */
-public class SyaryoAnalizer {
+public class SyaryoAnalizer implements AutoCloseable {
 
     public SyaryoObject4 syaryo;
     public String kind = "";
@@ -56,7 +56,7 @@ public class SyaryoAnalizer {
         this.syaryo = syaryo;
         this.syaryo.startHighPerformaceAccess();
         settings(syaryo);
-        this.syaryo.stopHighPerformaceAccess();
+        //this.syaryo.stopHighPerformaceAccess();
     }
 
     public SyaryoObject4 get() {
@@ -102,29 +102,44 @@ public class SyaryoAnalizer {
         }
 
         //受注日付
-        for (String sbn : syaryo.get("受注").keySet()) {
-            String date = (String) syaryo.get("受注").get(sbn).get(4);
-            sbnDate.put(sbn, date);
+        if (syaryo.get("受注") != null) {
+            for (String sbn : syaryo.get("受注").keySet()) {
+                String date = (String) syaryo.get("受注").get(sbn).get(4);
+                sbnDate.put(sbn, date);
 
-            if (dateSBN.get(date) == null) {
-                dateSBN.put(date, sbn);
-            } else {
-                dateSBN.put(date, dateSBN.get(date) + "," + sbn);
+                if (dateSBN.get(date) == null) {
+                    dateSBN.put(date, sbn);
+                } else {
+                    dateSBN.put(date, dateSBN.get(date) + "," + sbn);
+                }
             }
         }
 
         //Number
-        numOwners = ((Long) getValue("顧客", "KKYKCD", false).stream().distinct().count()).intValue();
-        numOrders = syaryo.get("受注").size();
-        numParts = syaryo.get("部品").size();
-        numWorks = syaryo.get("作業").size();
-        //System.out.println(getValue(getSMR(syaryo)[0], getSMR(syaryo)[1], true));
-        maxSMR[0] = Integer.valueOf(getValue(getSMR(syaryo)[0], "-1", true).get(getValue(getSMR(syaryo)[0], "-1", true).size() - 1));
-        maxSMR[1] = Integer.valueOf(getValue(getSMR(syaryo)[0], getSMR(syaryo)[1], true).get(getValue(getSMR(syaryo)[0], getSMR(syaryo)[1], true).size() - 1));
+        if (syaryo.get("顧客") != null) {
+            numOwners = ((Long) getValue("顧客", "KKYKCD", false).stream().distinct().count()).intValue();
+        }
+        if (syaryo.get("受注") != null) {
+            numOrders = syaryo.get("受注").size();
+        }
+        if (syaryo.get("部品") != null) {
+            numParts = syaryo.get("部品").size();
+        }
+        if (syaryo.get("作業") != null) {
+            numWorks = syaryo.get("作業").size();
+        }
 
+        //System.out.println(getValue(getSMR(syaryo)[0], getSMR(syaryo)[1], true));
+        if (syaryo.get(getSMR(syaryo)[0]) != null) {
+            maxSMR[0] = Integer.valueOf(getValue(getSMR(syaryo)[0], "-1", true).get(getValue(getSMR(syaryo)[0], "-1", true).size() - 1));
+            maxSMR[1] = Integer.valueOf(getValue(getSMR(syaryo)[0], getSMR(syaryo)[1], true).get(getValue(getSMR(syaryo)[0], getSMR(syaryo)[1], true).size() - 1));
+        }
+        
         //Life
         lifestart = syaryo.get("新車").keySet().stream().findFirst().get();
-        currentLife = getValue("受注", "ODDAY", true).get(numOrders - 1);
+        if (syaryo.get("受注") != null) {
+            currentLife = getValue("受注", "ODDAY", true).get(numOrders - 1);
+        }
         if (!dead) {
             currentAge_day = age("20170501"); //データ受領日(データによって数日ずれている)
         } else {
@@ -147,6 +162,7 @@ public class SyaryoAnalizer {
     //作番と日付をswで相互変換
     private Map<String, String> sbnDate = new HashMap<>();
     private Map<String, String> dateSBN = new HashMap<>();
+
     public String getSBNDate(String sbn, Boolean sw) {
         if (sw) {
             return sbnDate.get(sbn.split("#")[0]);
@@ -184,6 +200,7 @@ public class SyaryoAnalizer {
     }
 
     private static SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+
     //納車されてからstopまでの経過日数
     public Integer age(String stop) {
         String fstop = stop.split("#")[0];
@@ -202,27 +219,30 @@ public class SyaryoAnalizer {
             return null;
         }
     }
-    
+
     //オールサポート対象期間のサービスを返す
-    public Map<String, List<String>> allsupportService(){
-        if(!allsupport)
+    public Map<String, List<String>> allsupportService() {
+        if (!allsupport) {
             return null;
-        
+        }
+
         int idx = DATA_INDEX.get("受注").indexOf("ODDAY");
         Map<String, List<String>> map = new LinkedHashMap<>();
         Map<String, List> services = syaryo.get("受注");
-        for(String sbn : services.keySet()){
+        for (String sbn : services.keySet()) {
             String date = services.get(sbn).get(idx).toString();
-            if(!checkAS(date))
+            if (!checkAS(date)) {
                 continue;
+            }
             map.put(sbn, services.get(sbn));
         }
-        
-        if(map.isEmpty())
+
+        if (map.isEmpty()) {
             return null;
+        }
         return map;
     }
-    
+
     //オールサポート対象期間か判定
     private Boolean checkAS(String d) {
         LocalDate date = LocalDate.parse(d, DateTimeFormatter.ofPattern(DATE_FORMAT));
@@ -233,41 +253,47 @@ public class SyaryoAnalizer {
         }
         return false;
     }
-    
+
     //aschekc = true : オールサポート対象期間のパワーラインサービスを返す
     //aschekc = false: オールサポート対象のパワーラインサービスを返す
-    public Map<String, List<String>> powerlineService(Boolean ascheck){
-        if(syaryo.get("作業") == null)
+    public Map<String, List<String>> powerlineService(Boolean ascheck) {
+        if (syaryo.get("作業") == null) {
             return null;
-        if(ascheck)
-            if(!allsupport)
+        }
+        if (ascheck) {
+            if (!allsupport) {
                 return null;
-        
+            }
+        }
+
         int sg_idx = DATA_INDEX.get("作業").indexOf("SGYOCD");
         List<String> plSbns = syaryo.get("作業").entrySet().parallelStream()
-                                    .filter(e -> checkPL(e.getValue().get(sg_idx).toString()))
-                                    .map(e -> e.getKey())
-                                    .collect(Collectors.toList());
-        
+            .filter(e -> checkPL(e.getValue().get(sg_idx).toString()))
+            .map(e -> e.getKey())
+            .collect(Collectors.toList());
+
         int idx = DATA_INDEX.get("受注").indexOf("ODDAY");
         Map<String, List<String>> map = new LinkedHashMap<>();
         Map<String, List> services = syaryo.get("受注");
-        for(String sbn : services.keySet()){
-            if(!plSbns.contains(sbn))
+        for (String sbn : services.keySet()) {
+            if (!plSbns.contains(sbn)) {
                 continue;
-            if(ascheck){
+            }
+            if (ascheck) {
                 String date = services.get(sbn).get(idx).toString();
-                if(!checkAS(date))
+                if (!checkAS(date)) {
                     continue;
+                }
             }
             map.put(sbn, services.get(sbn));
         }
-        
-        if(map.isEmpty())
+
+        if (map.isEmpty()) {
             return null;
+        }
         return map;
     }
-    
+
     //オールサポート対象のパワーライン修理か判定
     public Boolean checkPL(String workID) {
         if (workID.length() > 3) {
@@ -319,5 +345,10 @@ public class SyaryoAnalizer {
         //Check
         System.out.println("20110801:" + analize.checkAS("20110801"));
         System.out.println("20340801:" + analize.checkAS("20340801"));
+    }
+
+    @Override
+    public void close() throws Exception {
+        syaryo.stopHighPerformaceAccess();
     }
 }
