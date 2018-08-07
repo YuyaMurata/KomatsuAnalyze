@@ -17,4 +17,5 @@
 *.gz
 *.bz2
 *.7z
+*.tar
 project.properties

@@ -162,13 +162,40 @@ public class SyaryoAnalizer implements AutoCloseable {
     //作番と日付をswで相互変換
     private Map<String, String> sbnDate = new HashMap<>();
     private Map<String, String> dateSBN = new HashMap<>();
-
     public String getSBNDate(String sbn, Boolean sw) {
         if (sw) {
             return sbnDate.get(sbn.split("#")[0]);
         } else {
             return dateSBN.get(sbn.split("#")[0]);
         }
+    }
+    
+    //指定作番の作業を返す。
+    public Map<String, List<String>> getSBNWork(String sbn){
+        return getSBNData("作業", sbn);
+    }
+    
+    //指定作番の部品を返す。
+    public Map<String, List<String>> getSBNParts(String sbn){
+        return getSBNData("部品", sbn);
+    }
+    
+    //指定作番のデータを返す。
+    private Map<String, List<String>> getSBNData(String key, String sbn){
+        if(syaryo.get(key) == null)
+            return null;
+        
+        List<String> sbns = syaryo.get(key).keySet().stream()
+                                        .filter(s -> s.split("#")[0].equals(sbn))
+                                        .collect(Collectors.toList());
+        
+        Map map = new LinkedHashMap();
+        for(String ksbn : sbns)
+            map.put(ksbn, syaryo.get(key).get(ksbn));
+        
+        if(map.isEmpty())
+            return null;
+        return map;
     }
 
     //列抽出:keyデータのindex列をsortedしてリストで返す

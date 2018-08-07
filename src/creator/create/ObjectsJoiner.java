@@ -20,7 +20,7 @@ import obj.SyaryoObject4;
  * @author ZZ17390
  */
 public class ObjectsJoiner {
-    private static String KISY = "PC200";
+    private static String KISY = "PC138US";
     private static String PATH = KomatsuDataParameter.MIDDLEDATA_PATH;
     private static String OUTPATH = KomatsuDataParameter.OBJECT_PATH;
     private static Map<String, String[]> JOIN_TYPE = KomatsuDataParameter.joinMap;

@@ -100,6 +100,8 @@ public class TemplateShuffle {
                     if (shuffleSyaryo == null) {
                         shuffleSyaryo = new SyaryoObject4(id);
                     }
+                    //高速アクセス スタート
+                    shuffleSyaryo.startHighPerformaceAccess();
 
                     //Shuffle車両が分類名を持たないときの処理
                     if (shuffleSyaryo.get(key) == null) {
@@ -138,6 +140,8 @@ public class TemplateShuffle {
 
                     //オブジェクトファイルへ車両を登録
                     //System.out.println(shuffleSyaryo.dump());
+                    //高速アクセス ストップ (登録データの保存)
+                    shuffleSyaryo.stopHighPerformaceAccess();
                     if (!shuffleSyaryo.get(key).isEmpty()) {
                         shuffleMap.put(shuffleSyaryo.getName(), shuffleSyaryo);
                     } else {
@@ -151,6 +155,7 @@ public class TemplateShuffle {
                 SyaryoObject4 syaryo = shuffleMap.values().stream().findFirst().get();
                 System.out.println(syaryo.dump());
                 System.out.println("Not Registerd = " + notRegisterList);
+                
                 //Output
                 zip.write(filename, shuffleMap);
             }else

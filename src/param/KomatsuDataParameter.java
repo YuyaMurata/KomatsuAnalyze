@@ -119,7 +119,15 @@ public interface KomatsuDataParameter {
     //認証関連
     public static String AUTH_PATH = "index\\autholize.json";
     
-    //分析用
+    //分析用 (将来的にはユーザーが定義できるようにする)
     //オールサポート対象 パワーライン
     public static Map POWERLINE = new MapIndexToJSON().reader("index\\allsupport_index.json");
+    
+    //定期メンテナンスの定義
+    public static Map PERIOD_MAINTE = new HashMap(){{
+        put("FLG", true);
+        put("受注.SGYO_KTICD", new String[]{"AA","AB","AS","BF","BJ","BL"});
+        put("作業.SGYOCD", new String[]{"B@BBB4"});
+    }};
+    
 }

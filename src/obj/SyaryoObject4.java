@@ -77,49 +77,33 @@ public class SyaryoObject4 implements Serializable {
 
     //Get Data
     public Map<String, List> get(String key) {
-        if (map == null) {
-            decompress();
-        }
+        decompress();
         Map m = (Map) map.get(key);
-        if (mapData == null) {
-            compress(true);
-        }
+        compress(true);
         return m;
     }
 
     //Get Map
     public Map<String, List> getMap() {
-        if (map == null) {
-            decompress();
-        }
+        decompress();
         Map m = map;
-        if (mapData == null) {
-            compress(true);
-        }
+        compress(true);
         return m;
     }
 
     /**
-     * Uodate Data
+     * Update Data
      */
     public void put(Object key, Object obj) {
-        if (map == null) {
-            decompress();
-        }
+        decompress();
         map.put(key, obj);
-        if (mapData == null) {
-            compress(true);
-        }
+        compress(true);
     }
 
     public void putAll(Map add) {
-        if (map == null) {
-            decompress();
-        }
+        decompress();
         map.putAll(add);
-        if (mapData == null) {
-            compress(true);
-        }
+        compress(true);
     }
 
     /*
@@ -139,13 +123,9 @@ public class SyaryoObject4 implements Serializable {
      * Delete
      */
     public void remove(Object key) {
-        if (map == null) {
-            decompress();
-        }
+        decompress();
         map.remove(key);
-        if (mapData == null) {
-            compress(true);
-        }
+        compress(true);
     }
 
     private void compress(Boolean flg) {
