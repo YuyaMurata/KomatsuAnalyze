@@ -124,7 +124,7 @@ public class SyaryoObjectFormatting {
             if (syaryo.get("KOMTRAX_SMR") != null) {
                 int tmp = -1;
                 for (String date : syaryo.get("KOMTRAX_SMR").keySet()) {
-                    int s = Integer.valueOf(syaryo.get("KOMTRAX_SMR").get(date).get(0).toString());
+                    int s = Double.valueOf(syaryo.get("KOMTRAX_SMR").get(date).get(0).toString()).intValue();
                     if (tmp > s) {
                         err++;
                     }
@@ -500,6 +500,7 @@ public class SyaryoObjectFormatting {
         }
     }
 
+    //受注情報を整形
     private static Map formOrder(Map<String, List> order, List indexList, DataRejectRule reject) {
         if (order == null) {
             //System.out.println("Not found Order!");
@@ -583,6 +584,7 @@ public class SyaryoObjectFormatting {
         return map;
     }
 
+    //作業明細を整形
     private static Map formWork(Map<String, List> work, List odrSBN, List indexList, List workOrder) {
         if (work == null || odrSBN == null) {
             //System.out.println("Not found Work!");
@@ -637,6 +639,7 @@ public class SyaryoObjectFormatting {
         return map;
     }
 
+    //部品明細を整形
     private static Map formParts(Map<String, List> parts, List odrSBN, List indexList, List partsOrder) {
         if (parts == null || odrSBN == null) {
             //System.out.println("Not found Parts!");
@@ -687,6 +690,7 @@ public class SyaryoObjectFormatting {
         return map;
     }
 
+    //サービスのSMRを整形
     private static Map formSMR(Map<String, List> smr, List indexList) {
         if (smr == null) {
             //System.out.println("Not found Work!");
@@ -754,6 +758,7 @@ public class SyaryoObjectFormatting {
         return map;
     }
 
+    //オールサポートの整形　(解約日を終了日とする)
     private static Map formAS(Map<String, List> as, List indexList) {
         if (as == null) {
             return null;
@@ -782,6 +787,7 @@ public class SyaryoObjectFormatting {
         }
     }
 
+    //日付に混じっているごみを削除 (日付が無い or 日付がおかしい)
     private static void formDate(SyaryoObject4 syaryo, List indexList, Integer date) {
         for (Object key : syaryo.getMap().keySet()) {
             Map<String, List> map = syaryo.get(key.toString());
@@ -822,6 +828,7 @@ public class SyaryoObjectFormatting {
         }
     }
 
+    //KOMTRAXデータの整形 (値の重複除去、日付の整形、小数->整数)
     private static void formKomtrax(SyaryoObject4 syaryo) {
         //ALL
         List<String> kmList = dataIndex.keySet().stream().filter(s -> s.contains("KOMTRAX")).collect(Collectors.toList());
@@ -838,7 +845,8 @@ public class SyaryoObjectFormatting {
                 String str = syaryo.get(id).get(date).toString();
 
                 if (!tmp.equals(str)) {
-                    newMap.put(dup(d, newMap), syaryo.get(id).get(date));
+                    List value = getDoubleToInteger(id, syaryo.get(id).get(date));
+                    newMap.put(dup(d, newMap), value);
                     tmp = str;
                     
                 }
@@ -847,7 +855,17 @@ public class SyaryoObjectFormatting {
             syaryo.put(id, newMap);
         }
     }
+    
+    //KOMTRAXデータを整数値に変換(SMR, FUEL_CONSUME)
+    private static List<String> getDoubleToInteger(String id, List<String> kmvalue){
+        if(!id.contains("SMR") && !id.contains("FUEL"))
+            return kmvalue;
+        
+        kmvalue.set(0, String.valueOf(Double.valueOf(kmvalue.get(0)).intValue()));
+        return kmvalue;
+    }
 
+    //重複して並んでいるIDを重複除去
     private static List exSeqDuplicate(List<String> dupList) {
         List list = new ArrayList();
         String tmp = "";
@@ -862,6 +880,7 @@ public class SyaryoObjectFormatting {
         return list;
     }
 
+    //日付をまとめて整形　2018/08/09 -> 20180809
     private static Map dateFormalize(Map dateMap) {
         Map map = new TreeMap();
         for (Object date : dateMap.keySet()) {
@@ -872,6 +891,7 @@ public class SyaryoObjectFormatting {
         return map;
     }
 
+    //空の情報を削除
     private static void removeEmptyObject(SyaryoObject4 syaryo) {
         List deleteKey = new ArrayList();
         for (Object key : syaryo.getMap().keySet()) {
@@ -887,6 +907,7 @@ public class SyaryoObjectFormatting {
         }
     }
     
+    //日付が重複する場合に連番を付与　20180809が2つ登場したとき-> 20180809#0001
     private static String dup(String key, Map map) {
         int cnt = 0;
         String k = key;
@@ -896,6 +917,7 @@ public class SyaryoObjectFormatting {
         return k;
     }
 
+    //SMRの異常値を除去　出来が悪いのでやり直し
     private static Map rejectSMRData(Map<String, List<String>> smr, int idx) {
         
         //MA
