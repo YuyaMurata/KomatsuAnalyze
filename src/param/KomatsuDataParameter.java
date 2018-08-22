@@ -130,4 +130,6 @@ public interface KomatsuDataParameter {
         put("作業.SGYOCD", new String[]{"B@BBB4"});
     }};
     
+    //サブキーの変換が必要なものの対応表
+    public static List TRANS_DATE = Arrays.asList(new String[]{"受注", "作業", "部品"});
 }

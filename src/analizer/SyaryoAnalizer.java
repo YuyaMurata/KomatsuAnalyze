@@ -164,8 +164,10 @@ public class SyaryoAnalizer implements AutoCloseable {
     private Map<String, String> dateSBN = new HashMap<>();
     public String getSBNDate(String sbn, Boolean sw) {
         if (sw) {
+            //SBN -> Date
             return sbnDate.get(sbn.split("#")[0]);
         } else {
+            //Date -> SBN
             return dateSBN.get(sbn.split("#")[0]);
         }
     }
@@ -198,6 +200,23 @@ public class SyaryoAnalizer implements AutoCloseable {
         return map;
     }
 
+    //選択
+    public Map<String, List<String>> getValue(String key, List<Integer> index){
+        //例外処理1
+        if (syaryo.get(key) == null) {
+            return null;
+        }
+        
+        //指定列を抽出したKey-Valueデータを作成
+        Map map = syaryo.get(key).entrySet().stream()
+                                    .collect(Collectors.toMap(s -> s.getKey(), s -> index.stream()
+                                            .map(i -> s.getValue().get(i))
+                                            .collect(Collectors.toList())
+                                    ));
+        
+        return map;
+    }
+    
     //列抽出:keyデータのindex列をsortedしてリストで返す
     public List<String> getValue(String key, String index, Boolean sorted) {
         //例外処理1
