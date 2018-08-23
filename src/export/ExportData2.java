@@ -9,12 +9,14 @@ import analizer.SyaryoAnalizer;
 import file.CSVFileReadWrite;
 import index.SyaryoObjectElementsIndex;
 import java.io.PrintWriter;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,28 +44,25 @@ public class ExportData2 {
         headers.put("日付", -1);
         headers.put("受注.作業形態", dataIndex.get("受注").indexOf("SGYO_KTICD"));
         headers.put("受注.受注金額", dataIndex.get("受注").indexOf("SKKG"));
-        headers.put("作業.作業コード", dataIndex.get("作業").indexOf("SGYOCD"));
-        headers.put("KOMTRAX_ERROR.エラーコード", dataIndex.get("KOMTRAX_ERROR").indexOf("ERROR_CODE"));
-        headers.put("KOMTRAX_ERROR.エラー種類", dataIndex.get("KOMTRAX_ERROR").indexOf("ERROR_KIND"));
-        headers.put("KOMTRAX_SMR.SMR", dataIndex.get("KOMTRAX_SMR").indexOf("SMR_VALUE"));
+        //headers.put("作業.作業コード", dataIndex.get("作業").indexOf("SGYOCD"));
+        //headers.put("KOMTRAX_ERROR.エラーコード", dataIndex.get("KOMTRAX_ERROR").indexOf("ERROR_CODE"));
+        //headers.put("KOMTRAX_ERROR.エラー種類", dataIndex.get("KOMTRAX_ERROR").indexOf("ERROR_KIND"));
+        //headers.put("KOMTRAX_SMR.SMR", dataIndex.get("KOMTRAX_SMR").indexOf("SMR_VALUE"));
         headers.put("経過", -1);
 
         Map filter = KomatsuDataParameter.PERIOD_MAINTE;
 
         //車両の読み込み
         map = new SyaryoToZip3().read(PATH + "syaryo_obj_" + KISY + "_form.bz2");
-        
+
         //テスト
-        export(null, headers, new SyaryoAnalizer(map.get("PC200-8N1-313582")), null);
-        
+        //export(null, headers, new SyaryoAnalizer(map.get("PC200-8N1-313582")), null);
         //単体
         //String name = "PC200-8N1-313582";
         //uniExport("ExportData_" + name + ".csv", headers, name, filter);
-
         //複数
         //String[] names = new String[]{"PC200-8N1-310531", "PC200-8N1-315586", "PC200-8N1-313998", "PC200-8N1-312914", "PC200-8N1-316882"};
         //multiExport("ExportData_Multi_"+names.length+".csv", headers, names, filter);
-        
         //全部
         //allExport("ExportData_"+KISY+"_ALL.csv", headers, filter);
     }
@@ -104,54 +103,92 @@ public class ExportData2 {
 
     private static void export(PrintWriter pw, Map<String, Integer> headers, SyaryoAnalizer syaryo, Map filter) {
         int cnt = 0;
-        
+
         String name = syaryo.get().name;
         System.out.println(name);
-        
+
         Map<String, Map<String, List<String>>> expMap = new HashMap();
         //親Keyの取得
-        List<String> data = headers.keySet().stream()
+        /*List<String> data = headers.keySet().stream()
                                     .filter(s -> s.contains("."))
                                     .map(s -> s.split("\\.")[0])
                                     .distinct()
                                     .collect(Collectors.toList());
-        
-        for(String d : data){
+         */
+
+        for (String key : headers.keySet()) {
+            if (!key.contains(".")) {
+                continue;
+            }
+
+            String data = key.split("\\.")[0];
+
             //子要素の取得
-            List<Integer> elements = headers.entrySet().stream()
-                                                    .filter(s -> s.getKey().contains(d))
-                                                    .map(s -> s.getValue())
-                                                    .collect(Collectors.toList());
-            
-            expMap.put(d, syaryo.getValue(d, elements));
+            List<Integer> elements = Arrays.asList(new Integer[]{headers.get(key)});
+
+            expMap.put(key, syaryo.getValue(data, elements));
         }
-        
-        if(headers.get("日付") != null){
+
+        if (headers.get("日付") != null) {
             //全日付の取得
             List<String> dates = new ArrayList<>();
-            for(String subKey : expMap.keySet()){
-                if(KomatsuDataParameter.TRANS_DATE.contains(subKey))
+            for (String subKey : expMap.keySet()) {
+                if (KomatsuDataParameter.TRANS_DATE.contains(subKey.split("\\.")[0])) {
                     dates.addAll(expMap.get(subKey).keySet().stream().map(s -> syaryo.getSBNDate(s, true)).collect(Collectors.toList()));
-                else
+                } else {
                     dates.addAll(expMap.get(subKey).keySet());
-            }
-            
-            //データ書き込み
-            List<String> header = headers.keySet().stream().map(s -> s.split("\\.")[0]).distinct().collect(Collectors.toList());
-            for(String date : dates){
-                List<String> line = new ArrayList<>();
-                for(String head : header){
-                    String subKey = date;
-                    if(KomatsuDataParameter.TRANS_DATE.contains(head))
-                        subKey = syaryo.getSBNDate(date, true);
-                    if(expMap.get(head).get(subKey) != null)
-                        line.addAll(expMap.get(head).get(subKey));
-                    else
-                        line.addAll();
                 }
             }
+            //重複除去　並び替え
+            dates = dates.stream().distinct().sorted().collect(Collectors.toList());
+
+            //データ書き込み
+            for (String date : dates) {
+                List<String> line = new ArrayList<>();
+                Queue<String> working = new ArrayDeque();
+                working.offer("");
+
+                while (working.peek() != null) {
+                    for (String header : headers.keySet()) {
+                        if (header.contains(".")) {
+                            //車両上を返すヘッダ
+                            String subKey = date;
+                            if (KomatsuDataParameter.TRANS_DATE.contains(header.split("\\.")[0])) {
+                                subKey = working.poll();
+                                if (subKey.equals("")) {
+                                    working.addAll(Arrays.asList(syaryo.getSBNDate(date, false).split(",")));
+                                    subKey = working.poll();
+                                }
+                                System.out.println(subKey);
+                            }
+                            if (expMap.get(header).get(subKey) != null) {
+                                line.addAll(expMap.get(header).get(subKey));
+                            } else {
+                                line.add("");
+                            }
+                        } else {
+                            //規定のデータを返すヘッダ
+                            switch (header) {
+                                case "SID":
+                                    line.add(name);
+                                    break;
+                                case "日付":
+                                    line.add(date.split("#")[0]);
+                                    break;
+                                case "経過":
+                                    line.add(syaryo.age(date).toString());
+                                    break;
+                                default:
+                                    line.add("Not Defined!");
+                            }
+                        }
+                    }
+                }
+                //pw.println(String.join(",", line));
+                System.out.println(line);
+            }
         }
-        
+
         System.out.println(expMap);
     }
 }

@@ -10,8 +10,11 @@ import file.CSVFileReadWrite;
 import index.SyaryoObjectElementsIndex;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import json.SyaryoToZip3;
 import obj.SyaryoObject4;
 import param.KomatsuDataParameter;
@@ -22,7 +25,7 @@ import param.KomatsuDataParameter;
  */
 public class ExportIrregularData {
 
-    private static String KISY = "PC138US";
+    private static String KISY = "PC200";
     private static String OBJPATH = KomatsuDataParameter.OBJECT_PATH;
 
     public static void main(String[] args) {
@@ -32,7 +35,9 @@ public class ExportIrregularData {
 
         Map<String, List> dataIndex = SyaryoObjectElementsIndex.getInstance().getIndex();
 
-        errSMR(syaryoMap, dataIndex.get("SMR"), dataIndex.get("KOMTRAX_SMR"));
+        //errSMR(syaryoMap, dataIndex.get("SMR"), dataIndex.get("KOMTRAX_SMR"));
+        
+        errSBN(syaryoMap, "受注");
     }
 
     private static void errSMR(Map<String, SyaryoObject4> syaryoMap, List smrList, List kmsmrList) {
@@ -142,6 +147,36 @@ public class ExportIrregularData {
                 line = line + "," + sd;
 
                 csv.println(line);
+            }
+        }
+    }
+    
+    private static void errSBN(Map<String, SyaryoObject4> syaryoMap, String data){
+        try (PrintWriter csv = CSVFileReadWrite.writer("errdata_SBN_" + KISY + ".csv")) {
+            for(SyaryoObject4 syaryo : syaryoMap.values()){
+                if(syaryo.get(data) == null)
+                    continue;
+                
+                Map<String, List<String>> sbncheck = new HashMap();
+                for(String sbn : syaryo.get(data).keySet()){
+                    if(sbn.length() > 6)
+                        continue;
+                    
+                    sbncheck.put(sbn, new ArrayList<>());
+                }
+                
+                for(String sbn : syaryo.get(data).keySet()){
+                    if(sbncheck.get(sbn) != null)
+                        continue;
+                    
+                    Optional<String> syuseisbn = sbncheck.keySet().stream().filter(s -> sbn.contains(s)).findFirst();
+                    if(syuseisbn.isPresent())
+                        sbncheck.get(syuseisbn.get()).add(sbn);
+                }
+                
+                for(String sbn : sbncheck.keySet()){
+                    csv.println(syaryo.name+","+syaryo.get(data).get(sbn).get(0)+","+syaryo.get(data).get(sbn).get(3)+","+sbn+","+String.join(" ", sbncheck.get(sbn)));
+                }
             }
         }
     }
