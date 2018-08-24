@@ -29,7 +29,7 @@ import program.r.R;
  */
 public class SyaryoObjectFormatting {
 
-    private static String KISY = "PC138US";
+    private static String KISY = "PC200";
     private static String INDEXPATH = KomatsuDataParameter.SHUFFLE_FORMAT_PATH;
     private static String OBJPATH = KomatsuDataParameter.OBJECT_PATH;
     private static String HONSY_INDEXPATH = KomatsuDataParameter.HONSYA_INDEX_PATH;
@@ -531,7 +531,10 @@ public class SyaryoObjectFormatting {
         int db = indexList.indexOf("kom_order");
         int price = indexList.indexOf("SKKG");
         int kind = indexList.indexOf("ODR_KBN");
-
+        
+        //6桁以下の規格外の作番を取得するリスト
+        List<String> sixSBN = new ArrayList();
+        
         for (String sbn : sbnList) {
             //重複作番を取り出す
             List<String> sbnGroup = order.keySet().stream()
@@ -561,17 +564,34 @@ public class SyaryoObjectFormatting {
                             map.put(sbn, list);
                         }
                     }
-
                 }
             }
-
+            
+            //規格外の作番取得
+            if(sbn.length() < 7)
+                sixSBN.add(sbn);
+            
             //System.out.println(map.get(sbn));
             reject.addPARTSID(sbn);
             if (map.get(sbn).get(kind).equals("2")) {
                 reject.addWORKID(sbn);
             }
         }
-
+        
+        //規格外作番で修正されている場合は削除
+        List<String> removeSixSBN = new ArrayList<>();
+        for(String sbn : map.keySet()){
+            if(sixSBN.contains(sbn))
+                continue;
+            
+            Optional<String> sbnCheck = sixSBN.stream().filter(s -> sbn.contains(s)).findFirst();
+            if(sbnCheck.isPresent()){
+                //System.out.println(sbn+":"+sixSBN);
+                removeSixSBN.add(sbnCheck.get());
+            }
+        } 
+        removeSixSBN.stream().forEach(s -> map.remove(s));
+        
         //金額の整形処理
         for (String sbn : map.keySet()) {
             List<String> list = map.get(sbn);

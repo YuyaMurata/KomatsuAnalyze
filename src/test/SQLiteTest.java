@@ -23,11 +23,11 @@ public class SQLiteTest {
         Class.forName("org.sqlite.JDBC");
         Connection c = DriverManager.getConnection("jdbc:sqlite:db/test.db");
         
-        /*createTable(c);
+        createTable(c);
         insert(c);
         select(c);
         update(c);
-        delete(c);*/
+        delete(c);
         outcsv(c);
         c.close();
     }

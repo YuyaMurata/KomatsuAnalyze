@@ -21,6 +21,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import json.MapIndexToJSON;
 import json.SyaryoToZip3;
 import obj.SyaryoObject4;
 import param.KomatsuDataParameter;
@@ -38,25 +39,29 @@ public class ExportData2 {
     private static Map<String, SyaryoObject4> map;
 
     public static void main(String[] args) {
-        //ヘッダー設定
+        //取得データ
         Map headers = new LinkedHashMap();
-        headers.put("SID", -1);
-        headers.put("日付", -1);
-        headers.put("受注.作業形態", dataIndex.get("受注").indexOf("SGYO_KTICD"));
-        headers.put("受注.受注金額", dataIndex.get("受注").indexOf("SKKG"));
-        //headers.put("作業.作業コード", dataIndex.get("作業").indexOf("SGYOCD"));
-        //headers.put("KOMTRAX_ERROR.エラーコード", dataIndex.get("KOMTRAX_ERROR").indexOf("ERROR_CODE"));
-        //headers.put("KOMTRAX_ERROR.エラー種類", dataIndex.get("KOMTRAX_ERROR").indexOf("ERROR_KIND"));
-        //headers.put("KOMTRAX_SMR.SMR", dataIndex.get("KOMTRAX_SMR").indexOf("SMR_VALUE"));
-        headers.put("経過", -1);
+        headers.put("受注", new Integer[]{dataIndex.get("受注").indexOf("SBN"), dataIndex.get("受注").indexOf("SGYO_KTICD"), dataIndex.get("受注").indexOf("SKKG")});
+        headers.put("作業", new Integer[]{dataIndex.get("作業").indexOf("SGYOCD")});
+        headers.put("KOMTRAX_ERROR", new Integer[]{dataIndex.get("KOMTRAX_ERROR").indexOf("ERROR_CODE"), dataIndex.get("KOMTRAX_ERROR").indexOf("ERROR_KIND")});
+        headers.put("KOMTRAX_SMR", new Integer[]{dataIndex.get("KOMTRAX_SMR").indexOf("SMR_VALUE")});
 
         Map filter = KomatsuDataParameter.PERIOD_MAINTE;
 
+        //Time
+        long start = System.currentTimeMillis();
+        
+        Map recmap = new HashMap();
+        
+        //テスト
+        //export("test.json", headers, new SyaryoAnalizer(map.get("PC200-8N1-313582")), null);
+
+        //ヘッダーの登録
+        regHeader(recmap, headers);
+        
         //車両の読み込み
         map = new SyaryoToZip3().read(PATH + "syaryo_obj_" + KISY + "_form.bz2");
-
-        //テスト
-        //export(null, headers, new SyaryoAnalizer(map.get("PC200-8N1-313582")), null);
+        
         //単体
         //String name = "PC200-8N1-313582";
         //uniExport("ExportData_" + name + ".csv", headers, name, filter);
@@ -64,131 +69,52 @@ public class ExportData2 {
         //String[] names = new String[]{"PC200-8N1-310531", "PC200-8N1-315586", "PC200-8N1-313998", "PC200-8N1-312914", "PC200-8N1-316882"};
         //multiExport("ExportData_Multi_"+names.length+".csv", headers, names, filter);
         //全部
-        //allExport("ExportData_"+KISY+"_ALL.csv", headers, filter);
+        allExport(recmap, "ExportData_"+KISY+"_ALL.json", headers);
+        
+        long stop = System.currentTimeMillis();
+        System.out.println("Time:"+(stop-start)+"ms");
     }
-
-    private static void allExport(String f, Map<String, Integer> headers, Map filter) {
-        try (PrintWriter pw = CSVFileReadWrite.writer(f)) {
-            pw.println(headers.keySet().stream().collect(Collectors.joining(",")));
-            for (String name : map.keySet()) {
-                System.out.println(name);
-                try (SyaryoAnalizer syaryo = new SyaryoAnalizer(map.get(name))) {
-                    export(pw, headers, syaryo, filter);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
+    
+    private static void regHeader(Map recmap, Map<String, Integer[]> headers){
+        Map headMap = new HashMap();
+        for(String header : headers.keySet()){
+            headMap.put(header, Arrays.asList(headers.get(header)).stream().map(i -> i<0?(header+"key"):dataIndex.get(header).get(i)).collect(Collectors.toList()));
+        }
+       
+        recmap.put("_headers", headMap);
+         System.out.println(recmap);
+    }
+    
+    private static void allExport(Map recmap, String f, Map<String, Integer[]> headers) {
+        for (String name : map.keySet()) {
+            System.out.println(name);
+            try (SyaryoAnalizer syaryo = new SyaryoAnalizer(map.get(name))) {
+                export(recmap, headers, syaryo);
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         }
+        new MapIndexToJSON().write(f, recmap);
     }
 
-    private static void multiExport(String f, Map<String, Integer> headers, String[] names, Map filter) {
-        try (PrintWriter pw = CSVFileReadWrite.writer(f)) {
-            pw.println(headers.keySet().stream().collect(Collectors.joining(",")));
-            for (String name : names) {
-                System.out.println(name);
-                SyaryoAnalizer syaryo = new SyaryoAnalizer(map.get(name));
-                export(pw, headers, syaryo, filter);
-            }
-        }
-    }
-
-    private static void uniExport(String f, Map<String, Integer> headers, String name, Map filter) {
-        try (PrintWriter pw = CSVFileReadWrite.writer(f)) {
-            pw.println(headers.keySet().stream().collect(Collectors.joining(",")));
+    private static void multiExport(Map recmap, String f, Map<String, Integer[]> headers, String[] names) {
+        for (String name : names) {
             System.out.println(name);
             SyaryoAnalizer syaryo = new SyaryoAnalizer(map.get(name));
-            export(pw, headers, syaryo, filter);
+            export(recmap, headers, syaryo);
         }
+        new MapIndexToJSON().write(f, recmap);
     }
 
-    private static void export(PrintWriter pw, Map<String, Integer> headers, SyaryoAnalizer syaryo, Map filter) {
-        int cnt = 0;
-
-        String name = syaryo.get().name;
+    private static void uniExport(Map recmap, String f, Map<String, Integer[]> headers, String name, Map filter) {
         System.out.println(name);
+        SyaryoAnalizer syaryo = new SyaryoAnalizer(map.get(name));
+        
+        export(recmap, headers, syaryo);
+        new MapIndexToJSON().write(f, recmap);
+    }
 
-        Map<String, Map<String, List<String>>> expMap = new HashMap();
-        //親Keyの取得
-        /*List<String> data = headers.keySet().stream()
-                                    .filter(s -> s.contains("."))
-                                    .map(s -> s.split("\\.")[0])
-                                    .distinct()
-                                    .collect(Collectors.toList());
-         */
-
-        for (String key : headers.keySet()) {
-            if (!key.contains(".")) {
-                continue;
-            }
-
-            String data = key.split("\\.")[0];
-
-            //子要素の取得
-            List<Integer> elements = Arrays.asList(new Integer[]{headers.get(key)});
-
-            expMap.put(key, syaryo.getValue(data, elements));
-        }
-
-        if (headers.get("日付") != null) {
-            //全日付の取得
-            List<String> dates = new ArrayList<>();
-            for (String subKey : expMap.keySet()) {
-                if (KomatsuDataParameter.TRANS_DATE.contains(subKey.split("\\.")[0])) {
-                    dates.addAll(expMap.get(subKey).keySet().stream().map(s -> syaryo.getSBNDate(s, true)).collect(Collectors.toList()));
-                } else {
-                    dates.addAll(expMap.get(subKey).keySet());
-                }
-            }
-            //重複除去　並び替え
-            dates = dates.stream().distinct().sorted().collect(Collectors.toList());
-
-            //データ書き込み
-            for (String date : dates) {
-                List<String> line = new ArrayList<>();
-                Queue<String> working = new ArrayDeque();
-                working.offer("");
-
-                while (working.peek() != null) {
-                    for (String header : headers.keySet()) {
-                        if (header.contains(".")) {
-                            //車両上を返すヘッダ
-                            String subKey = date;
-                            if (KomatsuDataParameter.TRANS_DATE.contains(header.split("\\.")[0])) {
-                                subKey = working.poll();
-                                if (subKey.equals("")) {
-                                    working.addAll(Arrays.asList(syaryo.getSBNDate(date, false).split(",")));
-                                    subKey = working.poll();
-                                }
-                                System.out.println(subKey);
-                            }
-                            if (expMap.get(header).get(subKey) != null) {
-                                line.addAll(expMap.get(header).get(subKey));
-                            } else {
-                                line.add("");
-                            }
-                        } else {
-                            //規定のデータを返すヘッダ
-                            switch (header) {
-                                case "SID":
-                                    line.add(name);
-                                    break;
-                                case "日付":
-                                    line.add(date.split("#")[0]);
-                                    break;
-                                case "経過":
-                                    line.add(syaryo.age(date).toString());
-                                    break;
-                                default:
-                                    line.add("Not Defined!");
-                            }
-                        }
-                    }
-                }
-                //pw.println(String.join(",", line));
-                System.out.println(line);
-            }
-        }
-
-        System.out.println(expMap);
+    private static void export(Map recmap, Map<String, Integer[]> headers, SyaryoAnalizer syaryo) {
+        recmap.putAll(syaryo.export(headers));
     }
 }

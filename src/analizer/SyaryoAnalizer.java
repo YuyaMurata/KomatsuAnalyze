@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import json.SyaryoToZip3;
 import obj.SyaryoObject4;
@@ -201,7 +202,7 @@ public class SyaryoAnalizer implements AutoCloseable {
     }
 
     //選択
-    public Map<String, List<String>> getValue(String key, List<Integer> index){
+    public Map<String, List<String>> getValue(String key, Integer[] index){
         //例外処理1
         if (syaryo.get(key) == null) {
             return null;
@@ -209,8 +210,8 @@ public class SyaryoAnalizer implements AutoCloseable {
         
         //指定列を抽出したKey-Valueデータを作成
         Map map = syaryo.get(key).entrySet().stream()
-                                    .collect(Collectors.toMap(s -> s.getKey(), s -> index.stream()
-                                            .map(i -> s.getValue().get(i))
+                                    .collect(Collectors.toMap(s -> s.getKey(), s -> Arrays.asList(index).stream()
+                                            .map(i -> i<0?s.getKey():s.getValue().get(i))
                                             .collect(Collectors.toList())
                                     ));
         
@@ -243,6 +244,19 @@ public class SyaryoAnalizer implements AutoCloseable {
         }
 
         return list;
+    }
+    
+    public Map export(Map<String, Integer[]> exportHeader){
+        Map<String, Map<String, List<String>>> exportMap = new HashMap<>();
+        
+        //エクスポートヘッダで指定した要素の取得
+        exportHeader.entrySet().stream()
+                                .filter(h -> syaryo.get(h.getKey()) != null)
+                                .forEach(h -> exportMap.put(h.getKey(), getValue(h.getKey(), h.getValue())));
+        
+        Map map = new HashMap<>();
+        map.put(syaryo.name, exportMap);
+        return map;
     }
 
     private static SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);

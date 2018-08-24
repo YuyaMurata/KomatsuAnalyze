@@ -41,6 +41,7 @@ public interface KomatsuDataParameter {
     public static String SETTING_GETDATA_PATH = "index\\syaryo_data_index.csv";
     public static String SETTING_GECUSTTDATA_PATH = "index\\customer_data_index.csv";
     public static String CUSTOMER_INDEX_PATH = "index\\customer_data_index.json";
+    public static String PC_ERRORFLG_INDEX_PATH = "index\\pc_errorflg_index.json";
     public static String HONSYA_INDEX_PATH = "index\\honsya_index.json";
     public static String SUMMARY_PATH = "summary\\";
     public static String PRODUCT_SOURCE = "index\\product_201703.csv";
