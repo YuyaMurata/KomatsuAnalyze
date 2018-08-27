@@ -64,12 +64,12 @@ public class ExportData2 {
         
         //単体
         //String name = "PC200-8N1-313582";
-        //uniExport("ExportData_" + name + ".csv", headers, name, filter);
+        //uniExport("ExportData_" + name + ".json", headers, name, filter);
         //複数
-        //String[] names = new String[]{"PC200-8N1-310531", "PC200-8N1-315586", "PC200-8N1-313998", "PC200-8N1-312914", "PC200-8N1-316882"};
-        //multiExport("ExportData_Multi_"+names.length+".csv", headers, names, filter);
+        String[] names = new String[]{"PC200-8N1-310531", "PC200-8N1-315586", "PC200-8N1-313998", "PC200-8N1-312914", "PC200-8N1-316882"};
+        multiExport(recmap, "ExportData_Multi_"+names.length+".json", headers, names);
         //全部
-        allExport(recmap, "ExportData_"+KISY+"_ALL.json", headers);
+        //allExport(recmap, "ExportData_"+KISY+"_ALL.json", headers);
         
         long stop = System.currentTimeMillis();
         System.out.println("Time:"+(stop-start)+"ms");

@@ -49,323 +49,320 @@ import viewer.service.ButtonService;
  */
 public class EasyViewerFXMLController implements Initializable {
 
-    @FXML
-    private MenuBar menu;
-    @FXML
-    private MenuItem import_json;
-    @FXML
-    private ListView<?> keylist;
-    private Accordion viewarea;
+	@FXML
+	private MenuBar menu;
+	@FXML
+	private MenuItem import_json;
+	@FXML
+	private ListView<?> keylist;
+	private Accordion viewarea;
 
-    private Map<String, SyaryoObject4> syaryoMap;
-    private Map<String, SimpleTemplate> simpleMap;
-    
-    @FXML
-    private Label id_label;
-    @FXML
-    private ComboBox<String> datafilter;
-    @FXML
-    private MenuItem rightClick_copy;
-    @FXML
-    private Label number_syaryo_label;
-    @FXML
-    private ToggleButton filter_button;
-    @FXML
-    private ToggleButton order_button;
-    @FXML
-    private Label index_number_label;
-    @FXML
-    private Button graph_button;
-    @FXML
-    private ComboBox<String> graph_menu;
+	private Map<String, SyaryoObject4> syaryoMap;
 
-    private SyaryoObject4 currentSyaryo;
-    private String currentFile;
-    
-    @FXML
-    private MenuItem smr_plot;
-    @FXML
-    private MenuItem smr_hist;
-    @FXML
-    private Accordion dataAccordion;
+	@FXML
+	private Label id_label;
+	@FXML
+	private ComboBox<String> datafilter;
+	@FXML
+	private MenuItem rightClick_copy;
+	@FXML
+	private Label number_syaryo_label;
+	@FXML
+	private ToggleButton filter_button;
+	@FXML
+	private ToggleButton order_button;
+	@FXML
+	private Label index_number_label;
+	@FXML
+	private Button graph_button;
+	@FXML
+	private ComboBox<String> graph_menu;
 
-    /**
-     * Initializes the controller class.
-     */
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        // TODO
-        syaryoMap = new HashMap();
-        machineListInitialize();
-        dataFilterSettings(KomatsuDataParameter.SETTING_DATAFILETER_PATH);
-        graphMenuSettings();
-        initializeAccordion();
-    }
+	private SyaryoObject4 currentSyaryo;
+	private String currentFile;
 
-    public void machineListInitialize() {
-        //Event
-        keylist.getSelectionModel().selectedIndexProperty().addListener(
-            (ov, old, current) -> {
-                // リスト・ビュー内の選択項目を出力
-                System.out.println(ov);
-                machineHistorySelected(current.intValue());
-            }
-        );
-    }
+	@FXML
+	private MenuItem smr_plot;
+	@FXML
+	private MenuItem smr_hist;
+	@FXML
+	private Accordion dataAccordion;
 
-    //Selected Machine
-    public void machineHistorySelected(Integer index) {
-        System.out.println("Selection in the listView is : " + index);
-        if (index < 0) {
-            return;
-        }
-        String name = keylist.getItems().get(index).toString();
-        
-        if(currentFile.contains(".json")){
-            SimpleTemplate temp = simpleMap.get(name);
-            id_label.setText(temp.name.get(0));
-            return ;
-        }
-        currentSyaryo = syaryoMap.get(name);
-        index_number_label.setText(String.valueOf(index + 1));
-        id_label.setText(currentSyaryo.getName());
+	/**
+	 * Initializes the controller class.
+	 */
+	@Override
+	public void initialize(URL url, ResourceBundle rb) {
+		// TODO
+		syaryoMap = new HashMap();
+		machineListInitialize();
+		dataFilterSettings();
+		graphMenuSettings();
+		initializeAccordion();
+	}
 
-        //データの設定
-        settingData(currentSyaryo);
-    }
-    
-    private void initializeAccordion(){
-        TitledPane[] tps = new TitledPane[KomatsuDataParameter.DATA_ORDER.size()];
-        TextArea[] tes = new TextArea[KomatsuDataParameter.DATA_ORDER.size()];
-        
-        int i = 0;
-        for(String data : KomatsuDataParameter.DATA_ORDER){
-            tes[i] = new TextArea();
-            tps[i] = new TitledPane(data, tes[i]);
-            i++;
-        }
-        
-        dataAccordion.getPanes().clear();
-        dataAccordion.getPanes().addAll(tps);
-    }
-    
-    //アコーディオンの設定
-    private void settingData(SyaryoObject4 syaryo) {
-        int i=0;
-        for(String data : KomatsuDataParameter.DATA_ORDER){
-            TitledPane title = dataAccordion.getPanes().get(i);
-            String[] str;
-            str = textdump(syaryo.get(title.getText().split(" ")[0].replace("×", "")));
-            ((TextArea)title.getContent()).setText(str[1]);
-            title.setText(check(title.getText(), str));
-            i++;
-        }
-    }
+	public void machineListInitialize() {
+		//Event
+		keylist.getSelectionModel().selectedIndexProperty().addListener(
+			(ov, old, current) -> {
+				// リスト・ビュー内の選択項目を出力
+				System.out.println(ov);
+				machineHistorySelected(current.intValue());
+			}
+		);
+	}
 
-    private String check(String title, String[] datastr) {
-        if (datastr[1] == null) {
-            return "×" + title.split(" ")[0].replace("×", "");
-        } else {
-            return title.split(" ")[0].replace("×", "") + " " + datastr[0];
-        }
-    }
+	//Selected Machine
+	public void machineHistorySelected(Integer index) {
+		System.out.println("Selection in the listView is : " + index);
+		if (index < 0) {
+			return;
+		}
+		String name = keylist.getItems().get(index).toString();
 
-    private String[] textdump(Map<String, List> m) {
-        if (m == null) {
-            return new String[]{"", null};
-        }
+		currentSyaryo = syaryoMap.get(name);
+		index_number_label.setText(String.valueOf(index + 1));
+		id_label.setText(currentSyaryo.getName());
 
-        StringBuilder sb = new StringBuilder();
-        for (String d : m.keySet()) {
-            sb.append(d);
-            sb.append(m.get(d));
-            sb.append("\n");
-        }
+		//データの設定
+		settingData(currentSyaryo);
+	}
 
-        return new String[]{String.valueOf(m.size()), sb.toString()};
-    }
+	private void initializeAccordion() {
+		TitledPane[] tps = new TitledPane[KomatsuDataParameter.DATA_ORDER.size()];
+		TextArea[] tes = new TextArea[KomatsuDataParameter.DATA_ORDER.size()];
 
-    @FXML
-    private void loadJSONFile(ActionEvent event) {
-        FileChooser filechooser = new FileChooser();
-        filechooser.setInitialDirectory(new File(KomatsuDataParameter.SYARYOOBJECT_FDPATH));
-        File file = filechooser.showOpenDialog(menu.getScene().getWindow());
-        if (file != null) {
-            id_label.setText(file.getName());
-            syaryoMap = loadSyaryoMap(file);
-            updateKeyList(new ArrayList(new TreeSet(syaryoMap.keySet())));
-        }
-        
-        //Filter Initialize
-        initializeFilter(true);
-    }
+		int i = 0;
+		for (String data : KomatsuDataParameter.DATA_ORDER) {
+			tes[i] = new TextArea();
+			tps[i] = new TitledPane(data, tes[i]);
+			i++;
+		}
 
-    private Map loadSyaryoMap(File file) {
-        System.out.println(file.getName());
-        currentFile = file.getName();
-        
-        if(file.getName().contains(".bz2"))
-            return new SyaryoToZip3().read(file.getAbsolutePath());
-        else{
-            //車両名の確認のみに制限される
-            simpleMap = new SyaryoTemplateToJson().reader(file.getAbsolutePath());
-            return new JsonToSyaryoTemplate().reader(file.getAbsolutePath());
-        }
-    }
+		dataAccordion.getPanes().clear();
+		dataAccordion.getPanes().addAll(tps);
+	}
 
-    private void updateKeyList(List keys) {
-        ObservableList list = FXCollections.observableArrayList(keys);
-        keylist.setItems(list);
-        number_syaryo_label.setText(keylist.getItems().size() + " / " + syaryoMap.size());
-    }
-    
-    private void initializeFilter(Boolean f){
-        //Select Filter
-        if(f)
-            datafilter.getSelectionModel().select(0);
-        
-        //Order Initialize
-        order_button.setSelected(false);
-        order_button.setText("N");
-        
-        //Filter Button Initialize
-        filter_button.setSelected(false);
-        filter_button.setText("NF");
-    }
-    
-    private static Map currentFilterMap;
-    @FXML
-    private void selectFilter(ActionEvent event) {
-        System.out.println("Selection in the listView is : " + datafilter.getValue());
-        currentFilterMap = null;
-        
-        //Filter Button Initialize
-        initializeFilter(false);
-        
-        //Filter Button
-        filter_button.setSelected(true);
-        onFilter(event);
-    }
+	//アコーディオンの設定
+	private void settingData(SyaryoObject4 syaryo) {
+		int i = 0;
+		for (String data : KomatsuDataParameter.DATA_ORDER) {
+			TitledPane title = dataAccordion.getPanes().get(i);
+			String[] str;
+			str = textdump(syaryo.get(title.getText().split(" ")[0].replace("×", "")));
+			((TextArea) title.getContent()).setText(str[1]);
+			title.setText(check(title.getText(), str));
+			i++;
+		}
+	}
 
-    private void selectOrder(ActionEvent event) {
-        List list;
-        if (datafilter.getValue().equals("ALL") || currentFilterMap == null) {
-            return;
-        } else if (order_button.isSelected()) {
-            list = (List) currentFilterMap.entrySet().stream()
-                .sorted(Map.Entry.comparingByValue().reversed())
-                .map(s -> ((Map.Entry) s).getKey().toString())
-                .collect(Collectors.toList());
-            order_button.setText("D");
-        } else {
-            list = (List) currentFilterMap.entrySet().stream()
-                .sorted(Map.Entry.comparingByValue())
-                .map(s -> ((Map.Entry) s).getKey().toString())
-                .collect(Collectors.toList());
-            order_button.setText("A");
-        }
-        //更新処理
-        updateKeyList(list);
-    }
+	private String check(String title, String[] datastr) {
+		if (datastr[1] == null) {
+			return "×" + title.split(" ")[0].replace("×", "");
+		} else {
+			return title.split(" ")[0].replace("×", "") + " " + datastr[0];
+		}
+	}
 
-    @FXML
-    private void rightClickCopy(ActionEvent event) {
-        Clipboard clipboard = Clipboard.getSystemClipboard();
-        ClipboardContent content = new ClipboardContent();
-        content.putString(id_label.getText());
-        clipboard.setContent(content);
-    }
+	private String[] textdump(Map<String, List> m) {
+		if (m == null) {
+			return new String[]{"", null};
+		}
 
-    private void dataFilterSettings(String file) {
-        datafilter.getItems().addAll(KomatsuDataParameter.DATA_ORDER);
-    }
+		StringBuilder sb = new StringBuilder();
+		for (String d : m.keySet()) {
+			sb.append(d);
+			sb.append(m.get(d));
+			sb.append("\n");
+		}
 
-    private void graphMenuSettings() {
-        graph_menu.getItems().add("SMR");
-        graph_menu.getItems().add("KOMTRAX_SMR");
-        graph_menu.getItems().add("KOMTRAX_ERROR");
-        graph_menu.getItems().add("KOMTRAX_FUEL_CONSUME");
-        graph_menu.getItems().add("KOMTRAX_GPS");
-    }
+		return new String[]{String.valueOf(m.size()), sb.toString()};
+	}
 
-    @FXML
-    private void rightClickCopyList(ActionEvent event) {
-        Clipboard clipboard = Clipboard.getSystemClipboard();
-        ClipboardContent content = new ClipboardContent();
-        StringBuilder sb = new StringBuilder();
-        for (Object id : keylist.getItems()) {
-            sb.append(id);
-            sb.append("\n");
-        }
-        content.putString(sb.toString());
-        clipboard.setContent(content);
-    }
+	@FXML
+	private void loadJSONFile(ActionEvent event) {
+		FileChooser filechooser = new FileChooser();
+		filechooser.setInitialDirectory(new File(KomatsuDataParameter.SYARYOOBJECT_FDPATH));
+		File file = filechooser.showOpenDialog(menu.getScene().getWindow());
+		if (file != null) {
+			id_label.setText(file.getName());
+			syaryoMap = loadSyaryoMap(file);
+			updateKeyList(new ArrayList(new TreeSet(syaryoMap.keySet())));
+		}
 
-    @FXML
-    private void onFilter(ActionEvent event) {
-        filtering(datafilter.getValue(), filter_button.isSelected());
-    }
+		//Filter Initialize
+		initializeFilter(true);
+	}
 
-    //Curent Filter
-    private Map enableFilterMap;
-    private Map disableFilterMap;
-    private void filtering(String filter, Boolean btnEnDis) {
-        if (filter.equals("ALL")) {
-            updateKeyList((new ArrayList(new TreeSet(syaryoMap.keySet()))));
-            return ;
-        }
-        
-        if (currentFilterMap == null) {
-            enableFilterMap = new ConcurrentHashMap();
-            disableFilterMap = new ConcurrentHashMap();
-            syaryoMap.values().parallelStream()
-                .forEach(s -> {
-                    Map data = s.get(filter);
-                    if (data != null) {
-                        enableFilterMap.put(s.getName(), data.size());
-                    } else {
-                        disableFilterMap.put(s.getName(), 0);
-                    }
-                });
-        }
+	private Map loadSyaryoMap(File file) {
+		System.out.println(file.getName());
+		currentFile = file.getName();
 
-        if (btnEnDis) {
-            currentFilterMap = enableFilterMap;
-            filter_button.setText("EN");
-        } else {
-            currentFilterMap = disableFilterMap;
-            filter_button.setText("DS");
-        }
+		if (file.getName().contains(".bz2")) {
+			return new SyaryoToZip3().read(file.getAbsolutePath());
+		} else {
+			return new SyaryoToZip3().readJSON(file.getAbsolutePath());
+		}
+	}
 
-        //更新処理
-        updateKeyList((new ArrayList(new TreeSet(currentFilterMap.keySet()))));
-    }
+	private void updateKeyList(List keys) {
+		ObservableList list = FXCollections.observableArrayList(keys);
+		keylist.setItems(list);
+		number_syaryo_label.setText(keylist.getItems().size() + " / " + syaryoMap.size());
+	}
 
-    @FXML
-    private void onOrder(ActionEvent event) {
-        selectOrder(event);
-    }
+	private void initializeFilter(Boolean f) {
+		//Select Filter
+		if (f) {
+			datafilter.getSelectionModel().select(0);
+		}
 
-    ButtonService service = new ButtonService();
-    @FXML
-    private void graphAction(ActionEvent event) {
-        String v = graph_menu.getValue();
-        if (v == null) {
-            return;
-        }
+		//Order Initialize
+		order_button.setSelected(false);
+		order_button.setText("N");
 
-        System.out.println(v);
-        service.setInfo(v, currentSyaryo);
-        service.restart();
-    }
+		//Filter Button Initialize
+		filter_button.setSelected(false);
+		filter_button.setText("NF");
+	}
 
-    @FXML
-    private void plotSMR(ActionEvent event) {
-        keylist.getItems();
-    }
+	private static Map currentFilterMap;
 
-    @FXML
-    private void histSMR(ActionEvent event) {
-        keylist.getItems();
-    }
+	@FXML
+	private void selectFilter(ActionEvent event) {
+		System.out.println("Selection in the listView is : " + datafilter.getValue());
+		currentFilterMap = null;
+
+		//Filter Button Initialize
+		initializeFilter(false);
+
+		//Filter Button
+		filter_button.setSelected(true);
+		onFilter(event);
+	}
+
+	private void selectOrder(ActionEvent event) {
+		List list;
+		if (datafilter.getValue().equals("ALL") || currentFilterMap == null) {
+			return;
+		} else if (order_button.isSelected()) {
+			list = (List) currentFilterMap.entrySet().stream()
+				.sorted(Map.Entry.comparingByValue().reversed())
+				.map(s -> ((Map.Entry) s).getKey().toString())
+				.collect(Collectors.toList());
+			order_button.setText("D");
+		} else {
+			list = (List) currentFilterMap.entrySet().stream()
+				.sorted(Map.Entry.comparingByValue())
+				.map(s -> ((Map.Entry) s).getKey().toString())
+				.collect(Collectors.toList());
+			order_button.setText("A");
+		}
+		//更新処理
+		updateKeyList(list);
+	}
+
+	@FXML
+	private void rightClickCopy(ActionEvent event) {
+		Clipboard clipboard = Clipboard.getSystemClipboard();
+		ClipboardContent content = new ClipboardContent();
+		content.putString(id_label.getText());
+		clipboard.setContent(content);
+	}
+
+	private void dataFilterSettings() {
+		datafilter.getItems().add("ALL");
+		datafilter.getItems().addAll(KomatsuDataParameter.DATA_ORDER);
+	}
+
+	private void graphMenuSettings() {
+		graph_menu.getItems().add("SMR");
+		graph_menu.getItems().add("KOMTRAX_SMR");
+		graph_menu.getItems().add("KOMTRAX_ERROR");
+		graph_menu.getItems().add("KOMTRAX_FUEL_CONSUME");
+		graph_menu.getItems().add("KOMTRAX_GPS");
+	}
+
+	@FXML
+	private void rightClickCopyList(ActionEvent event) {
+		Clipboard clipboard = Clipboard.getSystemClipboard();
+		ClipboardContent content = new ClipboardContent();
+		StringBuilder sb = new StringBuilder();
+		for (Object id : keylist.getItems()) {
+			sb.append(id);
+			sb.append("\n");
+		}
+		content.putString(sb.toString());
+		clipboard.setContent(content);
+	}
+
+	@FXML
+	private void onFilter(ActionEvent event) {
+		filtering(datafilter.getValue(), filter_button.isSelected());
+	}
+
+	//Curent Filter
+	private Map enableFilterMap;
+	private Map disableFilterMap;
+
+	private void filtering(String filter, Boolean btnEnDis) {
+		if (filter.equals("ALL")) {
+			updateKeyList((new ArrayList(new TreeSet(syaryoMap.keySet()))));
+			return;
+		}
+
+		if (currentFilterMap == null) {
+			enableFilterMap = new ConcurrentHashMap();
+			disableFilterMap = new ConcurrentHashMap();
+			syaryoMap.values().parallelStream()
+				.forEach(s -> {
+					Map data = s.get(filter);
+					if (data != null) {
+						enableFilterMap.put(s.getName(), data.size());
+					} else {
+						disableFilterMap.put(s.getName(), 0);
+					}
+				});
+		}
+
+		if (btnEnDis) {
+			currentFilterMap = enableFilterMap;
+			filter_button.setText("EN");
+		} else {
+			currentFilterMap = disableFilterMap;
+			filter_button.setText("DS");
+		}
+
+		//更新処理
+		updateKeyList((new ArrayList(new TreeSet(currentFilterMap.keySet()))));
+	}
+
+	@FXML
+	private void onOrder(ActionEvent event) {
+		selectOrder(event);
+	}
+
+	ButtonService service = new ButtonService();
+
+	@FXML
+	private void graphAction(ActionEvent event) {
+		String v = graph_menu.getValue();
+		if (v == null) {
+			return;
+		}
+
+		System.out.println(v);
+		service.setInfo(v, currentSyaryo);
+		service.restart();
+	}
+
+	@FXML
+	private void plotSMR(ActionEvent event) {
+		keylist.getItems();
+	}
+
+	@FXML
+	private void histSMR(ActionEvent event) {
+		keylist.getItems();
+	}
 }
