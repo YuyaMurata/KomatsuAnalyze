@@ -34,6 +34,7 @@ public interface KomatsuDataParameter {
         put("PC138US", new String[]{"2", "8", "10"});
     }};
 
+    //Create Syaryo Object
     public static String TEMPLATE_PATH = "template\\";
     public static String MIDDLEDATA_PATH = "middle\\";
     public static String OBJECT_PATH = "syaryo\\";
@@ -125,12 +126,15 @@ public interface KomatsuDataParameter {
     public static Map POWERLINE = new MapIndexToJSON().reader("index\\allsupport_index.json");
     
     //定期メンテナンスの定義
-    public static Map PERIOD_MAINTE = new HashMap(){{
-        put("FLG", true);
-        put("受注.SGYO_KTICD", new String[]{"AA","AB","AS","BF","BJ","BL"});
-        put("作業.SGYOCD", new String[]{"B@BBB4"});
+    public static Map<String, List> PERIOD_MAINTE = new HashMap(){{
+        put("受注.SGYO_KTICD", Arrays.asList(new String[]{"AA","AB","AS","BF","BJ","BL"}));
+        put("作業.SGYOCD", Arrays.asList(new String[]{"B@BBB4"}));
     }};
+    
+    //KOMTRAXエラーコードのフラグの定義
+    public static Map PC_ERROR = new MapIndexToJSON().reader(PC_ERRORFLG_INDEX_PATH);
     
     //サブキーの変換が必要なものの対応表
     public static List TRANS_DATE = Arrays.asList(new String[]{"受注", "作業", "部品"});
+    
 }

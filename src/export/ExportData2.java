@@ -6,20 +6,12 @@
 package export;
 
 import analizer.SyaryoAnalizer;
-import file.CSVFileReadWrite;
 import index.SyaryoObjectElementsIndex;
-import java.io.PrintWriter;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
-import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import json.MapIndexToJSON;
 import json.SyaryoToZip3;
@@ -41,10 +33,9 @@ public class ExportData2 {
     public static void main(String[] args) {
         //取得データ
         Map headers = new LinkedHashMap();
-        headers.put("受注", new Integer[]{dataIndex.get("受注").indexOf("SBN"), dataIndex.get("受注").indexOf("SGYO_KTICD"), dataIndex.get("受注").indexOf("SKKG")});
+        headers.put("受注", new Integer[]{dataIndex.get("受注").indexOf("SGYO_KTICD"), dataIndex.get("受注").indexOf("SKKG")});
         headers.put("作業", new Integer[]{dataIndex.get("作業").indexOf("SGYOCD")});
-        headers.put("KOMTRAX_ERROR", new Integer[]{dataIndex.get("KOMTRAX_ERROR").indexOf("ERROR_CODE"), dataIndex.get("KOMTRAX_ERROR").indexOf("ERROR_KIND")});
-        headers.put("KOMTRAX_SMR", new Integer[]{dataIndex.get("KOMTRAX_SMR").indexOf("SMR_VALUE")});
+        headers.put("KOMTRAX_ERROR", new Integer[]{dataIndex.get("KOMTRAX_ERROR").indexOf("ERROR_CODE")});
 
         Map filter = KomatsuDataParameter.PERIOD_MAINTE;
 
@@ -66,10 +57,10 @@ public class ExportData2 {
         //String name = "PC200-8N1-313582";
         //uniExport("ExportData_" + name + ".json", headers, name, filter);
         //複数
-        String[] names = new String[]{"PC200-8N1-310531", "PC200-8N1-315586", "PC200-8N1-313998", "PC200-8N1-312914", "PC200-8N1-316882"};
-        multiExport(recmap, "ExportData_Multi_"+names.length+".json", headers, names);
+        //String[] names = new String[]{"PC200-8N1-310531", "PC200-8N1-315586", "PC200-8N1-313998", "PC200-8N1-312914", "PC200-8N1-316882"};
+        //multiExport(recmap, "ExportData_Multi_"+names.length+".json", headers, names);
         //全部
-        //allExport(recmap, "ExportData_"+KISY+"_ALL.json", headers);
+        allExport(recmap, "ExportData_"+KISY+"_ALL.json", headers);
         
         long stop = System.currentTimeMillis();
         System.out.println("Time:"+(stop-start)+"ms");
@@ -82,7 +73,7 @@ public class ExportData2 {
         }
        
         recmap.put("_headers", headMap);
-         System.out.println(recmap);
+        System.out.println(recmap);
     }
     
     private static void allExport(Map recmap, String f, Map<String, Integer[]> headers) {
