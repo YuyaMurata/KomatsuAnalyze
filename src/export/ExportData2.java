@@ -7,11 +7,13 @@ package export;
 
 import analizer.SyaryoAnalizer;
 import index.SyaryoObjectElementsIndex;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import json.MapIndexToJSON;
 import json.SyaryoToZip3;
@@ -63,6 +65,7 @@ public class ExportData2 {
         allExport(recmap, "ExportData_"+KISY+"_ALL.json", headers);
         
         long stop = System.currentTimeMillis();
+        System.out.println("車両数:"+map.size()+" "+"抽出対象車両数:"+recmap.size());
         System.out.println("Time:"+(stop-start)+"ms");
     }
     
@@ -106,6 +109,10 @@ public class ExportData2 {
     }
 
     private static void export(Map recmap, Map<String, Integer[]> headers, SyaryoAnalizer syaryo) {
-        recmap.putAll(syaryo.export(headers));
+        Map<String, Map> expMap = syaryo.export(headers);
+        Optional s = headers.keySet().stream().filter(h -> expMap.get(h) == null).findFirst();
+        
+        if(!s.isPresent())
+            recmap.put(syaryo.get().name, expMap);
     }
 }

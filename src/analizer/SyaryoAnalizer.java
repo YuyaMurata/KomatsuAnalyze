@@ -12,13 +12,11 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import json.SyaryoToZip3;
 import obj.SyaryoObject4;
@@ -254,9 +252,7 @@ public class SyaryoAnalizer implements AutoCloseable {
                                 .filter(h -> syaryo.get(h.getKey()) != null)
                                 .forEach(h -> exportMap.put(h.getKey(), getValue(h.getKey(), h.getValue())));
         
-        Map map = new HashMap<>();
-        map.put(syaryo.name, exportMap);
-        return map;
+        return exportMap;
     }
 
     private static SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);

@@ -37,7 +37,9 @@ public class ExportIrregularData {
 
         //errSMR(syaryoMap, dataIndex.get("SMR"), dataIndex.get("KOMTRAX_SMR"));
         
-        errSBN(syaryoMap, "受注");
+        //errSBN(syaryoMap, "受注");
+        
+        errSGCD(syaryoMap, "作業");
     }
 
     private static void errSMR(Map<String, SyaryoObject4> syaryoMap, List smrList, List kmsmrList) {
@@ -176,6 +178,27 @@ public class ExportIrregularData {
                 
                 for(String sbn : sbncheck.keySet()){
                     csv.println(syaryo.name+","+syaryo.get(data).get(sbn).get(0)+","+syaryo.get(data).get(sbn).get(3)+","+sbn+","+String.join(" ", sbncheck.get(sbn)));
+                }
+            }
+        }
+    }
+    
+    private static void errSGCD(Map<String, SyaryoObject4> syaryoMap, String data){
+        try (PrintWriter csv = CSVFileReadWrite.writer("errdata_SGCD_" + KISY + ".csv")) {
+            for(SyaryoObject4 syaryo : syaryoMap.values()){
+                if(syaryo.get(data) == null)
+                    continue;
+                
+                Map<String, List<String>> sbncheck = new HashMap();
+                for(String sbn : syaryo.get(data).keySet()){
+                    if(syaryo.get(data).get(sbn).get(3).toString().length() > 4)
+                        continue;
+                    
+                    sbncheck.put(sbn, new ArrayList<>());
+                }
+                
+                for(String sbn : sbncheck.keySet()){
+                    csv.println(syaryo.name+","+syaryo.get("受注").get(sbn.split("#")[0]).get(0)+","+sbn.split("#")[0]+syaryo.get(data).get(sbn).get(3));
                 }
             }
         }

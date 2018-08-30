@@ -913,16 +913,18 @@ public class SyaryoObjectFormatting {
 
     //空の情報を削除
     private static void removeEmptyObject(SyaryoObject4 syaryo) {
-        List deleteKey = new ArrayList();
-        for (Object key : syaryo.getMap().keySet()) {
-            if (syaryo.get(key.toString()) != null) {
-                if (syaryo.get(key.toString()).isEmpty()) {
+        List<String> deleteKey = new ArrayList();
+        for (String key : syaryo.getMap().keySet()) {
+            if (syaryo.get(key) != null) {
+                if (syaryo.get(key).isEmpty()) {
                     deleteKey.add(key);
                 }
+            }else{
+                deleteKey.add(key);
             }
         }
 
-        for (Object dkey : deleteKey) {
+        for (String dkey : deleteKey) {
             syaryo.remove(dkey);
         }
     }
