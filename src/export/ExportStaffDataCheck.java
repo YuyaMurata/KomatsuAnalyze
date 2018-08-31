@@ -35,6 +35,7 @@ public class ExportStaffDataCheck {
                 try(SyaryoAnalizer analize = new SyaryoAnalizer(syaryo)){
                     export(pw, analize);
                 } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
             }
         }
@@ -45,10 +46,10 @@ public class ExportStaffDataCheck {
         
         int point = dataIndex.get("受注").indexOf("ODR_PNTCD");
         int tanto = dataIndex.get("受注").indexOf("ODR_TNTCD");
-        int sgktcd = dataIndex.get("作業").indexOf("SGYO_KTICD");
+        int sgktcd = dataIndex.get("受注").indexOf("SGYO_KTICD");
         
-        List mainte = KomatsuDataParameter.PERIOD_MAINTE.get("SGYO_KTICD");
-        List mainte2 = KomatsuDataParameter.PERIOD_MAINTE.get("SGYOCD");
+        List mainte = KomatsuDataParameter.PERIOD_MAINTE.get("受注.SGYO_KTICD");
+        List mainte2 = KomatsuDataParameter.PERIOD_MAINTE.get("作業.SGYOCD");
         
         for(String sbn : syaryo.get().get("作業").keySet()){
             //定期メンテ排除
