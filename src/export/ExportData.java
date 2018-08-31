@@ -120,9 +120,7 @@ public class ExportData {
                             //System.out.println(sbns);
                         }
                         for (String sbn : sbns.split(",")) {
-                            if (dataFilter(syaryo, k, sbn, syaryo.get().get(k).get(sbn), filter)) {
-                                str = (String) syaryo.get().get(k).get(sbn).get(idx);
-                            }
+                            str = (String) syaryo.get().get(k).get(sbn).get(idx);
                         }
                     } else if (key.contains("作業")) {
                         String sbns = syaryo.getSBNDate(date, false);
@@ -148,31 +146,7 @@ public class ExportData {
             pw.println(line);
         }
     }
-
-    private static Boolean dataFilter(SyaryoAnalizer syaryo, String key, String sbn, List<String> data, Map filter) {
-        if (!key.equals("受注")) {
-            return true;
-        }
-
-        Boolean flg = true;
-        //作業形態チェック
-        String fkey = "受注.SGYO_KTICD";
-        List<String> filterData = Arrays.asList((String[]) filter.get(fkey));
-        flg = filterData.contains(data.get(dataIndex.get(fkey.split("\\.")[0]).indexOf(fkey.split("\\.")[1])));
-
-        if (syaryo.get().get("作業") != null) {
-            String fkey2 = "作業.SGYOCD";
-            List<String> filterData2 = Arrays.asList((String[]) filter.get(fkey));
-            flg = flg || syaryo.getSBNWork(sbn).values().stream()
-                .map(s -> s.get(dataIndex.get(fkey2.split("\\.")[0]).indexOf(fkey2.split("\\.")[1])))
-                .allMatch(wid -> filterData2.contains(wid));
-        }
-        
-        System.out.println(data.get(dataIndex.get(fkey.split("\\.")[0]).indexOf(fkey.split("\\.")[1]))+":"+(((Boolean) filter.get("FLG")) != flg));
-        
-        return ((Boolean) filter.get("FLG")) != flg;
-    }
-
+    
     private static List<String> dateList(Map<String, Integer> headers, SyaryoAnalizer syaryo) {
         List<String> date = new ArrayList<>();
         for (String key : headers.keySet()) {

@@ -186,6 +186,8 @@ public class ExportIrregularData {
     private static void errSGCD(Map<String, SyaryoObject4> syaryoMap, String data){
         try (PrintWriter csv = CSVFileReadWrite.writer("errdata_SGCD_" + KISY + ".csv")) {
             for(SyaryoObject4 syaryo : syaryoMap.values()){
+                syaryo.startHighPerformaceAccess();
+                
                 if(syaryo.get(data) == null)
                     continue;
                 
@@ -198,8 +200,10 @@ public class ExportIrregularData {
                 }
                 
                 for(String sbn : sbncheck.keySet()){
-                    csv.println(syaryo.name+","+syaryo.get("受注").get(sbn.split("#")[0]).get(0)+","+sbn.split("#")[0]+syaryo.get(data).get(sbn).get(3));
+                    csv.println(syaryo.name+","+syaryo.get("受注").get(sbn.split("#")[0]).get(0)+","+sbn.split("#")[0]+","+syaryo.get(data).get(sbn).get(3));
                 }
+                
+                syaryo.stopHighPerformaceAccess();
             }
         }
     }
