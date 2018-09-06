@@ -38,6 +38,7 @@ public interface KomatsuDataParameter {
     public static String TEMPLATE_PATH = "template\\";
     public static String MIDDLEDATA_PATH = "middle\\";
     public static String OBJECT_PATH = "syaryo\\";
+    public static String INDEX_PATH = "index\\";
     public static String SHUFFLE_FORMAT_PATH = "index\\shuffle_format.json";
     public static String SETTING_GETDATA_PATH = "index\\syaryo_data_index.csv";
     public static String SETTING_GECUSTTDATA_PATH = "index\\customer_data_index.csv";

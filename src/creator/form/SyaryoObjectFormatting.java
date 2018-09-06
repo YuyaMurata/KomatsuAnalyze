@@ -30,7 +30,6 @@ import program.r.R;
 public class SyaryoObjectFormatting {
 
     private static String KISY = "PC200";
-    private static String INDEXPATH = KomatsuDataParameter.SHUFFLE_FORMAT_PATH;
     private static String OBJPATH = KomatsuDataParameter.OBJECT_PATH;
     private static String HONSY_INDEXPATH = KomatsuDataParameter.HONSYA_INDEX_PATH;
     private static String PRODUCT_INDEXPATH = KomatsuDataParameter.PRODUCT_INDEXPATH;
@@ -635,6 +634,20 @@ public class SyaryoObjectFormatting {
                     .forEach(s -> map.put(s, work.get(s)));
             }
         }
+        
+        //代表作業抽出と設定
+        int daihyoIdx = indexList.indexOf("0"); // DIHY_SGYO_FLG
+        int sgcdIdx = indexList.indexOf("SGYOCD");
+        int sgnmIdx = indexList.indexOf("SGYO_NM");
+        work.entrySet().stream()
+                        .filter(w -> w.getValue().get(daihyoIdx).equals("1"))
+                        .forEach(w -> {
+                            map.entrySet().stream()
+                                    .filter(e -> e.getKey().contains(w.getKey().split("#")[0]))
+                                    .filter(e -> e.getValue().get(sgcdIdx).equals(w.getValue().get(sgcdIdx)))
+                                    .filter(e -> e.getValue().get(sgnmIdx).equals(w.getValue().get(sgnmIdx)))
+                                    .forEach(e -> map.get(e.getKey()).set(daihyoIdx, "1"));
+                        });
 
         Integer[] kosu = new Integer[]{
             indexList.indexOf("HJUN_KOS"),
@@ -939,7 +952,7 @@ public class SyaryoObjectFormatting {
         return k;
     }
 
-    //SMRの異常値を除去　出来が悪いのでやり直し
+    //SMRの異常値を除去　出来が悪いのでつくり直し
     private static Map rejectSMRData(Map<String, List<String>> smr, int idx) {
         
         //MA
