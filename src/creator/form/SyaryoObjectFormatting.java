@@ -158,34 +158,39 @@ public class SyaryoObjectFormatting {
         //List<String> reject = new ArrayList();
         Map<String, Integer> reject = new ConcurrentHashMap();
         syaryoMap.values().parallelStream().forEach(syaryo -> {
-            //SyaryoObject4 syaryo = syaryoMap.get(key);
+            syaryo.startHighPerformaceAccess();
 
             for (String rule : deleteRule) {
-                Optional check;
+                Boolean check = false;
                 
                 String data = rule.split(",")[0];
                 String value = rule.split(",")[1];
                 
                 if (data.equals("company")) {
                     //Delete Company
-                    check = syaryo.get("最終更新日").values().stream()
-                        .filter(list -> list.contains(value)) //Company
-                        .findFirst();
+                    if(syaryo.get("最終更新日") != null)
+                        check = syaryo.get("最終更新日").values().stream()
+                            .filter(list -> list.contains(value)) //Company
+                            .findFirst().isPresent();
                 } else {
                     //Delete 新車 日付閾値以降のデータ削除
                     if(syaryo.get(data) == null)
                         data = "生産";
-                    check = syaryo.get(data).keySet().stream()
-                        .filter(k -> Integer.valueOf(k.split("#")[0].replace("/", "")) >= Integer.valueOf(value))
-                        .findFirst();
+                    
+                    if(syaryo.get(data) != null)
+                        check = syaryo.get(data).keySet().stream()
+                            .filter(k -> Integer.valueOf(k.split("#")[0].replace("/", "")) >= Integer.valueOf(value))
+                            .findFirst().isPresent();
                 }
                 
-                if (check.isPresent()) {
+                if (check) {
                     //System.out.println(data+":"+key);
                     reject.put(syaryo.name, 0);
                     //reject.add(key);
                 }
             }
+            
+            syaryo.stopHighPerformaceAccess();
         });
 
         System.out.println("カンパニ、日付で削除される車両数:"+reject.size());
@@ -213,7 +218,7 @@ public class SyaryoObjectFormatting {
     }
 
     private static Map formOwner(Map<String, List> owner, List indexList, Map<String, String> honsyIndex, Map<String, List> history, List indexHisList, DataRejectRule reject) {
-        if (owner == null) {
+        if (owner == null || history == null) {
             //System.out.println("Not found owner!");
             return null;
         }
@@ -234,6 +239,7 @@ public class SyaryoObjectFormatting {
          */
         //日付データ揃え
         owner = dateFormalize(owner);
+        
         //本社コード揃え
         for (String d : owner.keySet()) {
             List list = owner.get(d);
@@ -248,6 +254,7 @@ public class SyaryoObjectFormatting {
 
             list.set(ownerID, id);
         }
+        
         for (String d : history.keySet()) {
             List list = history.get(d);
             String com = list.get(company).toString();

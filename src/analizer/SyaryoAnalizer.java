@@ -57,6 +57,14 @@ public class SyaryoAnalizer implements AutoCloseable {
         settings(syaryo);
         //this.syaryo.stopHighPerformaceAccess();
     }
+    
+    public SyaryoAnalizer(SyaryoObject4 syaryo, Boolean set) {
+        this.syaryo = syaryo;
+        this.syaryo.startHighPerformaceAccess();
+        if(set)
+            settings(syaryo);
+        //this.syaryo.stopHighPerformaceAccess();
+    }
 
     public SyaryoObject4 get() {
         SyaryoObject4 s = syaryo;

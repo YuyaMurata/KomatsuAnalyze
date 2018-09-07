@@ -41,6 +41,7 @@ public class WorkIDPartsIDIndex {
         int odrkbnIdx = dataIndex.get("受注").indexOf("ODR_KBN");
         int sgksycdIdx = dataIndex.get("作業").indexOf("KSYCD");
         int sgcdIdx = dataIndex.get("作業").indexOf("SGYOCD");
+        int mainsgIdx = dataIndex.get("作業").indexOf("0"); //DIHY_SGYO_FLG
         int sgnmIdx = dataIndex.get("作業").indexOf("SGYO_NM");
         int ksycdIdx = dataIndex.get("部品").indexOf("KSYCD");
         int pmakerIdx = dataIndex.get("部品").indexOf("None"); //BHN_MAKR_KBN
@@ -48,19 +49,21 @@ public class WorkIDPartsIDIndex {
         int bhnnmIdx = dataIndex.get("部品").indexOf("BHN_NM");
         int quantIdx = dataIndex.get("部品").indexOf("JISI_SU");
         int bhnpriceIdx = dataIndex.get("部品").indexOf("SKKG");
-
+        
         map.values().stream()
             .filter(s -> s.get("作業") != null)
             .filter(s -> s.get("部品") != null)
             .forEach(s -> {
-                SyaryoAnalizer analize = new SyaryoAnalizer(s);
+                SyaryoAnalizer analize = new SyaryoAnalizer(s, false);
                 analize.getValue("受注", new Integer[]{odrkbnIdx}).entrySet().stream()
                     .filter(o -> o.getValue().get(0).equals("2"))
                     .filter(o -> analize.getSBNWork(o.getKey()) != null)
                     .filter(o -> analize.getSBNParts(o.getKey()) != null)
                     .map(o -> o.getKey())
                     .forEach(sbn ->{
-                        analize.getSBNWork(sbn).entrySet().stream().forEach(w ->{
+                        analize.getSBNWork(sbn).entrySet().stream()
+                            .filter(w -> w.getValue().get(mainsgIdx).equals("1"))
+                            .forEach(w ->{
                             String sgcd = w.getValue().get(sgcdIdx);
                             
                             SyaryoObject4 sg = index.get(sgcd);

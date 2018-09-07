@@ -27,7 +27,7 @@ import param.KomatsuDataParameter;
  * 現状 KOMTRAX_ERROR 作業のみから作成
  * @author ZZ17390
  */
-public class EvaluateArray {
+public class CreateEvaluateArray {
     private static final String KISY = "PC200";
     private static final String exportFile = "ExportData_"+KISY+"_ALL.json";
 
