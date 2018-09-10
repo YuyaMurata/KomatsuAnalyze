@@ -21,7 +21,8 @@ import json.SyaryoToZip3;
 import obj.SyaryoObject4;
 
 /**
- *
+ * 車両オブジェクトのシャッフリング
+ * シャッフルの定義ファイル(shuffle_format.json)に従ってデータを並び替える
  * @author ZZ17390
  */
 public class TemplateShuffle {
@@ -100,6 +101,7 @@ public class TemplateShuffle {
                     if (shuffleSyaryo == null) {
                         shuffleSyaryo = new SyaryoObject4(id);
                     }
+                    
                     //高速アクセス スタート
                     shuffleSyaryo.startHighPerformaceAccess();
 
@@ -123,7 +125,7 @@ public class TemplateShuffle {
                         
                         //車両情報を更新
                         if (update != null) {
-                            //System.out.println(recID);
+                            //System.out.println(key+":"+recID+":"+shuffleSyaryo.getMap());
                             if (shuffleSyaryo.get(key).get(recID) != null) {
                                 recID = dup(recID, shuffleSyaryo.get(key));
                             }
@@ -142,6 +144,7 @@ public class TemplateShuffle {
                     //System.out.println(shuffleSyaryo.dump());
                     //高速アクセス ストップ (登録データの保存)
                     shuffleSyaryo.stopHighPerformaceAccess();
+                    
                     if (!shuffleSyaryo.get(key).isEmpty()) {
                         shuffleMap.put(shuffleSyaryo.getName(), shuffleSyaryo);
                     } else {

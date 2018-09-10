@@ -27,7 +27,8 @@ import java.util.stream.Collectors;
 import json.SyaryoTemplateToJson;
 
 /**
- *
+ * 車両のテンプレートファイルを生成
+ * 抽出データの定義ファイル(syaryo_data_index.csv)に従ってCentOSに構築されたDBからデータを抽出
  * @author ZZ17390
  */
 public class TemplateCreate {

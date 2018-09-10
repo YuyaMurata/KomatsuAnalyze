@@ -29,6 +29,15 @@ public class CodeVariation {
         SyaryoObject4 dataHeader = syaryoMap.get("_headers");
         syaryoMap.remove("_headers");
         
+    }
+    
+    //KOMTRAX エラーコード
+    private static void kmerrcode(Map<String, SyaryoObject4> syaryoMap, SyaryoObject4 dataHeader){
+        if(dataHeader.get("KOMTRAX_ERROR") != null){
+            System.err.println("Do not exported KOMTRAX ERROR DATA!");
+            return ;
+        }
+
         //発生日数と発生台数
         Map<String, Integer> occErrDays = new HashMap();
         Map<String, Integer> occErrNum = new HashMap();
@@ -62,6 +71,14 @@ public class CodeVariation {
             for(String er : occErrNum.keySet()){
                 csv.println(er+","+occErrNum.get(er)+","+occErrDays.get(er));
             }
+        }
+    }
+    
+    //作業コード
+    private static void workcd(Map<String, SyaryoObject4> syaryoMap, SyaryoObject4 dataHeader){
+        if(dataHeader.get("作業") != null){
+            System.err.println("Do not exported KOMPAS WORKING DATA!");
+            return ;
         }
         
         //発生日数と発生台数
@@ -99,6 +116,14 @@ public class CodeVariation {
             for(String sg : occSgNum.keySet()){
                 csv.println(sg+","+occSgNum.get(sg)+","+occSgDays.get(sg));
             }
+        }
+    }
+    
+    //品番
+    private static void partscd(Map<String, SyaryoObject4> syaryoMap, SyaryoObject4 dataHeader){
+        if(dataHeader.get("部品") != null){
+            System.err.println("Do not exported KOMPAS PARTS DATA!");
+            return ;
         }
     }
 }

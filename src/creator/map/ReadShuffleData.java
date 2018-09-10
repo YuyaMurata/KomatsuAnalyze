@@ -127,7 +127,7 @@ public class ReadShuffleData {
         
         //ファイルから特定IDのデータ郡を抽出
         map = idExtractList(id, readFile);
-        System.out.println(map);
+        //System.out.println(map);
         return false;
     }
 
@@ -138,8 +138,9 @@ public class ReadShuffleData {
             List<List<String>> data = new ArrayList<>();
 
             SyaryoObject4 targetSyaryo = readFile.get(table).get(target);
+            //System.out.println(targetSyaryo.getMap());
 
-            for (Object list : targetSyaryo.getMap().values()) {
+            for (Object list : targetSyaryo.get(table).values()) {
                 data.add((List<String>) list);
             }
 

@@ -16,32 +16,39 @@ import java.util.Map;
 import json.SnappyMap;
 
 /**
- *
+ * 車両オブジェクトの定義クラス
  * @author ZZ17390
  */
 public class SyaryoObject4 implements Serializable {
-
+    //車両オブジェクトファイルに保存される変数
     private static final long serialVersionUID = 1L;
-    public String name;
-    private byte[] mapData;
+    public String name; //車両名
+    private byte[] mapData; //圧縮後のバイナリデータ
 
-    private transient Map map;
-    private transient DecimalFormat dformat = new DecimalFormat("0000");
-    private transient Boolean performanceAccess = false;
+    //車両オブジェクトファイルから削除される変数
+    private transient Map<String, Map<String, List>> map; //圧縮前の車両データ
+    private transient DecimalFormat dformat = new DecimalFormat("0000"); //キー重複番号の正規化
+    private transient Boolean performanceAccess = false; //アクセス性能を管理するフラグ
 
     public SyaryoObject4(String name) {
         this.name = name;
     }
 
-    public String key_no(Object key) {
+    /**
+     * キー重複時にIDの重複数を計算
+     * @param data : 重複を調べたいMap
+     * @param key : 重複を調べるキー
+     * @return 重複回数
+     */
+    private String key_no(Map data, Object key) {
 
         String df = key.toString();
 
-        if (map.get(key) == null) {
+        if (data.get(key) == null) {
             return df;
         } else {
             int i = 1;
-            while (map.get(df + "#" + dformat.format(i)) != null) {
+            while (data.get(df + "#" + dformat.format(i)) != null) {
                 i++;
             }
             return df + "#" + dformat.format(i);
@@ -50,20 +57,24 @@ public class SyaryoObject4 implements Serializable {
 
     /**
      * Add Data
+     * オブジェクト生成時に利用
+     * 文字型からオブジェクト型へ変換
      */
     public void add(Map template, int n) {
         decompress();
         for (Object field : template.keySet()) {
             String[] lines = template.get(field).toString().split("\n");
-
+            
+            Map temp = new HashMap();
             for (String line : lines) {
                 List<String> s = new ArrayList<>();
                 s.addAll(Arrays.asList(line.trim().split(",")));
                 while (n > s.size()) {
                     s.add(" ");
                 }
-                map.put(key_no(field), s);
+                temp.put(key_no(temp, field), s);
             }
+            map.put(field.toString(), temp);
         }
         compress(true);
     }
@@ -84,7 +95,7 @@ public class SyaryoObject4 implements Serializable {
     }
 
     //Get Map
-    public Map<String, List> getMap() {
+    public Map<String, Map<String, List>> getMap() {
         decompress();
         Map m = map;
         compress(true);
@@ -93,13 +104,20 @@ public class SyaryoObject4 implements Serializable {
 
     /**
      * Update Data
+     * データのリプレイスで利用
+     * データ要素の更新は不可
      */
-    public void put(Object key, Object obj) {
+    public void put(String key, Map data) {
         decompress();
-        map.put(key, obj);
+        map.put(key, data);
         compress(true);
     }
 
+    /**
+    * Insert Data
+    * データの追加で利用
+    * データ要素の追加は不可
+    */
     public void putAll(Map add) {
         decompress();
         map.putAll(add);
@@ -107,7 +125,7 @@ public class SyaryoObject4 implements Serializable {
     }
 
     /*
-    * アクセス性能を向上させる(1車両ごとに呼び出す)
+    * アクセス性能を向上させる(1車両ごとにプログラムの最初で呼び出す)
      */
     public void startHighPerformaceAccess() {
         decompress();
@@ -121,13 +139,20 @@ public class SyaryoObject4 implements Serializable {
 
     /**
      * Delete
+     * データ削除
+     * データ要素の削除は不可
      */
-    public void remove(Object key) {
+    public void remove(String key) {
         decompress();
         map.remove(key);
         compress(true);
     }
 
+    /**
+     * データ圧縮
+     * @param flg : 繰り返し車両データを呼び出すときのフラグ 
+     * true=データを残す false=データを破棄 
+     */
     private void compress(Boolean flg) {
         if (performanceAccess != null) {
             if (performanceAccess) {
@@ -141,7 +166,10 @@ public class SyaryoObject4 implements Serializable {
             map = null;
         }
     }
-
+    
+    /**
+     * データ解凍
+     */
     private void decompress() {
         if (performanceAccess != null) {
             if (performanceAccess) {
