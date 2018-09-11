@@ -37,7 +37,7 @@ public class ExportData2 {
         Map headers = new LinkedHashMap();
         headers.put("受注", new Integer[]{dataIndex.get("受注").indexOf("SGYO_KTICD"), dataIndex.get("受注").indexOf("SKKG")});
         headers.put("作業", new Integer[]{dataIndex.get("作業").indexOf("SGYOCD")});
-        headers.put("KOMTRAX_ERROR", new Integer[]{dataIndex.get("KOMTRAX_ERROR").indexOf("ERROR_CODE")});
+        headers.put("部品", new Integer[]{dataIndex.get("部品").indexOf("HNBN"), dataIndex.get("部品").indexOf("None"), dataIndex.get("部品").indexOf("BHN_NM")});
 
         Map filter = KomatsuDataParameter.PERIOD_MAINTE;
 

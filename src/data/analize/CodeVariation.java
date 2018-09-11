@@ -28,12 +28,14 @@ public class CodeVariation {
         
         SyaryoObject4 dataHeader = syaryoMap.get("_headers");
         syaryoMap.remove("_headers");
+        System.out.println(dataHeader.dump());
         
+        partscd(syaryoMap, dataHeader);
     }
     
     //KOMTRAX エラーコード
     private static void kmerrcode(Map<String, SyaryoObject4> syaryoMap, SyaryoObject4 dataHeader){
-        if(dataHeader.get("KOMTRAX_ERROR") != null){
+        if(dataHeader.get("KOMTRAX_ERROR") == null){
             System.err.println("Do not exported KOMTRAX ERROR DATA!");
             return ;
         }
@@ -76,7 +78,7 @@ public class CodeVariation {
     
     //作業コード
     private static void workcd(Map<String, SyaryoObject4> syaryoMap, SyaryoObject4 dataHeader){
-        if(dataHeader.get("作業") != null){
+        if(dataHeader.get("作業") == null){
             System.err.println("Do not exported KOMPAS WORKING DATA!");
             return ;
         }
@@ -121,9 +123,53 @@ public class CodeVariation {
     
     //品番
     private static void partscd(Map<String, SyaryoObject4> syaryoMap, SyaryoObject4 dataHeader){
-        if(dataHeader.get("部品") != null){
+        if(dataHeader.get("部品") == null){
             System.err.println("Do not exported KOMPAS PARTS DATA!");
             return ;
+        }
+        
+        //発生日数と発生台数
+        Map<String, Integer> occPDays = new HashMap();
+        Map<String, Integer> occPNum = new HashMap();
+        
+        //品番 抽出
+        syaryoMap.values().stream().forEach(s -> {
+            if(s.get("部品") == null)
+                return ;
+            
+            List<String> parts = s.get("部品").entrySet().stream()
+                                            .filter(d -> d.getValue().get(dataHeader.get("部品").get("部品").indexOf("None")).equals("10") ||
+                                                            d.getValue().get(dataHeader.get("部品").get("部品").indexOf("None")).equals("20"))
+                                            .map(d -> d.getValue().get(dataHeader.get("部品").get("部品").indexOf("HNBN"))
+                                                        +"_"+d.getValue().get(dataHeader.get("部品").get("部品").indexOf("None"))
+                                                        +"_"+d.getValue().get(dataHeader.get("部品").get("部品").indexOf("BHN_NM")))
+                                            .collect(Collectors.toList());
+            
+            for(String pa : parts){
+                if(occPDays.get(pa) == null)
+                    occPDays.put(pa, 0);
+                
+                occPDays.put(pa, occPDays.get(pa)+1);
+            }
+            
+            for(String pa : parts.stream().distinct().collect(Collectors.toList())){
+                if(occPNum.get(pa) == null)
+                    occPNum.put(pa, 0);
+                
+                occPNum.put(pa, occPNum.get(pa)+1);
+            }
+        });
+        
+        try(PrintWriter csv = CSVFileReadWrite.writer(exportFile+"partsno.csv")){
+            csv.println("品番,メーカ,品名,発生台数,発生日数");
+            for(String pa : occPNum.keySet()){
+                if(pa.contains("600-319-3610")){
+                    System.out.println(pa);
+                    System.out.println(pa.hashCode());
+                }
+                
+                csv.println(pa.split("_")[0]+","+pa.split("_")[1]+","+pa.split("_")[2]+","+occPNum.get(pa)+","+occPDays.get(pa));
+            }
         }
     }
 }
