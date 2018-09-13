@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 import json.SyaryoToZip3;
 import obj.SyaryoObject4;
@@ -253,7 +254,7 @@ public class SyaryoAnalizer implements AutoCloseable {
     }
     
     public Map export(Map<String, Integer[]> exportHeader){
-        Map<String, Map<String, List<String>>> exportMap = new HashMap<>();
+        Map<String, Map<String, List<String>>> exportMap = new TreeMap<>();
         
         //エクスポートヘッダで指定した要素の取得
         exportHeader.entrySet().stream()

@@ -37,6 +37,12 @@
                               <ToggleButton fx:id="order_button" mnemonicParsing="false" onAction="#onOrder" text="N" />
                            </children>
                         </HBox>
+                        <HBox>
+                           <children>
+                              <TextField fx:id="searchBox" prefHeight="23.0" prefWidth="177.0" />
+                              <Button fx:id="searchBtn" mnemonicParsing="false" onAction="#clickSearch" text="S" />
+                           </children>
+                        </HBox>
                         <ListView fx:id="keylist" maxWidth="200.0" minWidth="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
                            <contextMenu>
                               <ContextMenu>
