@@ -82,6 +82,7 @@ public class SyaryoAnalizer implements AutoCloseable {
         if (syaryo.get("KOMTRAX_SMR") != null || syaryo.get("仕様").get("1").get(0).equals("1")) {
             komtrax = true;
         }
+        
         if (syaryo.get("中古車") != null) {
             used = true;
             StringBuilder sb = new StringBuilder();

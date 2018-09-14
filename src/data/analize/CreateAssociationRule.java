@@ -100,13 +100,21 @@ public class CreateAssociationRule {
 
                                 String redef = "'" + def1.charAt(0) + (def2.length() == 2 ? "0" + def2 : def2);
 
-                                redefParts.add(redef);
+                                //再定義コード
+                                //redefParts.add(redef);
+                                
+                                //元の品番
+                                redefParts.add(pa);
                             });
 
                         if (parts.isEmpty()) {
                             continue;
                         }
 
+                        //アソシエーションルール
+                        if(redefParts.stream().filter(pa -> pa.contains("20Y-30")).findFirst().isPresent())
+                            pw.println(sgcd.split("_")[1]+","+String.join(",", redefParts));
+                        
                         associationMap.put(s.name + "_" + sbn + "_" + sgcd.split("_")[1], redefParts);
                     }
                 });
@@ -118,6 +126,7 @@ public class CreateAssociationRule {
                 .collect(Collectors.toList());
 
             //Check
+            /*
             Pattern pat = Pattern.compile("(^[A-Z]+)(\\d+)");
             allParts.stream().distinct().forEach(pa -> {
                 //String def1 = pa.split(",")[2].split("-")[0];
@@ -133,15 +142,16 @@ public class CreateAssociationRule {
                 String redef = "'" + def1.charAt(0) + (def2.length() == 2 ? "0" + def2 : def2);
 
                 System.out.println(redef + ":" + pa);
-            });
+            });*/
 
             //Header
-            pw.println("SID," + String.join(",", allparts));
+            /*pw.println("SID," + String.join(",", allparts));
             associationMap.entrySet().stream()
                 .map(al -> "'" + al.getKey().split("_")[2] + "," + allparts.stream()
                 .map(pa -> al.getValue().contains(pa) ? "1" : "0")
                 .collect(Collectors.joining(",")))
                 .forEach(pw::println);
+            */
         }
     }
 }

@@ -31,14 +31,20 @@ public class ExportData2 {
     private static String PATH = KomatsuDataParameter.SYARYOOBJECT_FDPATH;
     private static String KISY = "PC200";
     private static Map<String, SyaryoObject4> map;
+    
+    private static String syaryofilename = PATH + "syaryo_obj_" + KISY + "_km_form.bz2";
+    private static String filename = "ExportData_SMR_"+KISY;
 
     public static void main(String[] args) {
         //取得データ
         Map headers = new LinkedHashMap();
-        headers.put("受注", new Integer[]{dataIndex.get("受注").indexOf("SGYO_KTICD"), dataIndex.get("受注").indexOf("SKKG")});
-        headers.put("作業", new Integer[]{dataIndex.get("作業").indexOf("SGYOCD"), dataIndex.get("作業").indexOf("0")});
-        headers.put("部品", new Integer[]{dataIndex.get("部品").indexOf("HNBN"), dataIndex.get("部品").indexOf("None"), dataIndex.get("部品").indexOf("BHN_NM"), dataIndex.get("部品").indexOf("JISI_SU"), dataIndex.get("部品").indexOf("SKKG")});
-
+        //headers.put("受注", new Integer[]{dataIndex.get("受注").indexOf("SGYO_KTICD"), dataIndex.get("受注").indexOf("SKKG")});
+        //headers.put("作業", new Integer[]{dataIndex.get("作業").indexOf("SGYOCD"), dataIndex.get("作業").indexOf("0")});
+        //headers.put("部品", new Integer[]{dataIndex.get("部品").indexOf("HNBN"), dataIndex.get("部品").indexOf("None"), dataIndex.get("部品").indexOf("BHN_NM"), dataIndex.get("部品").indexOf("JISI_SU"), dataIndex.get("部品").indexOf("SKKG")});
+        headers.put("新車", new Integer[]{-1, dataIndex.get("新車").indexOf("sell")});
+        headers.put("SMR", new Integer[]{-1, dataIndex.get("SMR").indexOf("SVC_MTR")});
+        headers.put("KOMTRAX_SMR", new Integer[]{-1, dataIndex.get("KOMTRAX_SMR").indexOf("SMR_VALUE")});
+        
         Map filter = KomatsuDataParameter.PERIOD_MAINTE;
 
         //Time
@@ -53,7 +59,7 @@ public class ExportData2 {
         regHeader(recmap, headers);
         
         //車両の読み込み
-        map = new SyaryoToZip3().read(PATH + "syaryo_obj_" + KISY + "_sv_form.bz2");
+        map = new SyaryoToZip3().read(syaryofilename);
         
         //単体
         //String name = "PC200-8N1-313582";
@@ -62,7 +68,7 @@ public class ExportData2 {
         //String[] names = new String[]{"PC200-8N1-310531", "PC200-8N1-315586", "PC200-8N1-313998", "PC200-8N1-312914", "PC200-8N1-316882"};
         //multiExport(recmap, "ExportData_Multi_"+names.length+".json", headers, names);
         //全部
-        allExport(recmap, "ExportData_"+KISY+"_ALL.json", headers);
+        allExport(recmap, filename+"_ALL.json", headers);
         
         long stop = System.currentTimeMillis();
         System.out.println("車両数:"+map.size()+" "+"抽出対象車両数:"+recmap.size());

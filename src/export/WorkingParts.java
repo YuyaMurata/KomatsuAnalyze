@@ -87,11 +87,13 @@ public class WorkingParts {
                         String maxSbn = Collections.max(sortMap.entrySet(), Map.Entry.comparingByValue()).getKey();
                         List<String> parts = analize.get().get("部品").get(maxSbn);
                         
-                        //pw.println(s.name+","+ws+","+sgcd+","+String.join(",", parts));
+                        //金額の高い部品
+                        pw.println(s.name+","+ws+","+sgcd+","+String.join(",", parts));
                         
-                        sortMap.keySet().stream().map(pa -> analize.get().get("部品").get(pa)).forEach(pa ->{
+                        //全部品
+                        /*sortMap.keySet().stream().map(pa -> analize.get().get("部品").get(pa)).forEach(pa ->{
                             pw.println(s.name+","+ws+","+sgcd+","+String.join(",", pa));
-                        });
+                        });*/
                     });
                 });
         }
