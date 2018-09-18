@@ -145,7 +145,7 @@ public class SyaryoAnalizer implements AutoCloseable {
         }
         
         //Life
-        lifestart = syaryo.get("新車").keySet().stream().findFirst().get();
+        lifestart = syaryo.get("生産").keySet().stream().findFirst().get();
         if (syaryo.get("受注") != null) {
             currentLife = getValue("受注", "ODDAY", true).get(numOrders - 1);
         }
@@ -248,7 +248,7 @@ public class SyaryoAnalizer implements AutoCloseable {
         List list = syaryo.get(key).values().stream().map(l -> l.get(idx)).collect(Collectors.toList());
 
         if (sorted) {
-            list = (List) list.stream().map(v -> Integer.valueOf(v.toString())).sorted().map(v -> v.toString()).collect(Collectors.toList());
+            list = (List) list.stream().map(v -> Integer.valueOf(v.toString().split("#")[0])).sorted().map(v -> v.toString()).collect(Collectors.toList());
         }
 
         return list;

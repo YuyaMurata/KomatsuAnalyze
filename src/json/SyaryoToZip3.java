@@ -83,7 +83,7 @@ public class SyaryoToZip3 {
 		Map<String, SyaryoObject4> syaryoMap = new HashMap();
 		for (String name : map.keySet()) {
 			SyaryoObject4 syaryo = new SyaryoObject4(name);
-			_header(name, map);
+			//_header(name, map);
 			syaryo.putAll(map.get(name));
 			syaryoMap.put(name, syaryo);
 		}
