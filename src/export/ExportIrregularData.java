@@ -37,9 +37,11 @@ public class ExportIrregularData {
 
         //errSMR(syaryoMap, dataIndex.get("SMR"), dataIndex.get("KOMTRAX_SMR"));
         
+        errFUEL(syaryoMap, dataIndex.get("FUEL_CONSUME"));
+        
         //errSBN(syaryoMap, "受注");
         
-        errSGCD(syaryoMap, "作業");
+        //errSGCD(syaryoMap, "作業");
     }
 
     private static void errSMR(Map<String, SyaryoObject4> syaryoMap, List smrList, List kmsmrList) {
@@ -202,6 +204,22 @@ public class ExportIrregularData {
                 for(String sbn : sbncheck.keySet()){
                     csv.println(syaryo.name+","+syaryo.get("受注").get(sbn.split("#")[0]).get(0)+","+sbn.split("#")[0]+","+syaryo.get(data).get(sbn).get(3));
                 }
+                
+                syaryo.stopHighPerformaceAccess();
+            }
+        }
+    }
+    
+    private static void errFUEL(Map<String, SyaryoObject4> syaryoMap, List fuelList){
+        try (PrintWriter csv = CSVFileReadWrite.writer("errdata_FUEL_" + KISY + ".csv")) {
+            SyaryoObject4 header = syaryoMap.get("_headers");
+            
+            for(SyaryoObject4 syaryo : syaryoMap.values()){
+                syaryo.startHighPerformaceAccess();
+                
+                if(syaryo.get("KOMTRAX_FUEL_CONSUME") == null)
+                    continue;
+                
                 
                 syaryo.stopHighPerformaceAccess();
             }
