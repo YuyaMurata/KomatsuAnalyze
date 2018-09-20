@@ -41,7 +41,7 @@ public class ExportData2 {
         //headers.put("受注", new Integer[]{dataIndex.get("受注").indexOf("SGYO_KTICD"), dataIndex.get("受注").indexOf("SKKG")});
         //headers.put("作業", new Integer[]{dataIndex.get("作業").indexOf("SGYOCD"), dataIndex.get("作業").indexOf("0")});
         //headers.put("部品", new Integer[]{dataIndex.get("部品").indexOf("HNBN"), dataIndex.get("部品").indexOf("None"), dataIndex.get("部品").indexOf("BHN_NM"), dataIndex.get("部品").indexOf("JISI_SU"), dataIndex.get("部品").indexOf("SKKG")});
-        headers.put("生産", new Integer[]{-1, dataIndex.get("生産").indexOf("PLANT")});
+        headers.put("新車", new Integer[]{-1, dataIndex.get("新車").indexOf("sell")});
         headers.put("SMR", new Integer[]{-1, dataIndex.get("SMR").indexOf("SVC_MTR")});
         headers.put("KOMTRAX_SMR", new Integer[]{-1, dataIndex.get("KOMTRAX_SMR").indexOf("SMR_VALUE")});
         headers.put("KOMTRAX_FUEL_CONSUME", new Integer[]{-1, dataIndex.get("KOMTRAX_FUEL_CONSUME").indexOf("CONSUME_COUNT")});

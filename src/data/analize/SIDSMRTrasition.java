@@ -53,9 +53,9 @@ public class SIDSMRTrasition {
             System.out.println(s.name);
 
             Map<String, Map> expMap = new TreeMap();
-            expMap.put("SMR", formSMR(s.get("SMR"), header.get("SMR").get("SMR").indexOf("SVC_MTR")));
-            expMap.put("KOMTRAX_SMR", formSMR(s.get("KOMTRAX_SMR"), header.get("KOMTRAX_SMR").get("KOMTRAX_SMR").indexOf("SMR_VALUE")));
-            expMap.put("KOMTRAX_FUEL_CONSUME", formfuelConsume(s.get("KOMTRAX_FUEL_CONSUME"), header.get("KOMTRAX_FUEL_CONSUME").get("KOMTRAX_FUEL_CONSUME").indexOf("CONSUME_COUNT")));
+            expMap.put("SMR", formSMR(new TreeMap(s.get("SMR")), header.get("SMR").get("SMR").indexOf("SVC_MTR")));
+            expMap.put("KOMTRAX_SMR", formSMR(new TreeMap(s.get("KOMTRAX_SMR")), header.get("KOMTRAX_SMR").get("KOMTRAX_SMR").indexOf("SMR_VALUE")));
+            expMap.put("KOMTRAX_FUEL_CONSUME", formfuelConsume(new TreeMap(s.get("KOMTRAX_FUEL_CONSUME")), header.get("KOMTRAX_FUEL_CONSUME").get("KOMTRAX_FUEL_CONSUME").indexOf("CONSUME_COUNT")));
             for (String key : s.getMap().keySet()) {
                 if (expMap.get(key) != null) {
                     continue;
@@ -263,7 +263,11 @@ public class SIDSMRTrasition {
         });
 
         try (PrintWriter pw = CSVFileReadWrite.writer("syaryo_smr_data.csv")) {
-            //header +String.join(",", list)
+            //header
+            pw.println("Age,"+String.join(",", list));
+            smrData.entrySet().stream().filter(f -> f.getKey() >= 0).map(f -> f.getKey()+","+String.join(",", Arrays.asList(f.getValue()).stream().map(s -> s==null?"":s).collect(Collectors.toList()))).forEach(pw::println);
+            /*String[] tempSMR = new String[list.size()];
+            Arrays.fill(tempSMR, "0");
             pw.println("Age,Cnt,Avg,Med,Max,Min");
 
             for (int age : smrData.keySet()) {
@@ -271,45 +275,75 @@ public class SIDSMRTrasition {
                     continue;
                 }
 
-                //if(age % 365 != 0)
-                //    continue;
+                if(age % 365 != 0)
+                    continue;
+                
                 String[] values = smrData.get(age);
-                List<Integer> data = Arrays.asList(values).stream().filter(s -> s != null).map(s -> Integer.valueOf(s)).sorted().collect(Collectors.toList());
-
+                List<Integer> data = new ArrayList<>();
+                for(int i =0; i < values.length; i++){
+                    if(values[i] == null)
+                        continue;
+                    
+                    //単年累積
+                    if(tempSMR[i] == null)
+                        continue;
+                    data.add(Integer.valueOf(values[i]) - Integer.valueOf(tempSMR[i]));
+                    
+                    //全累積
+                    //data.add(Integer.valueOf(fvalues[i]));
+                }
+                
                 Double avg = data.stream().mapToInt(s -> s).average().getAsDouble();
                 Integer max = data.stream().mapToInt(s -> s).max().getAsInt();
                 Integer min = data.stream().mapToInt(s -> s).min().getAsInt();
                 Integer med = data.get(data.size() / 2);
                 long cnt = data.stream().count();
                 
+                tempSMR = values;
+                
                 pw.println(age + "," + cnt + "," + avg + "," + med + "," + max + "," + min);
-            }
+            }*/
         }
         
         try (PrintWriter pw = CSVFileReadWrite.writer("syaryo_fuel_data.csv")) {
             //header
             pw.println("Age,"+String.join(",", list));
-            fuelData.entrySet().stream().map(f -> f.getKey()+","+String.join(",", f.getValue())).forEach(pw::println);
+            fuelData.entrySet().stream().filter(f -> f.getKey() >= 0).map(f -> f.getKey()+","+String.join(",", Arrays.asList(f.getValue()).stream().map(s -> s==null?"":s).collect(Collectors.toList()))).forEach(pw::println);
+            /*String[] tempFuel = new String[list.size()];
+            Arrays.fill(tempFuel, "0");
             
-            /*
             pw.println("Age,Cnt,Avg,Med,Max,Min");
-
+                
             for (int age : fuelData.keySet()) {
                 if (age < 0) {
                     continue;
                 }
 
-                //if(age % 365 != 0)
-                //    continue;
+                if(age % 365 != 0)
+                    continue;
 
                 String[] fvalues = fuelData.get(age);
-                List<Double> fdata = Arrays.asList(fvalues).stream().filter(s -> s != null).map(s -> Double.valueOf(s)).sorted().collect(Collectors.toList());
-
+                List<Double> fdata = new ArrayList<>();
+                for(int i =0; i < fvalues.length; i++){
+                    if(fvalues[i] == null)
+                        continue;
+                    
+                    //単年累積
+                    if(tempFuel[i] == null)
+                        continue;
+                    fdata.add(Double.valueOf(fvalues[i]) - Double.valueOf(tempFuel[i]));
+                    
+                    //全累積
+                    //fdata.add(Double.valueOf(fvalues[i]));
+                }
+                
                 Double favg = fdata.stream().mapToDouble(s -> s).average().getAsDouble();
                 Double fmax = fdata.stream().mapToDouble(s -> s).max().getAsDouble();
                 Double fmin = fdata.stream().mapToDouble(s -> s).min().getAsDouble();
                 Double fmed = fdata.get(fdata.size() / 2);
                 long fcnt = fdata.stream().count();
+                
+                tempFuel = fvalues;
                 
                 pw.println(age + "," + fcnt + "," + favg + "," + fmed + "," + fmax + "," + fmin);
             }*/
