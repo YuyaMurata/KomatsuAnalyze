@@ -11,4 +11,5 @@ package param;
  */
 public interface KomatsuUserParameter {
     public static String PC200_ERRFILTER_FILE="user\\PC200_errorfilter_180828.txt";
+    public static String PC200_PARTSFILTER_FILE="user\\PC200_partsfilter_180921.txt";
 }

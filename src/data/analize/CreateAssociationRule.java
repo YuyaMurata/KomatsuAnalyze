@@ -93,10 +93,10 @@ public class CreateAssociationRule {
                                 String def1 = pa.split("-")[0];
                                 String def2 = pa.split("-")[1];
 
-                                Matcher m = pat.matcher(def1);
+                                /*Matcher m = pat.matcher(def1);
                                 if (m.find()) {
                                     def1 = m.group(2);
-                                }
+                                }*/
 
                                 String redef = "'" + def1.charAt(0) + (def2.length() == 2 ? "0" + def2 : def2);
 
@@ -126,7 +126,7 @@ public class CreateAssociationRule {
                 .collect(Collectors.toList());
 
             //Check
-            /*
+            
             Pattern pat = Pattern.compile("(^[A-Z]+)(\\d+)");
             allParts.stream().distinct().forEach(pa -> {
                 //String def1 = pa.split(",")[2].split("-")[0];
@@ -134,15 +134,15 @@ public class CreateAssociationRule {
                 String def1 = pa.split("-")[0];
                 String def2 = pa.split("-")[1];
 
-                Matcher m = pat.matcher(def1);
+                /*Matcher m = pat.matcher(def1);
                 if (m.find()) {
                     def1 = m.group(2);
-                }
+                }*/
 
                 String redef = "'" + def1.charAt(0) + (def2.length() == 2 ? "0" + def2 : def2);
 
                 System.out.println(redef + ":" + pa);
-            });*/
+            });
 
             //Header
             /*pw.println("SID," + String.join(",", allparts));

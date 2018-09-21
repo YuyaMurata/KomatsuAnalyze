@@ -6,6 +6,7 @@
 package data.analize;
 
 import file.CSVFileReadWrite;
+import file.UserDefinedFile;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 import json.SyaryoToZip3;
 import obj.SyaryoObject4;
 import param.KomatsuDataParameter;
+import param.KomatsuUserParameter;
 
 /**
  * 評価行列の作成 / |code.A code.B| sid.A| 0 1 | sid.B| 1 0 | 現状 KOMTRAX_ERROR 作業のみから作成
@@ -28,22 +30,25 @@ public class CreateEvaluateMatrix {
 
     private static final String KISY = "PC200";
     private static final String exportFile = "ExportData_" + KISY + "_ALL.json";
+    
+    private static final String partFilter = KomatsuUserParameter.PC200_PARTSFILTER_FILE;
 
     public static void main(String[] args) {
         Map<String, SyaryoObject4> syaryoMap = new SyaryoToZip3().readJSON(exportFile);
 
         SyaryoObject4 dataHeader = syaryoMap.get("_headers");
+        System.out.println(dataHeader.getMap());
         syaryoMap.remove("_headers");
         //List usererrors = UserDefinedFile.filter(KomatsuUserParameter.PC200_ERRFILTER_FILE);
         //List kmerrors = new ArrayList(KomatsuDataParameter.PC_ERROR.keySet());
 
         //作業フィルタ
-        workdatafilter(syaryoMap, dataHeader);
+        //workdatafilter(syaryoMap, dataHeader);
 
         //部品フィルタ
         partsdatafilter(syaryoMap, dataHeader);
         
-        //evalArray(syaryoMap, dataHeader, kmerrors);
+        //評価行列作成
         evalArrayKMError(syaryoMap, dataHeader, null);
 
         evalArrayPCD(syaryoMap, dataHeader, null);
@@ -60,26 +65,43 @@ public class CreateEvaluateMatrix {
         int idx2 = dataHeader.get("部品").get("部品").indexOf("HNBN");
         int idx3 = dataHeader.get("部品").get("部品").indexOf("None");
         
+        List filter = UserDefinedFile.filter(partFilter);
+        
         syaryoMap.values().stream().forEach(s -> {
             if (s.get("部品") == null) {
                 return;
             }
+            
+            s.startHighPerformaceAccess();
 
-            Map parts = s.get("部品").entrySet().stream()
+            Map<String, List<String>> parts = s.get("部品").entrySet().stream()
                     .filter(p -> !mainte.contains(s.get("受注").get(p.getKey().split("#")[0]).get(idx)))
                     .filter(p -> s.get("受注").get(p.getKey().split("#")[0]).get(order_idx).equals("2")) //修販
-                    .filter(p -> !p.getValue().get(idx3).equals("10"))
-                    .filter(p -> p.getValue().get(idx2).toString().split("-").length > 1)
+                    .filter(p -> p.getValue().get(idx3).equals("10"))   //コマツ部品のみ
+                    .filter(p -> !filter.contains(p.getValue().get(idx2)))
+                    .filter(p -> p.getValue().get(idx2).toString().split("-").length > 2) //汎用部品除外
                     .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
+            
+            //コード再定義
+            for(String key : parts.keySet()){
+                List<String> v = parts.get(key);
+                String hnbn = v.get(idx2);
+                String def1 = hnbn.split("-")[0];
+                String def2 = hnbn.split("-")[1];
+                String redef = "'" + def1.charAt(0) + (def2.length() == 2 ? "0" + def2 : def2);
+                v.set(idx2, redef);
+            }
 
-            if (parts != null) {
+            if (!parts.isEmpty()) {
                 s.put("部品", parts);
             } else {
                 reject.add(s.name);
             }
+            
+            s.stopHighPerformaceAccess();
         });
 
-        System.out.println("削除車両:" + reject);
+        System.out.println("削除車両:"+reject.size()+":"+ reject);
         for (String name : reject) {
             syaryoMap.remove(name);
         }
@@ -153,6 +175,8 @@ public class CreateEvaluateMatrix {
                 pw.println(name + "," + String.join(",", str));
             }
         }
+        
+        System.out.println("KOMTRAX_ERRORの評価行列作成");
     }
 
     private static void evalArraySGCD(Map<String, SyaryoObject4> syaryoMap, SyaryoObject4 dataHeader, List<String> service) {
@@ -192,12 +216,13 @@ public class CreateEvaluateMatrix {
                 pw.println(name + "," + String.join(",", str));
             }
         }
+        
+        System.out.println("作業データの評価行列作成");
     }
 
     private static void evalArrayPCD(Map<String, SyaryoObject4> syaryoMap, SyaryoObject4 dataHeader, List<String> parts) {
         try (PrintWriter pw = CSVFileReadWrite.writer(KISY + "_partscd_evalarray.csv")) {
             int parts_idx = dataHeader.get("部品").get("部品").indexOf("HNBN");
-            int order_idx = dataHeader.get("受注").get("受注").indexOf("ODR_KBN");
 
             Map<String, Integer[]> partscd = new HashMap();
 
@@ -206,14 +231,8 @@ public class CreateEvaluateMatrix {
                 s.startHighPerformaceAccess();
                 int idx = names.indexOf(s.name);
 
-                //修販のみ
-                List sbn = s.get("受注").entrySet().stream()
-                        .filter(ord -> ord.getValue().get(order_idx).equals("2"))
-                        .map(ord -> ord.getKey())
-                        .collect(Collectors.toList());
-
-                //KOMTRAX_ERROR
-                s.get("部品").entrySet().stream().filter(p -> sbn.contains(p.getKey().split("#")[0]))
+                //部品コード表
+                s.get("部品").entrySet().stream()
                         .map(p -> p.getValue().get(parts_idx).toString())
                         .forEach(cd -> {
                             if (partscd.get(cd) == null) {
@@ -235,10 +254,12 @@ public class CreateEvaluateMatrix {
             parts = parts.stream().sorted().collect(Collectors.toList());
             pw.println("コード," + String.join(",", parts));
             for (String name : syaryoMap.keySet()) {
-                List<String> str = parts.stream().map(err -> partscd.get(err) == null ? "N/A" : partscd.get(err)[names.indexOf(name)].toString()).collect(Collectors.toList());
+                List<String> str = parts.stream().map(p -> partscd.get(p) == null ? "N/A" : partscd.get(p)[names.indexOf(name)].toString()).collect(Collectors.toList());
                 pw.println(name + "," + String.join(",", str));
             }
         }
+        
+        System.out.println("部品データの評価行列作成");
     }
 
     private static void testEvalArray() {

@@ -26,6 +26,8 @@ public class MapTest {
         updateMap.put(temp.get("ID"), temp.get("list"));
         
         list.set(0, "X");
+        System.out.println(temp);
+        
         //temp = new HashMap();
         temp.put("ID", "XYZ");
         temp.put("Name", "XYZ");
