@@ -5,6 +5,7 @@
  */
 package data.analize;
 
+import data.code.CodeRedefine;
 import file.CSVFileReadWrite;
 import file.UserDefinedFile;
 import java.io.BufferedReader;
@@ -64,8 +65,12 @@ public class CreateEvaluateMatrix {
         int order_idx = dataHeader.get("受注").get("受注").indexOf("ODR_KBN");
         int idx2 = dataHeader.get("部品").get("部品").indexOf("HNBN");
         int idx3 = dataHeader.get("部品").get("部品").indexOf("None");
+        int idx4 = dataHeader.get("部品").get("部品").indexOf("BHN_NM");
         
         List filter = UserDefinedFile.filter(partFilter);
+        
+        //テスト出力用
+        Map<String, List<String>> testmap = new HashMap();
         
         syaryoMap.values().stream().forEach(s -> {
             if (s.get("部品") == null) {
@@ -79,19 +84,24 @@ public class CreateEvaluateMatrix {
                     .filter(p -> s.get("受注").get(p.getKey().split("#")[0]).get(order_idx).equals("2")) //修販
                     .filter(p -> p.getValue().get(idx3).equals("10"))   //コマツ部品のみ
                     .filter(p -> !filter.contains(p.getValue().get(idx2)))
-                    .filter(p -> p.getValue().get(idx2).toString().split("-").length > 2) //汎用部品除外
                     .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
             
             //コード再定義
             for(String key : parts.keySet()){
                 List<String> v = parts.get(key);
                 String hnbn = v.get(idx2);
-                String def1 = hnbn.split("-")[0];
-                String def2 = hnbn.split("-")[1];
-                String redef = "'" + def1.charAt(0) + (def2.length() == 2 ? "0" + def2 : def2);
+                String redef = CodeRedefine.partsCDRedefine(hnbn);
+                if(redef == null)
+                    continue;
+                
+                //テスト出力用
+                if(testmap.get(redef) == null)
+                    testmap.put(redef, new ArrayList());
+                testmap.get(redef).add(v.get(idx2)+"_"+v.get(idx4));
+                
                 v.set(idx2, redef);
             }
-
+            
             if (!parts.isEmpty()) {
                 s.put("部品", parts);
             } else {
@@ -101,6 +111,25 @@ public class CreateEvaluateMatrix {
             s.stopHighPerformaceAccess();
         });
 
+        //テスト出力
+        List<String> keys = testmap.keySet().stream().sorted().collect(Collectors.toList());
+            //重複除去
+        for(String k : keys){
+            Map<String, String> formMap = new HashMap();
+            for(String bhn : testmap.get(k)){
+                formMap.put(bhn.split("_")[0], bhn.split("_")[1]);
+            }
+            
+            testmap.put(k, formMap.entrySet().stream().map(f -> f.getKey()+","+f.getValue()).sorted().collect(Collectors.toList()));
+        }    
+        int n = testmap.values().stream().mapToInt(l -> l.size()).max().getAsInt();
+            //ヘッダ
+        System.out.println(keys.stream().map(k -> k+","+k+"品名").collect(Collectors.joining(",")));
+        for(int i=0; i < n; i++){
+            int col = i;
+            System.out.println(keys.stream().map(k -> testmap.get(k).size()-1 < col ?",":testmap.get(k).get(col)).collect(Collectors.joining(",")));
+        }
+        
         System.out.println("削除車両:"+reject.size()+":"+ reject);
         for (String name : reject) {
             syaryoMap.remove(name);

@@ -138,8 +138,7 @@ public class CodeVariation {
                 return ;
             
             List<String> parts = s.get("部品").entrySet().stream()
-                                            .filter(d -> d.getValue().get(dataHeader.get("部品").get("部品").indexOf("None")).equals("10") ||
-                                                            d.getValue().get(dataHeader.get("部品").get("部品").indexOf("None")).equals("20"))
+                                            .filter(d -> d.getValue().get(dataHeader.get("部品").get("部品").indexOf("None")).equals("10"))
                                             .map(d -> d.getValue().get(dataHeader.get("部品").get("部品").indexOf("HNBN"))
                                                         +"_"+d.getValue().get(dataHeader.get("部品").get("部品").indexOf("None"))
                                                         +"_"+d.getValue().get(dataHeader.get("部品").get("部品").indexOf("BHN_NM")))

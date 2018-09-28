@@ -6,6 +6,7 @@
 package data.analize;
 
 import analizer.SyaryoAnalizer;
+import data.code.CodeRedefine;
 import file.CSVFileReadWrite;
 import index.SyaryoObjectElementsIndex;
 import java.io.PrintWriter;
@@ -76,46 +77,17 @@ public class CreateAssociationRule {
 
                         List<String> parts = analize.getSBNParts(sbn).values().stream()
                             .filter(p -> p.get(markerIdx).equals("10"))//コマツ部品
-                            //.map(p -> p.get(ksycdIdx)+","+sbn+","+p.get(hnbnIdx))
-                            .map(p -> p.get(hnbnIdx))
-                            .filter(p -> p.split("-").length > 2) //汎用部品除外
-                            //.map(p -> "'"+p.charAt(0)+(p.split("-")[1].length()==2?"0"+p.split("-")[1]:p.split("-")[1]))
+                            .map(p -> CodeRedefine.partsCDRedefine(p.get(hnbnIdx))) //部品コードを再定義
                             .collect(Collectors.toList());
 
                         allParts.addAll(parts);
-
-                        //部品コードの再定義
-                        List<String> redefParts = new ArrayList();
-                        Pattern pat = Pattern.compile("(^[A-Z]+)(\\d+)");
-                        parts.stream()
-                            //.map(pa -> pa.split(",")[2])
-                            .forEach(pa -> {
-                                String def1 = pa.split("-")[0];
-                                String def2 = pa.split("-")[1];
-
-                                /*Matcher m = pat.matcher(def1);
-                                if (m.find()) {
-                                    def1 = m.group(2);
-                                }*/
-
-                                String redef = "'" + def1.charAt(0) + (def2.length() == 2 ? "0" + def2 : def2);
-
-                                //再定義コード
-                                //redefParts.add(redef);
-                                
-                                //元の品番
-                                redefParts.add(pa);
-                            });
-
+                        
                         if (parts.isEmpty()) {
                             continue;
                         }
 
                         //アソシエーションルール
-                        if(redefParts.stream().filter(pa -> pa.contains("20Y-30")).findFirst().isPresent())
-                            pw.println(sgcd.split("_")[1]+","+String.join(",", redefParts));
-                        
-                        associationMap.put(s.name + "_" + sbn + "_" + sgcd.split("_")[1], redefParts);
+                        associationMap.put(s.name + "_" + sbn + "_" + sgcd.split("_")[1], parts);
                     }
                 });
 
@@ -124,25 +96,6 @@ public class CreateAssociationRule {
                 .distinct()
                 .sorted()
                 .collect(Collectors.toList());
-
-            //Check
-            
-            Pattern pat = Pattern.compile("(^[A-Z]+)(\\d+)");
-            allParts.stream().distinct().forEach(pa -> {
-                //String def1 = pa.split(",")[2].split("-")[0];
-                //String def2 = pa.split(",")[2].split("-")[1];
-                String def1 = pa.split("-")[0];
-                String def2 = pa.split("-")[1];
-
-                /*Matcher m = pat.matcher(def1);
-                if (m.find()) {
-                    def1 = m.group(2);
-                }*/
-
-                String redef = "'" + def1.charAt(0) + (def2.length() == 2 ? "0" + def2 : def2);
-
-                System.out.println(redef + ":" + pa);
-            });
 
             //Header
             /*pw.println("SID," + String.join(",", allparts));
