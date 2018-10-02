@@ -36,7 +36,7 @@ public class CodeRedefine {
         //主要部品
         if(kind.charAt(0) == '6')
             define = "E";
-        else if(dev.length() == 3 && dev.charAt(0) == '8')
+        else if(dev.length() == 3 && (dev.charAt(0) == '8' || dev.charAt(0) == '9'))
             define = "A";
         else
             define = "B";
