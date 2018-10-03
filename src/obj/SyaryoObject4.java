@@ -184,7 +184,20 @@ public class SyaryoObject4 implements Serializable {
             map = new LinkedHashMap();
         }
     }
-
+    
+    public Map toMap(Boolean head){
+        decompress();
+        Map dump = new HashMap();
+        if(head){
+            for(Map v : map.values())
+                dump.putAll(v);
+        }else
+            dump.putAll(map);
+        compress(true);
+        
+        return dump;
+    }
+    
     //Dump
     public String dump() {
         decompress();

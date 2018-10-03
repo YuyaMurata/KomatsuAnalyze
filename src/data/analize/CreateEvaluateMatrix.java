@@ -31,8 +31,6 @@ public class CreateEvaluateMatrix {
 
     private static final String KISY = "PC200";
     private static final String exportFile = "ExportData_" + KISY + "_ALL.json";
-    
-    private static final String partFilter = KomatsuUserParameter.PC200_PARTSFILTER_FILE;
 
     public static void main(String[] args) {
         Map<String, SyaryoObject4> syaryoMap = new SyaryoToZip3().readJSON(exportFile);
@@ -47,7 +45,7 @@ public class CreateEvaluateMatrix {
         //workdatafilter(syaryoMap, dataHeader);
 
         //部品フィルタ
-        partsdatafilter(syaryoMap, dataHeader);
+        AnalizeDataFilter.partsdatafilter(syaryoMap, dataHeader);
         
         //評価行列作成
         evalArrayKMError(syaryoMap, dataHeader, null);
@@ -57,116 +55,7 @@ public class CreateEvaluateMatrix {
         //testEvalArray();
     }
     
-    private static void partsdatafilter(Map<String, SyaryoObject4> syaryoMap, SyaryoObject4 dataHeader) {
-        //定期メンテ削除
-        List<String> reject = new ArrayList();
-        List mainte = KomatsuDataParameter.PERIOD_MAINTE.get("受注.SGYO_KTICD");
-        int idx = dataHeader.get("受注").get("受注").indexOf("SGYO_KTICD");
-        int order_idx = dataHeader.get("受注").get("受注").indexOf("ODR_KBN");
-        int idx2 = dataHeader.get("部品").get("部品").indexOf("HNBN");
-        int idx3 = dataHeader.get("部品").get("部品").indexOf("None");
-        int idx4 = dataHeader.get("部品").get("部品").indexOf("BHN_NM");
-        
-        List filter = UserDefinedFile.filter(partFilter);
-        
-        //テスト出力用
-        Map<String, List<String>> testmap = new HashMap();
-        
-        syaryoMap.values().stream().forEach(s -> {
-            if (s.get("部品") == null) {
-                return;
-            }
-            
-            s.startHighPerformaceAccess();
-
-            Map<String, List<String>> parts = s.get("部品").entrySet().stream()
-                    .filter(p -> !mainte.contains(s.get("受注").get(p.getKey().split("#")[0]).get(idx)))
-                    .filter(p -> s.get("受注").get(p.getKey().split("#")[0]).get(order_idx).equals("2")) //修販
-                    .filter(p -> p.getValue().get(idx3).equals("10"))   //コマツ部品のみ
-                    .filter(p -> !filter.contains(p.getValue().get(idx2)))
-                    .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
-            
-            //コード再定義
-            for(String key : parts.keySet()){
-                List<String> v = parts.get(key);
-                String hnbn = v.get(idx2);
-                String redef = CodeRedefine.partsCDRedefine(hnbn);
-                if(redef == null)
-                    continue;
-                
-                //テスト出力用
-                if(testmap.get(redef) == null)
-                    testmap.put(redef, new ArrayList());
-                testmap.get(redef).add(v.get(idx2)+"_"+v.get(idx4));
-                
-                v.set(idx2, redef);
-            }
-            
-            if (!parts.isEmpty()) {
-                s.put("部品", parts);
-            } else {
-                reject.add(s.name);
-            }
-            
-            s.stopHighPerformaceAccess();
-        });
-
-        //テスト出力
-        List<String> keys = testmap.keySet().stream().sorted().collect(Collectors.toList());
-            //重複除去
-        for(String k : keys){
-            Map<String, String> formMap = new HashMap();
-            for(String bhn : testmap.get(k)){
-                formMap.put(bhn.split("_")[0], bhn.split("_")[1]);
-            }
-            
-            testmap.put(k, formMap.entrySet().stream().map(f -> f.getKey()+","+f.getValue()).sorted().collect(Collectors.toList()));
-        }    
-        int n = testmap.values().stream().mapToInt(l -> l.size()).max().getAsInt();
-            //ヘッダ
-        System.out.println(keys.stream().map(k -> k+","+k+"品名").collect(Collectors.joining(",")));
-        for(int i=0; i < n; i++){
-            int col = i;
-            System.out.println(keys.stream().map(k -> testmap.get(k).size()-1 < col ?",":testmap.get(k).get(col)).collect(Collectors.joining(",")));
-        }
-        
-        System.out.println("削除車両:"+reject.size()+":"+ reject);
-        for (String name : reject) {
-            syaryoMap.remove(name);
-        }
-    }
     
-    private static void workdatafilter(Map<String, SyaryoObject4> syaryoMap, SyaryoObject4 dataHeader) {
-        //定期メンテ削除
-        List<String> reject = new ArrayList();
-        List mainte = KomatsuDataParameter.PERIOD_MAINTE.get("受注.SGYO_KTICD");
-        int idx = dataHeader.get("受注").get("受注").indexOf("SGYO_KTICD");
-        List mainte2 = KomatsuDataParameter.PERIOD_MAINTE.get("作業.SGYOCD");
-        int idx2 = dataHeader.get("作業").get("作業").indexOf("SGYOCD");
-        syaryoMap.values().stream().forEach(s -> {
-            if (s.get("作業") == null) {
-                return;
-            }
-
-            Map works = s.get("作業").entrySet().stream()
-                    .filter(w -> !mainte.contains(s.get("受注").get(w.getKey().split("#")[0]).get(idx)))
-                    .filter(w -> !mainte2.contains(w.getValue().get(idx2)))
-                    .filter(w -> !w.getValue().get(idx2).equals("ZZU"))
-                    .filter(w -> !w.getValue().get(idx2).equals("None"))
-                    .collect(Collectors.toMap(w -> w.getKey(), w -> w.getValue()));
-
-            if (works != null) {
-                s.put("作業", works);
-            } else {
-                reject.add(s.name);
-            }
-        });
-
-        System.out.println("削除車両:" + reject);
-        for (String name : reject) {
-            syaryoMap.remove(name);
-        }
-    }
 
     private static void evalArrayKMError(Map<String, SyaryoObject4> syaryoMap, SyaryoObject4 dataHeader, List<String> error) {
         try (PrintWriter pw = CSVFileReadWrite.writer(KISY + "_kmerrcd_evalarray.csv")) {

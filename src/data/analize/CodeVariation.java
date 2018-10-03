@@ -5,6 +5,7 @@
  */
 package data.analize;
 
+import data.code.CodeRedefine;
 import file.CSVFileReadWrite;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -29,6 +30,9 @@ public class CodeVariation {
         SyaryoObject4 dataHeader = syaryoMap.get("_headers");
         syaryoMap.remove("_headers");
         System.out.println(dataHeader.dump());
+        
+        //部品フィルタ
+        AnalizeDataFilter.partsdatafilter(syaryoMap, dataHeader);
         
         partscd(syaryoMap, dataHeader);
     }
@@ -139,35 +143,35 @@ public class CodeVariation {
             
             List<String> parts = s.get("部品").entrySet().stream()
                                             .filter(d -> d.getValue().get(dataHeader.get("部品").get("部品").indexOf("None")).equals("10"))
-                                            .map(d -> d.getValue().get(dataHeader.get("部品").get("部品").indexOf("HNBN"))
-                                                        +"_"+d.getValue().get(dataHeader.get("部品").get("部品").indexOf("None"))
+                                            .filter(d -> CodeRedefine.partsCDRedefine((String) d.getValue().get(dataHeader.get("部品").get("部品").indexOf("HNBN"))) != null)
+                                            .map(d ->  CodeRedefine.partsCDRedefine((String) d.getValue().get(dataHeader.get("部品").get("部品").indexOf("HNBN")))
+                                                        +"_"+d.getValue().get(dataHeader.get("部品").get("部品").indexOf("HNBN"))
                                                         +"_"+d.getValue().get(dataHeader.get("部品").get("部品").indexOf("BHN_NM")))
                                             .collect(Collectors.toList());
             
             for(String pa : parts){
-                if(occPDays.get(pa) == null)
-                    occPDays.put(pa, 0);
+                String rp = pa.split("_")[0];
                 
-                occPDays.put(pa, occPDays.get(pa)+1);
+                if(occPDays.get(rp) == null)
+                    occPDays.put(rp, 0);
+                
+                System.out.println(pa.replace("_", ","));
+                
+                occPDays.put(rp, occPDays.get(rp)+1);
             }
             
-            for(String pa : parts.stream().distinct().collect(Collectors.toList())){
-                if(occPNum.get(pa) == null)
-                    occPNum.put(pa, 0);
+            for(String rp : parts.stream().map(p -> p.split("_")[0]).distinct().collect(Collectors.toList())){
+                if(occPNum.get(rp) == null)
+                    occPNum.put(rp, 0);
                 
-                occPNum.put(pa, occPNum.get(pa)+1);
+                occPNum.put(rp, occPNum.get(rp)+1);
             }
         });
         
         try(PrintWriter csv = CSVFileReadWrite.writer(exportFile+"partsno.csv")){
-            csv.println("品番,メーカ,品名,発生台数,発生日数");
+            csv.println("再定義,品番,メーカ,品名,発生台数,発生数");
             for(String pa : occPNum.keySet()){
-                if(pa.contains("600-319-3610")){
-                    System.out.println(pa);
-                    System.out.println(pa.hashCode());
-                }
-                
-                csv.println(pa.split("_")[0]+","+pa.split("_")[1]+","+pa.split("_")[2]+","+occPNum.get(pa)+","+occPDays.get(pa));
+                csv.println(pa.split("_")[0]+","+pa.split("_")[1]+","+pa.split("_")[2]+","+pa.split("_")[3]+","+occPNum.get(pa)+","+occPDays.get(pa));
             }
         }
     }
