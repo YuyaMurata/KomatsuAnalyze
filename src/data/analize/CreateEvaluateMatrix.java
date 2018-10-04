@@ -5,9 +5,7 @@
  */
 package data.analize;
 
-import data.code.CodeRedefine;
 import file.CSVFileReadWrite;
-import file.UserDefinedFile;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -19,8 +17,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import json.SyaryoToZip3;
 import obj.SyaryoObject4;
-import param.KomatsuDataParameter;
-import param.KomatsuUserParameter;
 
 /**
  * 評価行列の作成 / |code.A code.B| sid.A| 0 1 | sid.B| 1 0 | 現状 KOMTRAX_ERROR 作業のみから作成
