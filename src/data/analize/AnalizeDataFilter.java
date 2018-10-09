@@ -36,16 +36,18 @@ public class AnalizeDataFilter {
         
         syaryoMap.values().stream().forEach(s -> {
             if (s.get("部品") == null) {
+                reject.add(s.name);
                 return;
             }
             
             s.startHighPerformaceAccess();
 
             Map<String, List<String>> parts = s.get("部品").entrySet().stream()
-                    .filter(p -> !mainte.contains(s.get("受注").get(p.getKey().split("#")[0]).get(idx)))
+                    .filter(p -> !mainte.contains(s.get("受注").get(p.getKey().split("#")[0]).get(idx))) //定期メンテ削除
                     .filter(p -> s.get("受注").get(p.getKey().split("#")[0]).get(order_idx).equals("2")) //修販
                     .filter(p -> p.getValue().get(idx3).equals("10"))   //コマツ部品のみ
-                    .filter(p -> !filter.contains(p.getValue().get(idx2)))
+                    .filter(p -> p.getValue().get(idx2).toString().split("-").length > 2) //コマツコード体系
+                    .filter(p -> !filter.contains(p.getValue().get(idx2))) //除外部品
                     .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
             
             
