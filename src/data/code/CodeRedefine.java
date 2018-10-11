@@ -5,6 +5,8 @@
  */
 package data.code;
 
+import param.KomatsuUserParameter;
+
 /**
  *
  * @author ZZ17390
@@ -46,10 +48,14 @@ public class CodeRedefine {
             dev = "0"+dev;
         define = define + dev;
         
+        //ユーザー定義による部品定義
+        String redefine = KomatsuUserParameter.PC_PARTS_REDEF.get(define).toString();
+        
         //Check
         //codeCheck(origin, define);
         
-        return define;
+        //return define;
+        return redefine;
     }
     
     private static void codeCheck(String origin, String define){

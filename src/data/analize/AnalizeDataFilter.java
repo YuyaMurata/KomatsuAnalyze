@@ -30,6 +30,8 @@ public class AnalizeDataFilter {
         int idx2 = dataHeader.get("部品").get("部品").indexOf("HNBN");
         int idx3 = dataHeader.get("部品").get("部品").indexOf("None");
         int idx4 = dataHeader.get("部品").get("部品").indexOf("BHN_NM");
+        int idx_q = dataHeader.get("部品").get("部品").indexOf("JISI_SU");
+        int idx_p = dataHeader.get("部品").get("部品").indexOf("SKKG");
         
         //PC200 部品フィルタ
         List filter = UserDefinedFile.filter(KomatsuUserParameter.PC200_PARTSFILTER_FILE);
@@ -48,6 +50,8 @@ public class AnalizeDataFilter {
                     .filter(p -> p.getValue().get(idx3).equals("10"))   //コマツ部品のみ
                     .filter(p -> p.getValue().get(idx2).toString().split("-").length > 2) //コマツコード体系
                     .filter(p -> !filter.contains(p.getValue().get(idx2))) //除外部品
+                    .filter(p -> KomatsuUserParameter.PARTS_FILTER_PRICE <= 
+                            (Integer.valueOf(p.getValue().get(idx_p).toString()) / Integer.valueOf(p.getValue().get(idx_q).toString()))) //金額での除外
                     .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
             
             

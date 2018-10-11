@@ -40,7 +40,7 @@ public class ExportData2 {
         Map headers = new LinkedHashMap();
         headers.put("受注", new Integer[]{dataIndex.get("受注").indexOf("SGYO_KTICD"), dataIndex.get("受注").indexOf("ODR_KBN"), dataIndex.get("受注").indexOf("SKKG")});
         headers.put("作業", new Integer[]{dataIndex.get("作業").indexOf("KSYCD"), dataIndex.get("作業").indexOf("SGYOCD"), dataIndex.get("作業").indexOf("0")});
-        headers.put("部品", new Integer[]{dataIndex.get("部品").indexOf("HNBN"), dataIndex.get("部品").indexOf("None"), dataIndex.get("部品").indexOf("BHN_NM")});
+        headers.put("部品", new Integer[]{dataIndex.get("部品").indexOf("HNBN"), dataIndex.get("部品").indexOf("None"), dataIndex.get("部品").indexOf("BHN_NM"), dataIndex.get("部品").indexOf("JISI_SU"), dataIndex.get("部品").indexOf("SKKG")});
         headers.put("KOMTRAX_ERROR", new Integer[]{dataIndex.get("KOMTRAX_ERROR").indexOf("ERROR_CODE"), dataIndex.get("KOMTRAX_ERROR").indexOf("COUNT")});
         //headers.put("新車", new Integer[]{-1, dataIndex.get("新車").indexOf("sell")});
         //headers.put("SMR", new Integer[]{-1, dataIndex.get("SMR").indexOf("SVC_MTR")});

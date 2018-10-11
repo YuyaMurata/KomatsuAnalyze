@@ -5,13 +5,23 @@
  */
 package param;
 
+import java.util.Map;
+import json.MapIndexToJSON;
+
 /**
  *
  * @author ZZ17390
  */
 public interface KomatsuUserParameter {
     public static String PC200_ERRFILTER_FILE="user\\PC200_errorfilter_180828.txt";
+    
+    //部品フィルタ
     public static String PC200_PARTSFILTER_FILE="user\\PC200_partsfilter_180921.txt";
+    public static Integer PARTS_FILTER_PRICE = 5000;
+    
+    //部品コードの再定義
+    public static String PC_PARTS_REDEF_INDEX_PATH = "user\\pc200_parts_redefine.json";
+    public static Map PC_PARTS_REDEF = new MapIndexToJSON().reader(PC_PARTS_REDEF_INDEX_PATH);
     
     //評価行列
     public static String PC200_PARTS_EVAL_FILE="PC200_partscd_evalarray.csv";

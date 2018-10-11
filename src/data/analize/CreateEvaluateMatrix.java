@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import json.SyaryoToZip3;
 import obj.SyaryoObject4;
 import param.KomatsuDataParameter;
+import param.KomatsuUserParameter;
 
 /**
  * 評価行列の作成 / |code.A code.B| sid.A| 0 1 | sid.B| 1 0 | 現状 KOMTRAX_ERROR 作業のみから作成
@@ -151,7 +152,6 @@ public class CreateEvaluateMatrix {
                 s.get("部品").entrySet().stream()
                         .map(p -> CodeRedefine.partsCDRedefine(p.getValue().get(parts_idx).toString())) //コード再定義
                         .filter(p -> p != null) //再定義の例外確認
-                        .map(p -> KomatsuDataParameter.PC_PARTS_REDEF.get(p).toString()) //再定義コードのユーザー定義
                         .forEach(cd -> {
                             if (partscd.get(cd) == null) {
                                 partscd.put(cd, new Integer[syaryoMap.size()]);

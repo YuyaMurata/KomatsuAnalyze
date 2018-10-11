@@ -138,10 +138,6 @@ public interface KomatsuDataParameter {
     //サブキーの変換が必要なものの対応表
     public static List TRANS_DATE = Arrays.asList(new String[]{"受注", "作業", "部品"});
     
-    //部品コードの再定義
-    public static String PC_PARTS_REDEF_INDEX_PATH = "index\\pc200_parts_redefine.json";
-    public static Map PC_PARTS_REDEF = new MapIndexToJSON().reader(PC_PARTS_REDEF_INDEX_PATH);
-    
     //名称定義
     public static String PC_KMERR_DEFNAME_INDEX_PATH = "define\\PC200_Komtrax_Error_name.json";
     public static Map PC_KMERR_EDEFNAME = new MapIndexToJSON().reader(PC_KMERR_DEFNAME_INDEX_PATH);
