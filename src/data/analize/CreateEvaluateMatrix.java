@@ -50,8 +50,10 @@ public class CreateEvaluateMatrix {
         evalArrayKMError(syaryoMap, dataHeader, null);
 
         evalArrayPCD(syaryoMap, dataHeader, null);
-
+        
         //testEvalArray();
+        
+        System.out.println(syaryoMap.size()+"台");
     }
     
     

@@ -49,7 +49,7 @@ public class CodeRedefine {
         define = define + dev;
         
         //ユーザー定義による部品定義
-        String redefine = KomatsuUserParameter.PC_PARTS_REDEF.get(define).toString();
+        String redefine = KomatsuUserParameter.PC_PARTS_REDEF.get(define);
         
         //Check
         //codeCheck(origin, define);

@@ -377,12 +377,19 @@ public class EasyViewerFXMLController implements Initializable {
         if (searchBox.getText().equals("")) {
             return;
         }
-
+        
         List<String> targets;
         String[] searchWord = searchBox.getText().split(",");
-
+        
         List<String> searchList;
         Map<String, Integer> result = new HashMap<>();
+        
+        searchList = Arrays.asList(searchWord).stream().filter(s -> syaryoMap.keySet().contains(s)).collect(Collectors.toList());
+        if(searchList != null){
+            updateKeyList(searchList);
+            return;
+        }
+        
         if (datafilter.getValue().equals("ALL")) {
             targets = KomatsuDataParameter.DATA_ORDER;
             searchList = new ArrayList<>(syaryoMap.keySet());
