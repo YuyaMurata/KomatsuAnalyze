@@ -25,7 +25,8 @@ public class GeneticAlgorithm {
     private Integer LOOP_N = 100;
     private Integer N = 100;
     private Double MUPB = 0.1;
-    private Double CXPB = 0.5;
+    private Double CXPB = 0.8;
+    private Double UNICX = 0.5;
     private Integer SELECT_G = 10;
     private static Integer len = 40;
     private double[][] fit;
@@ -85,8 +86,12 @@ public class GeneticAlgorithm {
     
     //交叉 (一様交叉)
     public void crossover(List<Integer> p1, List<Integer> p2){
+        if(RAND.nextDouble() >= CXPB)
+            return;
+        
+        List<Integer> child = new ArrayList<>();
         IntStream.range(0, p1.size()).parallel()
-                .filter(i -> RAND.nextDouble() >= CXPB)
+                .filter(i -> RAND.nextDouble() >= UNICX)
                 .forEach(i -> {
                     Integer sw = p1.get(i);
                     p1.set(i, p2.get(i));
@@ -96,8 +101,11 @@ public class GeneticAlgorithm {
     
     //突然変異
     public void mutable(List<Integer> p){
+        if(RAND.nextDouble() >= MUPB)
+            return ;
+            
         IntStream.range(0, p.size()).parallel()
-                            .filter(i -> RAND.nextDouble() >= MUPB)
+                            .filter(i -> RAND.nextDouble() < MUPB)
                             .forEach(i -> p.set(i, (p.get(i)+1)%2));
     }
     
