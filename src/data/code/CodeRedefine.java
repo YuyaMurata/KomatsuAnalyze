@@ -14,9 +14,9 @@ import param.KomatsuUserParameter;
 public class CodeRedefine {
     /**
      * 主要部品のみ (品番体系で解釈可能)
-     * 車体部品 : BXX <- XXX-XX-XXXXX
-     * エンジン部品 : EXX <- 6XX-XXX-XXXX 6XXX-XX-XXXX
-     * 付属部品    : AXX <- XXX-8XX-XXXX, XXXX-9XX-XXXX
+     * 車体部品 : BXX <- XXX-○○-XXXXX
+     * エンジン部品 : EXX <- 6XX-○○X-XXXX 6XXX-○○-○XXX
+     * 付属部品    : AXX <- XXX-8○○-XXXX, XXXX-9○○-XXXX
      * 未使用 サービス　<- 7XX-XXX-XXXX
      * @param origin code
      * @return  redefined code
@@ -30,15 +30,22 @@ public class CodeRedefine {
         
         String kind = origin.split("-")[0];
         String dev = origin.split("-")[1];
+        String indv = origin.split("-")[2];
+        
         
         //未使用除外
         if(kind.charAt(0) == '7')
             return null;
         
         //主要部品
-        if(kind.charAt(0) == '6')
+        if(kind.charAt(0) == '6'){
             define = "E";
-        else if(dev.length() == 3 && (dev.charAt(0) == '8' || dev.charAt(0) == '9'))
+            if(kind.length() == 4)
+                dev = dev.charAt(0)+ "1" + indv.charAt(0);
+            else
+                dev = dev.substring(0,2);
+            
+        }else if(dev.length() == 3 && (dev.charAt(0) == '8' || dev.charAt(0) == '9'))
             define = "A";
         else
             define = "B";

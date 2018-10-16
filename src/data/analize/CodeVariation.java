@@ -169,9 +169,9 @@ public class CodeVariation {
         });
         
         try(PrintWriter csv = CSVFileReadWrite.writer(exportFile+"partsno.csv")){
-            csv.println("再定義,品番,メーカ,品名,発生台数,発生数");
+            csv.println("再定義,品番,品名,発生台数,発生数");
             for(String pa : occPNum.keySet()){
-                csv.println(pa.split("_")[0]+","+pa.split("_")[1]+","+pa.split("_")[2]+","+pa.split("_")[3]+","+occPNum.get(pa)+","+occPDays.get(pa));
+                csv.println(pa.split("_")[0]+","+pa.split("_")[1]+","+pa.split("_")[2]+","+occPNum.get(pa)+","+occPDays.get(pa));
             }
         }
     }

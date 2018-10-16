@@ -385,7 +385,7 @@ public class EasyViewerFXMLController implements Initializable {
         Map<String, Integer> result = new HashMap<>();
         
         searchList = Arrays.asList(searchWord).stream().filter(s -> syaryoMap.keySet().contains(s)).collect(Collectors.toList());
-        if(searchList != null){
+        if(!searchList.isEmpty()){
             updateKeyList(searchList);
             return;
         }

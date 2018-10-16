@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.hive.druid.org.jboss.netty.util.internal.ConcurrentHashMap;
@@ -27,7 +28,7 @@ public class GeneticAlgorithm {
     private Double MUPB = 0.1;
     private Double CXPB = 0.8;
     private Double UNICX = 0.5;
-    private Integer SELECT_G = 10;
+    private Integer ELITE_G = 4;
     private static Integer len = 40;
     private double[][] fit;
     private double[] tg;
@@ -77,11 +78,34 @@ public class GeneticAlgorithm {
                                 .forEach(j -> farray[j] += fit[i][j]);
                     });
             
-            //相関
-            double f = EvaluateCorrelation.correlation(tg, farray);
+            //相関 正値と負値をとるため
+            double f = Math.abs(EvaluateCorrelation.correlation(tg, farray));
             
             g.setValue(f);
         });
+    }
+    
+    public List selection(){
+        //エリート選択
+        List<List<Integer>> select = POOL.entrySet().stream()
+                                            .sorted(Entry.comparingByValue())
+                                            .limit(ELITE_G)
+                                            .map(e -> e.getKey())
+                                            .collect(Collectors.toList());
+        
+        //ルーレット選択 (POOL size - Elite size)
+        TreeMap<Double, List<Integer>> roullet = new TreeMap();
+        Double acm = 0d;
+        double sum = POOL.entrySet().parallelStream().filter(g -> !select.contains(g.getKey()))
+                                                .mapToDouble(g -> g.getValue()).sum();
+        for(List<Integer> key : POOL.keySet().stream().filter(g -> !select.contains(g)).collect(Collectors.toList())){
+            roullet.put(acm, key);
+            acm += POOL.get(key) / sum;
+        }
+        while(select.size() < N)
+            select.add(roullet.floorEntry(RAND.nextDouble()).getValue());
+        
+        return select;
     }
     
     //交叉 (一様交叉)
@@ -107,16 +131,6 @@ public class GeneticAlgorithm {
         IntStream.range(0, p.size()).parallel()
                             .filter(i -> RAND.nextDouble() < MUPB)
                             .forEach(i -> p.set(i, (p.get(i)+1)%2));
-    }
-    
-    public List selection(){
-        List<List<Integer>> select = POOL.entrySet().stream()
-                                            .sorted(Entry.comparingByValue())
-                                            .limit(SELECT_G)
-                                            .map(e -> e.getKey())
-                                            .collect(Collectors.toList());
-        
-        return select;
     }
     
     public void next(){

@@ -26,11 +26,11 @@ public class EvaluateCorrelation {
 
     private static Map evalPartsMap;
     private static Map evalKMErrMap;
-    //private static String filename = "PC200_correlationMap_parts_kme.csv";
-    private static String filename = "PC200_rank_correlationMap_kme.csv";
+    private static String filename = "PC200_correlationMap_parts_kme.csv";
+    //private static String filename = "PC200_rank_correlationMap_kme.csv";
     //private static String filename = "PC200_rank_correlationMap_parts.csv";
-    //private static Map defMap = KomatsuDataParameter.PC_PARTS_EDEFNAME;
-    private static Map defMap = KomatsuDataParameter.PC_KMERR_EDEFNAME;
+    private static Map defMap = KomatsuDataParameter.PC_PARTS_EDEFNAME;
+    //private static Map defMap = KomatsuDataParameter.PC_KMERR_EDEFNAME;
 
     public static void main(String[] args) {
         settings();
@@ -43,9 +43,9 @@ public class EvaluateCorrelation {
         //System.out.println("t-"+partsHeader);
         //test(partsHeader.indexOf("9"), partsHeader.indexOf("11"), partsData);
         
-        //calcMatrix();
+        calcMatrix();
         //rankCalcMatrix(((List<List>) evalPartsMap.get("headers")).get(0), (double[][]) evalPartsMap.get("data"));
-        rankCalcMatrix(((List<List>) evalKMErrMap.get("headers")).get(0), (double[][]) evalKMErrMap.get("data"));
+        //rankCalcMatrix(((List<List>) evalKMErrMap.get("headers")).get(0), (double[][]) evalKMErrMap.get("data"));
     }
     
     private static void rankCalcMatrix(List header, double[][] data){
