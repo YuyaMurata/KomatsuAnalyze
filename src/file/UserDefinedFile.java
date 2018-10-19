@@ -37,6 +37,7 @@ public class UserDefinedFile {
         return filterList;
     }
     
+    //評価行列の読み込み
     public static Map<String, Object> evalMatrix(String filename){
         List<List<String>> lines = new ArrayList();
         try(BufferedReader br = CSVFileReadWrite.reader(filename)){

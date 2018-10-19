@@ -22,7 +22,7 @@ public class Population {
     }
     
     public Double getFit(){
-        return f;
+        return Math.abs(f);
     }
     
     public String toString() {
