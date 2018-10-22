@@ -37,12 +37,13 @@ public class GeneticAlgorithm {
     private List<String> matname;
 
     private static Random RAND = new Random();
-    private static Integer LOOP_N = 100_000;
+    private static Integer LOOP_N = 10_000;
     private Integer GEN_N = 100;
     private Double MUPB = 0.1;
     private Double CXPB = 1.0;
-    private Double UNICX = 0.3;
+    private Double UNICX = 0.5;
     private int ELITE_G = (int) (0.1 * GEN_N);
+    private int SELECT_G = (int) (0.1 * GEN_N);
     private Integer GEN_LEN;
     private double[][] fit;
     private double[] tg;
@@ -61,6 +62,8 @@ public class GeneticAlgorithm {
         System.out.println("PartsMatrix-" + partsNameHeader);
         
         for (int kmeIdx = 0; kmeIdx < kmerrNameHeader.size(); kmeIdx++) {
+            //int kmeIdx = 0;
+            
             GeneticAlgorithm ga = new GeneticAlgorithm();
             
             System.out.println("Tartget-" + kmerrNameHeader.get(kmeIdx));
@@ -81,6 +84,7 @@ public class GeneticAlgorithm {
             for (int i = 0; i < LOOP_N; i++) {
                 ga.next();
                 ga.logPrint();
+                //ga.testPrint();
                 if (((i + 1) % 1000) == 0) {
                     System.out.println("Loop-" + (i + 1) + "," + ga.best.f + "," + ga.divercity);
                 }
@@ -138,11 +142,9 @@ public class GeneticAlgorithm {
 
     public List<Population> selection() {
         //エリート選択
-        List<Population> select = POOL.stream()
-            .sorted(Comparator.comparing(Population::getFit).reversed())
-            .limit(ELITE_G)
-            .collect(Collectors.toList());
-        POOL.removeAll(select);
+        POOL.sort(Comparator.comparing(Population::getFit).reversed());
+        List<Population> select = POOL.subList(0, ELITE_G);
+        POOL = new CopyOnWriteArrayList<>(POOL.subList(ELITE_G, POOL.size()));
 
         if (!select.isEmpty()) {
             this.best = select.get(0);
@@ -161,7 +163,7 @@ public class GeneticAlgorithm {
             acm += p.getFit() / sum;
         }
 
-        while (select.size() < GEN_N) {
+        while (select.size() < ELITE_G + SELECT_G) {
             select.add(roullet.floorEntry(RAND.nextDouble()).getValue());
         }
 
@@ -169,20 +171,23 @@ public class GeneticAlgorithm {
     }
 
     //交叉 (一様交叉)
-    public Population crossover(Population p1, Population p2) {
-        Population child = new Population(p1.g, p1.f);
+    public List<Population> crossover(Population p1, Population p2) {
+        List<Population> childlen = new ArrayList<>();
+        childlen.add(new Population(p1.g, p1.f));
+        childlen.add(new Population(p1.g, p1.f));
 
         if (RAND.nextDouble() >= CXPB) {
-            return child;
+            return childlen;
         }
 
         IntStream.range(0, p1.g.size()).parallel()
             .filter(i -> RAND.nextDouble() >= UNICX)
             .forEach(i -> {
-                child.g.set(i, p2.g.get(i));
+                childlen.get(0).g.set(i, p2.g.get(i));
+                childlen.get(1).g.set(i, p1.g.get(i));
             });
 
-        return child;
+        return childlen;
     }
 
     //突然変異
@@ -201,6 +206,15 @@ public class GeneticAlgorithm {
 
         return child;
     }
+    
+    //世代交代
+    public List<Population> nextGen(List<Population> nextgene){
+        List<Population> n = new CopyOnWriteArrayList<>();
+        n.addAll(nextgene);
+        n.addAll(POOL.subList(0, GEN_N - nextgene.size()));
+        
+        return n;
+    }
 
     public int cnt = 0;
 
@@ -210,21 +224,22 @@ public class GeneticAlgorithm {
 
         //評価
         fitness();
-
+        
         //選択
-        List<Population> nextgene = selection();
-
-        for (int i = ELITE_G; i < nextgene.size(); i++) {
+        List<Population> selectgene = selection();
+        
+        List<Population> nextgene = new CopyOnWriteArrayList<>();
+        for (int i = 0; i < selectgene.size()-1; i++) {
             //交叉
-            nextgene.set(i, crossover(nextgene.get(i), nextgene.get((i + 1) % GEN_N)));
+            List<Population> childlen = crossover(selectgene.get(i), selectgene.get(i + 1));
 
             //突然変異
-            nextgene.set(i, mutable(nextgene.get(i)));
+            nextgene.addAll(childlen.parallelStream().map(g -> mutable(g)).collect(Collectors.toList()));
         }
 
         //次世代の登録
-        POOL = new CopyOnWriteArrayList<>();
-        nextgene.stream().forEach(POOL::add);
+        nextgene.addAll(selectgene);
+        POOL = nextGen(nextgene);
 
         calcDivercity();
         //testPrint();
@@ -250,6 +265,7 @@ public class GeneticAlgorithm {
 
     private void testPrint() {
         System.out.println("------  N=" + cnt + "  ------");
-        System.out.println(cnt + "," + POOL.stream().map(p -> p.f.toString()).collect(Collectors.joining(",")));
+        //System.out.println(cnt + "," + POOL.stream().map(p -> p.f.toString()).collect(Collectors.joining(",")));
+        POOL.stream().forEach(System.out::println);
     }
 }
