@@ -198,11 +198,11 @@ public class GeneticAlgorithm {
             return child;
         }
 
-        int r = RAND.nextInt(p.g.size());
-        /*IntStream.range(0, p.g.size()).parallel()
+        //int r = RAND.nextInt(p.g.size());
+        IntStream.range(0, p.g.size()).parallel()
             .filter(i -> RAND.nextDouble() < MUPB)
-            .forEach(i -> child.g.set(i, (child.g.get(i) + 1) % 2));*/
-        child.g.set(r, (p.g.get(r) + 1) % 2);
+            .forEach(i -> child.g.set(i, (child.g.get(i) + 1) % 2));
+        //child.g.set(r, (p.g.get(r) + 1) % 2);
 
         return child;
     }

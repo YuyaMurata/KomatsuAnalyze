@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import json.SyaryoToZip3;
@@ -32,6 +33,7 @@ public class SyaryoAnalizer implements AutoCloseable {
     public String kind = "";
     public String type = "";
     public String no = "";
+    public String mcompany = "";
     public Boolean used = false;
     public Boolean komtrax = false;
     public Boolean allsupport = false;
@@ -157,6 +159,8 @@ public class SyaryoAnalizer implements AutoCloseable {
                     break;
                 case "新車":
                     lifestart = syaryo.get("新車").keySet().stream().findFirst().get();
+                    
+                    mcompany = syaryo.get("仕様").get("0").get(0).toString();
                     break;
             }
         }
