@@ -77,7 +77,7 @@ public class EvaluateSyaryoData {
 
         //初期化
         for (Object p : mainteIndex.keySet())
-            map.put(p, 0);
+            map.put(mainteIndex.get(p), 0);
 
         //定期点検
         if (syaryo.get().get("受注") != null) {
@@ -86,7 +86,6 @@ public class EvaluateSyaryoData {
                 String sg = service.get(layout.get("受注").indexOf("SGYO_KTICD"));
                 Object key = mainteIndex.get(sg);
                 if (key != null) {
-                    System.out.println(key+" : "+map);
                     map.put(key, map.get(key) + 1);
                 }
             }
