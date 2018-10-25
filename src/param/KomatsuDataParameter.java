@@ -129,7 +129,7 @@ public interface KomatsuDataParameter {
     //定期メンテナンスの定義
     public static Map<String, List> PERIOD_MAINTE = new HashMap(){{
         put("受注.SGYO_KTICD", Arrays.asList(new String[]{"AA","AB","AC","AS","BC","BF","BJ","BL"}));
-        put("部品.HNBN", Arrays.asList(new String[]{"6736-51-5142", "600-319-3610", "20Y-60-21470", "207-60-71182", "600-319-3750", "208-979-7620", "17M-911-3530"}));
+        put("部品.HNBN", Arrays.asList(new String[]{"6736-51-5142", "600-319-3610", "20Y-60-21470", "207-60-71182", "600-319-3750", "208-979-7620", "2A5-979-1551", "17M-911-3530"}));
         put("作業.SGYOCD", Arrays.asList(new String[]{"B@BBB4"}));
     }};
     
@@ -144,4 +144,6 @@ public interface KomatsuDataParameter {
     public static Map PC_KMERR_EDEFNAME = new MapIndexToJSON().reader(PC_KMERR_DEFNAME_INDEX_PATH);
     public static String PC_PARTS_DEFNAME_INDEX_PATH = "define\\PC200_Parts_Redefine_name.json";
     public static Map PC_PARTS_EDEFNAME = new MapIndexToJSON().reader(PC_PARTS_DEFNAME_INDEX_PATH);
+    public static String PC_PID_DEFNAME_INDEX_PATH = "define\\PC200_PartsID_Define_name.json";
+    public static Map PC_PID_DEFNAME = new MapIndexToJSON().reader(PC_PID_DEFNAME_INDEX_PATH);
 }

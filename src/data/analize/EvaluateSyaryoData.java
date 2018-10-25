@@ -6,6 +6,7 @@
 package data.analize;
 
 import analizer.SyaryoAnalizer;
+import data.eval.MainteEvaluate;
 import file.CSVFileReadWrite;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -70,26 +71,23 @@ public class EvaluateSyaryoData {
      * メンテナンスデータ 定義 : v[エンジンメンテ, 油圧メンテ, 定期メンテ] エンジンメンテ = エンジンOIL交換回数 / (SMR /
      * インターバル) 油圧メンテ = 作動機オイル交換 / (SMR / インターバル) 定期メンテ = 作業形態回数 / (経年 / インターバル)
      */
+    private Map mainteIndex = KomatsuDataParameter.PC_PID_DEFNAME;
     private Map mainteData(SyaryoAnalizer syaryo) {
-        Map<String, Integer> map = new LinkedHashMap<>();
+        Map<Object, Integer> map = new LinkedHashMap<>();
 
         //初期化
-        for (Object sg : mainte.get("受注.SGYO_KTICD")) {
-            map.put(sg.toString(), 0);
-        }
-        for (Object p : mainte.get("部品.HNBN")) {
-            map.put(p.toString(), 0);
-        }
-        map.put("エンジンオイル", 0);
-        //map.put("パワーラインオイル", 0);
+        for (Object p : mainteIndex.keySet())
+            map.put(p, 0);
 
         //定期点検
         if (syaryo.get().get("受注") != null) {
             for (List<String> service : syaryo.get().get("受注").values()) {
                 //作業形態カウント
                 String sg = service.get(layout.get("受注").indexOf("SGYO_KTICD"));
-                if (mainte.get("受注.SGYO_KTICD").contains(sg)) {
-                    map.put(sg, map.get(sg) + 1);
+                Object key = mainteIndex.get(sg);
+                if (key != null) {
+                    System.out.println(key+" : "+map);
+                    map.put(key, map.get(key) + 1);
                 }
             }
         }
@@ -98,15 +96,16 @@ public class EvaluateSyaryoData {
         if (syaryo.get().get("部品") != null) {
             List<String> sbns = new ArrayList<>(syaryo.get().get("受注").keySet());
             for (String sbn : sbns) {
-                Map<String, Boolean> flgMap = map.keySet().stream().collect(Collectors.toMap(k -> k, k -> true));
+                Map<Object, Boolean> flgMap = map.keySet().stream().collect(Collectors.toMap(k -> k, k -> true));
 
                 if (syaryo.getSBNParts(sbn) != null) {
                     for (List<String> parts : syaryo.getSBNParts(sbn).values()) {
 
                         //品番カウント
                         String p = parts.get(layout.get("部品").indexOf("HNBN"));
-                        if (mainte.get("部品.HNBN").contains(p) && flgMap.get(p)) {
-                            map.put(p, map.get(p) + 1);
+                        Object key = mainteIndex.get(p);
+                        if (map.get(key) != null && flgMap.get(key)) {
+                            map.put(key, map.get(key) + 1);
                         }
 
                         //エンジンオイル
@@ -160,7 +159,7 @@ public class EvaluateSyaryoData {
         sb.append(smr);
         for (String k : evalMap.keySet()) {
             sb.append(",");
-            sb.append(evalMap.get(k));
+            sb.append(MainteEvaluate.eval(k, evalMap.get(k), smr, day/365));
         }
 
         return sb.toString();

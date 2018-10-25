@@ -12,10 +12,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Random;
 import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -24,7 +22,6 @@ import java.util.stream.IntStream;
 import org.apache.hive.druid.org.jboss.netty.util.internal.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
-import param.KomatsuDataParameter;
 import param.KomatsuUserParameter;
 
 /**
@@ -60,12 +57,12 @@ public class GeneticAlgorithm {
         List<String> partsNameHeader = ((List<List<String>>) evalPartsMap.get("headers")).get(0);
         List<String> kmerrNameHeader = ((List<List<String>>) evalKMErrMap.get("headers")).get(0);
         System.out.println("PartsMatrix-" + partsNameHeader);
-        
+
         for (int kmeIdx = 0; kmeIdx < kmerrNameHeader.size(); kmeIdx++) {
             //int kmeIdx = 0;
-            
+
             GeneticAlgorithm ga = new GeneticAlgorithm();
-            
+
             System.out.println("Tartget-" + kmerrNameHeader.get(kmeIdx));
 
             //Log Settings
@@ -76,7 +73,6 @@ public class GeneticAlgorithm {
             DOMConfigurator.configure("xml/galog4j.xml");
 
             //log.info("-------------------------------  new Execution  -------------------------------");
-
             ga.settings(partsNameHeader, (double[][]) evalPartsMap.get("data"),
                 kmerrNameHeader.get(kmeIdx), ((double[][]) evalKMErrMap.get("data"))[kmeIdx]);
             ga.initialize(ga.GEN_N);
@@ -170,7 +166,7 @@ public class GeneticAlgorithm {
         return select;
     }
 
-    //交叉 (一様交叉)
+    //交叉
     public List<Population> crossover(Population p1, Population p2) {
         List<Population> childlen = new ArrayList<>();
         childlen.add(new Population(p1.g, p1.f));
@@ -180,12 +176,21 @@ public class GeneticAlgorithm {
             return childlen;
         }
 
-        IntStream.range(0, p1.g.size()).parallel()
+        //一様交叉
+        /*IntStream.range(0, p1.g.size()).parallel()
             .filter(i -> RAND.nextDouble() >= UNICX)
             .forEach(i -> {
+
                 childlen.get(0).g.set(i, p2.g.get(i));
                 childlen.get(1).g.set(i, p1.g.get(i));
             });
+        */
+        //2点交叉
+        List<Integer> point = IntStream.range(0, 2).map(i -> RAND.nextInt(GEN_LEN)).boxed().sorted().collect(Collectors.toList());
+        for (int i = point.get(0); i < point.get(1); i++) {
+            childlen.get(0).g.set(i, p2.g.get(i));
+            childlen.get(1).g.set(i, p1.g.get(i));
+        }
 
         return childlen;
     }
@@ -206,13 +211,13 @@ public class GeneticAlgorithm {
 
         return child;
     }
-    
+
     //世代交代
-    public List<Population> nextGen(List<Population> nextgene){
+    public List<Population> nextGen(List<Population> nextgene) {
         List<Population> n = new CopyOnWriteArrayList<>();
         n.addAll(nextgene);
         n.addAll(POOL.subList(0, GEN_N - nextgene.size()));
-        
+
         return n;
     }
 
@@ -224,12 +229,12 @@ public class GeneticAlgorithm {
 
         //評価
         fitness();
-        
+
         //選択
         List<Population> selectgene = selection();
-        
+
         List<Population> nextgene = new CopyOnWriteArrayList<>();
-        for (int i = 0; i < selectgene.size()-1; i++) {
+        for (int i = 0; i < selectgene.size() - 1; i++) {
             //交叉
             List<Population> childlen = crossover(selectgene.get(i), selectgene.get(i + 1));
 

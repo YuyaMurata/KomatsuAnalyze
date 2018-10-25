@@ -1,6 +1,5 @@
 /nbproject/private/
 /nbproject/old/
-/nbproject/log/
 /nbproject/車両テンプレート/
 /nbproject/車両テンプレートエラー/
 /nbproject/車両テンプレートエラー分離/
@@ -19,4 +18,5 @@
 *.bz2
 *.7z
 *.tar
+*.log
 project.properties
