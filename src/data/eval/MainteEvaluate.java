@@ -11,7 +11,7 @@ package data.eval;
  */
 public class MainteEvaluate {
     
-    public static Double eval(String s, int num, int smr, int y){
+    public static Double eval(String s, int num, int smr, double y){
         Double d = period(s, num, smr, y);
         if(d == null)
             d = parts(s, num, smr, y);
@@ -20,48 +20,58 @@ public class MainteEvaluate {
     }
     
     //定期メンテ評価
-    private static Double period(String sk, int num, int smr, int y) {
+    private static Double period(String sk, int num, int smr, double y) {
+        double d = 0;
         switch (sk) {
             case "特定自主検査":
-                return (double) num / y;
+                d = (double) num / y;
+                break;
             case "新車巡回":
-                double yrate = 3;
-                if(y <= 2)
-                    yrate = 3 * y / 2;
-                return (double) num / yrate;
+                if(y >= (16/12))
+                    d = (double) num / 3;
+                else if(y >= (6 / 12))
+                    d = (double) num / 2;
+                else
+                    d = (double) num / 1;
+                break;
             case "コマツケア":
                 if (y > 4) {
-                    return (double) num / 4d;
+                    d = (double) num / 4d;
                 } else {
                     double s = (smr / 500d) > 4 ? 4 : smr / 500d;
-                    return (double) num / s;
+                    if(s >= 1)
+                        d = (double) num / s;
                 }
+                break;
             case "エンジンオイル":
-                return num / (smr / 500d);
+                double s = (smr / 500d);
+                d = num / s;
+                break;
         }
         
-        return null;
+        return d;
     }
 
     //交換部品
-    private static Double parts(String hnbn, int num, int smr, int y) {
+    private static Double parts(String hnbn, int num, int smr, double y) {
         String p = hnbn.replace(" ", "");
+        double d = 0;
         
         //500時間交換品
         if (p.equals("エンジンオイルフィルタ") || p.equals("燃料プレフィルタ") || p.equals("作動油タンクブリザード")) {
-            return num / (smr / 500d);
+            d = num / (smr / 500d);
         }
 
         //1000時間
         if(p.equals("作動油フィルタ") ||  p.equals("燃料メインフィルタ")){
-            return num / (smr / 1000d);
+            d = num / (smr / 1000d);
         }
         
         //1年
         if(p.equals("エアコン内気フィルタ") || p.equals("エアコン外気フィルタ")){
-            return num / (y / 1d);
+            d = num / (y / 1d);
         }
         
-        return -1d;
+        return d;
     }
 }

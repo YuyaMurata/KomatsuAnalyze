@@ -153,12 +153,13 @@ public class EvaluateSyaryoData {
         sb.append(",");
         sb.append(company);
         sb.append(",");
-        sb.append(day / 365);
+        sb.append(day / 365d);
         sb.append(",");
         sb.append(smr);
         for (String k : evalMap.keySet()) {
             sb.append(",");
-            sb.append(MainteEvaluate.eval(k, evalMap.get(k), smr, day/365));
+            sb.append(MainteEvaluate.eval(k, evalMap.get(k), smr, day / 365d));
+            //sb.append(evalMap.get(k));
         }
 
         return sb.toString();
