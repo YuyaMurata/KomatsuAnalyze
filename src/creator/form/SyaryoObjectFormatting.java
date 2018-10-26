@@ -47,6 +47,9 @@ public class SyaryoObjectFormatting {
         String filename = OBJPATH + "syaryo_obj_" + kisy + ".bz2";
         Map<String, SyaryoObject4> syaryoMap = zip3.read(filename);
 
+        //残すデータ
+        List exist = new ArrayList(dataIndex.get("SMR").indexOf("SVC_MTR"));
+        
         //本社コード
         Map<String, String> honsyIndex = new MapIndexToJSON().reader(HONSY_INDEXPATH);
 
@@ -110,7 +113,8 @@ public class SyaryoObjectFormatting {
             newMap = formParts(syaryo.get("部品"), sbnList, dataIndex.get("部品"), rule.getPARTSID());
             syaryo.put("部品", newMap);
 
-            //SMR
+            //SMR  KOMTRAXと統合
+            syaryo.put("SMR", combine(reduce(syaryo.get("SMR"), exist), syaryo.get("KOMTRAX_SMR")));
             newMap = formSMR(syaryo.get("SMR"), dataIndex.get("SMR"));
             syaryo.put("SMR", newMap);
 
@@ -119,7 +123,7 @@ public class SyaryoObjectFormatting {
             syaryo.put("オールサポート", newMap);
 
             //check komtrax
-            int err = 0;
+            /*int err = 0;
             if (syaryo.get("KOMTRAX_SMR") != null) {
                 int tmp = -1;
                 for (String date : syaryo.get("KOMTRAX_SMR").keySet()) {
@@ -129,7 +133,7 @@ public class SyaryoObjectFormatting {
                     }
                     tmp = s;
                 }
-            }
+            }*/
 
             //Komtrax
             formKomtrax(syaryo);
@@ -152,6 +156,25 @@ public class SyaryoObjectFormatting {
         String outfile = OBJPATH + "syaryo_obj_" + kisy + "_form.bz2";
         zip3.write(outfile, syaryoMap);
     }
+    
+    private static Map reduce(Map<String, List> r, List<Integer> exp){
+        return r.entrySet().stream()
+                        .collect(Collectors.toMap(e -> e.getKey(), 
+                                                    e ->exp.stream().map(i -> e.getValue().get(i)).collect(Collectors.toList())));
+    }
+    
+    private static Map combine(Map c1, Map c2){
+        if(c2 == null)
+            return c1;
+        else if(c1 == null)
+            return c2;
+        
+        for(Object key : c2.keySet()){
+            c1.put(dup(key.toString(), c1), c2.get(key));
+        }
+        
+        return c1;
+    }
 
     //車両の削除
     private static void rejectSyaryo(Map<String, SyaryoObject4> syaryoMap, String[] deleteRule) {
@@ -162,38 +185,41 @@ public class SyaryoObjectFormatting {
 
             for (String rule : deleteRule) {
                 Boolean check = false;
-                
+
                 String data = rule.split(",")[0];
                 String value = rule.split(",")[1];
-                
+
                 if (data.equals("company")) {
                     //Delete Company
-                    if(syaryo.get("最終更新日") != null)
+                    if (syaryo.get("最終更新日") != null) {
                         check = syaryo.get("最終更新日").values().stream()
                             .filter(list -> list.contains(value)) //Company
                             .findFirst().isPresent();
+                    }
                 } else {
                     //Delete 新車 日付閾値以降のデータ削除
-                    if(syaryo.get(data) == null)
+                    if (syaryo.get(data) == null) {
                         data = "生産";
-                    
-                    if(syaryo.get(data) != null)
+                    }
+
+                    if (syaryo.get(data) != null) {
                         check = syaryo.get(data).keySet().stream()
                             .filter(k -> Integer.valueOf(k.split("#")[0].replace("/", "")) >= Integer.valueOf(value))
                             .findFirst().isPresent();
+                    }
                 }
-                
+
                 if (check) {
                     //System.out.println(data+":"+key);
                     reject.put(syaryo.name, 0);
                     //reject.add(key);
                 }
             }
-            
+
             syaryo.stopHighPerformaceAccess();
         });
 
-        System.out.println("カンパニ、日付で削除される車両数:"+reject.size());
+        System.out.println("カンパニ、日付で削除される車両数:" + reject.size());
         for (String key : reject.keySet()) {
             syaryoMap.remove(key);
         }
@@ -208,8 +234,9 @@ public class SyaryoObjectFormatting {
             if (Integer.valueOf(date) < Integer.valueOf(pdate)) {
                 map.put(pdate, product.get(date));
                 System.out.println(currentKey + ":生産-" + pdate + " 異常:" + date);
-            }else
+            } else {
                 map.put(date, product.get(date));
+            }
         } else {
             map.put(date, product.get(date));
         }
@@ -239,7 +266,7 @@ public class SyaryoObjectFormatting {
          */
         //日付データ揃え
         owner = dateFormalize(owner);
-        
+
         //本社コード揃え
         for (String d : owner.keySet()) {
             List list = owner.get(d);
@@ -254,7 +281,7 @@ public class SyaryoObjectFormatting {
 
             list.set(ownerID, id);
         }
-        
+
         for (String d : history.keySet()) {
             List list = history.get(d);
             String com = list.get(company).toString();
@@ -299,7 +326,6 @@ public class SyaryoObjectFormatting {
                 }
             }
         }*/
-
         if (owners.isEmpty()) {
             //System.out.println("使用顧客が存在しない車両(後で削除)");
             return null;
@@ -319,7 +345,7 @@ public class SyaryoObjectFormatting {
                 }
             }
         }
-       
+
         return map;
     }
 
@@ -537,10 +563,10 @@ public class SyaryoObjectFormatting {
         int db = indexList.indexOf("kom_order");
         int price = indexList.indexOf("SKKG");
         int kind = indexList.indexOf("ODR_KBN");
-        
+
         //6桁以下の規格外の作番を取得するリスト
         List<String> sixSBN = new ArrayList();
-        
+
         for (String sbn : sbnList) {
             //重複作番を取り出す
             List<String> sbnGroup = order.keySet().stream()
@@ -572,32 +598,34 @@ public class SyaryoObjectFormatting {
                     }
                 }
             }
-            
+
             //規格外の作番取得
-            if(sbn.length() < 7)
+            if (sbn.length() < 7) {
                 sixSBN.add(sbn);
-            
+            }
+
             //System.out.println(map.get(sbn));
             reject.addPARTSID(sbn);
             if (map.get(sbn).get(kind).equals("2")) {
                 reject.addWORKID(sbn);
             }
         }
-        
+
         //規格外作番で修正されている場合は削除
         List<String> removeSixSBN = new ArrayList<>();
-        for(String sbn : map.keySet()){
-            if(sixSBN.contains(sbn))
+        for (String sbn : map.keySet()) {
+            if (sixSBN.contains(sbn)) {
                 continue;
-            
+            }
+
             Optional<String> sbnCheck = sixSBN.stream().filter(s -> sbn.contains(s)).findFirst();
-            if(sbnCheck.isPresent()){
+            if (sbnCheck.isPresent()) {
                 //System.out.println(sbn+":"+sixSBN);
                 removeSixSBN.add(sbnCheck.get());
             }
-        } 
+        }
         removeSixSBN.stream().forEach(s -> map.remove(s));
-        
+
         //金額の整形処理
         for (String sbn : map.keySet()) {
             List<String> list = map.get(sbn);
@@ -641,20 +669,20 @@ public class SyaryoObjectFormatting {
                     .forEach(s -> map.put(s, work.get(s)));
             }
         }
-        
+
         //代表作業抽出と設定
         int daihyoIdx = indexList.indexOf("0"); // DIHY_SGYO_FLG
         int sgcdIdx = indexList.indexOf("SGYOCD");
         int sgnmIdx = indexList.indexOf("SGYO_NM");
         work.entrySet().stream()
-                        .filter(w -> w.getValue().get(daihyoIdx).equals("1"))
-                        .forEach(w -> {
-                            map.entrySet().stream()
-                                    .filter(e -> e.getKey().contains(w.getKey().split("#")[0]))
-                                    .filter(e -> e.getValue().get(sgcdIdx).equals(w.getValue().get(sgcdIdx)))
-                                    .filter(e -> e.getValue().get(sgnmIdx).equals(w.getValue().get(sgnmIdx)))
-                                    .forEach(e -> map.get(e.getKey()).set(daihyoIdx, "1"));
-                        });
+            .filter(w -> w.getValue().get(daihyoIdx).equals("1"))
+            .forEach(w -> {
+                map.entrySet().stream()
+                    .filter(e -> e.getKey().contains(w.getKey().split("#")[0]))
+                    .filter(e -> e.getValue().get(sgcdIdx).equals(w.getValue().get(sgcdIdx)))
+                    .filter(e -> e.getValue().get(sgnmIdx).equals(w.getValue().get(sgnmIdx)))
+                    .forEach(e -> map.get(e.getKey()).set(daihyoIdx, "1"));
+            });
 
         Integer[] kosu = new Integer[]{
             indexList.indexOf("HJUN_KOS"),
@@ -794,7 +822,6 @@ public class SyaryoObjectFormatting {
 
         //異常データの排除
         //map = rejectSMRData(map, smridx);
-
         return map;
     }
 
@@ -888,19 +915,20 @@ public class SyaryoObjectFormatting {
                     List value = getDoubleToInteger(id, syaryo.get(id).get(date));
                     newMap.put(dup(d, newMap), value);
                     tmp = str;
-                    
+
                 }
             }
 
             syaryo.put(id, newMap);
         }
     }
-    
+
     //KOMTRAXデータを整数値に変換(SMR, FUEL_CONSUME)
-    private static List<String> getDoubleToInteger(String id, List<String> kmvalue){
-        if(!id.contains("SMR") && !id.contains("FUEL"))
+    private static List<String> getDoubleToInteger(String id, List<String> kmvalue) {
+        if (!id.contains("SMR") && !id.contains("FUEL")) {
             return kmvalue;
-        
+        }
+
         kmvalue.set(0, String.valueOf(Double.valueOf(kmvalue.get(0)).intValue()));
         return kmvalue;
     }
@@ -939,7 +967,7 @@ public class SyaryoObjectFormatting {
                 if (syaryo.get(key).isEmpty()) {
                     deleteKey.add(key);
                 }
-            }else{
+            } else {
                 deleteKey.add(key);
             }
         }
@@ -948,7 +976,7 @@ public class SyaryoObjectFormatting {
             syaryo.remove(dkey);
         }
     }
-    
+
     //日付が重複する場合に連番を付与　20180809が2つ登場したとき-> 20180809#0001
     private static String dup(String key, Map map) {
         int cnt = 0;
@@ -961,7 +989,7 @@ public class SyaryoObjectFormatting {
 
     //SMRの異常値を除去　出来が悪いのでつくり直し
     private static Map rejectSMRData(Map<String, List<String>> smr, int idx) {
-        
+
         //MA
         List smrList = smr.values().stream()
             .map(s -> s.get(idx)).collect(Collectors.toList());
