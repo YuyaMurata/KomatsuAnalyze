@@ -87,7 +87,7 @@
                         <Region maxHeight="10.0" minHeight="10.0" prefHeight="10.0" VBox.vgrow="NEVER" />
                         <ScrollPane fitToWidth="true" prefViewportHeight="391.0" prefViewportWidth="400.0" VBox.vgrow="ALWAYS">
                            <content>
-                              <Accordion fx:id="dataAccordion" VBox.vgrow="ALWAYS" />
+                              <VBox fx:id="dataBox" />
                            </content>
                         </ScrollPane>
                      </children>
@@ -96,7 +96,8 @@
             </HBox>
             <AnchorPane prefHeight="20.0" prefWidth="200.0" VBox.vgrow="NEVER">
                <children>
-                  <Label fx:id="number_syaryo_label" layoutX="631.0" layoutY="3.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="15.0" prefWidth="160.0" text="0 / 0" textAlignment="RIGHT" />
+                  <Label fx:id="number_syaryo_label" layoutX="6.0" layoutY="3.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="15.0" prefWidth="160.0" text="0 / 0" textAlignment="RIGHT" />
+                  <ProgressBar fx:id="fileProgress" layoutX="657.0" layoutY="2.0" prefHeight="18.0" prefWidth="134.0" progress="0.0" AnchorPane.rightAnchor="13.0" />
                </children>
             </AnchorPane>
          </children>

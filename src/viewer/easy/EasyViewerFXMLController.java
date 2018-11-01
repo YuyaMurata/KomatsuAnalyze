@@ -17,10 +17,19 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Accordion;
@@ -30,19 +39,23 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import json.JsonToSyaryoTemplate;
 import json.SyaryoTemplateToJson;
 import json.SyaryoToZip3;
 //import obj.SyaryoObject3;
 import obj.SyaryoObject4;
+import viewer.progress.ProgressTask;
 import viewer.service.ButtonService;
+import viewer.service.FileLoadService;
 
 /**
  * FXML Controller class
@@ -87,12 +100,17 @@ public class EasyViewerFXMLController implements Initializable {
     private MenuItem smr_plot;
     @FXML
     private MenuItem smr_hist;
-    @FXML
-    private Accordion dataAccordion;
+
     @FXML
     private TextField searchBox;
     @FXML
     private Button searchBtn;
+    @FXML
+    private VBox dataBox;
+    @FXML
+    private ProgressBar fileProgress;
+
+    final ExecutorService exec = Executors.newFixedThreadPool(2);
 
     /**
      * Initializes the controller class.
@@ -136,24 +154,26 @@ public class EasyViewerFXMLController implements Initializable {
 
     private void initializeAccordion() {
         TitledPane[] tps = new TitledPane[KomatsuDataParameter.DATA_ORDER.size()];
-        TextArea[] tes = new TextArea[KomatsuDataParameter.DATA_ORDER.size()];
+        //TextArea[] tes = new TextArea[KomatsuDataParameter.DATA_ORDER.size()];
 
         int i = 0;
         for (String data : KomatsuDataParameter.DATA_ORDER) {
-            tes[i] = new TextArea();
-            tps[i] = new TitledPane(data, tes[i]);
+            TextArea ta = new TextArea();
+            ta.prefHeight(250d);
+            tps[i] = new TitledPane(data, ta);
+            tps[i].setAnimated(false);
+            tps[i].setExpanded(false);
             i++;
         }
 
-        dataAccordion.getPanes().clear();
-        dataAccordion.getPanes().addAll(tps);
+        dataBox.getChildren().addAll(tps);
     }
 
     //アコーディオンの設定
     private void settingData(SyaryoObject4 syaryo) {
         int i = 0;
         for (String data : KomatsuDataParameter.DATA_ORDER) {
-            TitledPane title = dataAccordion.getPanes().get(i);
+            TitledPane title = (TitledPane) dataBox.getChildren().get(i);
             String[] str;
             str = textdump(syaryo.get(title.getText().split(" ")[0].replace("×", "")));
             ((TextArea) title.getContent()).setText(str[1]);
@@ -191,13 +211,28 @@ public class EasyViewerFXMLController implements Initializable {
         filechooser.setInitialDirectory(new File(KomatsuDataParameter.SYARYOOBJECT_FDPATH));
         File file = filechooser.showOpenDialog(menu.getScene().getWindow());
         if (file != null) {
-            id_label.setText(file.getName());
+            /*id_label.setText(file.getName());
             syaryoMap = loadSyaryoMap(file);
-            updateKeyList(new ArrayList(new TreeSet(syaryoMap.keySet())));
+            updateKeyList(new ArrayList(new TreeSet(syaryoMap.keySet())));*/
+            Task ft = fileLoadTask(file);
+            exec.submit(ft);
+            ft.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, wse -> exec.shutdown());
         }
 
         //Filter Initialize
         initializeFilter(true);
+    }
+
+    private Task<Void> fileLoadTask(File file) {
+        return new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                Platform.runLater(() -> id_label.setText(file.getName()));
+                syaryoMap = loadSyaryoMap(file);
+                Platform.runLater(() -> updateKeyList(new ArrayList(new TreeSet(syaryoMap.keySet()))));  
+                return null;
+            }
+        };
     }
 
     private Map loadSyaryoMap(File file) {
@@ -205,7 +240,7 @@ public class EasyViewerFXMLController implements Initializable {
         currentFile = file.getName();
 
         if (file.getName().contains(".bz2")) {
-            return new SyaryoToZip3().read(file.getAbsolutePath());
+            return new SyaryoToZip3().guiRead(file.getAbsolutePath());
         } else {
             return new SyaryoToZip3().readJSON(file.getAbsolutePath());
         }
@@ -377,19 +412,19 @@ public class EasyViewerFXMLController implements Initializable {
         if (searchBox.getText().equals("")) {
             return;
         }
-        
+
         List<String> targets;
         String[] searchWord = searchBox.getText().split(",");
-        
+
         List<String> searchList;
         Map<String, Integer> result = new HashMap<>();
-        
+
         searchList = Arrays.asList(searchWord).stream().filter(s -> syaryoMap.keySet().contains(s)).collect(Collectors.toList());
-        if(!searchList.isEmpty()){
+        if (!searchList.isEmpty()) {
             updateKeyList(searchList);
             return;
         }
-        
+
         if (datafilter.getValue().equals("ALL")) {
             targets = KomatsuDataParameter.DATA_ORDER;
             searchList = new ArrayList<>(syaryoMap.keySet());
@@ -400,7 +435,7 @@ public class EasyViewerFXMLController implements Initializable {
 
         searchList.parallelStream().forEach(s -> {
             SyaryoObject4 syaryo = syaryoMap.get(s);
-            
+
             for (String target : targets) {
                 if (syaryo.get(target) == null) {
                     continue;

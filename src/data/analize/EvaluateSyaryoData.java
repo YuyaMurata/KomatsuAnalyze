@@ -110,6 +110,9 @@ public class EvaluateSyaryoData {
                         //エンジンオイル
                         String pn = parts.get(layout.get("部品").indexOf("BHN_NM"));
                         if (((p.contains("SYEO-") && !p.contains("SYEO-T")) || (p.contains("NYEO-") && !p.contains("NYEO-T"))) && flgMap.get("エンジンオイル")) {
+                            if(syaryo.no.equals("452771")){
+                                System.out.println(p+":"+pn);
+                            }
                             p = "エンジンオイル";
                             map.put(p, map.get(p) + 1);
                         }
