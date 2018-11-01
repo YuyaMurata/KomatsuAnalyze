@@ -26,13 +26,12 @@ public class ProgressTask {
     }
 
     public void start() {
-        bar.setProgress(0);
         Task task = getTask();
         bar.progressProperty().unbind();
         bar.progressProperty().bind(task.progressProperty());
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.submit(task);
-        task.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, wse -> executor.shutdown());
+        //task.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, wse -> executor.shutdown());
     }
 
     private Task getTask() {
@@ -43,7 +42,7 @@ public class ProgressTask {
                     long s = (long) (100 * (double) SyaryoToZip3.availSize / (double) SyaryoToZip3.fileSize);
                     updateProgress(s, 100);
                     TimeUnit.MILLISECONDS.sleep(100);
-                    //System.out.println(s+"%("+SyaryoToZip3.availSize + ")/" + SyaryoToZip3.fileSize);
+                    System.out.println(s+"%("+SyaryoToZip3.availSize + ")/" + SyaryoToZip3.fileSize);
                     
                     if (SyaryoToZip3.availSize >= SyaryoToZip3.fileSize) {
                         break;

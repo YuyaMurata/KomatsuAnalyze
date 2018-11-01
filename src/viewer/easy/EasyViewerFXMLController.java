@@ -216,6 +216,9 @@ public class EasyViewerFXMLController implements Initializable {
             updateKeyList(new ArrayList(new TreeSet(syaryoMap.keySet())));*/
             Task ft = fileLoadTask(file);
             exec.submit(ft);
+            fileProgress.setProgress(0);
+            ProgressTask pg = new ProgressTask(fileProgress);
+            pg.start();
             ft.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, wse -> exec.shutdown());
         }
 
