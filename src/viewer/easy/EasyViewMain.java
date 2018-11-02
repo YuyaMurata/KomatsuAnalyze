@@ -24,7 +24,7 @@ public class EasyViewMain extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("EasyViewerFXML.fxml"));
         Scene scene = new Scene(root);
 
-        stage.setTitle("Easy View Ver.0a");
+        stage.setTitle("Easy View Ver.0.1a");
         stage.setScene(scene);
         stage.show();
 

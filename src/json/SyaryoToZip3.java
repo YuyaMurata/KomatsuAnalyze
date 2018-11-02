@@ -19,6 +19,8 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javafx.application.Platform;
+import javafx.scene.control.ProgressBar;
 import obj.SyaryoObject4;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
@@ -98,14 +100,14 @@ public class SyaryoToZip3 {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             BZip2CompressorInputStream bzIn = new BZip2CompressorInputStream(in)) {
 
-            fileSize = 2 * in.available();
-            availSize = 0;
+            //fileSize = 2 * in.available();
+            //availSize = 0;
             
             final byte[] buffer = new byte[size];
             int n = 0;
             while (-1 != (n = bzIn.read(buffer))) {
                 out.write(buffer, 0, n);
-                availSize += size;
+                //availSize += size;
             }
 
             readObj = (Map) getObject(out.toByteArray());

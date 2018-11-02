@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.text.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
@@ -61,11 +62,17 @@
                                  <font>
                                     <Font size="15.0" />
                                  </font>
+                                 <HBox.margin>
+                                    <Insets left="5.0" top="2.0" />
+                                 </HBox.margin>
                               </Label>
                               <Label prefHeight="19.0" prefWidth="14.0" text=":" textAlignment="CENTER">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
+                                 <HBox.margin>
+                                    <Insets top="2.0" />
+                                 </HBox.margin>
                               </Label>
                               <Label fx:id="id_label" prefHeight="19.0" prefWidth="181.0" text="syaryo">
                                  <font>
@@ -78,13 +85,16 @@
                                       </items>
                                     </ContextMenu>
                                  </contextMenu>
+                                 <HBox.margin>
+                                    <Insets top="1.0" />
+                                 </HBox.margin>
                               </Label>
                               <Region prefHeight="23.0" prefWidth="102.0" HBox.hgrow="ALWAYS" />
                               <ComboBox fx:id="graph_menu" prefHeight="23.0" prefWidth="118.0" promptText="None" />
                               <Button fx:id="graph_button" alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#graphAction" prefHeight="23.0" prefWidth="82.0" text="Graph" />
                            </children>
                         </HBox>
-                        <Region maxHeight="10.0" minHeight="10.0" prefHeight="10.0" VBox.vgrow="NEVER" />
+                        <Region maxHeight="10.0" minHeight="2.0" prefHeight="2.0" prefWidth="604.0" VBox.vgrow="NEVER" />
                         <ScrollPane fitToWidth="true" prefViewportHeight="391.0" prefViewportWidth="400.0" VBox.vgrow="ALWAYS">
                            <content>
                               <VBox fx:id="dataBox" />
@@ -94,10 +104,10 @@
                   </VBox>
                </children>
             </HBox>
-            <AnchorPane prefHeight="20.0" prefWidth="200.0" VBox.vgrow="NEVER">
+            <AnchorPane prefHeight="21.0" prefWidth="804.0" VBox.vgrow="NEVER">
                <children>
-                  <Label fx:id="number_syaryo_label" layoutX="6.0" layoutY="3.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="15.0" prefWidth="160.0" text="0 / 0" textAlignment="RIGHT" />
-                  <ProgressBar fx:id="fileProgress" layoutX="657.0" layoutY="2.0" prefHeight="18.0" prefWidth="134.0" progress="0.0" AnchorPane.rightAnchor="13.0" />
+                  <Label fx:id="number_syaryo_label" layoutX="6.0" layoutY="3.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="15.0" prefWidth="134.0" text="0 / 0" textAlignment="RIGHT" />
+                  <ProgressIndicator fx:id="fileProgress" layoutX="761.0" layoutY="1.0" prefHeight="19.0" prefWidth="32.0" progress="1.0" AnchorPane.rightAnchor="11.0" />
                </children>
             </AnchorPane>
          </children>
