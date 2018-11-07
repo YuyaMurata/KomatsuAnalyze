@@ -21,6 +21,7 @@ public class MainteFilter {
         Boolean f = 
             skDetect(sgkt, hnbn, price) || 
             partsDetect(sgkt, hnbn, price) ||
+            egoilDetect(sgkt, hnbn, price) ||
             kesDetect(sgkt, hnbn, price) ||
             priceDetect(sgkt, hnbn, price);
         
@@ -39,6 +40,24 @@ public class MainteFilter {
     public static Boolean partsDetect(String sgkt, String hnbn, Integer price){    
         //品番に基づくフィルタ
         if(mainte.get("部品.HNBN").contains(hnbn)){
+            return true;
+        }
+        
+        return false;
+    }
+    
+    public static Boolean egoilDetect(String sgkt, String hnbn, Integer price){    
+        //品番に基づくフィルタ
+        if((hnbn.contains("SYEO-") && !hnbn.contains("SYEO-T")) || (hnbn.contains("NYEO-") && !hnbn.contains("NYEO-T"))){
+            return true;
+        }
+        
+        return false;
+    }
+    
+    public static Boolean pwoilDetect(String sgkt, String hnbn, Integer price){    
+        //品番に基づくフィルタ
+        if(hnbn.contains("SYEO-T")|| hnbn.contains("NYEO-T")){
             return true;
         }
         
