@@ -25,19 +25,19 @@ import param.KomatsuDataParameter;
  */
 public class ExportIrregularData {
 
-    private static String KISY = "PC200";
+    private static String KISY = "WA470";
     private static String OBJPATH = KomatsuDataParameter.OBJECT_PATH;
 
     public static void main(String[] args) {
         SyaryoToZip3 zip3 = new SyaryoToZip3();
-        String filename = OBJPATH + "syaryo_obj_" + KISY + "_form.bz2";
+        String filename = OBJPATH + "syaryo_obj_" + KISY + "_km_form.bz2";
         Map<String, SyaryoObject4> syaryoMap = zip3.read(filename);
 
         Map<String, List> dataIndex = SyaryoObjectElementsIndex.getInstance().getIndex();
 
-        //errSMR(syaryoMap, dataIndex.get("SMR"), dataIndex.get("KOMTRAX_SMR"));
+        errSMR(syaryoMap, dataIndex.get("SMR"), dataIndex.get("KOMTRAX_SMR"));
         
-        errFUEL(syaryoMap, dataIndex.get("FUEL_CONSUME"));
+        //errFUEL(syaryoMap, dataIndex.get("FUEL_CONSUME"));
         
         //errSBN(syaryoMap, "受注");
         

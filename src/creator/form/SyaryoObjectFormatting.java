@@ -10,6 +10,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayDeque;
 import param.KomatsuDataParameter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -29,7 +30,7 @@ import program.r.R;
  */
 public class SyaryoObjectFormatting {
 
-    private static String KISY = "PC200";
+    private static String KISY = "WA470";
     private static String OBJPATH = KomatsuDataParameter.OBJECT_PATH;
     private static String HONSY_INDEXPATH = KomatsuDataParameter.HONSYA_INDEX_PATH;
     private static String PRODUCT_INDEXPATH = KomatsuDataParameter.PRODUCT_INDEXPATH;
@@ -46,9 +47,6 @@ public class SyaryoObjectFormatting {
         SyaryoToZip3 zip3 = new SyaryoToZip3();
         String filename = OBJPATH + "syaryo_obj_" + kisy + ".bz2";
         Map<String, SyaryoObject4> syaryoMap = zip3.read(filename);
-
-        //残すデータ
-        List exist = new ArrayList(dataIndex.get("SMR").indexOf("SVC_MTR"));
         
         //本社コード
         Map<String, String> honsyIndex = new MapIndexToJSON().reader(HONSY_INDEXPATH);
@@ -113,8 +111,7 @@ public class SyaryoObjectFormatting {
             newMap = formParts(syaryo.get("部品"), sbnList, dataIndex.get("部品"), rule.getPARTSID());
             syaryo.put("部品", newMap);
 
-            //SMR  KOMTRAXと統合
-            syaryo.put("SMR", combine(reduce(syaryo.get("SMR"), exist), syaryo.get("KOMTRAX_SMR")));
+            //SMR
             newMap = formSMR(syaryo.get("SMR"), dataIndex.get("SMR"));
             syaryo.put("SMR", newMap);
 
@@ -122,21 +119,20 @@ public class SyaryoObjectFormatting {
             newMap = formAS(syaryo.get("オールサポート"), dataIndex.get("オールサポート"));
             syaryo.put("オールサポート", newMap);
 
-            //check komtrax
-            /*int err = 0;
-            if (syaryo.get("KOMTRAX_SMR") != null) {
-                int tmp = -1;
-                for (String date : syaryo.get("KOMTRAX_SMR").keySet()) {
-                    int s = Double.valueOf(syaryo.get("KOMTRAX_SMR").get(date).get(0).toString()).intValue();
-                    if (tmp > s) {
-                        err++;
-                    }
-                    tmp = s;
-                }
-            }*/
-
             //Komtrax
             formKomtrax(syaryo);
+            
+            //SMR  KOMTRAXと統合
+            /*if(syaryo.get("KOMTRAX_SMR") != null){
+                syaryo.put("KOMTRAX_SMR", 
+                        combine(
+                            reduce(syaryo.get("SMR"), Arrays.asList(new Integer[]{dataIndex.get("SMR").indexOf("SVC_MTR")})),
+                            syaryo.get("KOMTRAX_SMR")
+                        )
+                    );
+                //統合データを整形
+                
+            }*/
 
             //余計な情報を削除
             formExtra(syaryo, new String[]{"最終更新日", "国"});
@@ -158,9 +154,11 @@ public class SyaryoObjectFormatting {
     }
     
     private static Map reduce(Map<String, List> r, List<Integer> exp){
-        return r.entrySet().stream()
+        Map map =r.entrySet().stream()
                         .collect(Collectors.toMap(e -> e.getKey(), 
                                                     e ->exp.stream().map(i -> e.getValue().get(i)).collect(Collectors.toList())));
+        
+        return map;
     }
     
     private static Map combine(Map c1, Map c2){
@@ -169,11 +167,13 @@ public class SyaryoObjectFormatting {
         else if(c1 == null)
             return c2;
         
+        Map map = new TreeMap(c1);
+        
         for(Object key : c2.keySet()){
-            c1.put(dup(key.toString(), c1), c2.get(key));
+            map.put(dup(key.toString(), c1), c2.get(key));
         }
         
-        return c1;
+        return map;
     }
 
     //車両の削除
@@ -821,7 +821,6 @@ public class SyaryoObjectFormatting {
         }
 
         //異常データの排除
-        //map = rejectSMRData(map, smridx);
         return map;
     }
 

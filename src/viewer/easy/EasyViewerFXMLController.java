@@ -415,7 +415,7 @@ public class EasyViewerFXMLController implements Initializable {
         }
 
         List<String> targets;
-        String[] searchWord = searchBox.getText().split(",");
+        String[] searchWord = searchBox.getText().replace(" ", "").split(",");
 
         List<String> searchList;
         Map<String, Integer> result = new HashMap<>();

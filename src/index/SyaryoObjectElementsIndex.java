@@ -7,6 +7,7 @@ package index;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -32,7 +33,7 @@ public class SyaryoObjectElementsIndex {
     
     private void initialize(){
         Map<String, Map<String, List<String>>> index = new MapIndexToJSON().reader(INDEXPATH);
-        Map<String, List> formIndex = new HashMap();
+        Map<String, List> formIndex = new LinkedHashMap();
 
         for (String key : index.keySet()) {
             List<String> list = new ArrayList();

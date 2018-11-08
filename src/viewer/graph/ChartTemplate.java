@@ -25,23 +25,38 @@ public abstract class ChartTemplate{
     
     public void chart(String name, Map<String, List> map){
         //CSVFile 生成
+        System.out.println(name+"-CSV 生成");
         try(PrintWriter csv = CSVFileReadWrite.writer(KomatsuDataParameter.GRAPH_TEMP_FILE)){
             csv.println("Syaryo,"+name);
             csv.println("Date,"+String.join(",", map.get("header")));
             map.remove("header");
             int i=0;
+            
             for(String date : map.keySet()){
                 List values = map.get(date);
-                StringBuilder sb = new StringBuilder(date.split("#")[0].split(" ")[0].replace("/", ""));
+                String d = date.split("#")[0].split(" ")[0].replace("/", "");
+                if(d.length() > 8)
+                    d = d.substring(0, 8);
+                
+                StringBuilder sb = new StringBuilder(d);
+                i++;
                 for(Object v : values){
                     sb.append(",");
-                    sb.append(v);
+                    if(v.equals("None"))
+                        sb.append("NaN");
+                    else
+                        sb.append(v);
                 }
                 csv.println(sb.toString());
+                
+                if(i%1000 == 0)
+                    System.out.println(i+"件処理");
+                    
             }
         }
         
         //Graph Python 実行
+        System.out.println(name+"-Python 実行");
         PythonCommand.py(KomatsuDataParameter.GRAPH_PY, KomatsuDataParameter.GRAPH_TEMP_FILE);
     }
     

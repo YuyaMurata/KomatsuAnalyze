@@ -30,7 +30,9 @@ public class ButtonTask extends Task<Void>{
         if(map == null)
             return null;
         
+        ButtonService.syaryo.startHighPerformaceAccess();
         new TimeSpreadChart().graph(ButtonService.smenu, ButtonService.syaryo);
+        ButtonService.syaryo.stopHighPerformaceAccess();
             
         return null;
     }

@@ -305,6 +305,10 @@ public class SyaryoAnalizer implements AutoCloseable {
             Date st = sdf.parse(start);
             Date sp = sdf.parse(stop);
             Long age = (sp.getTime() - st.getTime()) / (1000 * 60 * 60 * 24);
+            
+            if(age == 0L)
+                age = 1L;
+            
             return age.intValue();
         } catch (ParseException ex) {
             ex.printStackTrace();
