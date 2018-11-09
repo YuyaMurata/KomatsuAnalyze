@@ -208,9 +208,8 @@ public class EasyViewerFXMLController implements Initializable {
 
     private void fileLoad(File file) {
         if (file != null) {
-            /*id_label.setText(file.getName());
-            syaryoMap = loadSyaryoMap(file);
-            updateKeyList(new ArrayList(new TreeSet(syaryoMap.keySet())));*/
+            id_label.setText(file.getName());
+            
             final ExecutorService exec = Executors.newSingleThreadExecutor();
             Task ft = fileLoadTask(file);
             exec.submit(ft);

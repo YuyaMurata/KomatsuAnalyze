@@ -24,6 +24,7 @@ import javafx.scene.control.ProgressBar;
 import obj.SyaryoObject4;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
+import viewer.easy.EasyViewMain;
 
 /**
  *
@@ -108,6 +109,9 @@ public class SyaryoToZip3 {
             while (-1 != (n = bzIn.read(buffer))) {
                 out.write(buffer, 0, n);
                 //availSize += size;
+                
+                if(!runnable)
+                    System.exit(0);
             }
 
             readObj = (Map) getObject(out.toByteArray());

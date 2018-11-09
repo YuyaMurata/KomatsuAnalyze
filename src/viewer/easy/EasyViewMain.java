@@ -11,6 +11,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import json.SyaryoToZip3;
 import program.r.R;
 
 /**
@@ -18,7 +19,7 @@ import program.r.R;
  * @author kaeru_yuya
  */
 public class EasyViewMain extends Application {
-
+    
     @Override
     public void start(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("EasyViewerFXML.fxml"));
@@ -27,10 +28,12 @@ public class EasyViewMain extends Application {
         stage.setTitle("Easy View Ver.0.1a");
         stage.setScene(scene);
         stage.show();
+        
 
         stage.showingProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue == true && newValue == false) {
                 R.close();
+                SyaryoToZip3.runnable = false;
             }
         });
     }
