@@ -37,13 +37,14 @@ public class DataToCSV {
 
     private static void mainte(String name, SyaryoObject4 header, Map<String, SyaryoObject4> map) {
         int sgkt = header.get("受注").get("受注").indexOf("SGYO_KTICD");
+        int kbn = header.get("受注").get("受注").indexOf("ODR_KBN");
         int hnbn = header.get("部品").get("部品").indexOf("HNBN");
         int price = header.get("部品").get("部品").indexOf("SKKG");
         int quant = header.get("部品").get("部品").indexOf("JISI_SU");
 
         try (PrintWriter pw = CSVFileReadWrite.writer(name)) {
             //Header
-            pw.println("SBN,SGKT," + String.join(",", header.get("部品").get("部品")) + ",単価,m_detect,d_sgkt,d_hnbn,d_egoil,d_pwoil,d_kes,d_price");
+            pw.println("SBN,SGKT,ODR_KBN," + String.join(",", header.get("部品").get("部品")) + ",単価,m_detect,d_sgkt,d_hnbn,d_egoil,d_pwoil,d_kes,d_price");
 
             map.values().stream().forEach(s -> {
                 s.startHighPerformaceAccess();
@@ -53,6 +54,7 @@ public class DataToCSV {
                 Map<String, List> p = s.get("部品");
                 for (String id : p.keySet()) {
                     String sg = (String) s.get("受注").get(id.split("#")[0]).get(sgkt);
+                    String odr = (String) s.get("受注").get(id.split("#")[0]).get(kbn);
                     String hn = (String) p.get(id).get(hnbn);
                     
                     Integer pr = -1, q = -1, u = -1;
@@ -65,8 +67,9 @@ public class DataToCSV {
                         continue;
                     }
                     List<String> csv = new ArrayList();
-                    csv.add(id);
+                    csv.add(id.split("#")[0]);
                     csv.add(sg);
+                    csv.add(odr);
                     csv.addAll(p.get(id));
                     
                     csv.add(String.valueOf(pr/q));
