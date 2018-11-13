@@ -21,7 +21,7 @@ public class MainteEvaluate {
     
     //定期メンテ評価
     private static Double period(String sk, int num, int smr, double y) {
-        double d = 0;
+        Double d = null;
         switch (sk) {
             case "特定自主検査":
                 d = (double) num / y;

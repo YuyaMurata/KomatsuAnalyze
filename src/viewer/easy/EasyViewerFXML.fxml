@@ -19,6 +19,11 @@
                     <MenuItem fx:id="import_json" mnemonicParsing="false" onAction="#loadJSONFile" text="Import" />
                   </items>
                 </Menu>
+                  <Menu mnemonicParsing="false" text="View">
+                    <items>
+                      <MenuItem fx:id="showJSON" mnemonicParsing="false" onAction="#showJSON" text="show JSON" />
+                    </items>
+                  </Menu>
                   <Menu mnemonicParsing="false" text="Graph AllData">
                      <items>
                         <MenuItem fx:id="smr_plot" mnemonicParsing="false" onAction="#plotSMR" text="SMR" />

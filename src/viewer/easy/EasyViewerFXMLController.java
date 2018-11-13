@@ -100,6 +100,9 @@ public class EasyViewerFXMLController implements Initializable {
     private VBox dataBox;
     @FXML
     private ProgressIndicator fileProgress;
+    @FXML
+    private MenuItem showJSON;
+    
 
     /**
      * Initializes the controller class.
@@ -115,6 +118,7 @@ public class EasyViewerFXMLController implements Initializable {
 
         //default
         fileLoad(new File("syaryo\\syaryo_obj_PC200_sv_form.bz2"));
+        
     }
 
     public void machineListInitialize() {
@@ -492,5 +496,10 @@ public class EasyViewerFXMLController implements Initializable {
         });
 
         updateKeyList(new ArrayList(new TreeSet(result.keySet())));
+    }
+
+    @FXML
+    private void showJSON(ActionEvent event) {
+        System.out.println(currentSyaryo.dump());
     }
 }

@@ -47,7 +47,7 @@ public class SyaryoAnalizer implements AutoCloseable {
     public Integer numOrders = -1;
     public Integer numParts = -1;
     public Integer numWorks = -1;
-    public Integer[] maxSMR = new Integer[]{-1, -1};
+    public Integer[] maxSMR = new Integer[]{-1, -1, -1, -1};
     private List<LocalDate[]> termAllSupport;
     private static String DATE_FORMAT = KomatsuDataParameter.DATE_FORMAT;
     private static Map<String, List> DATA_INDEX = KomatsuDataParameter.DATALAYOUT_INDEX;
@@ -95,15 +95,19 @@ public class SyaryoAnalizer implements AutoCloseable {
         //Status
         for (String key : enableSet) {
             switch (key) {
-                case "KOMTRAX_SMR":
-                    komtrax = true;
-                    if (syaryo.get(getSMR(syaryo)[0]) != null) {
-                        maxSMR[0] = Integer.valueOf(getValue(getSMR(syaryo)[0], "-1", true).get(getValue(getSMR(syaryo)[0], "-1", true).size() - 1));
-                        maxSMR[1] = Integer.valueOf(getValue(getSMR(syaryo)[0], getSMR(syaryo)[1], true).get(getValue(getSMR(syaryo)[0], getSMR(syaryo)[1], true).size() - 1));
+                case "SMR":
+                    if (syaryo.get("SMR") != null) {
+                        maxSMR[0] = Integer.valueOf(getValue("SMR", "-1", true).get(getValue("SMR", "-1", true).size() - 1));
+                        maxSMR[1] = Integer.valueOf(getValue("SMR", "SVC_MTR", true).get(getValue("SMR", "SVC_MTR", true).size() - 1));
+                    }
+                    if (syaryo.get("KOMTRAX_SMR") != null) {
+                        maxSMR[2] = Integer.valueOf(getValue("KOMTRAX_SMR", "-1", true).get(getValue("KOMTRAX_SMR", "-1", true).size() - 1));
+                        maxSMR[3] = Integer.valueOf(getValue("KOMTRAX_SMR", "SMR_VALUE", true).get(getValue("KOMTRAX_SMR", "SMR_VALUE", true).size() - 1));
+                        komtrax = komtrax || true;
                     }
                     break;
                 case "仕様":
-                    komtrax = syaryo.get("仕様").get("1").get(0).equals("1");
+                    komtrax = komtrax || syaryo.get("仕様").get("1").get(0).equals("1");
                     break;
                 case "中古車":
                     used = true;
