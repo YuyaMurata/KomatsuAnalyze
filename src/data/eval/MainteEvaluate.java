@@ -38,16 +38,29 @@ public class MainteEvaluate {
                 if (y > 4) {
                     d = (double) num / 4d;
                 } else {
-                    double s = (smr / 500d) > 4 ? 4 : smr / 500d;
+                    double s;
+                    if(y*500d > smr)
+                        s = y;
+                    else
+                        s = (smr / 500d) > 4 ? 4 : smr / 500d;
                     if(s >= 1)
                         d = (double) num / s;
                 }
                 break;
             case "エンジンオイル":
-                double s = (smr / 500d);
-                d = num / s;
+                if(smr > 500){ //500hを超える場合は評価
+                    double s = (smr / 500d);
+                    d = num / s;
+                }else
+                    if(num > 0)
+                        d = (double)num;
                 break;
         }
+        
+        //100%を超える場合は固定
+        if(d != null && !sk.equals("エンジンオイル"))
+            if(d > 1)
+                d = 1d;
         
         return d;
     }
@@ -59,17 +72,29 @@ public class MainteEvaluate {
         
         //500時間交換品
         if (p.equals("エンジンオイルフィルタ") || p.equals("燃料プレフィルタ") || p.equals("作動油タンクブリザード")) {
-            d = num / (smr / 500d);
+            if(smr > 500)
+                d = num / (smr / 500d);
+            else
+                if(num > 0)
+                    d = 1;
         }
 
         //1000時間
         if(p.equals("作動油フィルタ") ||  p.equals("燃料メインフィルタ")){
-            d = num / (smr / 1000d);
+            if(smr > 1000)
+                d = num / (smr / 1000d);
+            else
+                if(num > 0)
+                    d = 1;
         }
         
         //1年
         if(p.equals("エアコン内気フィルタ") || p.equals("エアコン外気フィルタ")){
-            d = num / (y / 1d);
+            if(y >= 1)
+                d = num / (y / 1d);
+            else
+                if(num > 0)
+                    d = 1;
         }
         
         return d;

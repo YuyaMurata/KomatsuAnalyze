@@ -5,6 +5,7 @@
  */
 package creator.form;
 
+import analizer.SyaryoAnalizer;
 import index.SyaryoObjectElementsIndex;
 import java.text.DecimalFormat;
 import java.util.ArrayDeque;
@@ -30,7 +31,7 @@ import program.r.R;
  */
 public class SyaryoObjectFormatting {
 
-    private static String KISY = "WA470";
+    private static String KISY = "PC200";
     private static String OBJPATH = KomatsuDataParameter.OBJECT_PATH;
     private static String HONSY_INDEXPATH = KomatsuDataParameter.HONSYA_INDEX_PATH;
     private static String PRODUCT_INDEXPATH = KomatsuDataParameter.PRODUCT_INDEXPATH;
@@ -83,6 +84,8 @@ public class SyaryoObjectFormatting {
             syaryo.put("顧客", newMap);
 
             //新車の整形
+            if(KomatsuDataParameter.PC_KR_SMASTER.get(syaryo.getName().split("-")[0]+"-"+syaryo.getName().split("-")[2]) != null)
+                syaryo.put("新車", null);
             newMap = formNew(syaryo.get("新車"), syaryo.get("生産"), syaryo.get("出荷"), dataIndex.get("新車"));
             syaryo.put("新車", newMap);
             rule.addNew(newMap.keySet().stream().findFirst().get().toString());
@@ -351,7 +354,13 @@ public class SyaryoObjectFormatting {
 
     private static Map formNew(Map<String, List> news, Map<String, List> born, Map<String, List> deploy, List indexList) {
         Map<String, List> map = new TreeMap();
-        if (news == null) {
+        
+        Integer deff = 0;
+        if(news != null){
+            deff = Math.abs(SyaryoAnalizer.time(news.keySet().stream().findFirst().get(), deploy.keySet().stream().findFirst().get())) / 30;
+        }
+        
+        if (news == null || deff > 6) {
             //出荷情報を取得する処理
             String date = "";
             if (deploy != null) {
