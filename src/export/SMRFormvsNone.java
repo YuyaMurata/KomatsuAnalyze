@@ -14,6 +14,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,31 +40,44 @@ public class SMRFormvsNone {
     public static void main(String[] args) {
         List<String> s = getSyaryo();
         
-        for(String id : s){
+        for(String id : syaryoMap.keySet()){
             SyaryoObject4 syaryo = syaryoMap.get(id);
             syaryo.startHighPerformaceAccess();
             
-            Map<String, List> smr = syaryo.get("SMR");
-            Map<String, List> kmsmr = syaryo.get("KOMTRAX_SMR");
+            Map<String, List> smr = syaryo.get("SMR") != null ? syaryo.get("SMR") : new HashMap<>();
+            Map<String, List> kmsmr = syaryo.get("KOMTRAX_SMR") != null ? syaryo.get("KOMTRAX_SMR") : new HashMap<>();
             Map<String, List> fsmr = formSMR(smr, 2);
             Map<String, List> fkmsmr = formSMR(kmsmr, 0);
+            String ly = "";
             
             try(PrintWriter pw = CSVFileReadWrite.writer("PC200SMR調査\\"+id+"_smr_graph.csv")){
                 //header
-                pw.println("日付,SMR,KOMTRAX_SMR,整形SMR,整形KOMTRAX_SMR");
+                pw.println("DATE,SMR,KOMTRAX_SMR,F_SMR,F_KOMTRAX_SMR");
                 
-                TreeMap date = new TreeMap(smr);
+                TreeMap date = new TreeMap();
+                date.putAll(smr);
                 date.putAll(kmsmr);
                 
+                
+                
                 for(Object d : date.keySet()){
-                    String v = smr.get(d) != null ? smr.get(d).get(2).toString() : "NaN";
-                    String kmv = kmsmr.get(d) != null ? kmsmr.get(d).get(0).toString() : "NaN";
-                    String fv = fsmr.get(d) != null ? fsmr.get(d).get(2).toString() : "NaN";
-                    String fkmv = fkmsmr.get(d) != null ? fkmsmr.get(d).get(0).toString() : "NaN";
+                    if(d.toString().contains("#"))
+                        continue;
+                    String v = smr.get(d) != null ? smr.get(d).get(2).toString() : "";
+                    String kmv = kmsmr.get(d) != null ? kmsmr.get(d).get(0).toString() : "";
+                    String fv = fsmr.get(d) != null ? fsmr.get(d).get(2).toString() : "";
+                    String fkmv = fkmsmr.get(d) != null ? fkmsmr.get(d).get(0).toString() : "";
                     
-                    pw.println(d+","+v+","+kmv+","+fv+","+fkmv);
+                    String y = d.toString().substring(0,4);
+                    String m = d.toString().substring(4,6);
+                    String dy = d.toString().substring(6,8);
+                    
+                    pw.println(y+"/"+m+"/"+dy+","+v+","+kmv+","+fv+","+fkmv);
+                    ly = y;
                 }
             }
+            
+            System.out.println(ly+","+id);
             
             syaryo.stopHighPerformaceAccess();
         }
@@ -88,7 +102,12 @@ public class SMRFormvsNone {
     private static Map formSMR(Map<String, List> smr, int smridx) {
         if (smr == null) {
             //System.out.println("Not found Work!");
-            return null;
+            return new HashMap();
+        }
+        
+        if (smr.isEmpty()) {
+            //System.out.println("Not found Work!");
+            return new HashMap();
         }
 
         //日付重複除去
