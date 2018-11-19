@@ -70,7 +70,7 @@ public class DataToCSV {
                     csv.add(sg);
                     csv.add(odr);
                     List newp = p.get(id);
-                    newp.add(hnnm+1, KomatsuDataParameter.PC_PID_SYSDEFNAME.get(p.get(id).get(hnbn)));
+                    //newp.add(hnnm+1, KomatsuDataParameter.PC_PID_SYSDEFNAME.get(p.get(id).get(hnbn)));
                     csv.addAll(newp);
                     
                     csv.add(String.valueOf(pr/q));

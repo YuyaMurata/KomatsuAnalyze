@@ -12,6 +12,9 @@ package data.eval;
 public class MainteEvaluate {
     
     public static Double eval(String s, int num, int smr, double y){
+        //経年の数値を切捨て
+        y = Math.floor(y);
+        
         Double d = period(s, num, smr, y);
         if(d == null)
             d = parts(s, num, smr, y);

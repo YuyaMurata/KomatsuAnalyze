@@ -150,7 +150,7 @@ public interface KomatsuDataParameter {
     public static String PC_PID_DEFNAME_INDEX_PATH = "define\\PC200_PartsID_Define_name.json";
     public static Map PC_PID_DEFNAME = new MapIndexToJSON().reader(PC_PID_DEFNAME_INDEX_PATH);
     public static String PC_PID_SYSDEFNAME_INDEX_PATH = "define\\PC200_PartsID_SystemDefine_name.json";
-    public static Map PC_PID_SYSDEFNAME = new MapIndexToJSON().reader(PC_PID_SYSDEFNAME_INDEX_PATH);
+    //public static Map PC_PID_SYSDEFNAME = new MapIndexToJSON().reader(PC_PID_SYSDEFNAME_INDEX_PATH);
     
     //PC200 KR
     public static String PC_KR_SMASTER_INDEX_PATH = "define\\PC200_KR_SyaryoMaster.json";
