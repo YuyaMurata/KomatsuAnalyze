@@ -10,13 +10,10 @@ import data.eval.MainteEvaluate;
 import file.CSVFileReadWrite;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import json.SyaryoToZip3;
 import obj.SyaryoObject4;
@@ -146,6 +143,7 @@ public class EvaluateSyaryoData {
         for (String k : evalMap.keySet()) {
             sb.append(",");
             sb.append(k);
+            sb.append(",回数");
         }
 
         return sb.toString();
@@ -162,7 +160,8 @@ public class EvaluateSyaryoData {
         for (String k : evalMap.keySet()) {
             sb.append(",");
             sb.append(MainteEvaluate.eval(k, evalMap.get(k), smr, day / 365d));
-            //sb.append(evalMap.get(k));
+            sb.append(",");
+            sb.append(evalMap.get(k));
         }
 
         return sb.toString();
@@ -171,11 +170,11 @@ public class EvaluateSyaryoData {
     private static String PATH = KomatsuDataParameter.SYARYOOBJECT_FDPATH;
     private static String KISY = "PC200";
     static String filename = PATH + "syaryo_obj_" + KISY + "_km_form.bz2";
-
     public static void main(String[] args) {
         Map<String, SyaryoObject4> map = new SyaryoToZip3().read(filename);
         SyaryoObject4 test = map.values().stream().findFirst().get();
         EvaluateSyaryoData ev = new EvaluateSyaryoData(test);
+        
         try (PrintWriter pw = CSVFileReadWrite.writer(KISY + "_syaryo_eval_mainte.csv")) {
             pw.println(ev.getHeader());
             for (SyaryoObject4 syaryo : map.values()) {

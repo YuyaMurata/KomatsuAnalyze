@@ -50,13 +50,11 @@ public class ExportData2 {
         //Time
         long start = System.currentTimeMillis();
         
-        Map recmap = new HashMap();
-        
         //テスト
         //export("test.json", headers, new SyaryoAnalizer(map.get("PC200-8N1-313582")), null);
 
         //ヘッダーの登録
-        regHeader(recmap, headers);
+        Map recmap = regHeader(headers);
         
         //車両の読み込み
         map = new SyaryoToZip3().read(syaryofilename);
@@ -75,8 +73,10 @@ public class ExportData2 {
         System.out.println("Time:"+(stop-start)+"ms");
     }
     
-    private static void regHeader(Map recmap, Map<String, Integer[]> headers){
+    public static Map regHeader(Map<String, Integer[]> headers){
+        Map recmap = new HashMap();
         Map headMap = new HashMap();
+        
         for(String header : headers.keySet()){
             Map inMap = new HashMap();
             inMap.put(header, Arrays.asList(headers.get(header)).stream().map(i -> i<0?(header+"key"):dataIndex.get(header).get(i)).collect(Collectors.toList()));
@@ -84,9 +84,13 @@ public class ExportData2 {
         }
        
         recmap.put("_headers", headMap);
+        
+        return recmap;
     }
     
-    private static void allExport(Map recmap, String f, Map<String, Integer[]> headers) {
+    public static void allExport(Map recmap, String f, Map<String, Integer[]> headers) {
+        f = KomatsuDataParameter.EXPORT_PATH+f;
+        
         for (String name : map.keySet()) {
             System.out.println(name);
             try (SyaryoAnalizer syaryo = new SyaryoAnalizer(map.get(name))) {
@@ -99,7 +103,9 @@ public class ExportData2 {
         new MapIndexToJSON().write(f, recmap);
     }
 
-    private static void multiExport(Map recmap, String f, Map<String, Integer[]> headers, String[] names) {
+    public static void multiExport(Map recmap, String f, Map<String, Integer[]> headers, String[] names) {
+        f = KomatsuDataParameter.EXPORT_PATH+f;
+        
         for (String name : names) {
             System.out.println(name);
             SyaryoAnalizer syaryo = new SyaryoAnalizer(map.get(name));
@@ -108,7 +114,9 @@ public class ExportData2 {
         new MapIndexToJSON().write(f, recmap);
     }
 
-    private static void uniExport(Map recmap, String f, Map<String, Integer[]> headers, String name, Map filter) {
+    public static void uniExport(Map recmap, String f, Map<String, Integer[]> headers, String name, Map filter) {
+        f = KomatsuDataParameter.EXPORT_PATH+f;
+        
         System.out.println(name);
         SyaryoAnalizer syaryo = new SyaryoAnalizer(map.get(name));
         

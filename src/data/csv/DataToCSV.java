@@ -5,17 +5,15 @@
  */
 package data.csv;
 
-import analizer.SyaryoAnalizer;
 import data.filter.MainteFilter;
 import file.CSVFileReadWrite;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import json.SyaryoToZip3;
 import obj.SyaryoObject4;
+import param.KomatsuDataParameter;
 
 /**
  *
@@ -39,6 +37,7 @@ public class DataToCSV {
         int sgkt = header.get("受注").get("受注").indexOf("SGYO_KTICD");
         int kbn = header.get("受注").get("受注").indexOf("ODR_KBN");
         int hnbn = header.get("部品").get("部品").indexOf("HNBN");
+        int hnnm = header.get("部品").get("部品").indexOf("BHN_NM");
         int price = header.get("部品").get("部品").indexOf("SKKG");
         int quant = header.get("部品").get("部品").indexOf("JISI_SU");
 
@@ -70,7 +69,9 @@ public class DataToCSV {
                     csv.add(id.split("#")[0]);
                     csv.add(sg);
                     csv.add(odr);
-                    csv.addAll(p.get(id));
+                    List newp = p.get(id);
+                    newp.add(hnnm+1, KomatsuDataParameter.PC_PID_SYSDEFNAME.get(p.get(id).get(hnbn)));
+                    csv.addAll(newp);
                     
                     csv.add(String.valueOf(pr/q));
                     

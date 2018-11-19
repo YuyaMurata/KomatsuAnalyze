@@ -25,7 +25,7 @@ public class CountData {
     
     public static void main(String[] args) {
         SyaryoToZip3 zip3 = new SyaryoToZip3();
-        String filename = OBJPATH + "syaryo_obj_" + KISY + "_sv_form.bz2";
+        String filename = OBJPATH + "syaryo_obj_" + KISY + "_sv_form_old.bz2";
         syaryoMap = zip3.read(filename);
         
         Map<Integer, List> filter = new HashMap<>();
@@ -33,7 +33,7 @@ public class CountData {
         
         //PC200
         System.out.println(filter);
-        System.out.println(count("部品", null));
+        System.out.println(count("受注", filter));
         System.out.println(syaryoMap.size());
     }
     
