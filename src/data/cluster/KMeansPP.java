@@ -5,7 +5,6 @@
  */
 package data.cluster;
 
-import data.ga.Population;
 import file.CSVFileReadWrite;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -78,12 +77,17 @@ public class KMeansPP {
     }
 
     private Map selectK() {
-        return rand.ints(0, s.size())
+        /*return rand.ints(0, s.size())
             .distinct()
             .limit(k)
             .mapToObj(new ArrayList(s.keySet())::get)
             .map(key -> key.toString())
-            .collect(Collectors.toMap(key -> key, key -> s.get(key)));
+            .collect(Collectors.toMap(key -> key, key -> s.get(key)));*/
+        
+        //初期値の偏り
+        //s.entrySet().stream().sorted(Map.Entry.comparingByValue());
+        return s.entrySet().stream().limit(k).collect(Collectors.toMap(e->e.getKey(), e->e.getValue()));
+        
     }
 
     private Map initialize() {
@@ -186,22 +190,13 @@ public class KMeansPP {
                 test.put("t_" + (i++), Arrays.asList(p));
             }
         }
-        
-        while (test.size() < n+10) {
-            double x = rn.nextInt(100+r.intValue());
-            double y = rn.nextInt(100+r.intValue());
-
-            //
-            Double[] p = new Double[]{x, y};
-            test.put("t_" + (i++), Arrays.asList(p));
-        }
 
         return test;
     }
 
     public static void main(String[] args) {
         //Test Sample
-        Map<String, List> test = testSample(200);
+        Map<String, List> test = testSample(1000);
 
         KMeansPP km = new KMeansPP();
 
