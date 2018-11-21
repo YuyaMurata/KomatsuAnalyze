@@ -15,9 +15,18 @@ public class MainteEvaluate {
         //経年の数値を切捨て
         y = Math.floor(y);
         
+        //経年が1年未満の車両は1年として評価
+        if(y == 0)
+            y = 1;
+        
         Double d = period(s, num, smr, y);
         if(d == null)
             d = parts(s, num, smr, y);
+        
+        //100%を超える場合は固定
+        if(d != null)
+            if(d > 1)
+                d = 1d;
         
         return d;
     }
@@ -37,7 +46,7 @@ public class MainteEvaluate {
                 else
                     d = (double) num / 1;
                 break;
-            case "コマツケア":
+            /*case "コマツケア":
                 if (y > 4) {
                     d = (double) num / 4d;
                 } else {
@@ -49,7 +58,7 @@ public class MainteEvaluate {
                     if(s >= 1)
                         d = (double) num / s;
                 }
-                break;
+                break;*/
             case "エンジンオイル":
                 if(smr > 500){ //500hを超える場合は評価
                     double s = (smr / 500d);
@@ -59,11 +68,6 @@ public class MainteEvaluate {
                         d = (double)num;
                 break;
         }
-        
-        //100%を超える場合は固定
-        if(d != null && !sk.equals("エンジンオイル"))
-            if(d > 1)
-                d = 1d;
         
         return d;
     }

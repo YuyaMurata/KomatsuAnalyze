@@ -77,16 +77,16 @@ public class KMeansPP {
     }
 
     private Map selectK() {
-        /*return rand.ints(0, s.size())
+        return rand.ints(0, s.size())
             .distinct()
             .limit(k)
             .mapToObj(new ArrayList(s.keySet())::get)
             .map(key -> key.toString())
-            .collect(Collectors.toMap(key -> key, key -> s.get(key)));*/
+            .collect(Collectors.toMap(key -> key, key -> s.get(key)));
         
         //初期値の偏り
         //s.entrySet().stream().sorted(Map.Entry.comparingByValue());
-        return s.entrySet().stream().limit(k).collect(Collectors.toMap(e->e.getKey(), e->e.getValue()));
+        //return s.entrySet().stream().limit(k).collect(Collectors.toMap(e->e.getKey(), e->e.getValue()));
         
     }
 
@@ -94,14 +94,14 @@ public class KMeansPP {
         cluster = new HashMap<>();
 
         //K-Means++
-        //Map<String, List<Double>> c = selectKpp();
+        Map<String, List<Double>> c = selectKpp();
 
         //K-Means
-        Map<String, List<Double>> c = selectK();
+        //Map<String, List<Double>> c = selectK();
         
         //keyを数字に変更
         Map<Integer, List<Double>> cf = new HashMap<>();
-        int i = 0;
+        int i = 1;
         for (String key : c.keySet()) {
             cf.put(i++, c.get(key));
         }

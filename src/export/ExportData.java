@@ -35,19 +35,12 @@ public class ExportData {
         //ヘッダー設定
         Map headers = new LinkedHashMap();
         headers.put("SID", -1);
-        headers.put("日付", -1);
-        headers.put("受注.作業形態", dataIndex.get("受注").indexOf("SGYO_KTICD"));
-        headers.put("受注.受注金額", dataIndex.get("受注").indexOf("SKKG"));
-        headers.put("作業.作業コード", dataIndex.get("作業").indexOf("SGYOCD"));
-        headers.put("KOMTRAX_ERROR.エラーコード", dataIndex.get("KOMTRAX_ERROR").indexOf("ERROR_CODE"));
-        headers.put("KOMTRAX_ERROR.エラー種類", dataIndex.get("KOMTRAX_ERROR").indexOf("ERROR_KIND"));
-        headers.put("KOMTRAX_SMR.SMR", dataIndex.get("KOMTRAX_SMR").indexOf("SMR_VALUE"));
-        headers.put("経過", -1);
+        headers.put("顧客.レンタル区分", dataIndex.get("顧客").indexOf("RENT_KBN"));
 
         Map filter = KomatsuDataParameter.PERIOD_MAINTE;
 
         //車両の読み込み
-        map = new SyaryoToZip3().read(PATH + "syaryo_obj_" + KISY + "_form.bz2");
+        map = new SyaryoToZip3().read(PATH + "syaryo_obj_" + KISY + "_sv_form_old.bz2");
 
         //単体
         //String name = "PC200-8N1-313582";

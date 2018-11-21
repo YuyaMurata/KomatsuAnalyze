@@ -6,10 +6,12 @@
 package data.analize;
 
 import analizer.SyaryoAnalizer;
+import data.cluster.KMeansPP;
 import data.eval.MainteEvaluate;
 import file.CSVFileReadWrite;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +33,8 @@ public class EvaluateSyaryoData {
     private String name, company;
     private Integer day, smr;
 
+    public Map<String, List> results = new HashMap<>();
+
     public EvaluateSyaryoData(SyaryoObject4 syaryo) {
         try (SyaryoAnalizer analize = new SyaryoAnalizer(syaryo)) {
             this.name = analize.get().name;
@@ -46,6 +50,8 @@ public class EvaluateSyaryoData {
             System.out.println(syaryo.dump());
             System.exit(0);
         }
+
+        results = getResults();
     }
 
     /**
@@ -69,12 +75,14 @@ public class EvaluateSyaryoData {
      * インターバル) 油圧メンテ = 作動機オイル交換 / (SMR / インターバル) 定期メンテ = 作業形態回数 / (経年 / インターバル)
      */
     private Map mainteIndex = KomatsuDataParameter.PC_PID_DEFNAME;
+
     private Map mainteData(SyaryoAnalizer syaryo) {
         Map<Object, Integer> map = new LinkedHashMap<>();
 
         //初期化
-        for (Object p : mainteIndex.keySet())
+        for (Object p : mainteIndex.keySet()) {
             map.put(mainteIndex.get(p), 0);
+        }
 
         //定期点検
         if (syaryo.get().get("受注") != null) {
@@ -132,55 +140,82 @@ public class EvaluateSyaryoData {
         return map;
     }
 
-    public String getHeader() {
-        StringBuilder sb = new StringBuilder("sid");
-        sb.append(",");
-        sb.append("会社");
-        sb.append(",");
-        sb.append("year");
-        sb.append(",");
-        sb.append("SMR");
+    public List<String> getHeader() {
+        List<String> sb = new ArrayList();
+        sb.add("sid");
+        sb.add("会社");
+        sb.add("経年");
+        sb.add("SMR");
         for (String k : evalMap.keySet()) {
-            sb.append(",");
-            sb.append(k);
-            sb.append(",回数");
+            sb.add(k);
+            //sb.add(",回数");
         }
 
-        return sb.toString();
+        return sb;
     }
 
-    public String print() {
-        StringBuilder sb = new StringBuilder(name);
-        sb.append(",");
-        sb.append(company);
-        sb.append(",");
-        sb.append(day / 365d);
-        sb.append(",");
-        sb.append(smr);
+    private Map<String, List> getResults() {
+        List info = new ArrayList();
+        info.add(name);
+        info.add(company);
+        info.add(String.valueOf(day / 365d));
+        info.add(String.valueOf(smr));
+
+        List data = new ArrayList();
         for (String k : evalMap.keySet()) {
-            sb.append(",");
-            sb.append(MainteEvaluate.eval(k, evalMap.get(k), smr, day / 365d));
-            sb.append(",");
-            sb.append(evalMap.get(k));
+            data.add(MainteEvaluate.eval(k, evalMap.get(k), smr, day / 365d));
+            //sb.add(evalMap.get(k));
         }
 
-        return sb.toString();
+        Map map = new HashMap();
+        map.put("info", info);
+        map.put("data", data);
+        return map;
     }
 
     private static String PATH = KomatsuDataParameter.SYARYOOBJECT_FDPATH;
     private static String KISY = "PC200";
     static String filename = PATH + "syaryo_obj_" + KISY + "_km_form.bz2";
+
     public static void main(String[] args) {
         Map<String, SyaryoObject4> map = new SyaryoToZip3().read(filename);
         SyaryoObject4 test = map.values().stream().findFirst().get();
         EvaluateSyaryoData ev = new EvaluateSyaryoData(test);
+
+        //メンテナンス評価
+        Map<String, List> info = new TreeMap();
+        Map<String, List> data = new HashMap();
+        Map<String, List> zerodata = new HashMap();
+        for (SyaryoObject4 syaryo : map.values()) {
+            System.out.println(syaryo.name);
+            EvaluateSyaryoData eval = new EvaluateSyaryoData(syaryo);
+
+            info.put(syaryo.name, eval.results.get("info"));
+            
+            //評価値が全て0のものは分ける
+            if(eval.results.get("data").stream()
+                                    .mapToDouble(d -> Double.valueOf(d.toString()))
+                                    .filter(d -> d > 0)
+                                    .findFirst().isPresent())
+                data.put(syaryo.name, eval.results.get("data"));
+            else
+                zerodata.put(syaryo.name, eval.results.get("data"));
+        }
         
+        //クラスタリング
+        KMeansPP km = new KMeansPP();
+        km.set(3, data);
+        Map<String, Integer> kmresult = km.execute();
+        
+        //出力
         try (PrintWriter pw = CSVFileReadWrite.writer(KISY + "_syaryo_eval_mainte.csv")) {
-            pw.println(ev.getHeader());
-            for (SyaryoObject4 syaryo : map.values()) {
-                System.out.println(syaryo.name);
-                EvaluateSyaryoData eval = new EvaluateSyaryoData(syaryo);
-                pw.println(eval.print());
+            pw.println(String.join(",", ev.getHeader())+",cid");
+            for(String key : info.keySet()){
+                pw.print(info.get(key).stream().map(s -> s.toString()).collect(Collectors.joining(","))+",");
+                if(data.get(key) != null)
+                    pw.println(data.get(key).stream().map(s -> s.toString()).collect(Collectors.joining(","))+","+kmresult.get(key));
+                else
+                    pw.println(zerodata.get(key).stream().map(s -> s.toString()).collect(Collectors.joining(","))+",0");
             }
         }
     }
