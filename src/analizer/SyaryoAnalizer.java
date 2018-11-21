@@ -47,6 +47,7 @@ public class SyaryoAnalizer implements AutoCloseable {
     public Integer numOrders = -1;
     public Integer numParts = -1;
     public Integer numWorks = -1;
+    public Integer rent = 0;
     public Integer[] maxSMR = new Integer[]{-1, -1, -1, -1};
     private List<LocalDate[]> termAllSupport;
     private static String DATE_FORMAT = KomatsuDataParameter.DATE_FORMAT;
@@ -154,6 +155,12 @@ public class SyaryoAnalizer implements AutoCloseable {
                 case "顧客":
                     List custv = getValue("顧客", "KKYKCD", false);
                     numOwners = custv == null?-1:((Long) custv.stream().distinct().count()).intValue();
+                    
+                    //レンタル業者か判定
+                    List<String> custKbn = getValue("顧客", "KKYK_KBN", false);
+                    List<String> custGycd = getValue("顧客", "GYSCD", false);
+                    if(custKbn.contains("0E") || custKbn.contains("0G") || custGycd.contains("17"))
+                        rent = 1;
                     break;
                 case "部品":
                     numParts = syaryo.get("部品").size();

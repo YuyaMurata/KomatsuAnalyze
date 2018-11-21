@@ -31,7 +31,7 @@ public class EvaluateSyaryoData {
     private Map<String, List> layout = KomatsuDataParameter.DATALAYOUT_INDEX;
     private Map<String, Integer> evalMap = new LinkedHashMap<>();
     private String name, company;
-    private Integer day, smr;
+    private Integer day, smr, rent;
 
     public Map<String, List> results = new HashMap<>();
 
@@ -39,6 +39,7 @@ public class EvaluateSyaryoData {
         try (SyaryoAnalizer analize = new SyaryoAnalizer(syaryo)) {
             this.name = analize.get().name;
             this.company = analize.mcompany;
+            this.rent = analize.rent;
             this.day = analize.currentAge_day;
             this.smr = analize.maxSMR[1];
 
@@ -144,6 +145,7 @@ public class EvaluateSyaryoData {
         List<String> sb = new ArrayList();
         sb.add("sid");
         sb.add("会社");
+        sb.add("顧客(レンタル)");
         sb.add("経年");
         sb.add("SMR");
         for (String k : evalMap.keySet()) {
@@ -158,6 +160,7 @@ public class EvaluateSyaryoData {
         List info = new ArrayList();
         info.add(name);
         info.add(company);
+        info.add(String.valueOf(rent));
         info.add(String.valueOf(day / 365d));
         info.add(String.valueOf(smr));
 
@@ -209,7 +212,7 @@ public class EvaluateSyaryoData {
         
         //出力
         try (PrintWriter pw = CSVFileReadWrite.writer(KISY + "_syaryo_eval_mainte.csv")) {
-            pw.println(String.join(",", ev.getHeader())+",cid");
+            pw.println(String.join(",", ev.getHeader())+",CID");
             for(String key : info.keySet()){
                 pw.print(info.get(key).stream().map(s -> s.toString()).collect(Collectors.joining(","))+",");
                 if(data.get(key) != null)

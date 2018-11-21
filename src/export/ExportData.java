@@ -35,7 +35,10 @@ public class ExportData {
         //ヘッダー設定
         Map headers = new LinkedHashMap();
         headers.put("SID", -1);
-        headers.put("顧客.レンタル区分", dataIndex.get("顧客").indexOf("RENT_KBN"));
+        headers.put("顧客.会社", dataIndex.get("顧客").indexOf("KSYCD"));
+        headers.put("顧客.顧客CD", dataIndex.get("顧客").indexOf("NNSCD"));
+        headers.put("顧客.区分", dataIndex.get("顧客").indexOf("KKYK_KBN"));
+        headers.put("顧客.業種", dataIndex.get("顧客").indexOf("GYSCD"));
 
         Map filter = KomatsuDataParameter.PERIOD_MAINTE;
 
