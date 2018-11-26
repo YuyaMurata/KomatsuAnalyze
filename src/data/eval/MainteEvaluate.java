@@ -23,7 +23,7 @@ public class MainteEvaluate {
         if(d == null)
             d = parts(s, num, smr, y);
         
-        //100%を超える場合は固定
+        //1.0を超える場合は1.0に固定
         if(d != null)
             if(d > 1)
                 d = 1d;
@@ -90,6 +90,15 @@ public class MainteEvaluate {
         if(p.equals("作動油フィルタ") ||  p.equals("燃料メインフィルタ")){
             if(smr > 1000)
                 d = num / (smr / 1000d);
+            else
+                if(num > 0)
+                    d = 1;
+        }
+        
+        //5000時間
+        if(p.equals("パワーラインオイル")){
+            if(smr > 5000)
+                d = num / (smr / 5000d);
             else
                 if(num > 0)
                     d = 1;

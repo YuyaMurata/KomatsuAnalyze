@@ -124,10 +124,10 @@ public class EvaluateSyaryoData {
                         }
 
                         //パワーラインオイル
-                        /*if (pn.contains("パワーラインオイル") && flgMap.get("パワーラインオイル")) {
+                        if ((p.contains("SYEO-T") || p.contains("NYEO-T")) && flgMap.get("パワーラインオイル")) {
                             p = "パワーラインオイル";
                             map.put(p, map.get(p) + 1);
-                        }*/
+                        }
                         //Check
                         if (flgMap.get(p) != null) {
                             flgMap.put(p, false);
@@ -145,7 +145,7 @@ public class EvaluateSyaryoData {
         List<String> sb = new ArrayList();
         sb.add("sid");
         sb.add("会社");
-        sb.add("顧客(レンタル)");
+        sb.add("レンタル");
         sb.add("経年");
         sb.add("SMR");
         for (String k : evalMap.keySet()) {
@@ -193,7 +193,12 @@ public class EvaluateSyaryoData {
             System.out.println(syaryo.name);
             EvaluateSyaryoData eval = new EvaluateSyaryoData(syaryo);
 
+            //レンタル車両
+            if(eval.results.get("info").get(2).equals("1"))
+                continue;
+            
             info.put(syaryo.name, eval.results.get("info"));
+            
             
             //評価値が全て0のものは分ける
             if(eval.results.get("data").stream()
@@ -212,13 +217,14 @@ public class EvaluateSyaryoData {
         
         //出力
         try (PrintWriter pw = CSVFileReadWrite.writer(KISY + "_syaryo_eval_mainte.csv")) {
-            pw.println(String.join(",", ev.getHeader())+",CID");
+            pw.println(String.join(",", ev.getHeader())+",AVG,CID");
             for(String key : info.keySet()){
                 pw.print(info.get(key).stream().map(s -> s.toString()).collect(Collectors.joining(","))+",");
-                if(data.get(key) != null)
-                    pw.println(data.get(key).stream().map(s -> s.toString()).collect(Collectors.joining(","))+","+kmresult.get(key));
-                else
-                    pw.println(zerodata.get(key).stream().map(s -> s.toString()).collect(Collectors.joining(","))+",0");
+                if(data.get(key) != null){
+                    double avg = data.get(key).stream().mapToDouble(d -> (Double)d).average().getAsDouble();
+                    pw.println(data.get(key).stream().map(s -> s.toString()).collect(Collectors.joining(","))+","+avg+","+kmresult.get(key));
+                }else
+                    pw.println(zerodata.get(key).stream().map(s -> s.toString()).collect(Collectors.joining(","))+",0,0");
             }
         }
     }
