@@ -13,11 +13,7 @@ public class MainteEvaluate {
     
     public static Double eval(String s, int num, int smr, double y){
         //経年の数値を切捨て
-        y = Math.floor(y);
-        
-        //経年が1年未満の車両は1年として評価
-        if(y == 0)
-            y = 1;
+        //y = Math.floor(y);
         
         Double d = period(s, num, smr, y);
         if(d == null)
@@ -36,7 +32,10 @@ public class MainteEvaluate {
         Double d = null;
         switch (sk) {
             case "特定自主検査":
-                d = (double) num / y;
+                if(y < 1)
+                    d = 1d;
+                else
+                    d = (double) num / y;
                 break;
             /*case "新車巡回":
                 if(y >= (16/12))
@@ -64,8 +63,7 @@ public class MainteEvaluate {
                     double s = (smr / 500d);
                     d = num / s;
                 }else
-                    if(num > 0)
-                        d = (double)num;
+                    d = 1d;
                 break;
         }
         
@@ -82,8 +80,7 @@ public class MainteEvaluate {
             if(smr > 500)
                 d = num / (smr / 500d);
             else
-                if(num > 0)
-                    d = 1;
+                d = 1;
         }
 
         //1000時間
@@ -91,8 +88,7 @@ public class MainteEvaluate {
             if(smr > 1000)
                 d = num / (smr / 1000d);
             else
-                if(num > 0)
-                    d = 1;
+                d = 1;
         }
         
         //5000時間
@@ -100,8 +96,7 @@ public class MainteEvaluate {
             if(smr > 5000)
                 d = num / (smr / 5000d);
             else
-                if(num > 0)
-                    d = 1;
+                d = 1;
         }
         
         //1年
@@ -109,8 +104,7 @@ public class MainteEvaluate {
             if(y >= 1)
                 d = num / (y / 1d);
             else
-                if(num > 0)
-                    d = 1;
+                d = 1;
         }
         
         return d;
