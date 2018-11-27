@@ -193,7 +193,7 @@ public class EvaluateSyaryoData {
             System.out.println(syaryo.name);
             EvaluateSyaryoData eval = new EvaluateSyaryoData(syaryo);
 
-            //レンタル車両
+            //レンタル車両除く
             if(eval.results.get("info").get(2).equals("1"))
                 continue;
             

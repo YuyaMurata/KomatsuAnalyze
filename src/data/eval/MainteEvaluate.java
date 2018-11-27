@@ -38,7 +38,7 @@ public class MainteEvaluate {
             case "特定自主検査":
                 d = (double) num / y;
                 break;
-            case "新車巡回":
+            /*case "新車巡回":
                 if(y >= (16/12))
                     d = (double) num / 3;
                 else if(y >= (6 / 12))
@@ -46,7 +46,7 @@ public class MainteEvaluate {
                 else
                     d = (double) num / 1;
                 break;
-            /*case "コマツケア":
+            case "コマツケア":
                 if (y > 4) {
                     d = (double) num / 4d;
                 } else {
