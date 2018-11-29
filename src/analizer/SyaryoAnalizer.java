@@ -38,6 +38,7 @@ public class SyaryoAnalizer implements AutoCloseable {
     public Boolean komtrax = false;
     public Boolean allsupport = false;
     public Boolean dead = false;
+    public Boolean rent = false;
     public String lifestart = "";
     public String lifestop = "";
     public String currentLife = "";
@@ -47,9 +48,11 @@ public class SyaryoAnalizer implements AutoCloseable {
     public Integer numOrders = -1;
     public Integer numParts = -1;
     public Integer numWorks = -1;
-    public Integer rent = 0;
+    public Integer acmLCC = -1;
     public Integer[] maxSMR = new Integer[]{-1, -1, -1, -1};
-    private List<LocalDate[]> termAllSupport;
+    public Map<String, Integer> odrKind = new HashMap<>();
+    public Map<String, Integer> workKind = new HashMap<>();
+    private List<String[]> termAllSupport;
     private static String DATE_FORMAT = KomatsuDataParameter.DATE_FORMAT;
     private static Map<String, List> DATA_INDEX = KomatsuDataParameter.DATALAYOUT_INDEX;
     private static Map<String, String> POWERLINE_CHECK = KomatsuDataParameter.POWERLINE;
@@ -127,7 +130,7 @@ public class SyaryoAnalizer implements AutoCloseable {
                     for (String st : syaryo.get("オールサポート").keySet()) {
                         LocalDate start = LocalDate.parse(st, DateTimeFormatter.ofPattern(DATE_FORMAT));
                         LocalDate end = LocalDate.parse((String) syaryo.get("オールサポート").get(st).get(DATA_INDEX.get("オールサポート").indexOf("MK_KIYK")), DateTimeFormatter.ofPattern(DATE_FORMAT));
-                        termAllSupport.add(new LocalDate[]{start, end});
+                        termAllSupport.add(new String[]{start.toString(), end.toString()});
                     }
                     break;
                 case "廃車":
@@ -139,11 +142,30 @@ public class SyaryoAnalizer implements AutoCloseable {
                     List<String> odrv = getValue("受注", "ODDAY", true);
                     currentLife = odrv == null ? "NA" : odrv.get(numOrders - 1);
                     int dayIdx = DATA_INDEX.get("受注").indexOf("ODDAY");
+                    int priceIdx = DATA_INDEX.get("受注").indexOf("SKKG");
+                    int sgktIdx = DATA_INDEX.get("受注").indexOf("SGYO_KTICD");
+                    int odrIdx = DATA_INDEX.get("受注").indexOf("UAGE_KBN_1");
                     if (dayIdx > -1) {
+                        acmLCC = 0;
                         for (String sbn : syaryo.get("受注").keySet()) {
                             String date = (String) syaryo.get("受注").get(sbn).get(dayIdx);
                             sbnDate.put(sbn, date);
-
+                            
+                            Double price = Double.valueOf(syaryo.get("受注").get(sbn).get(priceIdx).toString());
+                            acmLCC += price.intValue();
+                            
+                            String sgkt = syaryo.get("受注").get(sbn).get(sgktIdx).toString();
+                            if(workKind.get(sgkt) == null)
+                                workKind.put(sgkt, 0);
+                            workKind.put(sgkt, workKind.get(sgkt)+1);
+                            
+                            String odr = syaryo.get("受注").get(sbn).get(odrIdx).toString()+
+                                        syaryo.get("受注").get(sbn).get(odrIdx+1).toString()+
+                                        syaryo.get("受注").get(sbn).get(odrIdx+2).toString();
+                            if(odrKind.get(odr) == null)
+                                odrKind.put(odr, 0);
+                            odrKind.put(odr, odrKind.get(odr)+1);
+                            
                             if (dateSBN.get(date) == null) {
                                 dateSBN.put(date, sbn);
                             } else {
@@ -153,14 +175,14 @@ public class SyaryoAnalizer implements AutoCloseable {
                     }
                     break;
                 case "顧客":
-                    List custv = getValue("顧客", "KKYKCD", false);
-                    numOwners = custv == null?-1:((Long) custv.stream().distinct().count()).intValue();
+                    List custv = getValue("顧客", "NNSCD", false);
+                    numOwners = custv == null?-1:((Long)custv.stream().distinct().count()).intValue();
                     
                     //レンタル業者か判定
                     List<String> custKbn = getValue("顧客", "KKYK_KBN", false);
                     List<String> custGycd = getValue("顧客", "GYSCD", false);
                     if(custKbn.contains("0E") || custKbn.contains("0G") || custGycd.contains("17"))
-                        rent = 1;
+                        rent = true;
                     break;
                 case "部品":
                     numParts = syaryo.get("部品").size();
@@ -353,8 +375,10 @@ public class SyaryoAnalizer implements AutoCloseable {
     //オールサポート対象期間か判定
     private Boolean checkAS(String d) {
         LocalDate date = LocalDate.parse(d, DateTimeFormatter.ofPattern(DATE_FORMAT));
-        for (LocalDate[] term : termAllSupport) {
-            if (!(term[0].isAfter(date) || term[1].isBefore(date))) {
+        for (String[] term : termAllSupport) {
+            LocalDate ts = LocalDate.parse(term[0]);
+            LocalDate tf = LocalDate.parse(term[1]);
+            if (!(ts.isAfter(date) || tf.isBefore(date))) {
                 return true;
             }
         }
@@ -442,6 +466,63 @@ public class SyaryoAnalizer implements AutoCloseable {
         sb.append(" numWorks = " + numWorks + "\n");
         sb.append(" maxSMR = " + Arrays.asList(maxSMR) + "\n");
         return sb.toString();
+    }
+    
+    public static String getHeader() {
+        //基本情報
+        String header = "機種,型/小変形,機番,会社,KOMTRAX,中古,廃車,オールサポート,レンタル,SMR最終更新日,SMR,KOMTRAX_SMR最終更新日,KOMTRAX_SMR,経過日,納入日,最終更新日,廃車日,中古日,";
+        
+        //保証情報
+        header += "AS期間,";
+        
+        //受注情報
+        header += "顧客数,受注数,作業発注数,部品発注数,ライフサイクルコスト,受注情報1,受注情報2";
+        
+        return header;
+    }
+    
+    public String toPrint() {
+        List<String> data = new ArrayList<>();
+        //基本情報
+        data.add(kind);
+        data.add(type);
+        data.add(no);
+        data.add(mcompany);
+        data.add(komtrax?"1":"0");
+        data.add(used?"1":"0");
+        data.add(dead?"1":"0");
+        data.add(allsupport?"1":"0");
+        data.add(rent?"1":"0");
+        data.add(String.valueOf(maxSMR[0]));
+        data.add(String.valueOf(maxSMR[1]));
+        data.add(String.valueOf(maxSMR[2]));
+        data.add(String.valueOf(maxSMR[3]));
+        data.add(String.valueOf(currentAge_day));
+        data.add(lifestart);
+        data.add(currentLife);
+        data.add(lifestop);
+        if(used)
+            data.add(String.join("|", usedlife));
+        else
+            data.add("None");
+        
+        //保証情報
+        if(allsupport)
+            data.add(termAllSupport.stream().map(term -> String.join("_", term)).collect(Collectors.joining("|")));
+        else
+            data.add("None");
+        
+        
+        //受注情報
+        data.add(String.valueOf(numOwners));
+        data.add(String.valueOf(numOrders));
+        data.add(String.valueOf(numWorks));
+        data.add(String.valueOf(numParts));
+        data.add(String.valueOf(acmLCC));
+        data.add(workKind.keySet().stream().collect(Collectors.joining("|")));
+        data.add(odrKind.keySet().stream().collect(Collectors.joining("|")));
+        
+        return String.join(",", data);
     }
 
     public static void main(String[] args) {

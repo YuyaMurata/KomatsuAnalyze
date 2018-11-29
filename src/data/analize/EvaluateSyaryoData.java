@@ -39,7 +39,7 @@ public class EvaluateSyaryoData {
         try (SyaryoAnalizer analize = new SyaryoAnalizer(syaryo)) {
             this.name = analize.get().name;
             this.company = analize.mcompany;
-            this.rent = analize.rent;
+            this.rent = analize.rent?1:0;
             this.day = analize.currentAge_day;
             this.smr = analize.maxSMR[1];
 

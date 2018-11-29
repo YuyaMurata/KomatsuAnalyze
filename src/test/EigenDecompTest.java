@@ -37,8 +37,8 @@ public class EigenDecompTest {
         
         //固有値ベクトル
         RealMatrix sv = ed.getV().getSubMatrix(0, 3, 0, 1);
-        RealMatrix mv = realMatrix.subtract(getDeviation(realMatrix));
-        double[][] result = mv.getData();//mv.multiply(sv).getData();
+        RealMatrix mv = getDeviation(realMatrix);
+        double[][] result = mv.multiply(sv).getData();
         
         for(int i=0; i < result.length; i++){
             for(int j=0; j < result[i].length; j++)
@@ -48,7 +48,7 @@ public class EigenDecompTest {
     }
     
     public static RealMatrix getDeviation(RealMatrix m){
-        double[][] temp = m.getData();
+        double[][] temp = m.transpose().getData();
         double[][] avgs = new double[temp.length][temp[0].length];
         double[][] dev = new double[temp.length][temp[0].length];
             
@@ -61,9 +61,7 @@ public class EigenDecompTest {
         }
         
         //偏差
-        
-        
-        RealMatrix result = MatrixUtils.createRealMatrix(dev);
+        RealMatrix result = m.subtract(MatrixUtils.createRealMatrix(avgs).transpose());
         
         return result;
     }
