@@ -49,6 +49,7 @@ public class SyaryoAnalizer implements AutoCloseable {
     public Integer numParts = -1;
     public Integer numWorks = -1;
     public Integer acmLCC = -1;
+    public Integer numAccident = 0;
     public Integer[] maxSMR = new Integer[]{-1, -1, -1, -1};
     public Map<String, Integer> odrKind = new HashMap<>();
     public Map<String, Integer> workKind = new HashMap<>();
@@ -56,6 +57,7 @@ public class SyaryoAnalizer implements AutoCloseable {
     private static String DATE_FORMAT = KomatsuDataParameter.DATE_FORMAT;
     private static Map<String, List> DATA_INDEX = KomatsuDataParameter.DATALAYOUT_INDEX;
     private static Map<String, String> POWERLINE_CHECK = KomatsuDataParameter.POWERLINE;
+    private static String[] ACCIDENT_WORDS = KomatsuDataParameter.ACCIDENT_WORDS;
 
     public SyaryoAnalizer(SyaryoObject4 syaryo) {
         this.syaryo = syaryo;
@@ -145,20 +147,25 @@ public class SyaryoAnalizer implements AutoCloseable {
                     int priceIdx = DATA_INDEX.get("受注").indexOf("SKKG");
                     int sgktIdx = DATA_INDEX.get("受注").indexOf("SGYO_KTICD");
                     int odrIdx = DATA_INDEX.get("受注").indexOf("UAGE_KBN_1");
+                    int textIdx = DATA_INDEX.get("受注").indexOf("GAIYO_1");
+                    int text2Idx = DATA_INDEX.get("受注").indexOf("GAIYO_2");
                     if (dayIdx > -1) {
                         acmLCC = 0;
                         for (String sbn : syaryo.get("受注").keySet()) {
                             String date = (String) syaryo.get("受注").get(sbn).get(dayIdx);
                             sbnDate.put(sbn, date);
                             
+                            //ライフサイクルコスト計算
                             Double price = Double.valueOf(syaryo.get("受注").get(sbn).get(priceIdx).toString());
                             acmLCC += price.intValue();
                             
+                            //作業形態カウント
                             String sgkt = syaryo.get("受注").get(sbn).get(sgktIdx).toString();
                             if(workKind.get(sgkt) == null)
                                 workKind.put(sgkt, 0);
                             workKind.put(sgkt, workKind.get(sgkt)+1);
                             
+                            //売上区分カウント
                             String odr = syaryo.get("受注").get(sbn).get(odrIdx).toString()+
                                         syaryo.get("受注").get(sbn).get(odrIdx+1).toString()+
                                         syaryo.get("受注").get(sbn).get(odrIdx+2).toString();
@@ -166,6 +173,14 @@ public class SyaryoAnalizer implements AutoCloseable {
                                 odrKind.put(odr, 0);
                             odrKind.put(odr, odrKind.get(odr)+1);
                             
+                            //事故カウント
+                            String text = syaryo.get("受注").get(sbn).get(textIdx).toString()+
+                                            syaryo.get("受注").get(sbn).get(text2Idx).toString();
+                            for(String w : ACCIDENT_WORDS)
+                                if(text.contains(w))
+                                    numAccident++;
+                            
+                            //日付との相互変換用
                             if (dateSBN.get(date) == null) {
                                 dateSBN.put(date, sbn);
                             } else {
@@ -475,6 +490,9 @@ public class SyaryoAnalizer implements AutoCloseable {
         //保証情報
         header += "AS期間,";
         
+        //事故情報
+        header += "事故,";
+        
         //受注情報
         header += "顧客数,受注数,作業発注数,部品発注数,ライフサイクルコスト,受注情報1,受注情報2";
         
@@ -512,6 +530,8 @@ public class SyaryoAnalizer implements AutoCloseable {
         else
             data.add("None");
         
+        //事故情報
+        data.add(String.valueOf(numAccident));
         
         //受注情報
         data.add(String.valueOf(numOwners));
@@ -526,12 +546,12 @@ public class SyaryoAnalizer implements AutoCloseable {
     }
 
     public static void main(String[] args) {
-        Map<String, SyaryoObject4> syaryoMap = new SyaryoToZip3().read("syaryo\\syaryo_obj_PC138US_form.bz2");
-        SyaryoAnalizer analize = new SyaryoAnalizer(syaryoMap.get("PC138US-2-5322"));
+        Map<String, SyaryoObject4> syaryoMap = new SyaryoToZip3().read("syaryo\\syaryo_obj_PC200_sv_form.bz2");
+        SyaryoAnalizer analize = new SyaryoAnalizer(syaryoMap.get("PC200-10-451215"));
         System.out.println(analize.toString());
 
         //Check
-        System.out.println("20110801:" + analize.checkAS("20110801"));
+        System.out.println("20180801:" + analize.checkAS("20180801"));
         System.out.println("20340801:" + analize.checkAS("20340801"));
     }
 

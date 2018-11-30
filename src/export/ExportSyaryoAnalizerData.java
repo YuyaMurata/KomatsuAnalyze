@@ -23,7 +23,7 @@ public class ExportSyaryoAnalizerData {
     private static String KISY = "PC200";
 
     public static void main(String[] args) {
-        Map<String, SyaryoObject4> syaryoMap = LoadSyaryoObject.load(KISY + "_km_form_old.bz2");
+        Map<String, SyaryoObject4> syaryoMap = LoadSyaryoObject.load(KISY + "_km_form.bz2");
         try (PrintWriter csv = CSVFileReadWrite.writer(KISY + "_syaryo_analize_summary.csv")) {
             csv.println(SyaryoAnalizer.getHeader());
             for (SyaryoObject4 syaryo : syaryoMap.values()) {

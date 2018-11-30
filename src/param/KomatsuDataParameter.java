@@ -118,6 +118,9 @@ public interface KomatsuDataParameter {
     //R
     public static String R_FUNC_PATH = "R\\KMRFunction.R";
     
+    //事故抽出
+    public static String[] ACCIDENT_WORDS = new String[]{"横転","転倒","水没","火災"};
+    
     //エラー紐付け処理時のデータソース
     public static String[] ERR_SOURCE = new String[]{"kom_order", "parts", "work_info", "service"};
     public static String ERR_DATAPROCESS_PATH = "error_proc\\";
