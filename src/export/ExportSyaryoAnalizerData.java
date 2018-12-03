@@ -9,8 +9,6 @@ import analizer.SyaryoAnalizer;
 import file.CSVFileReadWrite;
 import java.io.PrintWriter;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import obj.LoadSyaryoObject;
 import obj.SyaryoObject4;
 

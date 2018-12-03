@@ -50,6 +50,7 @@ public class SyaryoAnalizer implements AutoCloseable {
     public Integer numWorks = -1;
     public Integer acmLCC = -1;
     public Integer numAccident = 0;
+    public Integer acmAccidentPrice = 0;
     public Integer[] maxSMR = new Integer[]{-1, -1, -1, -1};
     public Map<String, Integer> odrKind = new HashMap<>();
     public Map<String, Integer> workKind = new HashMap<>();
@@ -177,8 +178,10 @@ public class SyaryoAnalizer implements AutoCloseable {
                             String text = syaryo.get("受注").get(sbn).get(textIdx).toString()+
                                             syaryo.get("受注").get(sbn).get(text2Idx).toString();
                             for(String w : ACCIDENT_WORDS)
-                                if(text.contains(w))
+                                if(text.contains(w)){
                                     numAccident++;
+                                    acmAccidentPrice += price.intValue();
+                                }
                             
                             //日付との相互変換用
                             if (dateSBN.get(date) == null) {
@@ -491,7 +494,7 @@ public class SyaryoAnalizer implements AutoCloseable {
         header += "AS期間,";
         
         //事故情報
-        header += "事故,";
+        header += "事故,事故受注費計,";
         
         //受注情報
         header += "顧客数,受注数,作業発注数,部品発注数,ライフサイクルコスト,受注情報1,受注情報2";
@@ -532,6 +535,7 @@ public class SyaryoAnalizer implements AutoCloseable {
         
         //事故情報
         data.add(String.valueOf(numAccident));
+        data.add(String.valueOf(acmAccidentPrice));
         
         //受注情報
         data.add(String.valueOf(numOwners));
