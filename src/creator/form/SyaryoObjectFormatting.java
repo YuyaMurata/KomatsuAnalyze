@@ -122,7 +122,7 @@ public class SyaryoObjectFormatting {
             syaryo.put("オールサポート", newMap);
 
             //Komtrax
-            formKomtrax(syaryo);
+            formKomtrax(syaryo, syaryo.get("出荷"));
             
             //SMR  KOMTRAXと統合
             /*if(syaryo.get("KOMTRAX_SMR") != null){
@@ -903,9 +903,11 @@ public class SyaryoObjectFormatting {
     }
 
     //KOMTRAXデータの整形 (値の重複除去、日付の整形、小数->整数)
-    private static void formKomtrax(SyaryoObject4 syaryo) {
+    private static void formKomtrax(SyaryoObject4 syaryo, Map<String, List> deploy) {
         //ALL
         List<String> kmList = dataIndex.keySet().stream().filter(s -> s.contains("KOMTRAX")).collect(Collectors.toList());
+        String stdate = deploy.keySet().stream().findFirst().get();
+        
         for (String id : kmList) {
             if (syaryo.get(id) == null) {
                 continue;
@@ -915,12 +917,20 @@ public class SyaryoObjectFormatting {
             Map newMap = new TreeMap();
             String tmp = "";
             for (String date : syaryo.get(id).keySet()) {
+                
                 String d = date.split("#")[0].split(" ")[0].replace("/", "");
                 String str = syaryo.get(id).get(date).toString();
+                
+                //出荷より前のセンサー情報を消す
+                if(Integer.valueOf(d) < Integer.valueOf(stdate))
+                    continue;
 
                 if (!tmp.equals(str)) {
                     List value = getDoubleToInteger(id, syaryo.get(id).get(date));
-                    newMap.put(dup(d, newMap), value);
+                    if(id.equals("KOMTRAX_SMR"))
+                        newMap.put(d, value);
+                    else
+                        newMap.put(dup(d, newMap), value);
                     tmp = str;
 
                 }
