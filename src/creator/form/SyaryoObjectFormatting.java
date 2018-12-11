@@ -548,7 +548,7 @@ public class SyaryoObjectFormatting {
         }
 
         //日付ソート
-        int date = indexList.indexOf("JSDAY"); //kom_orderが紐づく場合 ODDAY
+        int date = indexList.indexOf("ODDAY"); //kom_orderが紐づく場合 ODDAY
         //System.out.println(order);
         //確認
         /*order.entrySet().stream()
@@ -568,7 +568,7 @@ public class SyaryoObjectFormatting {
         //System.out.println("作番:"+sbnList);
         Map<String, List<String>> map = new LinkedHashMap();
 
-        int db = indexList.indexOf("service");
+        int db = indexList.indexOf("kom_order");
         int price = indexList.indexOf("SKKG");
         int kind = indexList.indexOf("ODR_KBN");
 
@@ -874,7 +874,7 @@ public class SyaryoObjectFormatting {
             //日付情報をキーにもたない場合は無視
             try {
                 if (key.toString().equals("受注")) {
-                    int date_idx = indexList.indexOf("JSDAY"); //kom_orderが紐づく場合ODDAY
+                    int date_idx = indexList.indexOf("ODDAY"); //kom_orderが紐づく場合ODDAY
                     remove = map.entrySet().stream()
                         .filter(v -> !v.getValue().get(date_idx).toString().contains("None"))
                         .filter(v -> Integer.valueOf(v.getValue().get(date_idx).toString().split("#")[0].replace("/", "")) >= date)

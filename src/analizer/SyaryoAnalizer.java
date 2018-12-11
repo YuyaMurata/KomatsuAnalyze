@@ -59,6 +59,7 @@ public class SyaryoAnalizer implements AutoCloseable {
     private static Map<String, List> DATA_INDEX = KomatsuDataParameter.DATALAYOUT_INDEX;
     private static Map<String, String> POWERLINE_CHECK = KomatsuDataParameter.POWERLINE;
     private static String[] ACCIDENT_WORDS = KomatsuDataParameter.ACCIDENT_WORDS;
+    private static Map<String, String> PC200_KR_MASTER = KomatsuDataParameter.PC_KR_SMASTER;
 
     public SyaryoAnalizer(SyaryoObject4 syaryo) {
         this.syaryo = syaryo;
@@ -201,6 +202,12 @@ public class SyaryoAnalizer implements AutoCloseable {
                     List<String> custGycd = getValue("顧客", "GYSCD", false);
                     if(custKbn.contains("0E") || custKbn.contains("0G") || custGycd.contains("17"))
                         rent = true;
+                    
+                    //KR車両か判定
+                    if(!rent && kind.equals("PC200"))
+                        rent = PC200_KR_MASTER.get(kind+"-"+no) != null;
+                        
+                    
                     break;
                 case "部品":
                     numParts = syaryo.get("部品").size();
