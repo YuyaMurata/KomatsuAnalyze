@@ -76,6 +76,19 @@ public class TimeSpreadChart extends ChartTemplate {
 
         return data;
     }
+    
+    private Map<String, List> kmgps(SyaryoObject4 syaryo) {
+        int fuelidx = 0;
+        if (syaryo.get("KOMTRAX_GPS") == null) {
+            return null;
+        }
+        
+        for (String date : syaryo.get("KOMTRAX_GPS").keySet()) {
+            List<Double> latlng = (List<Double>) syaryo.get("KOMTRAX_GPS").get(date).stream().map(v -> Double.valueOf(v.toString())).collect(Collectors.toList());
+        }
+
+        return null;
+    }
 
     private Map<String, List> kmerror(SyaryoObject4 syaryo) {
         int errorCodeIdx = 0;
@@ -127,7 +140,9 @@ public class TimeSpreadChart extends ChartTemplate {
             return kmerror(syaryo);
         } else if (select.equals("KOMTRAX_FUEL_CONSUME")) {
             return kmfuel(syaryo);
-        } else {
+        } /*else if (select.equals("KOMTRAX_GPS")) {
+            return kmgps(syaryo);
+        }*/ else {
             return null;
         }
     }

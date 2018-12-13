@@ -6,6 +6,7 @@
 package creator.form;
 
 import analizer.SyaryoAnalizer;
+import google.map.MapPathData;
 import index.SyaryoObjectElementsIndex;
 import java.text.DecimalFormat;
 import java.util.ArrayDeque;
@@ -926,7 +927,7 @@ public class SyaryoObjectFormatting {
                     continue;
 
                 if (!tmp.equals(str)) {
-                    List value = getDoubleToInteger(id, syaryo.get(id).get(date));
+                    List value = getTransformValue(id, syaryo.get(id).get(date));
                     if(id.equals("KOMTRAX_SMR"))
                         newMap.put(d, value);
                     else
@@ -941,12 +942,18 @@ public class SyaryoObjectFormatting {
     }
 
     //KOMTRAXデータを整数値に変換(SMR, FUEL_CONSUME)
-    private static List<String> getDoubleToInteger(String id, List<String> kmvalue) {
-        if (!id.contains("SMR") && !id.contains("FUEL")) {
-            return kmvalue;
+    private static List<String> getTransformValue(String id, List<String> kmvalue) {
+        if (id.contains("SMR")) {
+            kmvalue.set(0, String.valueOf(Double.valueOf(kmvalue.get(0)).intValue()));
+        }else if(id.contains("FUEL")){
+            kmvalue.set(0, String.valueOf(Double.valueOf(kmvalue.get(0))));
+        }else if(id.contains("GPS")){
+            //緯度
+            kmvalue.set(0, String.valueOf(Double.valueOf(MapPathData.compValue(kmvalue.get(0)))));
+            //経度
+            kmvalue.set(1, String.valueOf(Double.valueOf(MapPathData.compValue(kmvalue.get(1)))));
         }
 
-        kmvalue.set(0, String.valueOf(Double.valueOf(kmvalue.get(0)).intValue()));
         return kmvalue;
     }
 

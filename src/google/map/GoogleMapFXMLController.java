@@ -101,7 +101,7 @@ public class GoogleMapFXMLController implements Initializable {
 		map = mapView.createMap(mapOptions, false);
 
 		//Get Syaryo Data
-		Map<String, SyaryoObject4> syaryoMap = new SyaryoToZip3().read(PATH+"syaryo_obj_"+KISY+"_form.bz2");
+		/*Map<String, SyaryoObject4> syaryoMap = new SyaryoToZip3().read(PATH+"syaryo_obj_"+KISY+"_form.bz2");
         
         SyaryoObject4 syaryo = syaryoMap.get("PC138US-10-40651");
  
@@ -110,6 +110,7 @@ public class GoogleMapFXMLController implements Initializable {
         //syaryo.compress(Boolean.FALSE);
         
 		timePoint(syaryo.name, gps);
+        */
         
 		sliderInitialize();
         
