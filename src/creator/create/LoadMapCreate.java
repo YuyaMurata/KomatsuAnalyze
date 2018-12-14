@@ -161,7 +161,7 @@ public class LoadMapCreate {
         System.out.println(syaryoMap.size());
         
         //visualデータ生成
-        SyaryoObject4 syaryo = syaryoMap.values().stream().findFirst().get();
+        SyaryoObject4 syaryo = syaryoMap.get("Pc200-10-450792");
         syaryo.get("LOADMAP_実エンジン回転VSエンジントルク").entrySet().stream()
                                 .map(eng -> eng.getKey().replace("_", ",")+","+eng.getValue().get(0))
                                 .forEach(System.out::println);
