@@ -118,9 +118,9 @@ public class SyaryoObject4 implements Serializable {
     * データの追加で利用
     * データ要素の追加は不可
     */
-    public void putAll(Map add) {
+    public void putAll(Map data) {
         decompress();
-        map.putAll(add);
+        map.putAll(data);
         compress(true);
     }
 

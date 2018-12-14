@@ -41,6 +41,7 @@ public class SnappyMap {
             oos.writeObject(obj);
             return baos.toByteArray();
         } catch (IOException ex) {
+            ex.printStackTrace();
         }
         return null;
     }
