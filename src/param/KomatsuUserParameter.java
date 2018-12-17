@@ -6,7 +6,7 @@
 package param;
 
 import java.util.Map;
-import json.MapIndexToJSON;
+import file.MapToJSON;
 
 /**
  *
@@ -21,7 +21,7 @@ public interface KomatsuUserParameter {
     
     //部品コードの再定義
     public static String PC_PARTS_REDEF_INDEX_PATH = "user\\pc200_parts_redefine.json";
-    public static Map<String, String> PC_PARTS_REDEF = new MapIndexToJSON().reader(PC_PARTS_REDEF_INDEX_PATH);
+    public static Map<String, String> PC_PARTS_REDEF = new MapToJSON().reader(PC_PARTS_REDEF_INDEX_PATH);
     
     //評価行列
     public static String PC200_PARTS_EVAL_FILE="PC200_partscd_evalarray.csv";

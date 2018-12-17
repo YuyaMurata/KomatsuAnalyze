@@ -12,8 +12,8 @@ import java.util.TreeMap;
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import json.SyaryoTemplateToJson;
-import json.SyaryoToZip3;
+import file.SyaryoTemplateToJSON;
+import file.SyaryoToCompress;
 import obj.SyaryoObject4;
 
 /**
@@ -51,7 +51,7 @@ public class TemplateToObjectCreate {
         }
 
         //File
-        SyaryoTemplateToJson json = new SyaryoTemplateToJson();
+        SyaryoTemplateToJSON json = new SyaryoTemplateToJSON();
 
         File[] flist = (new File(fpath)).listFiles();
         for (File f : flist) {
@@ -99,7 +99,7 @@ public class TemplateToObjectCreate {
             SyaryoObject4 syaryo = syaryoMap.values().stream().findFirst().get();
             System.out.println(syaryo.dump());
             
-            new SyaryoToZip3().write(FILENAME, syaryoMap);
+            new SyaryoToCompress().write(FILENAME, syaryoMap);
 
             System.out.println(syaryoMap.size());
             

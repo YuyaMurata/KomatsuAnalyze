@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-import json.SyaryoToZip3;
+import file.SyaryoToCompress;
 import obj.SyaryoObject4;
 import param.KomatsuDataParameter;
 
@@ -28,7 +28,7 @@ public class CodeHistgram {
         new Integer[]{0,1000,5000,10000,20000,30000,40000,50000,60000,70000,80000,90000,100000,200000,300000,400000,500000,600000,700000,800000,900000,1000000};
     
     public static void main(String[] args) {
-        Map<String, SyaryoObject4> syaryoMap = new SyaryoToZip3().readJSON(exportFile);
+        Map<String, SyaryoObject4> syaryoMap = new SyaryoToCompress().readJSON(exportFile);
 
         SyaryoObject4 dataHeader = syaryoMap.get("_headers");
         syaryoMap.remove("_headers");

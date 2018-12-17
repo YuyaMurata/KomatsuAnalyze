@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-import json.SyaryoTemplateToJson;
+import file.SyaryoTemplateToJSON;
 
 /**
  *
@@ -44,7 +44,7 @@ public class ErrorTemplateCreate {
         }
 
         //File
-        SyaryoTemplateToJson json = new SyaryoTemplateToJson();
+        SyaryoTemplateToJSON json = new SyaryoTemplateToJSON();
 
         //Layout Index
         Map<String, List> index = index();
@@ -101,7 +101,7 @@ public class ErrorTemplateCreate {
     }
 
     //Create Template
-    private static void template(Map<String, List> layoutIndex, String[] errSource, SyaryoTemplateToJson json) {
+    private static void template(Map<String, List> layoutIndex, String[] errSource, SyaryoTemplateToJSON json) {
         //JSONフォルダ作成
         String json_path = OUTPATH + "json\\";
         File folder = new File(json_path);

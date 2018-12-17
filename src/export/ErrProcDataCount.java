@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
-import json.SyaryoTemplateToJson;
+import file.SyaryoTemplateToJSON;
 import param.KomatsuDataParameter;
 
 /**
@@ -27,7 +27,7 @@ public class ErrProcDataCount {
         
         for(String errsource : KomatsuDataParameter.ERR_SOURCE){
             header.append(errsource+",");
-            Map<String, SimpleTemplate> err = new SyaryoTemplateToJson().reader("error_proc\\"+errsource+"_error.json");
+            Map<String, SimpleTemplate> err = new SyaryoTemplateToJSON().reader("error_proc\\"+errsource+"_error.json");
             for(String name : err.keySet()){
                 System.out.println(name);
                 String kisy = "";

@@ -6,7 +6,7 @@
 package obj;
 
 import java.util.Map;
-import json.SyaryoToZip3;
+import file.SyaryoToCompress;
 import param.KomatsuDataParameter;
 
 /**
@@ -18,6 +18,6 @@ public class LoadSyaryoObject {
     
     public static Map<String, SyaryoObject4> load(String filename){
         //車両の読み込み
-        return new SyaryoToZip3().read(PATH + "syaryo_obj_" + filename);
+        return new SyaryoToCompress().read(PATH + "syaryo_obj_" + filename);
     }
 }

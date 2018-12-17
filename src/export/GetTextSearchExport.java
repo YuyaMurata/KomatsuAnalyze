@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import json.SyaryoToZip3;
+import file.SyaryoToCompress;
 import obj.SyaryoObject4;
 import param.KomatsuDataParameter;
 
@@ -31,7 +31,7 @@ public class GetTextSearchExport {
     private static String syaryofilename = PATH + "syaryo_obj_" + KISY + "_sv_form.bz2";
 
     public static void main(String[] args) {
-        map = new SyaryoToZip3().read(syaryofilename);
+        map = new SyaryoToCompress().read(syaryofilename);
         
         List header = dataIndex.get("部品");
         List<Integer> indexs = Arrays.asList(new Integer[]{header.indexOf("KSYCD"), header.indexOf("HNBN")});

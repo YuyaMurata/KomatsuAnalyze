@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import json.SyaryoToZip3;
+import file.SyaryoToCompress;
 import obj.SyaryoObject4;
 import param.KomatsuDataParameter;
 
@@ -27,7 +27,7 @@ public class SyaryoDataExistsCheck {
         //Check Data
         //String[] ckey = new String[]{"顧客","受注", "作業", "部品"};
         String[] ckey = new String[]{"KOMTRAX_SMR","KOMTRAX_GPS", "KOMTRAX_ACT_DATA","KOMTRAX_FUEL_CONSUME", "KOMTRAX_ERROR"};
-        Map<String, SyaryoObject4> syaryoMap = new SyaryoToZip3().read(syaryoPath);
+        Map<String, SyaryoObject4> syaryoMap = new SyaryoToCompress().read(syaryoPath);
         
         existsCheck(syaryoMap, ckey);
     }

@@ -9,7 +9,7 @@ import index.SyaryoObjectElementsIndex;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import json.SyaryoToZip3;
+import file.SyaryoToCompress;
 import obj.SyaryoObject4;
 import param.KomatsuDataParameter;
 
@@ -24,7 +24,7 @@ public class CountData {
     private static Map<String, List> dataIndex = SyaryoObjectElementsIndex.getInstance().getIndex();
     
     public static void main(String[] args) {
-        SyaryoToZip3 zip3 = new SyaryoToZip3();
+        SyaryoToCompress zip3 = new SyaryoToCompress();
         String filename = OBJPATH + "syaryo_obj_" + KISY + "_sv_form_old.bz2";
         syaryoMap = zip3.read(filename);
         

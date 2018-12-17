@@ -14,7 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import json.MapIndexToJSON;
+import file.MapToJSON;
 
 /**
  *
@@ -24,10 +24,10 @@ public class KisyLayoutIndex {
     public static void main(String[] args) {
         
         Map kisyMap = createKisyMap();
-        new MapIndexToJSON().write("index\\kisy_index.json", kisyMap);
+        new MapToJSON().write("index\\kisy_index.json", kisyMap);
         
         Map layoutMap = createLayoutMap();
-        new MapIndexToJSON().write("index\\layout_index.json", layoutMap);
+        new MapToJSON().write("index\\layout_index.json", layoutMap);
     }
     
     private static Map createKisyMap(){

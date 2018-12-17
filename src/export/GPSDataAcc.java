@@ -11,7 +11,7 @@ import file.CSVFileReadWrite;
 import java.io.PrintWriter;
 import java.util.Map;
 import java.util.TreeMap;
-import json.SyaryoToZip3;
+import file.SyaryoToCompress;
 import obj.SyaryoObject4;
 
 /**
@@ -24,7 +24,7 @@ public class GPSDataAcc {
 
     public static void main(String[] args) {
         String filename = "syaryo\\syaryo_obj_" + kisy + "_form.bz2";
-        Map<String, SyaryoObject4> syaryoMap = new SyaryoToZip3().read(filename);
+        Map<String, SyaryoObject4> syaryoMap = new SyaryoToCompress().read(filename);
 
         String outputname = "gps_" + kisy + ".csv";
         try (PrintWriter csv = CSVFileReadWrite.writer(outputname)) {

@@ -11,7 +11,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import json.SyaryoToZip3;
+import file.SyaryoToCompress;
 import program.r.R;
 
 /**
@@ -33,7 +33,7 @@ public class EasyViewMain extends Application {
         stage.showingProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue == true && newValue == false) {
                 R.close();
-                SyaryoToZip3.runnable = false;
+                SyaryoToCompress.runnable = false;
             }
         });
     }

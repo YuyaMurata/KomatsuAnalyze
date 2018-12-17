@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import json.SyaryoToZip3;
+import file.SyaryoToCompress;
 import obj.SyaryoObject4;
 import param.KomatsuDataParameter;
 
@@ -31,7 +31,7 @@ public class ExportIrregularData {
     private static String OBJPATH = KomatsuDataParameter.OBJECT_PATH;
 
     public static void main(String[] args) {
-        SyaryoToZip3 zip3 = new SyaryoToZip3();
+        SyaryoToCompress zip3 = new SyaryoToCompress();
         String filename = OBJPATH + "syaryo_obj_" + KISY + "_km_form.bz2";
         Map<String, SyaryoObject4> syaryoMap = zip3.read(filename);
 

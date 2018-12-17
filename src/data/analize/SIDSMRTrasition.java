@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-import json.MapIndexToJSON;
-import json.SyaryoToZip3;
+import file.MapToJSON;
+import file.SyaryoToCompress;
 import obj.SyaryoObject4;
 import program.r.R;
 
@@ -35,7 +35,7 @@ public class SIDSMRTrasition {
     private static final String exportFile = "FORM_ExportData_SMR_" + KISY + "_ALL.json";
 
     public static void main(String[] args) {
-        Map<String, SyaryoObject4> syaryoMap = new SyaryoToZip3().readJSON(exportFile);
+        Map<String, SyaryoObject4> syaryoMap = new SyaryoToCompress().readJSON(exportFile);
 
         SyaryoObject4 dataHeader = syaryoMap.get("_headers");
         syaryoMap.remove("_headers");
@@ -75,7 +75,7 @@ public class SIDSMRTrasition {
 
         outMap.put("_headers", expMap);
 
-        new MapIndexToJSON().write("FORM_" + exportFile, outMap);
+        new MapToJSON().write("FORM_" + exportFile, outMap);
 
         R.close();
     }

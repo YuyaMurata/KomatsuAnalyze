@@ -11,7 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import json.MapIndexToJSON;
+import file.MapToJSON;
 import param.KomatsuDataParameter;
 
 /**
@@ -32,7 +32,7 @@ public class SyaryoObjectElementsIndex {
     }
     
     private void initialize(){
-        Map<String, Map<String, List<String>>> index = new MapIndexToJSON().reader(INDEXPATH);
+        Map<String, Map<String, List<String>>> index = new MapToJSON().reader(INDEXPATH);
         Map<String, List> formIndex = new LinkedHashMap();
 
         for (String key : index.keySet()) {

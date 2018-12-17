@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import json.SyaryoToZip3;
+import file.SyaryoToCompress;
 import obj.SyaryoObject4;
 import param.KomatsuDataParameter;
 
@@ -31,7 +31,7 @@ public class ErrCodeServicePriceSMRAge {
     
     public void export(){
         //Syaryo
-        Map<String, SyaryoObject4> syaryoMap = new SyaryoToZip3().read(PATH+"syaryo_obj_"+KISY+"_form.bz2");
+        Map<String, SyaryoObject4> syaryoMap = new SyaryoToCompress().read(PATH+"syaryo_obj_"+KISY+"_form.bz2");
         List<SyaryoObject4> analyzeSyaryo = new ArrayList();
         //分析対象を絞る
         for(SyaryoObject4 syaryo : syaryoMap.values()){

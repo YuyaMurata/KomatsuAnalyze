@@ -15,7 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import json.SyaryoToZip3;
+import file.SyaryoToCompress;
 import obj.SyaryoObject4;
 import param.KomatsuDataParameter;
 
@@ -37,7 +37,7 @@ public class WorkIDPartsIDIndex {
         Map<String, SyaryoObject4> index = new HashMap();
 
         //車両の読み込み
-        map = new SyaryoToZip3().read(PATH + "syaryo_obj_" + KISY + "_form.bz2");
+        map = new SyaryoToCompress().read(PATH + "syaryo_obj_" + KISY + "_form.bz2");
         int odrkbnIdx = dataIndex.get("受注").indexOf("ODR_KBN");
         int sgksycdIdx = dataIndex.get("作業").indexOf("KSYCD");
         int sgcdIdx = dataIndex.get("作業").indexOf("SGYOCD");
@@ -116,7 +116,7 @@ public class WorkIDPartsIDIndex {
             s.stopHighPerformaceAccess();
         });
         
-        new SyaryoToZip3().write(filename, index);
+        new SyaryoToCompress().write(filename, index);
 
     }
 }

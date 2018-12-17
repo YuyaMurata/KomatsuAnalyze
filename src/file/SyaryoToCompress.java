@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package json;
+package file;
 
+import file.MapToJSON;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -19,18 +20,15 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javafx.application.Platform;
-import javafx.scene.control.ProgressBar;
 import obj.SyaryoObject4;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
-import viewer.easy.EasyViewMain;
 
 /**
  *
  * @author ZZ17390
  */
-public class SyaryoToZip3 {
+public class SyaryoToCompress {
     public static Boolean runnable = true;
     public static Integer fileSize, availSize;
     
@@ -130,7 +128,7 @@ public class SyaryoToZip3 {
             System.exit(0);
         }
 
-        Map<String, Map> map = new MapIndexToJSON().reader(file);
+        Map<String, Map> map = new MapToJSON().reader(file);
         Map<String, SyaryoObject4> syaryoMap = new HashMap();
         for (String name : map.keySet()) {
             SyaryoObject4 syaryo = new SyaryoObject4(name);

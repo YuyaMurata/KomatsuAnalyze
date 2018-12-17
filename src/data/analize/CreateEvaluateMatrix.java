@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import json.SyaryoToZip3;
+import file.SyaryoToCompress;
 import obj.SyaryoObject4;
 import param.KomatsuDataParameter;
 import param.KomatsuUserParameter;
@@ -32,7 +32,7 @@ public class CreateEvaluateMatrix {
     private static final String exportFile = "ExportData_" + KISY + "_ALL.json";
 
     public static void main(String[] args) {
-        Map<String, SyaryoObject4> syaryoMap = new SyaryoToZip3().readJSON(exportFile);
+        Map<String, SyaryoObject4> syaryoMap = new SyaryoToCompress().readJSON(exportFile);
 
         SyaryoObject4 dataHeader = syaryoMap.get("_headers");
         System.out.println(dataHeader.getMap());

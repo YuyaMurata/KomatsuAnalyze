@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-import json.SyaryoToZip3;
+import file.SyaryoToCompress;
 import obj.SyaryoObject4;
 import param.KomatsuDataParameter;
 
@@ -181,7 +181,7 @@ public class EvaluateSyaryoData {
     static String filename = PATH + "syaryo_obj_" + KISY + "_km_form.bz2";
 
     public static void main(String[] args) {
-        Map<String, SyaryoObject4> map = new SyaryoToZip3().read(filename);
+        Map<String, SyaryoObject4> map = new SyaryoToCompress().read(filename);
         SyaryoObject4 test = map.values().stream().findFirst().get();
         EvaluateSyaryoData ev = new EvaluateSyaryoData(test);
 

@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-import json.SyaryoToZip3;
+import file.SyaryoToCompress;
 import obj.SyaryoObject4;
 import param.KomatsuDataParameter;
 import program.r.R;
@@ -33,7 +33,7 @@ public class SMRFormvsNone {
     private static String PATH = KomatsuDataParameter.SYARYOOBJECT_FDPATH;
     private static String KISY = "PC200";
     private static String filename = PATH + "syaryo_obj_" + KISY + "_km_form.bz2";
-    private static Map<String, SyaryoObject4> syaryoMap = new SyaryoToZip3().read(filename);
+    private static Map<String, SyaryoObject4> syaryoMap = new SyaryoToCompress().read(filename);
     
     private static String searchname = "user\\PC200SMR調査対象.csv";
     

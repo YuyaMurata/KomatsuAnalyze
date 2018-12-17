@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-import json.SyaryoToZip3;
+import file.SyaryoToCompress;
 import obj.SyaryoObject4;
 import param.KomatsuDataParameter;
 
@@ -557,7 +557,7 @@ public class SyaryoAnalizer implements AutoCloseable {
     }
 
     public static void main(String[] args) {
-        Map<String, SyaryoObject4> syaryoMap = new SyaryoToZip3().read("syaryo\\syaryo_obj_PC200_sv_form.bz2");
+        Map<String, SyaryoObject4> syaryoMap = new SyaryoToCompress().read("syaryo\\syaryo_obj_PC200_sv_form.bz2");
         SyaryoAnalizer analize = new SyaryoAnalizer(syaryoMap.get("PC200-10-451215"));
         System.out.println(analize.toString());
 

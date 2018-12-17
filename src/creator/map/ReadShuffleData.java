@@ -13,8 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import json.MapIndexToJSON;
-import json.SyaryoToZip3;
+import file.MapToJSON;
+import file.SyaryoToCompress;
 import obj.SyaryoObject4;
 import param.KomatsuDataParameter;
 
@@ -24,7 +24,7 @@ import param.KomatsuDataParameter;
  */
 public class ReadShuffleData {
     private Map<String, List<String>> custMap;
-    private static SyaryoToZip3 zip = new SyaryoToZip3();
+    private static SyaryoToCompress zip = new SyaryoToCompress();
     private Map<String, Map<String, SyaryoObject4>> readFile;
     private Map<String, List<List>> map;
     private Boolean fileCheck = true;
@@ -41,7 +41,7 @@ public class ReadShuffleData {
 
     private static Map<String, List<String>> setCustomer(String filename) {
         int size = ((List)CustomerIndex.layoutIndex().get("customer")).size()-1;
-        Map<String, String> map = new MapIndexToJSON().reader(filename);
+        Map<String, String> map = new MapToJSON().reader(filename);
         System.out.println("CSUTSIZE="+size);
         Map<String, List<String>> formCustMap = new HashMap<>();
         for(String cid : map.keySet()){

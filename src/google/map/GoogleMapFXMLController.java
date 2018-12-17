@@ -42,8 +42,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
-import json.MapIndexToJSON;
-import json.SyaryoToZip3;
+import file.MapToJSON;
+import file.SyaryoToCompress;
 import obj.SyaryoObject4;
 import param.KomatsuDataParameter;
 
@@ -77,7 +77,7 @@ public class GoogleMapFXMLController implements Initializable {
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
 		// TODO
-        Map map = new MapIndexToJSON().reader(KomatsuDataParameter.AUTH_PATH);
+        Map map = new MapToJSON().reader(KomatsuDataParameter.AUTH_PATH);
         System.out.println(map);
 
         //Proxy

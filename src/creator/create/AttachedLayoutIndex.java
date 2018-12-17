@@ -9,8 +9,8 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import json.MapIndexToJSON;
-import json.SyaryoToZip3;
+import file.MapToJSON;
+import file.SyaryoToCompress;
 import obj.LoadSyaryoObject;
 import obj.SyaryoObject4;
 import param.KomatsuDataParameter;
@@ -34,7 +34,7 @@ public class AttachedLayoutIndex {
         Map<String, SyaryoObject4> map = LoadSyaryoObject.load("PC200.bz2");
         
         SyaryoObject4 header = new SyaryoObject4("_header");
-        Map<String, List> layout = new MapIndexToJSON().reader(LAYOUT_INDEX);
+        Map<String, List> layout = new MapToJSON().reader(LAYOUT_INDEX);
         Map<String, Map> formatter = new HashMap<>();
         for(String key : layout.keySet()){
             Map data = new HashMap();
@@ -45,7 +45,7 @@ public class AttachedLayoutIndex {
         header.putAll(formatter);
         map.put("_header", header);
         
-        new SyaryoToZip3().write("syaryo\\syaryo_obj_PC200.bz2", map);
+        new SyaryoToCompress().write("syaryo\\syaryo_obj_PC200.bz2", map);
         System.out.println("Attached SyaryoData Index!");
     }
 }

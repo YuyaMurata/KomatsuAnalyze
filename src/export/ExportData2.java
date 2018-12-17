@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import json.MapIndexToJSON;
-import json.SyaryoToZip3;
+import file.MapToJSON;
+import file.SyaryoToCompress;
 import obj.SyaryoObject4;
 import param.KomatsuDataParameter;
 
@@ -57,7 +57,7 @@ public class ExportData2 {
         Map recmap = regHeader(headers);
         
         //車両の読み込み
-        map = new SyaryoToZip3().read(syaryofilename);
+        map = new SyaryoToCompress().read(syaryofilename);
         
         //単体
         //String name = "PC200-8N1-313582";
@@ -100,7 +100,7 @@ public class ExportData2 {
             }
         }
         
-        new MapIndexToJSON().write(f, recmap);
+        new MapToJSON().write(f, recmap);
     }
 
     public static void multiExport(Map recmap, String f, Map<String, Integer[]> headers, String[] names) {
@@ -111,7 +111,7 @@ public class ExportData2 {
             SyaryoAnalizer syaryo = new SyaryoAnalizer(map.get(name));
             export(recmap, headers, syaryo);
         }
-        new MapIndexToJSON().write(f, recmap);
+        new MapToJSON().write(f, recmap);
     }
 
     public static void uniExport(Map recmap, String f, Map<String, Integer[]> headers, String name, Map filter) {
@@ -121,7 +121,7 @@ public class ExportData2 {
         SyaryoAnalizer syaryo = new SyaryoAnalizer(map.get(name));
         
         export(recmap, headers, syaryo);
-        new MapIndexToJSON().write(f, recmap);
+        new MapToJSON().write(f, recmap);
     }
 
     private static void export(Map recmap, Map<String, Integer[]> headers, SyaryoAnalizer syaryo) {

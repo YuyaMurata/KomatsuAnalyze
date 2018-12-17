@@ -9,7 +9,7 @@ import gis.AddressToPostGIS;
 import google.AddressToGPS;
 import java.util.HashMap;
 import java.util.Map;
-import json.MapIndexToJSON;
+import file.MapToJSON;
 import param.KomatsuDataParameter;
 
 /**
@@ -25,7 +25,7 @@ public class CustomerDataAddGPS {
         //AddressToGPS adgps = AddressToGPS.getInstance();
         AddressToPostGIS adgps = AddressToPostGIS.getInstance();
         
-        Map<String, String> custMap = new MapIndexToJSON().reader(filename);
+        Map<String, String> custMap = new MapToJSON().reader(filename);
         Map<String, String> map = new HashMap<>();
         int n = 0;
         for(String id : custMap.keySet()){

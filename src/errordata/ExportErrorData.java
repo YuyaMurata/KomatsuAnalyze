@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import json.SyaryoTemplateToJson;
+import file.SyaryoTemplateToJSON;
 import param.KomatsuDataParameter;
 
 /**
@@ -48,7 +48,7 @@ public class ExportErrorData {
             .map(e -> "  " + e.getKey() + ":" + e.getValue())
             .forEach(System.out::println);
         //File
-        SyaryoTemplateToJson json = new SyaryoTemplateToJson();
+        SyaryoTemplateToJSON json = new SyaryoTemplateToJSON();
         
         //SyaryoIndex
         Map allsyaryo = syaryoindex(json);
@@ -65,7 +65,7 @@ public class ExportErrorData {
     }
 
     //Set Syaryo Index
-    private static Map syaryoindex(SyaryoTemplateToJson json) {
+    private static Map syaryoindex(SyaryoTemplateToJSON json) {
         Map index = new HashMap();
         File file = new File(OUTPATH + "allsyaryo_index.json");
         if (file.exists()) {
@@ -209,7 +209,7 @@ public class ExportErrorData {
     }
     
     //Set Other Corp. Syaryo Index
-    private static Map othersyaryoindex(SyaryoTemplateToJson json) {
+    private static Map othersyaryoindex(SyaryoTemplateToJSON json) {
         Map index = new HashMap();
         File file = new File(OUTPATH + "othersyaryo_index.json");
         if (file.exists()) {

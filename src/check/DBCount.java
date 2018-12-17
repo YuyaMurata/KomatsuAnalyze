@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import json.SyaryoTemplateToJson;
+import file.SyaryoTemplateToJSON;
 import param.KomatsuDataParameter;
 
 /**
@@ -44,20 +44,20 @@ public class DBCount {
         Map<String, Integer[]> all = allCount();
 
         //Komatsu
-        Map index = syaryoindex(new SyaryoTemplateToJson());
+        Map index = syaryoindex(new SyaryoTemplateToJSON());
         Map<String, Integer[]> komatsu = syaryoCount(index, true);
 
         System.out.println(komatsu.keySet());
 
         //Other
         SimpleTemplate.removeValidate();
-        index = othersyaryoindex(new SyaryoTemplateToJson());
+        index = othersyaryoindex(new SyaryoTemplateToJSON());
         Map<String, Integer[]> other = syaryoCount(index, true);
 
         System.out.println(other.keySet());
 
         //Error
-        index = syaryoindex(new SyaryoTemplateToJson());
+        index = syaryoindex(new SyaryoTemplateToJSON());
         Map<String, Integer[]> error = syaryoCount(index, false);
         System.out.println(error.keySet());
 
@@ -223,7 +223,7 @@ public class DBCount {
     }
 
     //Set Syaryo Index
-    private static Map syaryoindex(SyaryoTemplateToJson json) {
+    private static Map syaryoindex(SyaryoTemplateToJSON json) {
         Map index = new HashMap();
         File file = new File(OUTPATH + "allsyaryo_index.json");
         if (file.exists()) {
@@ -267,7 +267,7 @@ public class DBCount {
     }
 
     //Set Other Corp. Syaryo Index
-    private static Map othersyaryoindex(SyaryoTemplateToJson json) {
+    private static Map othersyaryoindex(SyaryoTemplateToJSON json) {
         Map index = new HashMap();
         File file = new File(OUTPATH + "othersyaryo_index.json");
         if (file.exists()) {

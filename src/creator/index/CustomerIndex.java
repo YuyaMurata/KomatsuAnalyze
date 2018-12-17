@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-import json.MapIndexToJSON;
+import file.MapToJSON;
 import param.KomatsuDataParameter;
 
 /**
@@ -67,7 +67,7 @@ public class CustomerIndex {
 
             System.out.println("Total Created CutomerIndex = " + n);
             
-            new MapIndexToJSON().write(OUTPATH, customerIndex);
+            new MapToJSON().write(OUTPATH, customerIndex);
         } catch (SQLException sqlex) {
             sqlex.printStackTrace();
         }

@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import json.SyaryoToZip3;
+import file.SyaryoToCompress;
 import obj.SyaryoObject4;
 import param.KomatsuDataParameter;
 
@@ -34,7 +34,7 @@ public class WorkingParts {
 
     public static void main(String[] args) {
         //車両の読み込み
-        map = new SyaryoToZip3().read(PATH + "syaryo_obj_" + KISY + "_sv_form.bz2");
+        map = new SyaryoToCompress().read(PATH + "syaryo_obj_" + KISY + "_sv_form.bz2");
         int sgcdIdx = dataIndex.get("作業").indexOf("SGYOCD");
         int sgmainIdx = dataIndex.get("作業").indexOf("0");
         int ksycdIdx = dataIndex.get("部品").indexOf("KSYCD");

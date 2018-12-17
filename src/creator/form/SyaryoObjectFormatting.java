@@ -20,8 +20,8 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-import json.MapIndexToJSON;
-import json.SyaryoToZip3;
+import file.MapToJSON;
+import file.SyaryoToCompress;
 import obj.SyaryoObject4;
 import program.r.R;
 
@@ -45,15 +45,15 @@ public class SyaryoObjectFormatting {
     private static String currentKey;
 
     private static void form(String kisy) {
-        SyaryoToZip3 zip3 = new SyaryoToZip3();
+        SyaryoToCompress zip3 = new SyaryoToCompress();
         String filename = OBJPATH + "syaryo_obj_" + kisy + ".bz2";
         Map<String, SyaryoObject4> syaryoMap = zip3.read(filename);
         
         //本社コード
-        Map<String, String> honsyIndex = new MapIndexToJSON().reader(HONSY_INDEXPATH);
+        Map<String, String> honsyIndex = new MapToJSON().reader(HONSY_INDEXPATH);
 
         //生産日情報
-        Map<String, String> productIndex = new MapIndexToJSON().reader(PRODUCT_INDEXPATH);
+        Map<String, String> productIndex = new MapToJSON().reader(PRODUCT_INDEXPATH);
 
         //車両の削除
         rejectSyaryo(syaryoMap, new String[]{"company,UR", "company,GC", "新車,20170501"});

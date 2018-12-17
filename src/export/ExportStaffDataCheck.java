@@ -11,7 +11,7 @@ import index.SyaryoObjectElementsIndex;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
-import json.SyaryoToZip3;
+import file.SyaryoToCompress;
 import obj.SyaryoObject4;
 import param.KomatsuDataParameter;
 
@@ -28,7 +28,7 @@ public class ExportStaffDataCheck {
     
     public static void main(String[] args) {
         //車両の読み込み
-        map = new SyaryoToZip3().read(PATH + "syaryo_obj_" + KISY + "_form.bz2");
+        map = new SyaryoToCompress().read(PATH + "syaryo_obj_" + KISY + "_form.bz2");
         
         try(PrintWriter pw = CSVFileReadWrite.writer(KISY+"_pointcode_sgcd_check.csv")){
             for(SyaryoObject4 syaryo : map.values()){

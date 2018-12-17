@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package json;
+package file;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -24,7 +24,7 @@ import java.util.Map;
  *
  * @author ZZ17390
  */
-public class MapIndexToJSON {
+public class MapToJSON {
     public void write(String filename, Map index){
         try(JsonWriter writer = new JsonWriter(new BufferedWriter(new FileWriter(filename)))){
             writer.setIndent("  ");

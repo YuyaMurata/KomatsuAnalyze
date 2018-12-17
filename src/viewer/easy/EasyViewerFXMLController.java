@@ -43,7 +43,7 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import json.SyaryoToZip3;
+import file.SyaryoToCompress;
 //import obj.SyaryoObject3;
 import obj.SyaryoObject4;
 import viewer.service.ButtonService;
@@ -243,9 +243,9 @@ public class EasyViewerFXMLController implements Initializable {
         currentFile = file.getName();
 
         if (file.getName().contains(".bz2")) {
-            return new SyaryoToZip3().guiRead(file.getAbsolutePath());
+            return new SyaryoToCompress().guiRead(file.getAbsolutePath());
         } else {
-            return new SyaryoToZip3().readJSON(file.getAbsolutePath());
+            return new SyaryoToCompress().readJSON(file.getAbsolutePath());
         }
     }
 

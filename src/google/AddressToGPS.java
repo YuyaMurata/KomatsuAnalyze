@@ -15,7 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import json.MapIndexToJSON;
+import file.MapToJSON;
 import param.KomatsuDataParameter;
 
 /**
@@ -28,7 +28,7 @@ public class AddressToGPS {
     private GeoApiContext context;
 
     private AddressToGPS() {
-        Map map = new MapIndexToJSON().reader(KomatsuDataParameter.AUTH_PATH);
+        Map map = new MapToJSON().reader(KomatsuDataParameter.AUTH_PATH);
         System.out.println(map);
 
         //Proxy

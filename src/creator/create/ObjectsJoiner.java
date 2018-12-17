@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-import json.SyaryoToZip3;
+import file.SyaryoToCompress;
 import obj.SyaryoObject4;
 
 /**
@@ -35,7 +35,7 @@ public class ObjectsJoiner {
     
     public static Integer create(String kisy, Boolean iot){
         KISY = kisy;
-        SyaryoToZip3 zip3 = new SyaryoToZip3();
+        SyaryoToCompress zip3 = new SyaryoToCompress();
         String objPath = PATH+"\\"+kisy+"\\shuffle\\";
         String syaryoPath = OUTPATH;
         String filename = syaryoPath+"syaryo_obj_"+kisy+".bz2";
@@ -76,7 +76,7 @@ public class ObjectsJoiner {
     
     public static Integer add(String kisy, Boolean iot){
         KISY = kisy;
-        SyaryoToZip3 zip3 = new SyaryoToZip3();
+        SyaryoToCompress zip3 = new SyaryoToCompress();
         String objPath = PATH+"\\"+kisy+"\\shuffle\\";
         String syaryoPath = OUTPATH;
         String filename = syaryoPath+"syaryo_obj_"+kisy+".bz2";

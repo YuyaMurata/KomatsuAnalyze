@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import json.MapIndexToJSON;
+import file.MapToJSON;
 import param.KomatsuDataParameter;
 
 /**
@@ -37,6 +37,6 @@ public class ProductIndex {
             ex.printStackTrace();
         }
         
-        new MapIndexToJSON().write(outpath, product);
+        new MapToJSON().write(outpath, product);
     }
 }

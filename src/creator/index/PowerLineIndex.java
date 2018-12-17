@@ -10,7 +10,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import json.MapIndexToJSON;
+import file.MapToJSON;
 
 /**
  *
@@ -28,7 +28,7 @@ public class PowerLineIndex {
                 String[] as = line.split(",");
                 map.put(as[0].trim(), as[1]);
             }
-            new MapIndexToJSON().write("allsupport_index.json", map);
+            new MapToJSON().write("allsupport_index.json", map);
         } catch (IOException ex) {
             ex.printStackTrace();
         }

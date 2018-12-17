@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import json.SyaryoTemplateToJson;
+import file.SyaryoTemplateToJSON;
 import param.KomatsuDataParameter;
 
 /**
@@ -26,7 +26,7 @@ import param.KomatsuDataParameter;
 public class KISYHantei {
     private static String sourcePath = KomatsuDataParameter.ERR_DATAPROCESS_PATH;
     public static void main(String[] args) {
-        SyaryoTemplateToJson json = new SyaryoTemplateToJson();
+        SyaryoTemplateToJSON json = new SyaryoTemplateToJSON();
         Map<String, SimpleTemplate> all = json.reader(sourcePath+"allsyaryo_index.json");
         Map<String, SimpleTemplate> other = json.reader(sourcePath+"othersyaryo_index.json");
         
@@ -65,7 +65,7 @@ public class KISYHantei {
     //othersyaryoIndexの修正
     private static void formatingOthers(){
         //othersyaryoIndexの修正
-        SyaryoTemplateToJson json = new SyaryoTemplateToJson();
+        SyaryoTemplateToJSON json = new SyaryoTemplateToJSON();
         Map<String, SimpleTemplate> all = json.reader(sourcePath+"allsyaryo_index.json");
         Map<String, SimpleTemplate> other = json.reader(sourcePath+"othersyaryo_index.json");
         

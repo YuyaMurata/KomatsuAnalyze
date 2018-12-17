@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import json.MapIndexToJSON;
+import file.MapToJSON;
 
 /**
  *
@@ -20,7 +20,7 @@ public class ShuffleIndex {
 
     public static void main(String[] args) {
         Map shuffleMap = createShuffleMap();
-        new MapIndexToJSON().write("index\\shuffle_default_format.json", shuffleMap);
+        new MapToJSON().write("index\\shuffle_default_format.json", shuffleMap);
     }
     
     private static Map createShuffleMap(){

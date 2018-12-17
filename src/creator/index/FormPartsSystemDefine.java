@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import json.MapIndexToJSON;
+import file.MapToJSON;
 import static param.KomatsuDataParameter.PC_PID_SYSDEFNAME_INDEX_PATH;
 
 /**
@@ -54,6 +54,6 @@ public class FormPartsSystemDefine {
             }
         }
         
-        new MapIndexToJSON().write(PC_PID_SYSDEFNAME_INDEX_PATH+".json", cpjson);
+        new MapToJSON().write(PC_PID_SYSDEFNAME_INDEX_PATH+".json", cpjson);
     }
 }

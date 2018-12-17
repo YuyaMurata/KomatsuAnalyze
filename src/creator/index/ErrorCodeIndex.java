@@ -10,7 +10,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import json.MapIndexToJSON;
+import file.MapToJSON;
 import param.KomatsuDataParameter;
 
 /**
@@ -30,7 +30,7 @@ public class ErrorCodeIndex {
                 String[] as = line.split(",");
                 map.put(as[0].trim(), as[1]);
             }
-            new MapIndexToJSON().write(KomatsuDataParameter.PC_ERRORFLG_INDEX_PATH, map);
+            new MapToJSON().write(KomatsuDataParameter.PC_ERRORFLG_INDEX_PATH, map);
         } catch (IOException ex) {
             ex.printStackTrace();
         }

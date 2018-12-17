@@ -15,9 +15,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-import json.MapIndexToJSON;
-import json.SyaryoTemplateToJson;
-import json.SyaryoToZip3;
+import file.MapToJSON;
+import file.SyaryoTemplateToJSON;
+import file.SyaryoToCompress;
 import obj.SyaryoObject4;
 
 /**
@@ -55,8 +55,8 @@ public class TemplateShuffle {
         }
 
         Map<String, Map<String, List>> map = index();
-        SyaryoToZip3 zip = new SyaryoToZip3();
-        List<String> syaryoIndex = new ArrayList(new SyaryoTemplateToJson().reader(SINDEXPATH).keySet());
+        SyaryoToCompress zip = new SyaryoToCompress();
+        List<String> syaryoIndex = new ArrayList(new SyaryoTemplateToJSON().reader(SINDEXPATH).keySet());
         
         ReadShuffleData shuffle = new ReadShuffleData(FILEPATH, kisy);
         
@@ -170,7 +170,7 @@ public class TemplateShuffle {
     }
 
     private static Map index() {
-        return new MapIndexToJSON().reader(INDEXPATH);
+        return new MapToJSON().reader(INDEXPATH);
     }
 
     private static List format(List<String> formatData, int idx, ReadShuffleData shuffle) {

@@ -14,7 +14,7 @@ import com.google.maps.model.GeocodingResult;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import json.MapIndexToJSON;
+import file.MapToJSON;
 import param.KomatsuDataParameter;
 
 /**
@@ -24,7 +24,7 @@ import param.KomatsuDataParameter;
 public class GoogleMapTest {
 
     public static void main(String[] args) throws ApiException, InterruptedException, IOException, IOException {
-        Map map = new MapIndexToJSON().reader(KomatsuDataParameter.AUTH_PATH);
+        Map map = new MapToJSON().reader(KomatsuDataParameter.AUTH_PATH);
         System.out.println(map);
         //System.setProperty("https.proxyHost", ((List)map.get("proxy")).get(0).toString());
         //System.setProperty("https.proxyPort", ((List)map.get("proxy")).get(1).toString());

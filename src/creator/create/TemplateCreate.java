@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import json.SyaryoTemplateToJson;
+import file.SyaryoTemplateToJSON;
 
 /**
  * 車両のテンプレートファイルを生成
@@ -52,7 +52,7 @@ public class TemplateCreate {
         }
 
         //File
-        SyaryoTemplateToJson json = new SyaryoTemplateToJson();
+        SyaryoTemplateToJSON json = new SyaryoTemplateToJSON();
 
         //Layout Index
         Map<String, List> index = index();
@@ -119,7 +119,7 @@ public class TemplateCreate {
     }
 
     //Set Syaryo Index
-    private static Map syaryoindex(String kisy, SyaryoTemplateToJson json) {
+    private static Map syaryoindex(String kisy, SyaryoTemplateToJSON json) {
         Map index = new HashMap();
         File file = new File(OUTPATH + "syaryo_" + kisy + "_index.json");
         if (file.exists()) {
@@ -161,7 +161,7 @@ public class TemplateCreate {
     }
 
     //Create Template
-    private static void template(Map<String, List> layoutIndex, Map<String, SimpleTemplate> syaryoMap, SyaryoTemplateToJson json, String kisy) {
+    private static void template(Map<String, List> layoutIndex, Map<String, SimpleTemplate> syaryoMap, SyaryoTemplateToJSON json, String kisy) {
         //エラーフォルダ作成
         String err_path = OUTPATH + "error\\";
         File folder = new File(err_path);

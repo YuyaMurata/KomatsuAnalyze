@@ -7,7 +7,7 @@ package test;
 
 import java.util.List;
 import java.util.Map;
-import json.SyaryoToZip3;
+import file.SyaryoToCompress;
 import obj.SyaryoObject4;
 import param.KomatsuDataParameter;
 
@@ -21,7 +21,7 @@ public class GetMapSyaryoObjectTest {
     private static Map<String, SyaryoObject4> map;
     
     public static void main(String[] args) {
-        map = new SyaryoToZip3().read(PATH + "syaryo_obj_" + KISY + "_sv_form.bz2");
+        map = new SyaryoToCompress().read(PATH + "syaryo_obj_" + KISY + "_sv_form.bz2");
         
         SyaryoObject4 syaryo = map.get("PC200-8N1-351668");
         for(Object list : syaryo.getMap().values()){

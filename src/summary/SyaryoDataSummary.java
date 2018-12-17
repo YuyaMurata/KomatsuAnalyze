@@ -12,8 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import json.SyaryoObjToJson;
-import json.SyaryoToZip3;
+import file.SyaryoToCompress;
 import obj.SyaryoObject4;
 import param.KomatsuDataParameter;
 
@@ -37,7 +36,7 @@ public class SyaryoDataSummary {
             (new File(outpath)).mkdirs();
         
         String filename = path + "syaryo_obj_" + kisy + "_form.bz2";
-        Map<String, SyaryoObject4> syaryoMap = new SyaryoToZip3().read(filename);
+        Map<String, SyaryoObject4> syaryoMap = new SyaryoToCompress().read(filename);
         
         //Syaryo Data Check
         int cnt = 0;

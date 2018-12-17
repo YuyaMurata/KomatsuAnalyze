@@ -16,8 +16,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import json.SyaryoTemplateToJson;
-import json.SyaryoToZip3;
+import file.SyaryoTemplateToJSON;
+import file.SyaryoToCompress;
 import obj.SyaryoObject4;
 import param.KomatsuDataParameter;
 
@@ -54,7 +54,7 @@ public class LoadMapCreate {
         //車両Indexの作成 SimpleTemplateにcheck機能が付加される
         File file = new File(INDEX_PATH + kisy +"\\syaryo_" + kisy + "_index.json");
         if (file.exists()) {
-            new SyaryoTemplateToJson().reader(file.getAbsolutePath());
+            new SyaryoTemplateToJSON().reader(file.getAbsolutePath());
         }
 
         Map<String, SyaryoObject4> syaryoMap = new HashMap();
@@ -192,7 +192,7 @@ public class LoadMapCreate {
         //syaryo.get("LOADMAP_実エンジン回転VSエンジントルク").entrySet().stream()
         //                        .map(eng -> eng.getKey().replace("_", ",")+","+eng.getValue().get(0))
         //                        .forEach(System.out::println);
-        new SyaryoToZip3().write(filename, syaryoMap);
+        new SyaryoToCompress().write(filename, syaryoMap);
         System.out.println(syaryoMap.size());
     }
 }
