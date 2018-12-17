@@ -24,10 +24,10 @@ public class KisyLayoutIndex {
     public static void main(String[] args) {
         
         Map kisyMap = createKisyMap();
-        new MapToJSON().write("index\\kisy_index.json", kisyMap);
+        new MapToJSON().toJSON("index\\kisy_index.json", kisyMap);
         
         Map layoutMap = createLayoutMap();
-        new MapToJSON().write("index\\layout_index.json", layoutMap);
+        new MapToJSON().toJSON("index\\layout_index.json", layoutMap);
     }
     
     private static Map createKisyMap(){

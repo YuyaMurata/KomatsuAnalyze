@@ -18,7 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import file.SyaryoToCompress;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
 /**
@@ -33,7 +33,7 @@ public class ExportIrregularData {
     public static void main(String[] args) {
         SyaryoToCompress zip3 = new SyaryoToCompress();
         String filename = OBJPATH + "syaryo_obj_" + KISY + "_km_form.bz2";
-        Map<String, SyaryoObject4> syaryoMap = zip3.read(filename);
+        Map<String, SyaryoObject> syaryoMap = zip3.read(filename);
 
         Map<String, List> dataIndex = SyaryoObjectElementsIndex.getInstance().getIndex();
 
@@ -44,7 +44,7 @@ public class ExportIrregularData {
         //errSGCD(syaryoMap, "作業");
     }
 
-    private static void errSMR(Map<String, SyaryoObject4> syaryoMap, List smrList, List kmsmrList) {
+    private static void errSMR(Map<String, SyaryoObject> syaryoMap, List smrList, List kmsmrList) {
         int smrIdx = smrList.indexOf("SVC_MTR");
         int kmsmrIdx = kmsmrList.indexOf("SMR_VALUE");
         try (PrintWriter csv = CSVFileReadWrite.writer("errdata_SMR_" + KISY + ".csv")) {
@@ -158,9 +158,9 @@ public class ExportIrregularData {
         }
     }
 
-    private static void errSBN(Map<String, SyaryoObject4> syaryoMap, String data) {
+    private static void errSBN(Map<String, SyaryoObject> syaryoMap, String data) {
         try (PrintWriter csv = CSVFileReadWrite.writer("errdata_SBN_" + KISY + ".csv")) {
-            for (SyaryoObject4 syaryo : syaryoMap.values()) {
+            for (SyaryoObject syaryo : syaryoMap.values()) {
                 if (syaryo.get(data) == null) {
                     continue;
                 }
@@ -192,9 +192,9 @@ public class ExportIrregularData {
         }
     }
 
-    private static void errSGCD(Map<String, SyaryoObject4> syaryoMap, String data) {
+    private static void errSGCD(Map<String, SyaryoObject> syaryoMap, String data) {
         try (PrintWriter csv = CSVFileReadWrite.writer("errdata_SGCD_" + KISY + ".csv")) {
-            for (SyaryoObject4 syaryo : syaryoMap.values()) {
+            for (SyaryoObject syaryo : syaryoMap.values()) {
                 syaryo.startHighPerformaceAccess();
 
                 if (syaryo.get(data) == null) {
@@ -219,11 +219,11 @@ public class ExportIrregularData {
         }
     }
 
-    private static void errFUEL(Map<String, SyaryoObject4> syaryoMap, List fuelList) {
+    private static void errFUEL(Map<String, SyaryoObject> syaryoMap, List fuelList) {
         try (PrintWriter csv = CSVFileReadWrite.writer("errdata_FUEL_" + KISY + ".csv")) {
-            SyaryoObject4 header = syaryoMap.get("_headers");
+            SyaryoObject header = syaryoMap.get("_headers");
 
-            for (SyaryoObject4 syaryo : syaryoMap.values()) {
+            for (SyaryoObject syaryo : syaryoMap.values()) {
                 syaryo.startHighPerformaceAccess();
 
                 if (syaryo.get("KOMTRAX_FUEL_CONSUME") == null) {

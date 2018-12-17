@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import obj.LoadSyaryoObject;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 
 /**
  *
@@ -29,7 +29,7 @@ public class ErrorRelateDataAnalize {
     private static Map<String, List> dataIndex = SyaryoObjectElementsIndex.getInstance().getIndex();
 
     public static void main(String[] args) {
-        Map<String, SyaryoObject4> syaryoMap = LoadSyaryoObject.load(KISY + "_km_form.bz2");
+        Map<String, SyaryoObject> syaryoMap = LoadSyaryoObject.load(KISY + "_km_form.bz2");
 
         Map<String, List<String>> relate = syaryoMap.keySet().stream().collect(Collectors.toMap(e -> e, e -> new ArrayList<>()));
 
@@ -52,7 +52,7 @@ public class ErrorRelateDataAnalize {
     }
 
     //エラーカウント
-    private static void errCounts(Map<String, SyaryoObject4> syaryoMap, Map<String, List<String>> relate) {
+    private static void errCounts(Map<String, SyaryoObject> syaryoMap, Map<String, List<String>> relate) {
         List<String> field = Arrays.asList(ERR_CODE);
         System.out.println(field);
 
@@ -80,7 +80,7 @@ public class ErrorRelateDataAnalize {
     }
 
     //コードカウント
-    private static void counts(Map<String, SyaryoObject4> syaryoMap, Map<String, List<String>> relate) {
+    private static void counts(Map<String, SyaryoObject> syaryoMap, Map<String, List<String>> relate) {
         List<String> field = Arrays.asList(CODE);
 
         syaryoMap.values().stream().forEach(s -> {

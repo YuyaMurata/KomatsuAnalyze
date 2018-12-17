@@ -44,8 +44,7 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import file.SyaryoToCompress;
-//import obj.SyaryoObject3;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 import viewer.service.ButtonService;
 
 /**
@@ -63,7 +62,7 @@ public class EasyViewerFXMLController implements Initializable {
     private ListView<?> keylist;
     private Accordion viewarea;
 
-    private Map<String, SyaryoObject4> syaryoMap;
+    private Map<String, SyaryoObject> syaryoMap;
 
     @FXML
     private Label id_label;
@@ -84,7 +83,7 @@ public class EasyViewerFXMLController implements Initializable {
     @FXML
     private ComboBox<String> graph_menu;
 
-    private SyaryoObject4 currentSyaryo;
+    private SyaryoObject currentSyaryo;
     private String currentFile;
 
     @FXML
@@ -166,7 +165,7 @@ public class EasyViewerFXMLController implements Initializable {
     }
 
     //アコーディオンの設定
-    private void settingData(SyaryoObject4 syaryo) {
+    private void settingData(SyaryoObject syaryo) {
         int i = 0;
         for (String data : KomatsuDataParameter.DATA_ORDER) {
             TitledPane title = (TitledPane) dataBox.getChildren().get(i);
@@ -455,7 +454,7 @@ public class EasyViewerFXMLController implements Initializable {
         
 
         searchList.parallelStream().forEach(s -> {
-            SyaryoObject4 syaryo = syaryoMap.get(s);
+            SyaryoObject syaryo = syaryoMap.get(s);
 
             for (String target : targets) {
                 if (syaryo.get(target) == null) {

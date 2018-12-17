@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import obj.LoadSyaryoObject;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 
 /**
  *
@@ -88,7 +88,7 @@ public class SMRDataFormalize {
         List<String> downErrorSyaryo = UserDefinedFile.filter("error_proc\\pc200_komtrax_smr_down_10.csv");
         System.out.println(downErrorSyaryo);
 
-        Map<String, SyaryoObject4> syaryoMap = LoadSyaryoObject.load(KISY + "_km_form.bz2");
+        Map<String, SyaryoObject> syaryoMap = LoadSyaryoObject.load(KISY + "_km_form.bz2");
 
         Map<String, List> outMap = new TreeMap<>();
 

@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import file.SyaryoToCompress;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
 /**
@@ -20,7 +20,7 @@ import param.KomatsuDataParameter;
 public class CountData {
     private static String KISY = "PC200";
     private static String OBJPATH = KomatsuDataParameter.OBJECT_PATH;
-    private static Map<String, SyaryoObject4> syaryoMap;
+    private static Map<String, SyaryoObject> syaryoMap;
     private static Map<String, List> dataIndex = SyaryoObjectElementsIndex.getInstance().getIndex();
     
     public static void main(String[] args) {
@@ -41,7 +41,7 @@ public class CountData {
         int cnt = 0;
         int emp = 0;
         
-        for(SyaryoObject4 s : syaryoMap.values()){
+        for(SyaryoObject s : syaryoMap.values()){
             s.startHighPerformaceAccess();
             
             if(s.get(key) != null){

@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import file.SyaryoToCompress;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
 /**
@@ -27,12 +27,12 @@ public class SyaryoDataExistsCheck {
         //Check Data
         //String[] ckey = new String[]{"顧客","受注", "作業", "部品"};
         String[] ckey = new String[]{"KOMTRAX_SMR","KOMTRAX_GPS", "KOMTRAX_ACT_DATA","KOMTRAX_FUEL_CONSUME", "KOMTRAX_ERROR"};
-        Map<String, SyaryoObject4> syaryoMap = new SyaryoToCompress().read(syaryoPath);
+        Map<String, SyaryoObject> syaryoMap = new SyaryoToCompress().read(syaryoPath);
         
         existsCheck(syaryoMap, ckey);
     }
     
-    private static void existsCheck(Map<String, SyaryoObject4> syaryoMap, String[] ckey){
+    private static void existsCheck(Map<String, SyaryoObject> syaryoMap, String[] ckey){
         try(PrintWriter csv = CSVFileReadWrite.writer(filename)){
             //Header
             Boolean kmflg = Arrays.asList(ckey).stream().filter(key -> key.contains("KOMTRAX")).findFirst().isPresent();
@@ -42,7 +42,7 @@ public class SyaryoDataExistsCheck {
                 csv.println("SID,"+String.join(",", ckey));
             
             for(String name : syaryoMap.keySet()){
-                SyaryoObject4 syaryo = syaryoMap.get(name);
+                SyaryoObject syaryo = syaryoMap.get(name);
                 List<String> check = new ArrayList();
                 
                 check.add(syaryo.name);

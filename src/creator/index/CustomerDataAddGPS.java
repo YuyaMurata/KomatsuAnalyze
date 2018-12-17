@@ -25,7 +25,7 @@ public class CustomerDataAddGPS {
         //AddressToGPS adgps = AddressToGPS.getInstance();
         AddressToPostGIS adgps = AddressToPostGIS.getInstance();
         
-        Map<String, String> custMap = new MapToJSON().reader(filename);
+        Map<String, String> custMap = new MapToJSON().toMap(filename);
         Map<String, String> map = new HashMap<>();
         int n = 0;
         for(String id : custMap.keySet()){

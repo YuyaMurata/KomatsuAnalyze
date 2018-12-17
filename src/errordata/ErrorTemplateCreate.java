@@ -124,7 +124,7 @@ public class ErrorTemplateCreate {
 
             //
             List<String> code = layoutIndex.get(table);
-            json.write(
+            json.toJSON(
                     filename,
                     simpleTemplate(syaryoMap, table, code.subList(0, code.size() - 1), code.get(code.size() - 1))
             );

@@ -12,7 +12,7 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
 import file.SyaryoToCompress;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
 /**
@@ -24,14 +24,14 @@ public class ExportStaffDataCheck {
     private static Map<String, List> dataIndex = SyaryoObjectElementsIndex.getInstance().getIndex();
     private static String PATH = KomatsuDataParameter.SYARYOOBJECT_FDPATH;
     private static String KISY = "PC200";
-    private static Map<String, SyaryoObject4> map;
+    private static Map<String, SyaryoObject> map;
     
     public static void main(String[] args) {
         //車両の読み込み
         map = new SyaryoToCompress().read(PATH + "syaryo_obj_" + KISY + "_form.bz2");
         
         try(PrintWriter pw = CSVFileReadWrite.writer(KISY+"_pointcode_sgcd_check.csv")){
-            for(SyaryoObject4 syaryo : map.values()){
+            for(SyaryoObject syaryo : map.values()){
                 try(SyaryoAnalizer analize = new SyaryoAnalizer(syaryo)){
                     export(pw, analize);
                 } catch (Exception ex) {

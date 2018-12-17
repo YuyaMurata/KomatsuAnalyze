@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import file.SyaryoToCompress;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
 /**
@@ -31,10 +31,10 @@ public class ErrCodeServicePriceSMRAge {
     
     public void export(){
         //Syaryo
-        Map<String, SyaryoObject4> syaryoMap = new SyaryoToCompress().read(PATH+"syaryo_obj_"+KISY+"_form.bz2");
-        List<SyaryoObject4> analyzeSyaryo = new ArrayList();
+        Map<String, SyaryoObject> syaryoMap = new SyaryoToCompress().read(PATH+"syaryo_obj_"+KISY+"_form.bz2");
+        List<SyaryoObject> analyzeSyaryo = new ArrayList();
         //分析対象を絞る
-        for(SyaryoObject4 syaryo : syaryoMap.values()){
+        for(SyaryoObject syaryo : syaryoMap.values()){
             if((syaryo.get("KOMTRAX_ERROR") != null) && 
                 (syaryo.get("受注") != null) &&
                 (syaryo.get("KOMTRAX_SMR") != null)){
@@ -45,7 +45,7 @@ public class ErrCodeServicePriceSMRAge {
         //データ出力
         try(PrintWriter pw = CSVFileReadWrite.writer(filename)){
             pw.println("SID,");
-            for(SyaryoObject4 syaryo : analyzeSyaryo){
+            for(SyaryoObject syaryo : analyzeSyaryo){
                 SyaryoAnalizer analyzer = new SyaryoAnalizer(syaryo);
                 
             }

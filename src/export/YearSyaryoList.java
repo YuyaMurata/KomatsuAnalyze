@@ -11,7 +11,7 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
 import file.SyaryoToCompress;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
 /**
@@ -23,7 +23,7 @@ public class YearSyaryoList {
     private static Map<String, List> dataIndex = SyaryoObjectElementsIndex.getInstance().getIndex();
     private static String PATH = KomatsuDataParameter.SYARYOOBJECT_FDPATH;
     private static String KISY = "PC200";
-    private static Map<String, SyaryoObject4> map;
+    private static Map<String, SyaryoObject> map;
     
     public static void main(String[] args) {
         //車両の読み込み

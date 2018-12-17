@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import file.SyaryoToCompress;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
 /**
@@ -35,7 +35,7 @@ public class EvaluateSyaryoData {
 
     public Map<String, List> results = new HashMap<>();
 
-    public EvaluateSyaryoData(SyaryoObject4 syaryo) {
+    public EvaluateSyaryoData(SyaryoObject syaryo) {
         try (SyaryoAnalizer analize = new SyaryoAnalizer(syaryo)) {
             this.name = analize.get().name;
             this.company = analize.mcompany;
@@ -59,14 +59,14 @@ public class EvaluateSyaryoData {
      * 使われ方のデータ 定義 : 累積負荷 / SMR
      *
      */
-    private Map useData(SyaryoObject4 syaryo) {
+    private Map useData(SyaryoObject syaryo) {
         return null;
     }
 
     /**
      * 経年/SMRのデータ 定義 : v[経年, ACT_SMR]
      */
-    private Map agingSMRData(SyaryoObject4 syaryo) {
+    private Map agingSMRData(SyaryoObject syaryo) {
         Map agesmr = new TreeMap();
         return null;
     }
@@ -181,15 +181,15 @@ public class EvaluateSyaryoData {
     static String filename = PATH + "syaryo_obj_" + KISY + "_km_form.bz2";
 
     public static void main(String[] args) {
-        Map<String, SyaryoObject4> map = new SyaryoToCompress().read(filename);
-        SyaryoObject4 test = map.values().stream().findFirst().get();
+        Map<String, SyaryoObject> map = new SyaryoToCompress().read(filename);
+        SyaryoObject test = map.values().stream().findFirst().get();
         EvaluateSyaryoData ev = new EvaluateSyaryoData(test);
 
         //メンテナンス評価
         Map<String, List> info = new TreeMap();
         Map<String, List> data = new HashMap();
         Map<String, List> zerodata = new HashMap();
-        for (SyaryoObject4 syaryo : map.values()) {
+        for (SyaryoObject syaryo : map.values()) {
             System.out.println(syaryo.name);
             EvaluateSyaryoData eval = new EvaluateSyaryoData(syaryo);
 

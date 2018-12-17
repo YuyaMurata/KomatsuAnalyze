@@ -7,17 +7,17 @@ package viewer.service;
 
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 
 /**
  *
  * @author ZZ17390
  */
 public class ButtonService extends Service<Void>{
-    public static SyaryoObject4 syaryo;
+    public static SyaryoObject syaryo;
     public static String smenu;
     
-    public void setInfo(String menu, SyaryoObject4 current){
+    public void setInfo(String menu, SyaryoObject current){
         smenu = menu;
         syaryo = current;
     }

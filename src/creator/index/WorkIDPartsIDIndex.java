@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import file.SyaryoToCompress;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
 /**
@@ -30,11 +30,11 @@ public class WorkIDPartsIDIndex {
     private static Map<String, List> dataIndex = SyaryoObjectElementsIndex.getInstance().getIndex();
     private static String PATH = KomatsuDataParameter.SYARYOOBJECT_FDPATH;
     private static String KISY = "PC200";
-    private static Map<String, SyaryoObject4> map;
+    private static Map<String, SyaryoObject> map;
 
     public static void main(String[] args) {
         String filename = OUTPATH + KISY+"_wid_pid_index.bz2";
-        Map<String, SyaryoObject4> index = new HashMap();
+        Map<String, SyaryoObject> index = new HashMap();
 
         //車両の読み込み
         map = new SyaryoToCompress().read(PATH + "syaryo_obj_" + KISY + "_form.bz2");
@@ -66,9 +66,9 @@ public class WorkIDPartsIDIndex {
                             .forEach(w ->{
                             String sgcd = w.getValue().get(sgcdIdx);
                             
-                            SyaryoObject4 sg = index.get(sgcd);
+                            SyaryoObject sg = index.get(sgcd);
                             if(sg == null){
-                                sg = new SyaryoObject4(sgcd);
+                                sg = new SyaryoObject(sgcd);
                                 sg.put("作業", new HashMap());
                                 sg.put("部品", new HashMap());
                             }

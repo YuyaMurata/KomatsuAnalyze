@@ -54,6 +54,6 @@ public class FormPartsSystemDefine {
             }
         }
         
-        new MapToJSON().write(PC_PID_SYSDEFNAME_INDEX_PATH+".json", cpjson);
+        new MapToJSON().toJSON(PC_PID_SYSDEFNAME_INDEX_PATH+".json", cpjson);
     }
 }

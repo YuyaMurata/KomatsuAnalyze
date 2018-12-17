@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import file.MapToJSON;
 import file.SyaryoToCompress;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
 /**
@@ -30,7 +30,7 @@ public class ExportData2 {
     private static Map<String, List> dataIndex = SyaryoObjectElementsIndex.getInstance().getIndex();
     private static String PATH = KomatsuDataParameter.SYARYOOBJECT_FDPATH;
     private static String KISY = "PC200";
-    private static Map<String, SyaryoObject4> map;
+    private static Map<String, SyaryoObject> map;
     
     private static String syaryofilename = PATH + "syaryo_obj_" + KISY + "_sv_form.bz2";
     private static String filename = "ExportData_"+KISY;
@@ -100,7 +100,7 @@ public class ExportData2 {
             }
         }
         
-        new MapToJSON().write(f, recmap);
+        new MapToJSON().toJSON(f, recmap);
     }
 
     public static void multiExport(Map recmap, String f, Map<String, Integer[]> headers, String[] names) {
@@ -111,7 +111,7 @@ public class ExportData2 {
             SyaryoAnalizer syaryo = new SyaryoAnalizer(map.get(name));
             export(recmap, headers, syaryo);
         }
-        new MapToJSON().write(f, recmap);
+        new MapToJSON().toJSON(f, recmap);
     }
 
     public static void uniExport(Map recmap, String f, Map<String, Integer[]> headers, String name, Map filter) {
@@ -121,7 +121,7 @@ public class ExportData2 {
         SyaryoAnalizer syaryo = new SyaryoAnalizer(map.get(name));
         
         export(recmap, headers, syaryo);
-        new MapToJSON().write(f, recmap);
+        new MapToJSON().toJSON(f, recmap);
     }
 
     private static void export(Map recmap, Map<String, Integer[]> headers, SyaryoAnalizer syaryo) {

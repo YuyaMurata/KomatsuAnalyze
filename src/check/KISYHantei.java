@@ -27,8 +27,8 @@ public class KISYHantei {
     private static String sourcePath = KomatsuDataParameter.ERR_DATAPROCESS_PATH;
     public static void main(String[] args) {
         SyaryoTemplateToJSON json = new SyaryoTemplateToJSON();
-        Map<String, SimpleTemplate> all = json.reader(sourcePath+"allsyaryo_index.json");
-        Map<String, SimpleTemplate> other = json.reader(sourcePath+"othersyaryo_index.json");
+        Map<String, SimpleTemplate> all = json.ToTemplate(sourcePath+"allsyaryo_index.json");
+        Map<String, SimpleTemplate> other = json.ToTemplate(sourcePath+"othersyaryo_index.json");
         
         Map<String, Integer> allkisy = new HashMap();
         for(String name : all.keySet()){
@@ -66,8 +66,8 @@ public class KISYHantei {
     private static void formatingOthers(){
         //othersyaryoIndexの修正
         SyaryoTemplateToJSON json = new SyaryoTemplateToJSON();
-        Map<String, SimpleTemplate> all = json.reader(sourcePath+"allsyaryo_index.json");
-        Map<String, SimpleTemplate> other = json.reader(sourcePath+"othersyaryo_index.json");
+        Map<String, SimpleTemplate> all = json.ToTemplate(sourcePath+"allsyaryo_index.json");
+        Map<String, SimpleTemplate> other = json.ToTemplate(sourcePath+"othersyaryo_index.json");
         
         Map<String, List> otherKisyMap = new HashMap();
         //Other kisyMap
@@ -91,6 +91,6 @@ public class KISYHantei {
             }
         }
         
-        json.write(sourcePath+"othersyaryo_index.json", other);
+        json.toJSON(sourcePath+"othersyaryo_index.json", other);
     }
 }

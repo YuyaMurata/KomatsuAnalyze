@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import file.SyaryoToCompress;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 import program.r.R;
 
@@ -33,7 +33,7 @@ public class SMRFormvsNone {
     private static String PATH = KomatsuDataParameter.SYARYOOBJECT_FDPATH;
     private static String KISY = "PC200";
     private static String filename = PATH + "syaryo_obj_" + KISY + "_km_form.bz2";
-    private static Map<String, SyaryoObject4> syaryoMap = new SyaryoToCompress().read(filename);
+    private static Map<String, SyaryoObject> syaryoMap = new SyaryoToCompress().read(filename);
     
     private static String searchname = "user\\PC200SMR調査対象.csv";
     
@@ -41,7 +41,7 @@ public class SMRFormvsNone {
         List<String> s = getSyaryo();
         
         for(String id : syaryoMap.keySet()){
-            SyaryoObject4 syaryo = syaryoMap.get(id);
+            SyaryoObject syaryo = syaryoMap.get(id);
             syaryo.startHighPerformaceAccess();
             
             Map<String, List> smr = syaryo.get("SMR") != null ? syaryo.get("SMR") : new HashMap<>();

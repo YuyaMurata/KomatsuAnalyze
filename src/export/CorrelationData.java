@@ -9,7 +9,7 @@ import index.SyaryoObjectElementsIndex;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
 /**

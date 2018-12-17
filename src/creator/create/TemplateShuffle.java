@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 import file.MapToJSON;
 import file.SyaryoTemplateToJSON;
 import file.SyaryoToCompress;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 
 /**
  * 車両オブジェクトのシャッフリング
@@ -56,7 +56,7 @@ public class TemplateShuffle {
 
         Map<String, Map<String, List>> map = index();
         SyaryoToCompress zip = new SyaryoToCompress();
-        List<String> syaryoIndex = new ArrayList(new SyaryoTemplateToJSON().reader(SINDEXPATH).keySet());
+        List<String> syaryoIndex = new ArrayList(new SyaryoTemplateToJSON().ToTemplate(SINDEXPATH).keySet());
         
         ReadShuffleData shuffle = new ReadShuffleData(FILEPATH, kisy);
         
@@ -71,7 +71,7 @@ public class TemplateShuffle {
 
             System.out.println("Shuffle = " + key);
             Map<String, List> dataFormatMap = map.get(key);
-            Map<String, SyaryoObject4> shuffleMap = new TreeMap();
+            Map<String, SyaryoObject> shuffleMap = new TreeMap();
             
             List notRegisterList = new ArrayList();
 
@@ -97,9 +97,9 @@ public class TemplateShuffle {
                         continue;
 
                     //Shuffle車両の登録
-                    SyaryoObject4 shuffleSyaryo = shuffleMap.get(id);
+                    SyaryoObject shuffleSyaryo = shuffleMap.get(id);
                     if (shuffleSyaryo == null) {
-                        shuffleSyaryo = new SyaryoObject4(id);
+                        shuffleSyaryo = new SyaryoObject(id);
                     }
                     
                     //高速アクセス スタート
@@ -155,7 +155,7 @@ public class TemplateShuffle {
 
             if (!shuffleMap.isEmpty()) {
                 //Check
-                SyaryoObject4 syaryo = shuffleMap.values().stream().findFirst().get();
+                SyaryoObject syaryo = shuffleMap.values().stream().findFirst().get();
                 System.out.println(syaryo.dump());
                 System.out.println("Not Registerd = " + notRegisterList);
                 
@@ -170,7 +170,7 @@ public class TemplateShuffle {
     }
 
     private static Map index() {
-        return new MapToJSON().reader(INDEXPATH);
+        return new MapToJSON().toMap(INDEXPATH);
     }
 
     private static List format(List<String> formatData, int idx, ReadShuffleData shuffle) {

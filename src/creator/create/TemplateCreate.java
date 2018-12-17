@@ -123,7 +123,7 @@ public class TemplateCreate {
         Map index = new HashMap();
         File file = new File(OUTPATH + "syaryo_" + kisy + "_index.json");
         if (file.exists()) {
-            return json.reader(file.getAbsolutePath());
+            return json.ToTemplate(file.getAbsolutePath());
         }
 
         try (Connection con = HiveDB.getConnection()) {
@@ -156,7 +156,7 @@ public class TemplateCreate {
         } catch (SQLException ex) {
         }
 
-        json.write(file.getAbsolutePath(), index);
+        json.toJSON(file.getAbsolutePath(), index);
         return index;
     }
 
@@ -190,7 +190,7 @@ public class TemplateCreate {
 
             //
             List<String> code = layoutIndex.get(table);
-            json.write(
+            json.toJSON(
                 filename,
                 simpleTemplate(kisy, syaryoMap, table, code.subList(0, code.size() - 1), code.get(code.size() - 1), errname)
             );

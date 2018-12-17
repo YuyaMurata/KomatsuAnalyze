@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import file.SyaryoToCompress;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
 /**
@@ -24,16 +24,16 @@ public class DataToCSV {
     private static final String exportFile = "ExportData_PC200_ALL.json";
 
     public static void main(String[] args) {
-        Map<String, SyaryoObject4> syaryoMap = new SyaryoToCompress().readJSON(exportFile);
+        Map<String, SyaryoObject> syaryoMap = new SyaryoToCompress().readJSON(exportFile);
 
-        SyaryoObject4 dataHeader = syaryoMap.get("_headers");
+        SyaryoObject dataHeader = syaryoMap.get("_headers");
         syaryoMap.remove("_headers");
         System.out.println(dataHeader.dump());
 
         mainte("PC200_parts_data.csv", dataHeader, syaryoMap);
     }
 
-    private static void mainte(String name, SyaryoObject4 header, Map<String, SyaryoObject4> map) {
+    private static void mainte(String name, SyaryoObject header, Map<String, SyaryoObject> map) {
         int sgkt = header.get("受注").get("受注").indexOf("SGYO_KTICD");
         int kbn = header.get("受注").get("受注").indexOf("ODR_KBN");
         int hnbn = header.get("部品").get("部品").indexOf("HNBN");

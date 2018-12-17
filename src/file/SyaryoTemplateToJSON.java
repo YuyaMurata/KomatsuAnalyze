@@ -24,7 +24,7 @@ import java.util.Map;
  */
 public class SyaryoTemplateToJSON {
     
-    public Map<String, SimpleTemplate> reader(String filename) {
+    public Map<String, SimpleTemplate> ToTemplate(String filename) {
 		Map<String, SimpleTemplate> syaryoMap;
         try (JsonReader reader = new JsonReader(new BufferedReader(new FileReader(filename)))) {
 
@@ -45,7 +45,7 @@ public class SyaryoTemplateToJSON {
         return syaryoMap;
 	}
     
-    public void write(String filename, Map syaryoMap){
+    public void toJSON(String filename, Map syaryoMap){
         if(syaryoMap == null)
             return ;
         

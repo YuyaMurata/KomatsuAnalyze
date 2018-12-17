@@ -18,9 +18,8 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 
@@ -128,11 +127,10 @@ public class SyaryoToCompress {
             System.exit(0);
         }
 
-        Map<String, Map> map = new MapToJSON().reader(file);
-        Map<String, SyaryoObject4> syaryoMap = new HashMap();
+        Map<String, Map> map = new MapToJSON().toMap(file);
+        Map<String, SyaryoObject> syaryoMap = new HashMap();
         for (String name : map.keySet()) {
-            SyaryoObject4 syaryo = new SyaryoObject4(name);
-            //_header(name, map);
+            SyaryoObject syaryo = new SyaryoObject(name);
             syaryo.putAll(map.get(name));
             syaryoMap.put(name, syaryo);
         }
@@ -161,20 +159,5 @@ public class SyaryoToCompress {
             ex.printStackTrace();
         }
         return null;
-    }
-
-    //データに含まれる異常オブジェクトを定型化(※SyaryoObject4とデータを参照)
-    private void _header(String name, Map<String, Map> map) {
-        if (!name.equals("_headers")) {
-            return;
-        }
-
-        for (Object d : map.get(name).keySet()) {
-            List head = (List) map.get(name).get(d);
-            HashMap headMap = new HashMap();
-            headMap.put(d, head);
-            map.get(name).put(d, headMap);
-        }
-
     }
 }

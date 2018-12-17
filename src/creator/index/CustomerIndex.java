@@ -67,7 +67,7 @@ public class CustomerIndex {
 
             System.out.println("Total Created CutomerIndex = " + n);
             
-            new MapToJSON().write(OUTPATH, customerIndex);
+            new MapToJSON().toJSON(OUTPATH, customerIndex);
         } catch (SQLException sqlex) {
             sqlex.printStackTrace();
         }

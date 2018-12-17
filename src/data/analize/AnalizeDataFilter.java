@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 import param.KomatsuUserParameter;
 
@@ -21,7 +21,7 @@ import param.KomatsuUserParameter;
  * @author ZZ17390
  */
 public class AnalizeDataFilter {
-    public static void partsdatafilter(Map<String, SyaryoObject4> syaryoMap, SyaryoObject4 dataHeader) {
+    public static void partsdatafilter(Map<String, SyaryoObject> syaryoMap, SyaryoObject dataHeader) {
         //定期メンテ削除
         List<String> reject = new ArrayList();
         List mainte = KomatsuDataParameter.PERIOD_MAINTE.get("受注.SGYO_KTICD");
@@ -70,7 +70,7 @@ public class AnalizeDataFilter {
         }
     }
     
-    public static void workdatafilter(Map<String, SyaryoObject4> syaryoMap, SyaryoObject4 dataHeader) {
+    public static void workdatafilter(Map<String, SyaryoObject> syaryoMap, SyaryoObject dataHeader) {
         //定期メンテ削除
         List<String> reject = new ArrayList();
         List mainte = KomatsuDataParameter.PERIOD_MAINTE.get("受注.SGYO_KTICD");

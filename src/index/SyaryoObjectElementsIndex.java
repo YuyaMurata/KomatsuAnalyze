@@ -32,7 +32,7 @@ public class SyaryoObjectElementsIndex {
     }
     
     private void initialize(){
-        Map<String, Map<String, List<String>>> index = new MapToJSON().reader(INDEXPATH);
+        Map<String, Map<String, List<String>>> index = new MapToJSON().toMap(INDEXPATH);
         Map<String, List> formIndex = new LinkedHashMap();
 
         for (String key : index.keySet()) {

@@ -28,7 +28,7 @@ public class PowerLineIndex {
                 String[] as = line.split(",");
                 map.put(as[0].trim(), as[1]);
             }
-            new MapToJSON().write("allsupport_index.json", map);
+            new MapToJSON().toJSON("allsupport_index.json", map);
         } catch (IOException ex) {
             ex.printStackTrace();
         }

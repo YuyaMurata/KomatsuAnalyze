@@ -25,6 +25,6 @@ public class ObjectLayoutIndex {
         for(String k : keys)
             DATA_LAYOUT_INDEX.put(key+k, Arrays.asList(new String[]{"VALUE"}));
         
-        new MapToJSON().write(KomatsuDataParameter.LAYOUT_FORMAT_PATH.replace("format", "default_format"), DATA_LAYOUT_INDEX);
+        new MapToJSON().toJSON(KomatsuDataParameter.LAYOUT_FORMAT_PATH.replace("format", "default_format"), DATA_LAYOUT_INDEX);
     }
 }

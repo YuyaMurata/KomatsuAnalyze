@@ -12,7 +12,7 @@ import java.io.PrintWriter;
 import java.util.Map;
 import java.util.TreeMap;
 import file.SyaryoToCompress;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 
 /**
  *
@@ -24,7 +24,7 @@ public class GPSDataAcc {
 
     public static void main(String[] args) {
         String filename = "syaryo\\syaryo_obj_" + kisy + "_form.bz2";
-        Map<String, SyaryoObject4> syaryoMap = new SyaryoToCompress().read(filename);
+        Map<String, SyaryoObject> syaryoMap = new SyaryoToCompress().read(filename);
 
         String outputname = "gps_" + kisy + ".csv";
         try (PrintWriter csv = CSVFileReadWrite.writer(outputname)) {
@@ -32,11 +32,11 @@ public class GPSDataAcc {
         }
     }
     
-    private static void extractZENRIN(Map<String, SyaryoObject4> syaryoMap, PrintWriter csv){
+    private static void extractZENRIN(Map<String, SyaryoObject> syaryoMap, PrintWriter csv){
         csv.println("id,lon,lat,label");
         String id = "100";
         
-        SyaryoObject4 syaryo = syaryoMap.get("PC138US-8-22337");
+        SyaryoObject syaryo = syaryoMap.get("PC138US-8-22337");
 
         Map<String, String> gps = new TreeMap<>();
         for(String date : syaryo.get("KOMTRAX_GPS").keySet()){

@@ -57,7 +57,7 @@ public class ExportErrorData {
         
         for (String errsource : ERR_SOURCE) {
             String filename = OUTPATH + errsource + "_error.json";
-            json.write(
+            json.toJSON(
                 filename,
                 outError(allsyaryo, index, errsource)
             );
@@ -69,7 +69,7 @@ public class ExportErrorData {
         Map index = new HashMap();
         File file = new File(OUTPATH + "allsyaryo_index.json");
         if (file.exists()) {
-            return json.reader(file.getAbsolutePath());
+            return json.ToTemplate(file.getAbsolutePath());
         }
 
         try (Connection con = HiveDB.getConnection()) {
@@ -100,7 +100,7 @@ public class ExportErrorData {
         } catch (SQLException ex) {
         }
 
-        json.write(file.getAbsolutePath(), index);
+        json.toJSON(file.getAbsolutePath(), index);
         return index;
     }
 
@@ -213,7 +213,7 @@ public class ExportErrorData {
         Map index = new HashMap();
         File file = new File(OUTPATH + "othersyaryo_index.json");
         if (file.exists()) {
-            return json.reader(file.getAbsolutePath());
+            return json.ToTemplate(file.getAbsolutePath());
         }
 
         try (Connection con = HiveDB.getConnection()) {
@@ -245,7 +245,7 @@ public class ExportErrorData {
         }
 
         System.out.println("Other Syaryo:" + index.size());
-        json.write(file.getAbsolutePath(), index);
+        json.toJSON(file.getAbsolutePath(), index);
         return index;
     }
 

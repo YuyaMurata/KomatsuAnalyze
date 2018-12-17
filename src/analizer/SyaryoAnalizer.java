@@ -20,7 +20,7 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import file.SyaryoToCompress;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
 /**
@@ -29,7 +29,7 @@ import param.KomatsuDataParameter;
  */
 public class SyaryoAnalizer implements AutoCloseable {
 
-    public SyaryoObject4 syaryo;
+    public SyaryoObject syaryo;
     public String kind = "";
     public String type = "";
     public String no = "";
@@ -58,17 +58,17 @@ public class SyaryoAnalizer implements AutoCloseable {
     private static String DATE_FORMAT = KomatsuDataParameter.DATE_FORMAT;
     private static Map<String, List> DATA_INDEX = KomatsuDataParameter.DATALAYOUT_INDEX;
     private static Map<String, String> POWERLINE_CHECK = KomatsuDataParameter.POWERLINE;
-    private static String[] ACCIDENT_WORDS = KomatsuDataParameter.ACCIDENT_WORDS;
+    private static List<String> ACCIDENT_WORDS = KomatsuDataParameter.ACCIDENT_WORDS;
     private static Map<String, String> PC200_KR_MASTER = KomatsuDataParameter.PC_KR_SMASTER;
 
-    public SyaryoAnalizer(SyaryoObject4 syaryo) {
+    public SyaryoAnalizer(SyaryoObject syaryo) {
         this.syaryo = syaryo;
         this.syaryo.startHighPerformaceAccess();
         settings(syaryo);
         //this.syaryo.stopHighPerformaceAccess();
     }
 
-    public SyaryoAnalizer(SyaryoObject4 syaryo, Map<String, List> header) {
+    public SyaryoAnalizer(SyaryoObject syaryo, Map<String, List> header) {
         this.syaryo = syaryo;
         this.syaryo.startHighPerformaceAccess();
         DATA_INDEX = header;
@@ -76,8 +76,8 @@ public class SyaryoAnalizer implements AutoCloseable {
         //this.syaryo.stopHighPerformaceAccess();
     }
 
-    public SyaryoObject4 get() {
-        SyaryoObject4 s = syaryo;
+    public SyaryoObject get() {
+        SyaryoObject s = syaryo;
         return s;
     }
 
@@ -91,7 +91,7 @@ public class SyaryoAnalizer implements AutoCloseable {
         return enable;
     }
 
-    private void settings(SyaryoObject4 syaryo) {
+    private void settings(SyaryoObject syaryo) {
         //Name
         this.kind = syaryo.getName().split("-")[0];
         this.type = syaryo.getName().split("-")[1];
@@ -156,34 +156,37 @@ public class SyaryoAnalizer implements AutoCloseable {
                         for (String sbn : syaryo.get("受注").keySet()) {
                             String date = (String) syaryo.get("受注").get(sbn).get(dayIdx);
                             sbnDate.put(sbn, date);
-                            
+
                             //ライフサイクルコスト計算
                             Double price = Double.valueOf(syaryo.get("受注").get(sbn).get(priceIdx).toString());
                             acmLCC += price.intValue();
-                            
+
                             //作業形態カウント
                             String sgkt = syaryo.get("受注").get(sbn).get(sgktIdx).toString();
-                            if(workKind.get(sgkt) == null)
+                            if (workKind.get(sgkt) == null) {
                                 workKind.put(sgkt, 0);
-                            workKind.put(sgkt, workKind.get(sgkt)+1);
-                            
+                            }
+                            workKind.put(sgkt, workKind.get(sgkt) + 1);
+
                             //売上区分カウント
-                            String odr = syaryo.get("受注").get(sbn).get(odrIdx).toString()+
-                                        syaryo.get("受注").get(sbn).get(odrIdx+1).toString()+
-                                        syaryo.get("受注").get(sbn).get(odrIdx+2).toString();
-                            if(odrKind.get(odr) == null)
+                            String odr = syaryo.get("受注").get(sbn).get(odrIdx).toString()
+                                + syaryo.get("受注").get(sbn).get(odrIdx + 1).toString()
+                                + syaryo.get("受注").get(sbn).get(odrIdx + 2).toString();
+                            if (odrKind.get(odr) == null) {
                                 odrKind.put(odr, 0);
-                            odrKind.put(odr, odrKind.get(odr)+1);
-                            
+                            }
+                            odrKind.put(odr, odrKind.get(odr) + 1);
+
                             //事故カウント
-                            String text = syaryo.get("受注").get(sbn).get(textIdx).toString()+
-                                            syaryo.get("受注").get(sbn).get(text2Idx).toString();
-                            for(String w : ACCIDENT_WORDS)
-                                if(text.contains(w)){
+                            String text = syaryo.get("受注").get(sbn).get(textIdx).toString()
+                                + syaryo.get("受注").get(sbn).get(text2Idx).toString();
+                            ACCIDENT_WORDS.stream().forEach(w -> {
+                                if (text.contains(w)) {
                                     numAccident++;
                                     acmAccidentPrice += price.intValue();
                                 }
-                            
+                            });
+
                             //日付との相互変換用
                             if (dateSBN.get(date) == null) {
                                 dateSBN.put(date, sbn);
@@ -195,19 +198,20 @@ public class SyaryoAnalizer implements AutoCloseable {
                     break;
                 case "顧客":
                     List custv = getValue("顧客", "NNSCD", false);
-                    numOwners = custv == null?-1:((Long)custv.stream().distinct().count()).intValue();
-                    
+                    numOwners = custv == null ? -1 : ((Long) custv.stream().distinct().count()).intValue();
+
                     //レンタル業者か判定
                     List<String> custKbn = getValue("顧客", "KKYK_KBN", false);
                     List<String> custGycd = getValue("顧客", "GYSCD", false);
-                    if(custKbn.contains("0E") || custKbn.contains("0G") || custGycd.contains("17"))
+                    if (custKbn.contains("0E") || custKbn.contains("0G") || custGycd.contains("17")) {
                         rent = true;
-                    
+                    }
+
                     //KR車両か判定
-                    if(!rent && kind.equals("PC200"))
-                        rent = PC200_KR_MASTER.get(kind+"-"+no) != null;
-                        
-                    
+                    if (!rent && kind.equals("PC200")) {
+                        rent = PC200_KR_MASTER.get(kind + "-" + no) != null;
+                    }
+
                     break;
                 case "部品":
                     numParts = syaryo.get("部品").size();
@@ -217,7 +221,7 @@ public class SyaryoAnalizer implements AutoCloseable {
                     break;
                 case "新車":
                     lifestart = syaryo.get("新車").keySet().stream().findFirst().get();
-                    
+
                     mcompany = syaryo.get("仕様").get("0").get(0).toString();
                     break;
             }
@@ -225,15 +229,15 @@ public class SyaryoAnalizer implements AutoCloseable {
 
         //Life
         if (!dead) {
-            currentAge_day = lifestart.equals("")?-1:age("20170501"); //データ受領日(データによって数日ずれている)
+            currentAge_day = lifestart.equals("") ? -1 : age("20170501"); //データ受領日(データによって数日ずれている)
         } else {
-            currentAge_day = lifestop.equals("")?-1:age(lifestop); //廃車日
+            currentAge_day = lifestop.equals("") ? -1 : age(lifestop); //廃車日
         }
 
     }
 
     //SMRをサービスSMRかKOMTRAX_SMRのどちらかに変換
-    private String[] getSMR(SyaryoObject4 syaryo) {
+    private String[] getSMR(SyaryoObject syaryo) {
         if (syaryo.get("KOMTRAX_SMR") != null) {
             return new String[]{"KOMTRAX_SMR", "SMR_VALUE"};
         } else if (syaryo.get("SMR") != null) {
@@ -363,10 +367,11 @@ public class SyaryoAnalizer implements AutoCloseable {
             Date st = sdf.parse(start);
             Date sp = sdf.parse(stop);
             Long age = (sp.getTime() - st.getTime()) / (1000 * 60 * 60 * 24);
-            
-            if(age == 0L)
+
+            if (age == 0L) {
                 age = 1L;
-            
+            }
+
             return age.intValue();
         } catch (ParseException ex) {
             ex.printStackTrace();
@@ -492,23 +497,23 @@ public class SyaryoAnalizer implements AutoCloseable {
         sb.append(" maxSMR = " + Arrays.asList(maxSMR) + "\n");
         return sb.toString();
     }
-    
+
     public static String getHeader() {
         //基本情報
         String header = "機種,型/小変形,機番,会社,KOMTRAX,中古,廃車,オールサポート,レンタル,SMR最終更新日,SMR,KOMTRAX_SMR最終更新日,KOMTRAX_SMR,経過日,納入日,最終更新日,廃車日,中古日,";
-        
+
         //保証情報
         header += "AS期間,";
-        
+
         //事故情報
         header += "事故,事故受注費計,";
-        
+
         //受注情報
         header += "顧客数,受注数,作業発注数,部品発注数,ライフサイクルコスト,受注情報1,受注情報2";
-        
+
         return header;
     }
-    
+
     public String toPrint() {
         List<String> data = new ArrayList<>();
         //基本情報
@@ -516,11 +521,11 @@ public class SyaryoAnalizer implements AutoCloseable {
         data.add(type);
         data.add(no);
         data.add(mcompany);
-        data.add(komtrax?"1":"0");
-        data.add(used?"1":"0");
-        data.add(dead?"1":"0");
-        data.add(allsupport?"1":"0");
-        data.add(rent?"1":"0");
+        data.add(komtrax ? "1" : "0");
+        data.add(used ? "1" : "0");
+        data.add(dead ? "1" : "0");
+        data.add(allsupport ? "1" : "0");
+        data.add(rent ? "1" : "0");
         data.add(String.valueOf(maxSMR[0]));
         data.add(String.valueOf(maxSMR[1]));
         data.add(String.valueOf(maxSMR[2]));
@@ -529,21 +534,23 @@ public class SyaryoAnalizer implements AutoCloseable {
         data.add(lifestart);
         data.add(currentLife);
         data.add(lifestop);
-        if(used)
+        if (used) {
             data.add(String.join("|", usedlife));
-        else
+        } else {
             data.add("None");
-        
+        }
+
         //保証情報
-        if(allsupport)
+        if (allsupport) {
             data.add(termAllSupport.stream().map(term -> String.join("_", term)).collect(Collectors.joining("|")));
-        else
+        } else {
             data.add("None");
-        
+        }
+
         //事故情報
         data.add(String.valueOf(numAccident));
         data.add(String.valueOf(acmAccidentPrice));
-        
+
         //受注情報
         data.add(String.valueOf(numOwners));
         data.add(String.valueOf(numOrders));
@@ -552,12 +559,12 @@ public class SyaryoAnalizer implements AutoCloseable {
         data.add(String.valueOf(acmLCC));
         data.add(workKind.keySet().stream().collect(Collectors.joining("|")));
         data.add(odrKind.keySet().stream().collect(Collectors.joining("|")));
-        
+
         return String.join(",", data);
     }
 
     public static void main(String[] args) {
-        Map<String, SyaryoObject4> syaryoMap = new SyaryoToCompress().read("syaryo\\syaryo_obj_PC200_sv_form.bz2");
+        Map<String, SyaryoObject> syaryoMap = new SyaryoToCompress().read("syaryo\\syaryo_obj_PC200_sv_form.bz2");
         SyaryoAnalizer analize = new SyaryoAnalizer(syaryoMap.get("PC200-10-451215"));
         System.out.println(analize.toString());
 

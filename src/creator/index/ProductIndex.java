@@ -37,6 +37,6 @@ public class ProductIndex {
             ex.printStackTrace();
         }
         
-        new MapToJSON().write(outpath, product);
+        new MapToJSON().toJSON(outpath, product);
     }
 }

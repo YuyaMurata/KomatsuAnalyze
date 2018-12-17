@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import file.MapToJSON;
 import file.SyaryoToCompress;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
 /**
@@ -25,7 +25,7 @@ import param.KomatsuDataParameter;
 public class ReadShuffleData {
     private Map<String, List<String>> custMap;
     private static SyaryoToCompress zip = new SyaryoToCompress();
-    private Map<String, Map<String, SyaryoObject4>> readFile;
+    private Map<String, Map<String, SyaryoObject>> readFile;
     private Map<String, List<List>> map;
     private Boolean fileCheck = true;
     private String path;
@@ -41,7 +41,7 @@ public class ReadShuffleData {
 
     private static Map<String, List<String>> setCustomer(String filename) {
         int size = ((List)CustomerIndex.layoutIndex().get("customer")).size()-1;
-        Map<String, String> map = new MapToJSON().reader(filename);
+        Map<String, String> map = new MapToJSON().toMap(filename);
         System.out.println("CSUTSIZE="+size);
         Map<String, List<String>> formCustMap = new HashMap<>();
         for(String cid : map.keySet()){
@@ -132,12 +132,12 @@ public class ReadShuffleData {
     }
 
     //テンプレートファイルからターゲット車両のリストデータを抽出する
-    private static Map<String, List<List>> idExtractList(String target, Map<String, Map<String, SyaryoObject4>> readFile) {
+    private static Map<String, List<List>> idExtractList(String target, Map<String, Map<String, SyaryoObject>> readFile) {
         Map extract = new HashMap();
         for (String table : readFile.keySet()) {
             List<List<String>> data = new ArrayList<>();
 
-            SyaryoObject4 targetSyaryo = readFile.get(table).get(target);
+            SyaryoObject targetSyaryo = readFile.get(table).get(target);
             //System.out.println(targetSyaryo.getMap());
 
             for (Object list : targetSyaryo.get(table).values()) {

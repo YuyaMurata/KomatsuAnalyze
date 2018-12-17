@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import file.SyaryoToCompress;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
 /**
@@ -28,7 +28,7 @@ public class SyaryoDataSummary {
     
     
     public static void main(String[] args) {
-        SyaryoObject4 sample = null;
+        SyaryoObject sample = null;
         int size = 0;
         
         //Create Folder
@@ -36,14 +36,14 @@ public class SyaryoDataSummary {
             (new File(outpath)).mkdirs();
         
         String filename = path + "syaryo_obj_" + kisy + "_form.bz2";
-        Map<String, SyaryoObject4> syaryoMap = new SyaryoToCompress().read(filename);
+        Map<String, SyaryoObject> syaryoMap = new SyaryoToCompress().read(filename);
         
         //Syaryo Data Check
         int cnt = 0;
         Map<Object, Integer> dataSizeMap = new HashMap();
         Map<Object, Integer> numSyaryoMap = new HashMap();
         Map<String, Map<String, Integer>> syaryoSummary = new HashMap();
-        for(SyaryoObject4 syaryo : syaryoMap.values()){
+        for(SyaryoObject syaryo : syaryoMap.values()){
             syaryo.startHighPerformaceAccess();
             int total = 0;
             

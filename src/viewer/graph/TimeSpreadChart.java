@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
 /**
@@ -19,65 +19,7 @@ import param.KomatsuDataParameter;
  * @author ZZ17390
  */
 public class TimeSpreadChart extends ChartTemplate {
-
-    private static String py_path = KomatsuDataParameter.GRAPH_PY;
-
-    private Map<String, List> smr(SyaryoObject4 syaryo) {
-        int smridx = 2;
-        //System.out.println(syaryo);
-        if (syaryo.get("SMR") == null) {
-            return null;
-        }
-
-        Map<String, List> data = new TreeMap();
-        data.put("header", Arrays.asList(new String[]{"SMR"}));
-        
-        for (String date : syaryo.get("SMR").keySet()) {
-            List l = new ArrayList();
-            l.add(syaryo.get("SMR").get(date).get(smridx));
-            data.put(date, l);
-        }
-
-        return data;
-    }
-
-    private Map<String, List> kmsmr(SyaryoObject4 syaryo) {
-        int smridx = 0;
-        if (syaryo.get("KOMTRAX_SMR") == null) {
-            return null;
-        }
-
-        Map<String, List> data = new TreeMap();
-        data.put("header", Arrays.asList(new String[]{"KMSMR"}));
-        
-        for (String date : syaryo.get("KOMTRAX_SMR").keySet()) {
-            List l = new ArrayList();
-            l.add(syaryo.get("KOMTRAX_SMR").get(date).get(smridx));
-            data.put(date, l);
-        }
-
-        return data;
-    }
-    
-    private Map<String, List> kmfuel(SyaryoObject4 syaryo) {
-        int fuelidx = 0;
-        if (syaryo.get("KOMTRAX_FUEL_CONSUME") == null) {
-            return null;
-        }
-
-        Map<String, List> data = new TreeMap();
-        data.put("header", Arrays.asList(new String[]{"FUEL"}));
-        
-        for (String date : syaryo.get("KOMTRAX_FUEL_CONSUME").keySet()) {
-            List l = new ArrayList();
-            l.add(syaryo.get("KOMTRAX_FUEL_CONSUME").get(date).get(fuelidx));
-            data.put(date, l);
-        }
-
-        return data;
-    }
-    
-    private Map<String, List> kmgps(SyaryoObject4 syaryo) {
+    private Map<String, List> kmgps(SyaryoObject syaryo) {
         int fuelidx = 0;
         if (syaryo.get("KOMTRAX_GPS") == null) {
             return null;
@@ -90,7 +32,7 @@ public class TimeSpreadChart extends ChartTemplate {
         return null;
     }
 
-    private Map<String, List> kmerror(SyaryoObject4 syaryo) {
+    private Map<String, List> kmerror(SyaryoObject syaryo) {
         int errorCodeIdx = 0;
         int errorIdx = 1;
         if (syaryo.get("KOMTRAX_ERROR") == null) {
@@ -125,24 +67,29 @@ public class TimeSpreadChart extends ChartTemplate {
             data.put(date, l);
             temp = date;
         }
-
+        
         return data;
+    }
+    
+    private Map<String, String> graphFormatter(Map<String, List> data, Integer idx){
+        if(idx < 0)
+            return data.entrySet().stream()
+                        .collect(Collectors.toMap(e -> e.getKey(), e -> String.join(",", e.getValue())));
+        else
+            return data.entrySet().stream()
+                        .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().get(idx).toString()));
     }
 
     @Override
-    public Map<String, List> graphFile(String select, SyaryoObject4 syaryo) {
-        setGraphPath(py_path);
-        if (select.equals("SMR")) {
-            return smr(syaryo);
-        } else if (select.equals("KOMTRAX_SMR")) {
-            return kmsmr(syaryo);
+    public Map<String, String> graphFile(String select, SyaryoObject syaryo) {
+        if (select.equals("SMR") || select.equals("KOMTRAX_SMR") || select.equals("KOMTRAX_FUEL_CONSUME")) {
+            Map data = syaryo.get(select);
+            data.put("header", "Date,Value");
+            return graphFormatter(data, KomatsuDataParameter.LOADER.index(select, "VALUE"));
         } else if (select.equals("KOMTRAX_ERROR")) {
-            return kmerror(syaryo);
-        } else if (select.equals("KOMTRAX_FUEL_CONSUME")) {
-            return kmfuel(syaryo);
-        } /*else if (select.equals("KOMTRAX_GPS")) {
-            return kmgps(syaryo);
-        }*/ else {
+            Map data = kmerror(syaryo);
+            return graphFormatter(data, -1);
+        } else {
             return null;
         }
     }

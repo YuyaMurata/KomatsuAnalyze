@@ -12,7 +12,7 @@ import java.util.Map;
 import file.MapToJSON;
 import file.SyaryoToCompress;
 import obj.LoadSyaryoObject;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
 /**
@@ -31,10 +31,11 @@ public class AttachedLayoutIndex {
             return;
         }
         
-        Map<String, SyaryoObject4> map = LoadSyaryoObject.load("PC200.bz2");
+        KomatsuDataParameter.LOADER.setFile("PC200.bz2");
+        Map<String, SyaryoObject> map = KomatsuDataParameter.LOADER.getSyaryoMap();
         
-        SyaryoObject4 header = new SyaryoObject4("_header");
-        Map<String, List> layout = new MapToJSON().reader(LAYOUT_INDEX);
+        SyaryoObject header = new SyaryoObject("_header");
+        Map<String, List> layout = new MapToJSON().toMap(LAYOUT_INDEX);
         Map<String, Map> formatter = new HashMap<>();
         for(String key : layout.keySet()){
             Map data = new HashMap();

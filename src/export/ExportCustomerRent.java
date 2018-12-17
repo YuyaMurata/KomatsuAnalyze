@@ -8,7 +8,7 @@ package export;
 import index.SyaryoObjectElementsIndex;
 import java.util.List;
 import java.util.Map;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
 /**
@@ -20,7 +20,7 @@ public class ExportCustomerRent {
     private static Map<String, List> dataIndex = SyaryoObjectElementsIndex.getInstance().getIndex();
     private static String PATH = KomatsuDataParameter.SYARYOOBJECT_FDPATH;
     private static String KISY = "PC200";
-    private static Map<String, SyaryoObject4> map;
+    private static Map<String, SyaryoObject> map;
     
     private static String syaryofilename = PATH + "syaryo_obj_" + KISY + "_sv_form.bz2";
     private static String filename = "ExportData_"+KISY;

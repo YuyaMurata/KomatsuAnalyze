@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import file.SyaryoToCompress;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 import param.KomatsuUserParameter;
 
@@ -32,9 +32,9 @@ public class CreateEvaluateMatrix {
     private static final String exportFile = "ExportData_" + KISY + "_ALL.json";
 
     public static void main(String[] args) {
-        Map<String, SyaryoObject4> syaryoMap = new SyaryoToCompress().readJSON(exportFile);
+        Map<String, SyaryoObject> syaryoMap = new SyaryoToCompress().readJSON(exportFile);
 
-        SyaryoObject4 dataHeader = syaryoMap.get("_headers");
+        SyaryoObject dataHeader = syaryoMap.get("_headers");
         System.out.println(dataHeader.getMap());
         syaryoMap.remove("_headers");
         //List usererrors = UserDefinedFile.filter(KomatsuUserParameter.PC200_ERRFILTER_FILE);
@@ -58,7 +58,7 @@ public class CreateEvaluateMatrix {
     
     
 
-    private static void evalArrayKMError(Map<String, SyaryoObject4> syaryoMap, SyaryoObject4 dataHeader, List<String> error) {
+    private static void evalArrayKMError(Map<String, SyaryoObject> syaryoMap, SyaryoObject dataHeader, List<String> error) {
         try (PrintWriter pw = CSVFileReadWrite.writer(KISY + "_kmerrcd_evalarray.csv")) {
             int err_idx = dataHeader.get("KOMTRAX_ERROR").get("KOMTRAX_ERROR").indexOf("ERROR_CODE");
 
@@ -98,7 +98,7 @@ public class CreateEvaluateMatrix {
         System.out.println("KOMTRAX_ERRORの評価行列作成");
     }
 
-    private static void evalArraySGCD(Map<String, SyaryoObject4> syaryoMap, SyaryoObject4 dataHeader, List<String> service) {
+    private static void evalArraySGCD(Map<String, SyaryoObject> syaryoMap, SyaryoObject dataHeader, List<String> service) {
         try (PrintWriter pw = CSVFileReadWrite.writer(KISY + "_sgcd_evalarray.csv")) {
             int sg_idx = dataHeader.get("作業").get("作業").indexOf("SGYOCD");
 
@@ -139,7 +139,7 @@ public class CreateEvaluateMatrix {
         System.out.println("作業データの評価行列作成");
     }
 
-    private static void evalArrayPCD(Map<String, SyaryoObject4> syaryoMap, SyaryoObject4 dataHeader, List<String> parts) {
+    private static void evalArrayPCD(Map<String, SyaryoObject> syaryoMap, SyaryoObject dataHeader, List<String> parts) {
         try (PrintWriter pw = CSVFileReadWrite.writer(KISY + "_partscd_evalarray.csv")) {
             int parts_idx = dataHeader.get("部品").get("部品").indexOf("HNBN");
 

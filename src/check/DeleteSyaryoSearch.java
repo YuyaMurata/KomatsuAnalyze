@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import file.SyaryoToCompress;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
 /**
@@ -25,7 +25,7 @@ public class DeleteSyaryoSearch {
     private static String PATH = KomatsuDataParameter.SYARYOOBJECT_FDPATH;
     private static String KISY = "PC200";
     private static String filename = PATH + "syaryo_obj_" + KISY + "_km_form.bz2";
-    private static Map<String, SyaryoObject4> syaryoMap = new SyaryoToCompress().read(filename);
+    private static Map<String, SyaryoObject> syaryoMap = new SyaryoToCompress().read(filename);
     
     //ALL Syaryo
      private static String all = "resource\\車両マスタ.csv";

@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import file.SyaryoToCompress;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
 /**
@@ -31,8 +31,8 @@ public class CreateAssociationRule {
 
     public static void main(String[] args) {
         //車両の読み込み
-        Map<String, SyaryoObject4> syaryoMap = new SyaryoToCompress().readJSON(exportFile);
-        SyaryoObject4 dataHeader = syaryoMap.get("_headers");
+        Map<String, SyaryoObject> syaryoMap = new SyaryoToCompress().readJSON(exportFile);
+        SyaryoObject dataHeader = syaryoMap.get("_headers");
         System.out.println(dataHeader.getMap());
         syaryoMap.remove("_headers");
 
@@ -42,7 +42,7 @@ public class CreateAssociationRule {
         asscoiationRule(syaryoMap, dataHeader);
     }
 
-    private static void asscoiationRule(Map<String, SyaryoObject4> syaryoMap, SyaryoObject4 dataHeader) {
+    private static void asscoiationRule(Map<String, SyaryoObject> syaryoMap, SyaryoObject dataHeader) {
         int ksycdIdx = dataHeader.get("作業").get("作業").indexOf("KSYCD");
         int sgcdIdx = dataHeader.get("作業").get("作業").indexOf("SGYOCD");
         int mainflgIdx = dataHeader.get("作業").get("作業").indexOf("0");

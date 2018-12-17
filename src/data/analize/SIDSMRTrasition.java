@@ -20,7 +20,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import file.MapToJSON;
 import file.SyaryoToCompress;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 import program.r.R;
 
 /**
@@ -35,16 +35,16 @@ public class SIDSMRTrasition {
     private static final String exportFile = "FORM_ExportData_SMR_" + KISY + "_ALL.json";
 
     public static void main(String[] args) {
-        Map<String, SyaryoObject4> syaryoMap = new SyaryoToCompress().readJSON(exportFile);
+        Map<String, SyaryoObject> syaryoMap = new SyaryoToCompress().readJSON(exportFile);
 
-        SyaryoObject4 dataHeader = syaryoMap.get("_headers");
+        SyaryoObject dataHeader = syaryoMap.get("_headers");
         syaryoMap.remove("_headers");
 
         //formalize(syaryoMap, dataHeader);
         transition(syaryoMap, dataHeader);
     }
 
-    private static void formalize(Map<String, SyaryoObject4> map, SyaryoObject4 header) {
+    private static void formalize(Map<String, SyaryoObject> map, SyaryoObject header) {
         Map<String, Map> outMap = new TreeMap();
 
         map.values().stream().forEach(s -> {
@@ -75,7 +75,7 @@ public class SIDSMRTrasition {
 
         outMap.put("_headers", expMap);
 
-        new MapToJSON().write("FORM_" + exportFile, outMap);
+        new MapToJSON().toJSON("FORM_" + exportFile, outMap);
 
         R.close();
     }
@@ -224,7 +224,7 @@ public class SIDSMRTrasition {
         return fuel;
     }
 
-    private static void transition(Map<String, SyaryoObject4> map, SyaryoObject4 header) {
+    private static void transition(Map<String, SyaryoObject> map, SyaryoObject header) {
 
         List<String> list = new ArrayList(map.keySet());
         Map<Integer, String[]> smrData = new TreeMap();

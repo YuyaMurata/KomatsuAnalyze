@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import file.SyaryoToCompress;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
 /**
@@ -25,9 +25,9 @@ public class CodeVariation {
     private static final String exportFile = "ExportData_PC200_ALL.json";
     
     public static void main(String[] args) {
-        Map<String, SyaryoObject4> syaryoMap = new SyaryoToCompress().readJSON(exportFile);
+        Map<String, SyaryoObject> syaryoMap = new SyaryoToCompress().readJSON(exportFile);
         
-        SyaryoObject4 dataHeader = syaryoMap.get("_headers");
+        SyaryoObject dataHeader = syaryoMap.get("_headers");
         syaryoMap.remove("_headers");
         System.out.println(dataHeader.dump());
         
@@ -38,7 +38,7 @@ public class CodeVariation {
     }
     
     //KOMTRAX エラーコード
-    private static void kmerrcode(Map<String, SyaryoObject4> syaryoMap, SyaryoObject4 dataHeader){
+    private static void kmerrcode(Map<String, SyaryoObject> syaryoMap, SyaryoObject dataHeader){
         if(dataHeader.get("KOMTRAX_ERROR") == null){
             System.err.println("Do not exported KOMTRAX ERROR DATA!");
             return ;
@@ -81,7 +81,7 @@ public class CodeVariation {
     }
     
     //作業コード
-    private static void workcd(Map<String, SyaryoObject4> syaryoMap, SyaryoObject4 dataHeader){
+    private static void workcd(Map<String, SyaryoObject> syaryoMap, SyaryoObject dataHeader){
         if(dataHeader.get("作業") == null){
             System.err.println("Do not exported KOMPAS WORKING DATA!");
             return ;
@@ -126,7 +126,7 @@ public class CodeVariation {
     }
     
     //品番
-    private static void partscd(Map<String, SyaryoObject4> syaryoMap, SyaryoObject4 dataHeader){
+    private static void partscd(Map<String, SyaryoObject> syaryoMap, SyaryoObject dataHeader){
         if(dataHeader.get("部品") == null){
             System.err.println("Do not exported KOMPAS PARTS DATA!");
             return ;

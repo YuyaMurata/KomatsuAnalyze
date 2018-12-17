@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 import file.SyaryoTemplateToJSON;
 import file.SyaryoToCompress;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
 /**
@@ -54,10 +54,10 @@ public class LoadMapCreate {
         //車両Indexの作成 SimpleTemplateにcheck機能が付加される
         File file = new File(INDEX_PATH + kisy +"\\syaryo_" + kisy + "_index.json");
         if (file.exists()) {
-            new SyaryoTemplateToJSON().reader(file.getAbsolutePath());
+            new SyaryoTemplateToJSON().ToTemplate(file.getAbsolutePath());
         }
 
-        Map<String, SyaryoObject4> syaryoMap = new HashMap();
+        Map<String, SyaryoObject> syaryoMap = new HashMap();
 
         //Load File
         File[] flist = (new File(INPATH)).listFiles();
@@ -75,7 +75,7 @@ public class LoadMapCreate {
                 continue;
             }
             
-            SyaryoObject4 syaryo = new SyaryoObject4(name);
+            SyaryoObject syaryo = new SyaryoObject(name);
             Map<String, Map<String, List<String>>> temp = new HashMap();
 
             //System.out.println(f);

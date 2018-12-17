@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import file.SyaryoToCompress;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
 /**
@@ -26,7 +26,7 @@ public class GetTextSearchExport {
     private static Map<String, List> dataIndex = SyaryoObjectElementsIndex.getInstance().getIndex();
     private static String PATH = KomatsuDataParameter.SYARYOOBJECT_FDPATH;
     private static String KISY = "PC200";
-    private static Map<String, SyaryoObject4> map;
+    private static Map<String, SyaryoObject> map;
 
     private static String syaryofilename = PATH + "syaryo_obj_" + KISY + "_sv_form.bz2";
 
@@ -40,7 +40,7 @@ public class GetTextSearchExport {
 
     public static void textSearch(String data, String text, int search, List<Integer> export) {
         try (PrintWriter pw = CSVFileReadWrite.writer(KISY + "_" + data + "_" + text + ".csv")) {
-            for (SyaryoObject4 syaryo : map.values()) {
+            for (SyaryoObject syaryo : map.values()) {
                 
                 if (syaryo.get(data) == null) {
                     continue;

@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import file.SyaryoTemplateToJSON;
 import file.SyaryoToCompress;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 
 /**
  * 車両テンプレートから車両オブジェクトを作成
@@ -76,8 +76,8 @@ public class TemplateToObjectCreate {
 
             System.out.println(f.getName());
 
-            Map<String, SimpleTemplate> templats = json.reader(f.getAbsolutePath());
-            Map<String, SyaryoObject4> syaryoMap = new ConcurrentHashMap<>();
+            Map<String, SimpleTemplate> templats = json.ToTemplate(f.getAbsolutePath());
+            Map<String, SyaryoObject> syaryoMap = new ConcurrentHashMap<>();
 
             if (templats.isEmpty()) {
                 System.out.println("No Data " + objf.getName());
@@ -90,13 +90,13 @@ public class TemplateToObjectCreate {
             templats.entrySet().parallelStream()
                 .map(s -> s.getValue()).forEach(s -> {
 
-                SyaryoObject4 syaryoObj = new SyaryoObject4(s.getName());
+                SyaryoObject syaryoObj = new SyaryoObject(s.getName());
                 syaryoObj.add(s.temp, fieldLen);
 
                 syaryoMap.put(syaryoObj.getName(), syaryoObj);
             });
 
-            SyaryoObject4 syaryo = syaryoMap.values().stream().findFirst().get();
+            SyaryoObject syaryo = syaryoMap.values().stream().findFirst().get();
             System.out.println(syaryo.dump());
             
             new SyaryoToCompress().write(FILENAME, syaryoMap);

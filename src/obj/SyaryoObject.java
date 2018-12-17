@@ -18,7 +18,7 @@ import java.util.Map;
  * 車両オブジェクトの定義クラス
  * @author ZZ17390
  */
-public class SyaryoObject4 implements Serializable {
+public class SyaryoObject implements Serializable {
     //車両オブジェクトファイルに保存される変数
     private static final long serialVersionUID = 1L;
     public String name; //車両名
@@ -29,7 +29,7 @@ public class SyaryoObject4 implements Serializable {
     private transient DecimalFormat dformat = new DecimalFormat("0000"); //キー重複番号の正規化
     private transient Boolean performanceAccess = false; //アクセス性能を管理するフラグ
 
-    public SyaryoObject4(String name) {
+    public SyaryoObject(String name) {
         this.name = name;
     }
 

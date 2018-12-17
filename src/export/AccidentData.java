@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import file.SyaryoToCompress;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 
 /**
  *
@@ -24,7 +24,7 @@ public class AccidentData {
 
     public static void main(String[] args) {
         String filename = "syaryo\\syaryo_obj_" + kisy + "_form.bz2";
-        Map<String, SyaryoObject4> syaryoMap = new SyaryoToCompress().read(filename);
+        Map<String, SyaryoObject> syaryoMap = new SyaryoToCompress().read(filename);
 
         String outputname = "accident_" + kisy + ".csv";
         try (PrintWriter csv = CSVFileReadWrite.writer(outputname)) {
@@ -32,11 +32,11 @@ public class AccidentData {
         }
     }
 
-    public static void extractAccident(Map<String, SyaryoObject4> syaryoMap, PrintWriter csv) {
+    public static void extractAccident(Map<String, SyaryoObject> syaryoMap, PrintWriter csv) {
         int cnt = 0;
 
         csv.println("SID,SMR,金額,概要");
-        for (SyaryoObject4 syaryo : syaryoMap.values()) {
+        for (SyaryoObject syaryo : syaryoMap.values()) {
 
             cnt++;
             if (syaryo.get("受注") == null) {

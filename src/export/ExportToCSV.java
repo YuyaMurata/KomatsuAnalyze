@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 import obj.LoadSyaryoObject;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 
 /**
  *
@@ -21,7 +21,7 @@ import obj.SyaryoObject4;
  */
 public class ExportToCSV {
 
-    private static Map<String, SyaryoObject4> syaryoMap;
+    private static Map<String, SyaryoObject> syaryoMap;
     static String KISY = "PC200";
     static Random rand = new Random();
 

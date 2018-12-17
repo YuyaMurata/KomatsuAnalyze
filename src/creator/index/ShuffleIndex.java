@@ -20,7 +20,7 @@ public class ShuffleIndex {
 
     public static void main(String[] args) {
         Map shuffleMap = createShuffleMap();
-        new MapToJSON().write("index\\shuffle_default_format.json", shuffleMap);
+        new MapToJSON().toJSON("index\\shuffle_default_format.json", shuffleMap);
     }
     
     private static Map createShuffleMap(){

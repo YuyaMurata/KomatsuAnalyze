@@ -227,7 +227,7 @@ public class DBCount {
         Map index = new HashMap();
         File file = new File(OUTPATH + "allsyaryo_index.json");
         if (file.exists()) {
-            return json.reader(file.getAbsolutePath());
+            return json.ToTemplate(file.getAbsolutePath());
         }
 
         try (Connection con = HiveDB.getConnection()) {
@@ -262,7 +262,7 @@ public class DBCount {
 
         System.out.println("Syaryo:" + index.size());
 
-        json.write(file.getAbsolutePath(), index);
+        json.toJSON(file.getAbsolutePath(), index);
         return index;
     }
 
@@ -271,7 +271,7 @@ public class DBCount {
         Map index = new HashMap();
         File file = new File(OUTPATH + "othersyaryo_index.json");
         if (file.exists()) {
-            return json.reader(file.getAbsolutePath());
+            return json.ToTemplate(file.getAbsolutePath());
         }
 
         try (Connection con = HiveDB.getConnection()) {
@@ -303,7 +303,7 @@ public class DBCount {
         }
 
         System.out.println("Other Syaryo:" + index.size());
-        json.write(file.getAbsolutePath(), index);
+        json.toJSON(file.getAbsolutePath(), index);
         return index;
     }
 

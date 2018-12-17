@@ -28,7 +28,7 @@ public class AddressToGPS {
     private GeoApiContext context;
 
     private AddressToGPS() {
-        Map map = new MapToJSON().reader(KomatsuDataParameter.AUTH_PATH);
+        Map map = new MapToJSON().toMap(KomatsuDataParameter.AUTH_PATH);
         System.out.println(map);
 
         //Proxy

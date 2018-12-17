@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import file.SyaryoToCompress;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 
 /**
  *
@@ -51,7 +51,7 @@ public class ObjectsJoiner {
         }
         
         //Syaryo Map
-        Map<String, SyaryoObject4> syaryoMap = new ConcurrentHashMap<>();
+        Map<String, SyaryoObject> syaryoMap = new ConcurrentHashMap<>();
         
         //Middle File
         File[] flist = (new File(objPath)).listFiles();
@@ -92,7 +92,7 @@ public class ObjectsJoiner {
         }
         
         //Syaryo Map
-        Map<String, SyaryoObject4> syaryoMap = zip3.read(filename);
+        Map<String, SyaryoObject> syaryoMap = zip3.read(filename);
         
         //Middle File
         File[] flist = (new File(objPath)).listFiles();
@@ -112,7 +112,7 @@ public class ObjectsJoiner {
     }
     
     //join map1 <- map2
-    public static void join(Map<String, SyaryoObject4> map1, Map<String, SyaryoObject4> map2){
+    public static void join(Map<String, SyaryoObject> map1, Map<String, SyaryoObject> map2){
         if(map2.isEmpty())
             System.out.println("Target File is Empty!");
         
@@ -127,9 +127,9 @@ public class ObjectsJoiner {
         //Join
         map2.values().parallelStream().filter(s -> check.contains(s.getName().split("-")[1]))
             .forEach(s ->{
-            SyaryoObject4 syaryo = map1.get(s.getName());
+            SyaryoObject syaryo = map1.get(s.getName());
             if(syaryo == null)
-                syaryo = new SyaryoObject4(s.getName());
+                syaryo = new SyaryoObject(s.getName());
             
             //車両情報を結合
             syaryo.putAll(s.getMap());

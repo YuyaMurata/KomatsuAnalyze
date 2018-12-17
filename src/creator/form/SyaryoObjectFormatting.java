@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import file.MapToJSON;
 import file.SyaryoToCompress;
-import obj.SyaryoObject4;
+import obj.SyaryoObject;
 import program.r.R;
 
 /**
@@ -47,13 +47,13 @@ public class SyaryoObjectFormatting {
     private static void form(String kisy) {
         SyaryoToCompress zip3 = new SyaryoToCompress();
         String filename = OBJPATH + "syaryo_obj_" + kisy + ".bz2";
-        Map<String, SyaryoObject4> syaryoMap = zip3.read(filename);
+        Map<String, SyaryoObject> syaryoMap = zip3.read(filename);
         
         //本社コード
-        Map<String, String> honsyIndex = new MapToJSON().reader(HONSY_INDEXPATH);
+        Map<String, String> honsyIndex = new MapToJSON().toMap(HONSY_INDEXPATH);
 
         //生産日情報
-        Map<String, String> productIndex = new MapToJSON().reader(PRODUCT_INDEXPATH);
+        Map<String, String> productIndex = new MapToJSON().toMap(PRODUCT_INDEXPATH);
 
         //車両の削除
         rejectSyaryo(syaryoMap, new String[]{"company,UR", "company,GC", "新車,20170501"});
@@ -63,7 +63,7 @@ public class SyaryoObjectFormatting {
             //System.out.println(key);
             currentKey = key;
 
-            SyaryoObject4 syaryo = syaryoMap.get(key);
+            SyaryoObject syaryo = syaryoMap.get(key);
             syaryo.startHighPerformaceAccess();
 
             //整形時のデータ削除ルールを設定
@@ -180,7 +180,7 @@ public class SyaryoObjectFormatting {
     }
 
     //車両の削除
-    private static void rejectSyaryo(Map<String, SyaryoObject4> syaryoMap, String[] deleteRule) {
+    private static void rejectSyaryo(Map<String, SyaryoObject> syaryoMap, String[] deleteRule) {
         //List<String> reject = new ArrayList();
         Map<String, Integer> reject = new ConcurrentHashMap();
         syaryoMap.values().parallelStream().forEach(syaryo -> {
@@ -856,14 +856,14 @@ public class SyaryoObjectFormatting {
         return newMap;
     }
 
-    private static void formExtra(SyaryoObject4 syaryo, String[] removeInfo) {
+    private static void formExtra(SyaryoObject syaryo, String[] removeInfo) {
         for (String remove : removeInfo) {
             syaryo.remove(remove);
         }
     }
 
     //日付に混じっているごみを削除 (日付が無い or 日付がおかしい)
-    private static void formDate(SyaryoObject4 syaryo, List indexList, Integer date) {
+    private static void formDate(SyaryoObject syaryo, List indexList, Integer date) {
         for (Object key : syaryo.getMap().keySet()) {
             Map<String, List> map = syaryo.get(key.toString());
             if (map == null) {
@@ -904,7 +904,7 @@ public class SyaryoObjectFormatting {
     }
 
     //KOMTRAXデータの整形 (値の重複除去、日付の整形、小数->整数)
-    private static void formKomtrax(SyaryoObject4 syaryo, Map<String, List> deploy) {
+    private static void formKomtrax(SyaryoObject syaryo, Map<String, List> deploy) {
         //ALL
         List<String> kmList = dataIndex.keySet().stream().filter(s -> s.contains("KOMTRAX")).collect(Collectors.toList());
         String stdate = deploy.keySet().stream().findFirst().get();
@@ -984,7 +984,7 @@ public class SyaryoObjectFormatting {
     }
 
     //空の情報を削除
-    private static void removeEmptyObject(SyaryoObject4 syaryo) {
+    private static void removeEmptyObject(SyaryoObject syaryo) {
         List<String> deleteKey = new ArrayList();
         for (String key : syaryo.getMap().keySet()) {
             if (syaryo.get(key) != null) {
