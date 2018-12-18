@@ -19,9 +19,11 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import obj.LoadSyaryoObject;
 import obj.SyaryoObject;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
+import param.KomatsuDataParameter;
 
 /**
  *
@@ -31,8 +33,15 @@ public class SyaryoToCompress {
     public static Boolean runnable = true;
     public static Integer fileSize, availSize;
     
+    private static LoadSyaryoObject LOADER = KomatsuDataParameter.LOADER;
+    
     public void write(String file, Map map) {
         runnable = true;
+        if(!LOADER.isClosable){
+            System.err.println("LoadSyaryoObject is not close!");
+            System.exit(0);
+        }
+            
         
         file = file.replace(".gz", "").replace(".bz2", "");
 

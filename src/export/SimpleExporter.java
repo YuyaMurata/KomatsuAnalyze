@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import file.SyaryoToCompress;
+import obj.LoadSyaryoObject;
 import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
@@ -23,27 +24,27 @@ import param.KomatsuDataParameter;
  *
  * @author ZZ17390
  */
-public class ExportData {
-
-    //レイアウト
-    private static Map<String, List> dataIndex = SyaryoObjectElementsIndex.getInstance().getIndex();
-    private static String PATH = KomatsuDataParameter.SYARYOOBJECT_FDPATH;
+public class SimpleExporter {
+    private static LoadSyaryoObject LOADER = KomatsuDataParameter.LOADER;
     private static String KISY = "PC200";
     private static Map<String, SyaryoObject> map;
 
     public static void main(String[] args) {
+        LOADER.setFile(KISY+"_sv_form");
+        map = LOADER.getSyaryoMap();
+        
         //ヘッダー設定
-        Map headers = new LinkedHashMap();
-        headers.put("SID", -1);
-        headers.put("SMR.SVC_MTR", dataIndex.get("SMR").indexOf("SVC_MTR"));
+        Map<String, Integer> headers = new LinkedHashMap();
+        headers.put("受注.会社", LOADER.index("受注", "会社CD"));
+        headers.put("受注.作番", LOADER.index("受注", "KEY"));
+        headers.put("受注.金額", LOADER.index("受注", "SKKG"));
         //headers.put("顧客.顧客CD", dataIndex.get("顧客").indexOf("NNSCD"));
         //headers.put("顧客.区分", dataIndex.get("顧客").indexOf("KKYK_KBN"));
         //headers.put("顧客.業種", dataIndex.get("顧客").indexOf("GYSCD"));
-
+        
+        System.out.println(headers);
+        
         Map filter = KomatsuDataParameter.PERIOD_MAINTE;
-
-        //車両の読み込み
-        map = new SyaryoToCompress().read(PATH + "syaryo_obj_" + KISY + "_sv_form.bz2");
 
         //単体
         //String name = "PC200-8N1-313582";
@@ -59,7 +60,7 @@ public class ExportData {
 
     private static void allExport(String f, Map<String, Integer> headers, Map filter) {
         try (PrintWriter pw = CSVFileReadWrite.writer(f)) {
-            pw.println(headers.keySet().stream().collect(Collectors.joining(",")));
+            pw.println("SID,"+headers.keySet().stream().collect(Collectors.joining(",")));
             for (String name : map.keySet()) {
                 System.out.println(name);
                 try (SyaryoAnalizer syaryo = new SyaryoAnalizer(map.get(name))) {
@@ -92,55 +93,11 @@ public class ExportData {
     }
 
     private static void export(PrintWriter pw, Map<String, Integer> headers, SyaryoAnalizer syaryo, Map filter) {
-        int cnt = 0;
-
-        //日付あり
-        List<String> dates = dateList(headers, syaryo);
-        System.out.println(dates);
-        for (String date : dates) {
-            StringBuilder line = new StringBuilder();
-            for (String key : headers.keySet()) {
-                String k = key.split("\\.")[0];
-                int idx = headers.get(key);
-                String str = "";
-                try {
-                    if (key.equals("SID")) {
-                        str = syaryo.syaryo.name;
-                    } else if (key.equals("日付")) {
-                        str = date.split("#")[0];
-                    } else if (key.equals("経過")) {
-                        str = syaryo.age(date).toString();
-                    } else if (key.contains("受注")) {
-                        String sbns = syaryo.getSBNDate(date, false);
-                        if (sbns.contains(",")) {
-                            //System.out.println(sbns);
-                        }
-                        for (String sbn : sbns.split(",")) {
-                            str = (String) syaryo.get().get(k).get(sbn).get(idx);
-                        }
-                    } else if (key.contains("作業")) {
-                        String sbns = syaryo.getSBNDate(date, false);
-                        for (String sbn : sbns.split(",")) {
-                            str = (String) syaryo.getSBNWork(sbn).values().stream().map(s -> s.get(idx)).collect(Collectors.joining("_"));
-                        }
-                    } else if (key.contains("部品")) {
-                        String sbns = syaryo.getSBNDate(date, false);
-                        for (String sbn : sbns.split(",")) {
-                            str = (String) syaryo.getSBNParts(sbn).values().stream().map(s -> s.get(idx)).collect(Collectors.joining("_"));
-                        }
-                    } else {
-                        str = (String) syaryo.get().get(k).get(date).get(idx);
-                    }
-                } catch (NullPointerException e) {
-                }
-
-                line.append(str).append(",");
-
-            }
-            //System.out.println(line);
-            line.deleteCharAt(line.length() - 1);
-            pw.println(line);
-        }
+        List<Integer> index = new ArrayList(headers.values());
+        String key = headers.keySet().stream().findFirst().get().split("\\.")[0];
+        syaryo.getValue(key, index.toArray(new Integer[index.size()])).values().stream()
+                            .map(s -> syaryo.get().name+","+String.join(",", s))
+                            .forEach(pw::println);
     }
     
     private static List<String> dateList(Map<String, Integer> headers, SyaryoAnalizer syaryo) {

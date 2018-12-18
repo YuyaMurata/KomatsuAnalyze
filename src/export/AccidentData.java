@@ -5,6 +5,7 @@
  */
 package export;
 
+import analizer.SyaryoAnalizer;
 import file.CSVFileReadWrite;
 import java.io.PrintWriter;
 import java.util.List;
@@ -12,7 +13,13 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import file.SyaryoToCompress;
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import obj.LoadSyaryoObject;
 import obj.SyaryoObject;
+import param.KomatsuDataParameter;
 
 /**
  *
@@ -20,11 +27,13 @@ import obj.SyaryoObject;
  */
 public class AccidentData {
 
-    private static String kisy = "PC138US";
+    private static String kisy = "PC200";
+    private static LoadSyaryoObject LOADER = KomatsuDataParameter.LOADER;
+    private static List<String> ACCIDENT_WORDS = KomatsuDataParameter.ACCIDENT_WORDS;
 
     public static void main(String[] args) {
-        String filename = "syaryo\\syaryo_obj_" + kisy + "_form.bz2";
-        Map<String, SyaryoObject> syaryoMap = new SyaryoToCompress().read(filename);
+        LOADER.setFile(kisy + "_sv_form");
+        Map<String, SyaryoObject> syaryoMap = LOADER.getSyaryoMap();
 
         String outputname = "accident_" + kisy + ".csv";
         try (PrintWriter csv = CSVFileReadWrite.writer(outputname)) {
@@ -35,55 +44,44 @@ public class AccidentData {
     public static void extractAccident(Map<String, SyaryoObject> syaryoMap, PrintWriter csv) {
         int cnt = 0;
 
-        csv.println("SID,SMR,金額,概要");
+        int compidx = LOADER.index("受注", "会社CD");
+        int priceidx = LOADER.index("受注", "SKKG");
+
+        int odrtxtidx = LOADER.index("受注", "GAIYO_1");
+        int odrtxtidx2 = LOADER.index("受注", "GAIYO_2");
+        int wrktxtidx = LOADER.index("作業", "SGYO_NM");
+
+        csv.println("SID,会社CD,作番,金額,テキスト");
         for (SyaryoObject syaryo : syaryoMap.values()) {
+            try (SyaryoAnalizer analize = new SyaryoAnalizer(syaryo)) {
 
-            cnt++;
-            if (syaryo.get("受注") == null) {
-                System.out.println(syaryo.getName());
-                continue;
-            }
-
-            Map<String, List> accident = syaryo.get("受注").entrySet().stream()
-                .filter(s -> s.getValue().get(10).toString().contains("横転")
-                || s.getValue().get(10).toString().contains("水没")
-                || s.getValue().get(10).toString().contains("横転")
-                || s.getValue().get(10).toString().contains("転倒"))
-                .collect(Collectors.toMap(s -> s.getKey(), s -> s.getValue()));
-
-            if (accident == null || accident.isEmpty() || syaryo.get("KOMTRAX_SMR") == null) {
-                continue;
-            }
-
-            TreeMap<Integer, String> smr = new TreeMap();
-            for (String date : syaryo.get("KOMTRAX_SMR").keySet()) {
-                smr.put(Integer.valueOf(date.replace("/", "").split("#")[0]),
-                    (String) syaryo.get("KOMTRAX_SMR").get(date).get(0));
-            }
-
-            StringBuilder sb = new StringBuilder();
-            for (String sbn : accident.keySet()) {
-                List<String> list = accident.get(sbn);
-                String date = list.get(4);
-                Integer date_int = Integer.valueOf(date.replace("/", ""));
-                sb.append(syaryo.getName());
-                sb.append(",");
-                try {
-                    sb.append(smr.floorEntry(date_int).getValue());
-                } catch (NullPointerException e) {
-                    sb.append(smr.higherEntry(date_int).getValue());
+                cnt++;
+                if (syaryo.get("受注") == null) {
+                    System.out.println(syaryo.getName());
+                    continue;
                 }
-                sb.append(",");
-                sb.append(list.get(0));
-                sb.append(",");
-                sb.append(sbn);
-                sb.append(",");
-                sb.append(list.get(13));
-                sb.append(",");
-                    sb.append(list.get(10));
-                sb.append("\n");
+
+                for (String sbn : syaryo.get("受注").keySet()) {
+                    String txt = syaryo.get("受注").get(sbn).get(odrtxtidx) + ","
+                        + syaryo.get("受注").get(sbn).get(odrtxtidx2) + ","
+                        + (analize.getSBNWork(sbn) != null ? analize.getSBNWork(sbn).values().stream().map(w -> w.get(wrktxtidx)).collect(Collectors.joining(",")) : "");
+                    
+                    Optional<String> accidents = ACCIDENT_WORDS.stream().filter(w -> txt.contains(w)).findFirst();
+                    if(!accidents.isPresent())
+                        continue;
+                    
+                    List line = new ArrayList();
+                    line.add(syaryo.name);
+                    line.add(syaryo.get("受注").get(sbn).get(compidx));
+                    line.add(sbn);
+                    line.add(syaryo.get("受注").get(sbn).get(priceidx));
+                    line.add(txt);
+                    
+                    csv.println(String.join(",", line));
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
-            csv.println(sb.toString());
         }
     }
 }

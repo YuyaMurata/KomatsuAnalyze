@@ -23,8 +23,13 @@ public class ListToCSV {
         List<String> list = new ArrayList<>();
         try(BufferedReader br = CSVFileReadWrite.reader(csv)){
             String line;
-            while((line = br.readLine()) != null)
+            while((line = br.readLine()) != null){
+                //コメント除外
+                if(line.charAt(0) == '#')
+                    continue;
+                
                 list.add(line);
+            }
             
             return list;
         } catch (IOException ex) {

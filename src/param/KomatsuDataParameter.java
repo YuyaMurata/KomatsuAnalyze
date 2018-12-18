@@ -66,7 +66,7 @@ public interface KomatsuDataParameter {
     public static String GRAPH_TEMP_FILE = PYTHONE_PATH+"csv\\graph_temp.csv";
 
     //Layout
-    public static Map<String, List> DATALAYOUT_INDEX = SyaryoObjectElementsIndex.getInstance().getIndex();
+    //public static Map<String, List> DATALAYOUT_INDEX = SyaryoObjectElementsIndex.getInstance().getIndex();
     public static String LAYOUT_FORMAT_PATH = "index\\obj_layout_format.json";
 
     //Formalize

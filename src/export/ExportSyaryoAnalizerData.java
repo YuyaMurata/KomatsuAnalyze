@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import java.util.Map;
 import obj.LoadSyaryoObject;
 import obj.SyaryoObject;
+import param.KomatsuDataParameter;
 
 /**
  *
@@ -19,9 +20,11 @@ import obj.SyaryoObject;
 public class ExportSyaryoAnalizerData {
 
     private static String KISY = "PC200";
+    private static LoadSyaryoObject LOADER = KomatsuDataParameter.LOADER;
 
     public static void main(String[] args) {
-        Map<String, SyaryoObject> syaryoMap = LoadSyaryoObject.load(KISY + "_km_form.bz2");
+        LOADER.setFile(KISY+"_km_form");
+        Map<String, SyaryoObject> syaryoMap = LOADER.getSyaryoMap();
         try (PrintWriter csv = CSVFileReadWrite.writer(KISY + "_syaryo_analize_summary.csv")) {
             csv.println(SyaryoAnalizer.getHeader());
             for (SyaryoObject syaryo : syaryoMap.values()) {

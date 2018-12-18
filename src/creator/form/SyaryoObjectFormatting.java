@@ -44,7 +44,7 @@ public class SyaryoObjectFormatting {
     private static String currentKey;
 
     private static void form(String kisy) {
-        LOADER.setFile(kisy + "_sv.bz2");
+        LOADER.setFile(kisy + "_km");
         Map<String, SyaryoObject> syaryoMap = LOADER.getSyaryoMap();
         
         //本社コード
@@ -151,7 +151,7 @@ public class SyaryoObjectFormatting {
         R.close();
         
         //Headerの付加
-        syaryoMap.put("_header", LOADER._header);
+        LOADER.close();
         
         new SyaryoToCompress().write(LOADER.getFilePath().replace(".bz2", "_form.bz2"), syaryoMap);
     }

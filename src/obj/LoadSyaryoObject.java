@@ -18,6 +18,7 @@ import param.KomatsuDataParameter;
 public class LoadSyaryoObject {
     private static LoadSyaryoObject instance = new LoadSyaryoObject();
     private String PATH;
+    public Boolean isClosable = true; //ファイル書き込み時のチェック用
     public SyaryoObject _header; //直接アクセスしない
     private Map<String, SyaryoObject> syaryoMap;
     
@@ -44,7 +45,10 @@ public class LoadSyaryoObject {
     
     private Map<String, SyaryoObject> load(String filename){
         if(!filename.contains("\\"))
-            PATH = PATH + "syaryo_obj_" + filename;
+            PATH = PATH + "syaryo_obj_" + filename + ".bz2";
+        
+        //Open
+        isClosable = false;
         
         //車両の読み込み
         Map<String, SyaryoObject> map = new SyaryoToCompress().read(PATH);
@@ -66,5 +70,10 @@ public class LoadSyaryoObject {
     
     public Map<String, SyaryoObject> getSyaryoMap(){
         return syaryoMap;
+    }
+    
+    public void close(){
+        isClosable = true;
+        syaryoMap.put("_header", _header);
     }
 }

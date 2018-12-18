@@ -5,8 +5,10 @@
  */
 package param;
 
+import file.ListToCSV;
 import java.util.Map;
 import file.MapToJSON;
+import java.util.List;
 
 /**
  *
@@ -26,4 +28,7 @@ public interface KomatsuUserParameter {
     //評価行列
     public static String PC200_PARTS_EVAL_FILE="PC200_partscd_evalarray.csv";
     public static String PC200_KMERR_EVAL_FILE="PC200_kmerrcd_evalarray.csv";
+    
+    //削除車両
+    public static List<String> PC200_REJECT_LIST = ListToCSV.toList("user\\PC200_rejectSID.csv");
 }

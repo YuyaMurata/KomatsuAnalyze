@@ -31,7 +31,7 @@ public class AttachedLayoutIndex {
             return;
         }
         
-        KomatsuDataParameter.LOADER.setFile(kisy+".bz2");
+        KomatsuDataParameter.LOADER.setFile(kisy+"_sv_form");
         Map<String, SyaryoObject> map = KomatsuDataParameter.LOADER.getSyaryoMap();
         
         SyaryoObject header = new SyaryoObject("_header");
