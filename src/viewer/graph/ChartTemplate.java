@@ -7,9 +7,7 @@ package viewer.graph;
 
 import file.CSVFileReadWrite;
 import java.io.PrintWriter;
-import java.util.List;
 import java.util.Map;
-import javafx.concurrent.Task;
 import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 import program.py.PythonCommand;
@@ -30,7 +28,7 @@ public abstract class ChartTemplate{
         System.out.println(name+"-CSV 生成");
         try(PrintWriter csv = CSVFileReadWrite.writer(KomatsuDataParameter.GRAPH_TEMP_FILE)){
             csv.println("Syaryo,"+name);
-            csv.println(map.get("header"));
+            csv.println("Date,"+map.get("header"));
             map.remove("header");
             
             map.entrySet().stream()
@@ -66,10 +64,10 @@ public abstract class ChartTemplate{
         PythonCommand.py(script, KomatsuDataParameter.GRAPH_TEMP_FILE);
     }
     
-    public abstract Map<String, String> graphFile(String select, SyaryoObject syaryo);
+    public abstract Map<String, String> graphFile(String select, int idx, SyaryoObject syaryo);
     
-    public void graph(String select, SyaryoObject syaryo){
-        Map<String, String> data = graphFile(select, syaryo);
+    public void graph(String select, int idx, SyaryoObject syaryo){
+        Map<String, String> data = graphFile(select, idx, syaryo);
         if(data != null){
             String script = PY_PATH+PY_SCRIPT.get(select);
             chart(syaryo.getName(), data);

@@ -16,9 +16,11 @@ import obj.SyaryoObject;
 public class ButtonService extends Service<Void>{
     public static SyaryoObject syaryo;
     public static String smenu;
+    public static int sidx;
     
-    public void setInfo(String menu, SyaryoObject current){
+    public void setInfo(String menu, int idx, SyaryoObject current){
         smenu = menu;
+        sidx = idx;
         syaryo = current;
     }
     

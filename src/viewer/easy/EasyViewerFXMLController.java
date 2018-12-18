@@ -43,7 +43,7 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import file.SyaryoToCompress;
+import obj.LoadSyaryoObject;
 import obj.SyaryoObject;
 import viewer.service.ButtonService;
 
@@ -62,6 +62,7 @@ public class EasyViewerFXMLController implements Initializable {
     private ListView<?> keylist;
     private Accordion viewarea;
 
+    private static LoadSyaryoObject LOADER = KomatsuDataParameter.LOADER;
     private Map<String, SyaryoObject> syaryoMap;
 
     @FXML
@@ -117,6 +118,8 @@ public class EasyViewerFXMLController implements Initializable {
 
         //default
         fileLoad(new File("syaryo\\syaryo_obj_PC200_sv_form.bz2"));
+        
+        //LOADER.indexes("受注");
         
     }
 
@@ -229,23 +232,13 @@ public class EasyViewerFXMLController implements Initializable {
             protected Void call() throws Exception {
                 Platform.runLater(() -> fileProgress.setProgress(-1));
                 Platform.runLater(() -> id_label.setText(file.getName()));
-                syaryoMap = loadSyaryoMap(file);
+                LOADER.setFile(file);
+                syaryoMap = LOADER.getSyaryoMap();
                 Platform.runLater(() -> updateKeyList(new ArrayList(new TreeSet(syaryoMap.keySet()))));
                 Platform.runLater(() -> fileProgress.setProgress(1));
                 return null;
             }
         };
-    }
-
-    private Map loadSyaryoMap(File file) {
-        System.out.println(file.getName());
-        currentFile = file.getName();
-
-        if (file.getName().contains(".bz2")) {
-            return new SyaryoToCompress().guiRead(file.getAbsolutePath());
-        } else {
-            return new SyaryoToCompress().readJSON(file.getAbsolutePath());
-        }
     }
 
     private void updateKeyList(List keys) {
@@ -394,8 +387,8 @@ public class EasyViewerFXMLController implements Initializable {
             return;
         }
 
-        System.out.println(v);
-        service.setInfo(v, currentSyaryo);
+        System.out.println(v+":"+LOADER.indexes(v));
+        service.setInfo(v, LOADER.index(v, "VALUE"), currentSyaryo);
         service.restart();
     }
 

@@ -7,6 +7,8 @@ package obj;
 
 import java.util.Map;
 import file.SyaryoToCompress;
+import java.io.File;
+import java.util.List;
 import param.KomatsuDataParameter;
 
 /**
@@ -15,9 +17,9 @@ import param.KomatsuDataParameter;
  */
 public class LoadSyaryoObject {
     private static LoadSyaryoObject instance = new LoadSyaryoObject();
-    private static String PATH = KomatsuDataParameter.SYARYOOBJECT_FDPATH;
-    private static SyaryoObject header;
-    private static Map<String, SyaryoObject> syaryoMap;
+    private String PATH;
+    public SyaryoObject _header; //直接アクセスしない
+    private Map<String, SyaryoObject> syaryoMap;
     
     private LoadSyaryoObject() {
     }
@@ -26,24 +28,40 @@ public class LoadSyaryoObject {
         return instance;
     }
     
+    public String getFilePath(){
+        return PATH;
+    }
+    
     public void setFile(String file){
+        PATH = KomatsuDataParameter.SYARYOOBJECT_FDPATH;
         syaryoMap = load(file);
     }
     
+    public void setFile(File file){
+        PATH = file.getAbsolutePath();
+        syaryoMap = load(file.getAbsolutePath());
+    }
+    
     private Map<String, SyaryoObject> load(String filename){
+        if(!filename.contains("\\"))
+            PATH = PATH + "syaryo_obj_" + filename;
+        
         //車両の読み込み
-        Map<String, SyaryoObject> map = new SyaryoToCompress().read(PATH + "syaryo_obj_" + filename);
+        Map<String, SyaryoObject> map = new SyaryoToCompress().read(PATH);
         
         //ヘッダの読み込み
-        header = map.get("_header");
+        _header = map.get("_header");
         map.remove("_header");
         
         return map;
     }
     
     public Integer index(String key, String element){        
-        header.startHighPerformaceAccess();
-        return header.get(key).get(key).indexOf(element);
+        return _header.get(key).get(key).indexOf(element);
+    }
+    
+    public List<String> indexes(String key){
+        return _header.get(key).get(key);
     }
     
     public Map<String, SyaryoObject> getSyaryoMap(){

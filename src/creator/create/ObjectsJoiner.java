@@ -71,6 +71,9 @@ public class ObjectsJoiner {
         
         zip3.write(filename, syaryoMap);
         
+        //レイアウトを付加
+        AttachedLayoutIndex.attached(kisy);
+        
         return syaryoMap.size();
     }
     

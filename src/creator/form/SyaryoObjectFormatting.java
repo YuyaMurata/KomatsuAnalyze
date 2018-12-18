@@ -7,7 +7,6 @@ package creator.form;
 
 import analizer.SyaryoAnalizer;
 import google.map.MapPathData;
-import index.SyaryoObjectElementsIndex;
 import java.text.DecimalFormat;
 import java.util.ArrayDeque;
 import param.KomatsuDataParameter;
@@ -22,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import file.MapToJSON;
 import file.SyaryoToCompress;
+import obj.LoadSyaryoObject;
 import obj.SyaryoObject;
 import program.r.R;
 
@@ -32,11 +32,10 @@ import program.r.R;
 public class SyaryoObjectFormatting {
 
     private static String KISY = "PC200";
-    private static String OBJPATH = KomatsuDataParameter.OBJECT_PATH;
     private static String HONSY_INDEXPATH = KomatsuDataParameter.HONSYA_INDEX_PATH;
     private static String PRODUCT_INDEXPATH = KomatsuDataParameter.PRODUCT_INDEXPATH;
     private static DecimalFormat df = new DecimalFormat("0000");
-    private static Map<String, List> dataIndex = SyaryoObjectElementsIndex.getInstance().getIndex();
+    private static LoadSyaryoObject LOADER = KomatsuDataParameter.LOADER;
 
     public static void main(String[] args) {
         form(KISY);
@@ -45,9 +44,8 @@ public class SyaryoObjectFormatting {
     private static String currentKey;
 
     private static void form(String kisy) {
-        SyaryoToCompress zip3 = new SyaryoToCompress();
-        String filename = OBJPATH + "syaryo_obj_" + kisy + ".bz2";
-        Map<String, SyaryoObject> syaryoMap = zip3.read(filename);
+        LOADER.setFile(kisy + "_sv.bz2");
+        Map<String, SyaryoObject> syaryoMap = LOADER.getSyaryoMap();
         
         //本社コード
         Map<String, String> honsyIndex = new MapToJSON().toMap(HONSY_INDEXPATH);
@@ -73,29 +71,29 @@ public class SyaryoObjectFormatting {
             Map newMap;
 
             //日付ズレの補正 閾値以降のデータを削除
-            formDate(syaryo, dataIndex.get("受注"), 20170501);
+            formDate(syaryo, LOADER.indexes("受注"), 20170501);
 
             //生産の整形
             newMap = formProduct(syaryo.get("生産"), productIndex, syaryo.getName());
             syaryo.put("生産", newMap);
 
             //顧客の整形
-            newMap = formOwner(syaryo.get("顧客"), dataIndex.get("顧客"), honsyIndex, syaryo.get("経歴"), dataIndex.get("経歴"), rule);
+            newMap = formOwner(syaryo.get("顧客"), LOADER.indexes("顧客"), honsyIndex, syaryo.get("経歴"), LOADER.indexes("経歴"), rule);
             syaryo.put("顧客", newMap);
 
             //新車の整形
             if(KomatsuDataParameter.PC_KR_SMASTER.get(syaryo.getName().split("-")[0]+"-"+syaryo.getName().split("-")[2]) != null)
                 syaryo.put("新車", null);
-            newMap = formNew(syaryo.get("新車"), syaryo.get("生産"), syaryo.get("出荷"), dataIndex.get("新車"));
+            newMap = formNew(syaryo.get("新車"), syaryo.get("生産"), syaryo.get("出荷"), LOADER.indexes("新車"));
             syaryo.put("新車", newMap);
             rule.addNew(newMap.keySet().stream().findFirst().get().toString());
 
             //中古車の整形
-            newMap = formUsed(syaryo.get("中古車"), dataIndex.get("中古車"), rule.getNew(), rule.getKUEC());
+            newMap = formUsed(syaryo.get("中古車"), LOADER.indexes("中古車"), rule.getNew(), rule.getKUEC());
             syaryo.put("中古車", newMap);
 
             //受注
-            newMap = formOrder(syaryo.get("受注"), dataIndex.get("受注"), rule);
+            newMap = formOrder(syaryo.get("受注"), LOADER.indexes("受注"), rule);
             syaryo.put("受注", newMap);
             List sbnList = null;
             if (syaryo.get("受注") != null) {
@@ -103,23 +101,23 @@ public class SyaryoObjectFormatting {
             }
 
             //廃車
-            newMap = formDead(syaryo.get("廃車"), rule.currentDate, dataIndex.get("廃車"));
+            newMap = formDead(syaryo.get("廃車"), rule.currentDate, LOADER.indexes("廃車"));
             syaryo.put("廃車", newMap);
 
             //作業
-            newMap = formWork(syaryo.get("作業"), sbnList, dataIndex.get("作業"), rule.getWORKID());
+            newMap = formWork(syaryo.get("作業"), sbnList, LOADER.indexes("作業"), rule.getWORKID());
             syaryo.put("作業", newMap);
 
             //部品
-            newMap = formParts(syaryo.get("部品"), sbnList, dataIndex.get("部品"), rule.getPARTSID());
+            newMap = formParts(syaryo.get("部品"), sbnList, LOADER.indexes("部品"), rule.getPARTSID());
             syaryo.put("部品", newMap);
 
             //SMR
-            newMap = formSMR(syaryo.get("SMR"), dataIndex.get("SMR"));
+            newMap = formSMR(syaryo.get("SMR"), LOADER.indexes("SMR"));
             syaryo.put("SMR", newMap);
 
             //AS
-            newMap = formAS(syaryo.get("オールサポート"), dataIndex.get("オールサポート"));
+            newMap = formAS(syaryo.get("オールサポート"), LOADER.indexes("オールサポート"));
             syaryo.put("オールサポート", newMap);
 
             //Komtrax
@@ -151,9 +149,11 @@ public class SyaryoObjectFormatting {
 
         //R
         R.close();
-
-        String outfile = OBJPATH + "syaryo_obj_" + kisy + "_form.bz2";
-        zip3.write(outfile, syaryoMap);
+        
+        //Headerの付加
+        syaryoMap.put("_header", LOADER._header);
+        
+        new SyaryoToCompress().write(LOADER.getFilePath().replace(".bz2", "_form.bz2"), syaryoMap);
     }
     
     private static Map reduce(Map<String, List> r, List<Integer> exp){
@@ -253,20 +253,13 @@ public class SyaryoObjectFormatting {
             return null;
         }
 
-        Integer company = indexList.indexOf("KSYCD");
-        Integer ownerID = indexList.indexOf("NNSCD");
-        Integer ownerName = indexList.indexOf("NNSK_NM_1");
+        Integer company = indexList.indexOf("会社CD");
+        Integer ownerID = indexList.indexOf("顧客CD");
+        Integer ownerName = indexList.indexOf("顧客名");
 
-        Integer hist_cid = indexHisList.indexOf("HY_KKYKCD");
-        Integer syareki = indexHisList.indexOf("SYRK_KBN");
-
-        /*使用顧客情報の確認
-        owner.values().stream()
-                .filter(o -> (o.get(ownerName).toString().contains("住商") || 
-                    o.get(ownerName).toString().contains("ファイナンス") || 
-                    o.get(ownerName).toString().contains("三井") || 
-                    o.get(ownerName).toString().contains("住友"))).forEach(e -> System.out.println(currentKey));
-         */
+        Integer hist_cid = indexHisList.indexOf("顧客CD");
+        Integer syareki = indexHisList.indexOf("車歴区分");
+        
         //日付データ揃え
         owner = dateFormalize(owner);
 
@@ -307,28 +300,7 @@ public class SyaryoObjectFormatting {
             .collect(Collectors.toList());
         //System.out.println(owners);
         owners = exSeqDuplicate(owners);
-
-        //経歴情報から特定の顧客を排除 (車両ごとにパターンが異なるため不可能?)
-        /*if (history != null) {
-            if (history.size() > 1) {
-                //繰り返し検知 3以上繰り返したもの
-                Boolean cycle = false;
-
-                for (String date : history.keySet()) {
-                    String id = history.get(date).get(hist_cid).toString();
-                    long cnt = owners.stream().filter(own -> own.equals(id)).count();
-                    if (cnt > 2) {
-                        cycle = true;
-                    }
-                }
-
-                if (cycle) {
-                    System.out.println(currentKey + "," + history);
-
-                    //System.exit(0);
-                }
-            }
-        }*/
+        
         if (owners.isEmpty()) {
             //System.out.println("使用顧客が存在しない車両(後で削除)");
             return null;
@@ -551,14 +523,11 @@ public class SyaryoObjectFormatting {
         //日付ソート
         int date = indexList.indexOf("ODDAY"); //kom_orderが紐づく場合 ODDAY
         //System.out.println(order);
-        //確認
-        /*order.entrySet().stream()
-                    .filter(e -> e.getValue().get(date).equals("None"))
-                    .forEach(e -> System.out.println(currentKey+":"+e.getKey()));
-         */
+
         Map<String, Integer> sortMap = order.entrySet().stream()
             .filter(e -> !e.getValue().get(date).equals("None"))
             .collect(Collectors.toMap(e -> e.getKey(), e -> Integer.valueOf(e.getValue().get(date).toString())));
+        
         //作番重複除去
         List<String> sbnList = sortMap.entrySet().stream()
             .sorted(Map.Entry.comparingByValue()).map(s -> s.getKey())
@@ -569,7 +538,7 @@ public class SyaryoObjectFormatting {
         //System.out.println("作番:"+sbnList);
         Map<String, List<String>> map = new LinkedHashMap();
 
-        int db = indexList.indexOf("kom_order");
+        int db = indexList.indexOf("DB");
         int price = indexList.indexOf("SKKG");
         int kind = indexList.indexOf("ODR_KBN");
 
@@ -656,7 +625,7 @@ public class SyaryoObjectFormatting {
 
         Map<String, List<String>> map = new LinkedHashMap();
 
-        int db = indexList.indexOf("work_info");
+        int db = indexList.indexOf("DB");
 
         for (Object sbn : odrSBN) {
             //重複作番を取り出す
@@ -680,7 +649,7 @@ public class SyaryoObjectFormatting {
         }
 
         //代表作業抽出と設定
-        int daihyoIdx = indexList.indexOf("0"); // DIHY_SGYO_FLG
+        int daihyoIdx = indexList.indexOf("DIHY_SGYO_FLG");
         int sgcdIdx = indexList.indexOf("SGYOCD");
         int sgnmIdx = indexList.indexOf("SGYO_NM");
         work.entrySet().stream()
@@ -725,7 +694,7 @@ public class SyaryoObjectFormatting {
 
         Map<String, List<String>> map = new LinkedHashMap();
 
-        int db = indexList.indexOf("service");
+        int db = indexList.indexOf("DB");
 
         for (Object sbn : odrSBN) {
             //重複作番を取り出す
@@ -774,7 +743,7 @@ public class SyaryoObjectFormatting {
             return null;
         }
 
-        int smridx = indexList.indexOf("SVC_MTR");
+        int smridx = indexList.indexOf("VALUE");
 
         //日付重複除去
         List<String> dateList = smr.keySet().stream()
@@ -839,7 +808,7 @@ public class SyaryoObjectFormatting {
             return null;
         }
 
-        int kaiyaku = indexList.indexOf("MK_KIYK");
+        int kaiyaku = indexList.indexOf("満了日");
 
         Map newMap = new TreeMap();
         for (String date : as.keySet()) {
@@ -906,7 +875,7 @@ public class SyaryoObjectFormatting {
     //KOMTRAXデータの整形 (値の重複除去、日付の整形、小数->整数)
     private static void formKomtrax(SyaryoObject syaryo, Map<String, List> deploy) {
         //ALL
-        List<String> kmList = dataIndex.keySet().stream().filter(s -> s.contains("KOMTRAX")).collect(Collectors.toList());
+        List<String> kmList = KomatsuDataParameter.DATA_ORDER.stream().filter(s -> s.contains("KOMTRAX")).collect(Collectors.toList());
         String stdate = deploy.keySet().stream().findFirst().get();
         
         for (String id : kmList) {

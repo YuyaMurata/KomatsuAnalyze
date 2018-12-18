@@ -81,15 +81,21 @@ public class TimeSpreadChart extends ChartTemplate {
     }
 
     @Override
-    public Map<String, String> graphFile(String select, SyaryoObject syaryo) {
+    public Map<String, String> graphFile(String select, int idx, SyaryoObject syaryo) {
+        try{
         if (select.equals("SMR") || select.equals("KOMTRAX_SMR") || select.equals("KOMTRAX_FUEL_CONSUME")) {
             Map data = syaryo.get(select);
-            data.put("header", "Date,Value");
-            return graphFormatter(data, KomatsuDataParameter.LOADER.index(select, "VALUE"));
+            Map map = graphFormatter(data, idx);
+            map.put("header", "Value");
+            return map;
         } else if (select.equals("KOMTRAX_ERROR")) {
             Map data = kmerror(syaryo);
             return graphFormatter(data, -1);
         } else {
+            return null;
+        }
+        }catch(Exception e){
+            e.printStackTrace();
             return null;
         }
     }
