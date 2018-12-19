@@ -6,7 +6,9 @@
 package viewer.graph;
 
 import file.CSVFileReadWrite;
+import file.ListToCSV;
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.Map;
 import obj.SyaryoObject;
 import param.KomatsuDataParameter;
@@ -19,43 +21,9 @@ import program.py.PythonCommand;
 public abstract class ChartTemplate{
     private static String PY_PATH = KomatsuDataParameter.PYTHONE_PATH;
     private static Map<String, String> PY_SCRIPT = KomatsuDataParameter.GRAPH_PY;
+    private static String PY_CSV_FILE = KomatsuDataParameter.GRAPH_TEMP_FILE;
     
     public ChartTemplate() {
-    }
-    
-    public void chart(String name, Map<String, String> map){
-        //CSVFile 生成
-        System.out.println(name+"-CSV 生成");
-        try(PrintWriter csv = CSVFileReadWrite.writer(KomatsuDataParameter.GRAPH_TEMP_FILE)){
-            csv.println("Syaryo,"+name);
-            csv.println("Date,"+map.get("header"));
-            map.remove("header");
-            
-            map.entrySet().stream()
-                        .map(e -> e.getKey().substring(0,8)+","+e.getValue().replace("None", "NaN"))
-                        .forEach(csv::println);
-            
-            /*for(String date : map.keySet()){
-                List values = map.get(date);
-                String d = date.split("#")[0].split(" ")[0].replace("/", "");
-                if(d.length() > 8)
-                    d = d.substring(0, 8);
-                
-                StringBuilder sb = new StringBuilder(d);
-                i++;
-                for(Object v : values){
-                    sb.append(",");
-                    if(v.equals("None"))
-                        sb.append("NaN");
-                    else
-                        sb.append(v);
-                }
-                csv.println(sb.toString());
-                
-                if(i%1000 == 0)
-                    System.out.println(i+"件処理");     
-            }*/
-        }
     }
     
     public void exec(String name, String script){
@@ -64,13 +32,18 @@ public abstract class ChartTemplate{
         PythonCommand.py(script, KomatsuDataParameter.GRAPH_TEMP_FILE);
     }
     
-    public abstract Map<String, String> graphFile(String select, int idx, SyaryoObject syaryo);
+    public abstract List<String> graphFile(String select, int idx, SyaryoObject syaryo);
     
     public void graph(String select, int idx, SyaryoObject syaryo){
-        Map<String, String> data = graphFile(select, idx, syaryo);
+        List<String> data = graphFile(select, idx, syaryo);
         if(data != null){
             String script = PY_PATH+PY_SCRIPT.get(select);
-            chart(syaryo.getName(), data);
+            System.out.println(syaryo.name+"-CSV 生成 scripts:"+PY_SCRIPT.get(select));
+            
+            //CSV生成
+            ListToCSV.toCSV(PY_CSV_FILE, data);
+            
+            //Python 実行
             exec(syaryo.getName(), script);
         }
     }

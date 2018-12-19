@@ -38,8 +38,7 @@ public class ListToCSV {
         }
     }
     
-    public static void toCSV(String csv){
-        List<String> list = new ArrayList<>();
+    public static void toCSV(String csv, List list){
         try(PrintWriter pw = CSVFileReadWrite.writer(csv)){
             list.stream().forEach(pw::println);   
         }

@@ -51,7 +51,7 @@ public class AccidentData {
         int odrtxtidx2 = LOADER.index("受注", "GAIYO_2");
         int wrktxtidx = LOADER.index("作業", "SGYO_NM");
 
-        csv.println("SID,会社CD,作番,金額,テキスト");
+        csv.println("SID,会社CD,作番,判定,金額,テキスト");
         for (SyaryoObject syaryo : syaryoMap.values()) {
             try (SyaryoAnalizer analize = new SyaryoAnalizer(syaryo)) {
 
@@ -66,7 +66,7 @@ public class AccidentData {
                         + syaryo.get("受注").get(sbn).get(odrtxtidx2) + ","
                         + (analize.getSBNWork(sbn) != null ? analize.getSBNWork(sbn).values().stream().map(w -> w.get(wrktxtidx)).collect(Collectors.joining(",")) : "");
                     
-                    Optional<String> accidents = ACCIDENT_WORDS.stream().filter(w -> txt.contains(w)).findFirst();
+                    Optional<String> accidents = ACCIDENT_WORDS.stream().filter(w -> txt.contains(w)).map(w -> w).findFirst();
                     if(!accidents.isPresent())
                         continue;
                     
@@ -74,6 +74,7 @@ public class AccidentData {
                     line.add(syaryo.name);
                     line.add(syaryo.get("受注").get(sbn).get(compidx));
                     line.add(sbn);
+                    line.add(accidents.get());
                     line.add(syaryo.get("受注").get(sbn).get(priceidx));
                     line.add(txt);
                     

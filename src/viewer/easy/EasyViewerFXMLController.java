@@ -312,11 +312,7 @@ public class EasyViewerFXMLController implements Initializable {
     }
 
     private void graphMenuSettings() {
-        graph_menu.getItems().add("SMR");
-        graph_menu.getItems().add("KOMTRAX_SMR");
-        graph_menu.getItems().add("KOMTRAX_ERROR");
-        graph_menu.getItems().add("KOMTRAX_FUEL_CONSUME");
-        graph_menu.getItems().add("KOMTRAX_GPS");
+        graph_menu.getItems().addAll(KomatsuDataParameter.GRAPH_PY.keySet());
     }
 
     @FXML

@@ -29,7 +29,6 @@ import param.KomatsuDataParameter;
  * @author ZZ17390
  */
 public class SyaryoAnalizer implements AutoCloseable {
-
     public SyaryoObject syaryo;
     public String kind = "";
     public String type = "";
