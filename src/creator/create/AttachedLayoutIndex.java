@@ -31,7 +31,7 @@ public class AttachedLayoutIndex {
             return;
         }
         
-        KomatsuDataParameter.LOADER.setFile(kisy+"_sv_form");
+        KomatsuDataParameter.LOADER.setFile(kisy);
         Map<String, SyaryoObject> map = KomatsuDataParameter.LOADER.getSyaryoMap();
         
         SyaryoObject header = new SyaryoObject("_header");
@@ -46,6 +46,7 @@ public class AttachedLayoutIndex {
         header.putAll(formatter);
         map.put("_header", header);
         
+        KomatsuDataParameter.LOADER.close();
         new SyaryoToCompress().write(KomatsuDataParameter.LOADER.getFilePath(), map);
         System.out.println("Attached SyaryoData Index!");
     }

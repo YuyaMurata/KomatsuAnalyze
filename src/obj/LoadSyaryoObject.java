@@ -74,6 +74,9 @@ public class LoadSyaryoObject {
     
     public void close(){
         isClosable = true;
-        syaryoMap.put("_header", _header);
+        if(_header != null){
+            System.out.println("header is null!");
+            syaryoMap.put("_header", _header);
+        }
     }
 }
