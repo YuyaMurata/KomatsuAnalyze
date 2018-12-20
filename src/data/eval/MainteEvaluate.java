@@ -76,7 +76,7 @@ public class MainteEvaluate {
         double d = 0;
         
         //500時間交換品
-        if (p.equals("エンジンオイルフィルタ") || p.equals("燃料プレフィルタ") || p.equals("作動油タンクブリザード")) {
+        if (p.equals("エンジンオイルフィルタ") || p.equals("燃料プレフィルタ") || p.equals("作動油タンクブリーザ")) {
             if(smr > 500)
                 d = num / (smr / 500d);
             else
