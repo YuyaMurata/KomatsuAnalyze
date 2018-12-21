@@ -45,7 +45,7 @@ public class DataAccessTestPC200 {
                 ).map(s -> s.name).collect(Collectors.toList());
         
         //車両オブジェクト Nアクセス
-        access(1, list, map);
+        access(10000, list, map);
 
         //ランダム抽出
         /*List<String> randomSample = randomSampling(map);
@@ -61,9 +61,15 @@ public class DataAccessTestPC200 {
     }
 
     private static List<String> randomSampling(int n, List<String> list) {
-        return rand.ints(n, 0, list.size())
+        if(n > list.size()){
+            System.out.println("n="+list.size());
+            //n = list.size();
+            return list;
+        }else{
+            return rand.ints(n, 0, list.size())
                 .mapToObj(i -> list.get(i))
                 .collect(Collectors.toList());
+        }
     }
 
     private static void accessToSyaryoObject(List<String> samples) {

@@ -71,7 +71,7 @@ public class TimeSpreadChart extends ChartTemplate {
                 break;
             case -2:
                 gdata = (List) data.entrySet().stream()
-                    .map(e -> String.join(",", e.getKey().split("_")) + "," + String.join(",", e.getValue()))
+                    .map(e -> String.join(",", e.getKey().replace("～", "~").split("_")) + "," + String.join(",", e.getValue()))
                     .collect(Collectors.toList());
                 break;
             default:
