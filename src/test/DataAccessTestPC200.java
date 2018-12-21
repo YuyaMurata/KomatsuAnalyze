@@ -26,37 +26,44 @@ import param.KomatsuDataParameter;
  *
  * @author ZZ17390
  */
-public class RandaomAccessTestPC200 {
+public class DataAccessTestPC200 {
 
     private static LoadSyaryoObject LOADER = KomatsuDataParameter.LOADER;
     private static String[] testDB = new String[]{"service.受注", "komtrax_CW_SERVICE_METER.KOMTRAX_SMR"};
+    
+    private static Random rand = new Random();
 
     public static void main(String[] args) {
-        Random rand = new Random();
+        Arrays.asList(testDB).stream().map(k -> k.split("\\.")[1]).forEach(System.out::println);
 
         LOADER.setFile("PC200_km_form");
         Map<String, SyaryoObject> map = LOADER.getSyaryoMap();
+        
+        List<String> list = map.values().stream()
+                .filter(s -> Arrays.asList(testDB).stream()
+                .allMatch(k -> s.get(k.split("\\.")[1]) != null)
+                ).map(s -> s.name).collect(Collectors.toList());
+        
+        //車両オブジェクト Nアクセス
+        access(1, list, map);
 
         //ランダム抽出
-        Arrays.asList(testDB).stream().map(k -> k.split("\\.")[1]).forEach(System.out::println);
-        List<String> list = map.values().stream()
-            .filter(s -> Arrays.asList(testDB).stream()
-            .allMatch(k -> s.get(k.split("\\.")[1]) != null)
-            ).map(s -> s.name).collect(Collectors.toList());
-
-        List<String> randomSample = rand.ints(10, 0, list.size())
-            .mapToObj(i -> list.get(i))
-            .collect(Collectors.toList());
-
+        /*List<String> randomSample = randomSampling(map);
         System.out.println(randomSample);
 
         //車両オブジェクトアクセス
         System.out.println("車両オブジェクトアクセス");
         accessToSyaryoObject(randomSample);
-
+        
         //DBアクセス
         System.out.println("\nDBアクセス");
-        accessToDB(randomSample);
+        accessToDB(randomSample);*/
+    }
+
+    private static List<String> randomSampling(int n, List<String> list) {
+        return rand.ints(n, 0, list.size())
+                .mapToObj(i -> list.get(i))
+                .collect(Collectors.toList());
     }
 
     private static void accessToSyaryoObject(List<String> samples) {
@@ -112,6 +119,32 @@ public class RandaomAccessTestPC200 {
 
             Long stop = System.currentTimeMillis();
             System.out.println("DB_Transaction = " + (stop - start) + "ms");
+        }
+    }
+
+    private static void access(int n, List syaryo, Map<String, SyaryoObject> map) {
+        if (n > syaryo.size()) {
+            n = syaryo.size();
+        }
+
+        //平均用
+        for (String key : testDB) {
+            Long total = 0L;
+            String k = key.split("\\.")[1];
+            for (int i = 0; i < 100; i++) {
+
+                List<String> list = randomSampling(n, syaryo);
+
+                Long start = System.currentTimeMillis();
+
+                list.parallelStream().forEach(s -> {
+                    Map m = map.get(s).get(k);
+                });
+
+                Long stop = System.currentTimeMillis();
+                total += stop - start;
+            }
+            System.out.println(k + ":" + n + "=" + (total / 100) + "ms");
         }
     }
 }
