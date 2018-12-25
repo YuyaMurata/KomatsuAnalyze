@@ -8,6 +8,7 @@ package obj;
 import java.util.Map;
 import file.SyaryoToCompress;
 import java.io.File;
+import java.io.Serializable;
 import java.util.List;
 import param.KomatsuDataParameter;
 
@@ -15,9 +16,11 @@ import param.KomatsuDataParameter;
  *
  * @author ZZ17390
  */
-public class LoadSyaryoObject {
+public class LoadSyaryoObject  implements Serializable {
+    private static final long serialVersionUID = 1L;
+    
     private static LoadSyaryoObject instance = new LoadSyaryoObject();
-    private String PATH;
+    private String PATH = "Do not load file";
     public Boolean isClosable = true; //ファイル書き込み時のチェック用
     public SyaryoObject _header; //直接アクセスしない
     private Map<String, SyaryoObject> syaryoMap;

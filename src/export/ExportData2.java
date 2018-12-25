@@ -6,8 +6,6 @@
 package export;
 
 import analizer.SyaryoAnalizer;
-import index.SyaryoObjectElementsIndex;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -16,7 +14,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import file.MapToJSON;
-import file.SyaryoToCompress;
 import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
@@ -27,7 +24,6 @@ import param.KomatsuDataParameter;
 public class ExportData2 {
 
     //レイアウト
-    private static Map<String, List> dataIndex = SyaryoObjectElementsIndex.getInstance().getIndex();
     private static String PATH = KomatsuDataParameter.SYARYOOBJECT_FDPATH;
     private static String KISY = "PC200";
     private static Map<String, SyaryoObject> map;
@@ -37,15 +33,7 @@ public class ExportData2 {
 
     public static void main(String[] args) {
         //取得データ
-        Map headers = new LinkedHashMap();
-        headers.put("受注", new Integer[]{dataIndex.get("受注").indexOf("SGYO_KTICD"), dataIndex.get("受注").indexOf("ODR_KBN"), dataIndex.get("受注").indexOf("SKKG")});
-        //headers.put("作業", new Integer[]{dataIndex.get("作業").indexOf("KSYCD"), dataIndex.get("作業").indexOf("SGYOCD"), dataIndex.get("作業").indexOf("0")});
-        headers.put("部品", new Integer[]{dataIndex.get("部品").indexOf("KSYCD"), dataIndex.get("部品").indexOf("HNBN"), dataIndex.get("部品").indexOf("None"), dataIndex.get("部品").indexOf("BHN_NM"), dataIndex.get("部品").indexOf("JISI_SU"), dataIndex.get("部品").indexOf("SKKG")});
-        //headers.put("KOMTRAX_ERROR", new Integer[]{dataIndex.get("KOMTRAX_ERROR").indexOf("ERROR_CODE"), dataIndex.get("KOMTRAX_ERROR").indexOf("COUNT")});
-        //headers.put("新車", new Integer[]{-1, dataIndex.get("新車").indexOf("sell")});
-        //headers.put("SMR", new Integer[]{-1, dataIndex.get("SMR").indexOf("SVC_MTR")});
-        //headers.put("KOMTRAX_SMR", new Integer[]{-1, dataIndex.get("KOMTRAX_SMR").indexOf("SMR_VALUE")});
-        //headers.put("KOMTRAX_FUEL_CONSUME", new Integer[]{-1, dataIndex.get("KOMTRAX_FUEL_CONSUME").indexOf("CONSUME_COUNT")});
+        
 
         //Time
         long start = System.currentTimeMillis();

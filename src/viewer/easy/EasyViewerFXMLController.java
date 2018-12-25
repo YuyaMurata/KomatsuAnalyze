@@ -45,6 +45,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import obj.LoadSyaryoObject;
 import obj.SyaryoObject;
+import rmi.SyaryoObjectClient;
 import viewer.service.ButtonService;
 
 /**
@@ -61,7 +62,8 @@ public class EasyViewerFXMLController implements Initializable {
     @FXML
     private ListView<?> keylist;
     private Accordion viewarea;
-
+    
+    private static SyaryoObjectClient CLIENT = SyaryoObjectClient.getInstance();
     private static LoadSyaryoObject LOADER = KomatsuDataParameter.LOADER;
     private Map<String, SyaryoObject> syaryoMap;
 
@@ -118,9 +120,6 @@ public class EasyViewerFXMLController implements Initializable {
 
         //default
         fileLoad(new File("syaryo\\syaryo_obj_PC200_sv_form.bz2"));
-        
-        //LOADER.indexes("受注");
-        
     }
 
     public void machineListInitialize() {
@@ -232,7 +231,13 @@ public class EasyViewerFXMLController implements Initializable {
             protected Void call() throws Exception {
                 Platform.runLater(() -> fileProgress.setProgress(-1));
                 Platform.runLater(() -> id_label.setText(file.getName()));
-                LOADER.setFile(file);
+                
+                if(CLIENT.isRunnable){
+                    CLIENT.setLoadFile(file);
+                    LOADER = CLIENT.getLoader();
+                }else{
+                    LOADER.setFile(file);
+                }
                 syaryoMap = LOADER.getSyaryoMap();
                 Platform.runLater(() -> updateKeyList(new ArrayList(new TreeSet(syaryoMap.keySet()))));
                 Platform.runLater(() -> fileProgress.setProgress(1));
