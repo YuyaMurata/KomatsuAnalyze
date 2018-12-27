@@ -76,12 +76,12 @@ public class DataToCSV {
                     csv.add(String.valueOf(pr/q));
                     
                     csv.add(MainteFilter.allDetect(sg, hn, u) ? "1" : "0");
-                    csv.add(MainteFilter.skDetect(sg, hn, u) ? "1" : "0");
-                    csv.add(MainteFilter.partsDetect(sg, hn, u) ? "1" : "0");
-                    csv.add(MainteFilter.egoilDetect(sg, hn, u) ? "1" : "0");
-                    csv.add(MainteFilter.pwoilDetect(sg, hn, u) ? "1" : "0");
-                    csv.add(MainteFilter.kesDetect(sg, hn, u) ? "1" : "0");
-                    csv.add(MainteFilter.priceDetect(sg, hn, u) ? "1" : "0");
+                    csv.add(MainteFilter.skDetect(sg) ? "1" : "0");
+                    csv.add(MainteFilter.partsDetect(hn) ? "1" : "0");
+                    csv.add(MainteFilter.egoilDetect(hn) ? "1" : "0");
+                    csv.add(MainteFilter.pwoilDetect(hn) ? "1" : "0");
+                    csv.add(MainteFilter.kesDetect(hn) ? "1" : "0");
+                    csv.add(MainteFilter.priceDetect(u) ? "1" : "0");
 
                     pw.println(String.join(",", csv));
                 }

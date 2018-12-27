@@ -7,7 +7,6 @@ package data.analize;
 
 import file.CSVFileReadWrite;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +47,7 @@ public class CreateMatrix {
         List<String> cids = map.values().stream()
             .filter(s -> s.get("顧客") != null)
             .flatMap(s -> s.get("顧客").values().stream())
-            .map(c -> c.get(LOADER.index("顧客", "顧客CD")).toString())
+            .map(c -> c.get(LOADER.index("顧客", "会社CD"))+"_"+c.get(LOADER.index("顧客", "顧客CD")))
             .distinct().collect(Collectors.toList());
 
         String[][] mx = new String[map.size() + 1][cids.size() + 1];
@@ -67,7 +66,7 @@ public class CreateMatrix {
         map.values().stream().forEach(s -> {
             if (s.get("顧客") != null) {
                 List<String> scid = s.get("顧客").values().stream()
-                    .map(c -> c.get(LOADER.index("顧客", "顧客CD")).toString())
+                    .map(c -> c.get(LOADER.index("顧客", "会社CD"))+"_"+c.get(LOADER.index("顧客", "顧客CD")).toString())
                     .distinct().collect(Collectors.toList());
 
                 for (String cid : scid) {

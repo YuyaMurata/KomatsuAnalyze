@@ -19,16 +19,16 @@ public class MainteFilter {
     
     public static Boolean allDetect(String sgkt, String hnbn, Integer price){
         Boolean f = 
-            skDetect(sgkt, hnbn, price) || 
-            partsDetect(sgkt, hnbn, price) ||
-            egoilDetect(sgkt, hnbn, price) ||
-            kesDetect(sgkt, hnbn, price) ||
-            priceDetect(sgkt, hnbn, price);
+            skDetect(sgkt) || 
+            partsDetect(hnbn) ||
+            egoilDetect(hnbn) ||
+            kesDetect(hnbn) ||
+            priceDetect(price);
         
         return f;
     }
     
-    public static Boolean skDetect(String sgkt, String hnbn, Integer price){
+    public static Boolean skDetect(String sgkt){
         //作業形態に基づくフィルタ
         if(mainte.get("受注.SGYO_KTICD").contains(sgkt)){
             return true;
@@ -37,7 +37,7 @@ public class MainteFilter {
         return false;
     }
     
-    public static Boolean partsDetect(String sgkt, String hnbn, Integer price){    
+    public static Boolean partsDetect(String hnbn){    
         //品番に基づくフィルタ
         if(mainte.get("部品.HNBN").contains(hnbn)){
             return true;
@@ -46,7 +46,7 @@ public class MainteFilter {
         return false;
     }
     
-    public static Boolean egoilDetect(String sgkt, String hnbn, Integer price){    
+    public static Boolean egoilDetect(String hnbn){    
         //品番に基づくフィルタ
         if((hnbn.contains("SYEO-") && !hnbn.contains("SYEO-T")) || (hnbn.contains("NYEO-") && !hnbn.contains("NYEO-T"))){
             return true;
@@ -55,7 +55,7 @@ public class MainteFilter {
         return false;
     }
     
-    public static Boolean pwoilDetect(String sgkt, String hnbn, Integer price){    
+    public static Boolean pwoilDetect(String hnbn){    
         //品番に基づくフィルタ
         if(hnbn.contains("SYEO-T")|| hnbn.contains("NYEO-T")){
             return true;
@@ -64,7 +64,7 @@ public class MainteFilter {
         return false;
     }
     
-    public static Boolean kesDetect(String sgkt, String hnbn, Integer price){   
+    public static Boolean kesDetect(String hnbn){   
         //KES部品のフィルタ
         String[] kes = hnbn.split("-");
         if(kes.length == 2)
@@ -75,7 +75,7 @@ public class MainteFilter {
         return false;
     }
     
-    public static Boolean priceDetect(String sgkt, String hnbn, Integer price){
+    public static Boolean priceDetect(Integer price){
         //金額フィルタ
         if(price < priceTh){
             return true;
