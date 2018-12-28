@@ -153,7 +153,7 @@ public class ErrorDataExport {
 
     private static void exportMainte() {
         Map<String, String> sbns = new HashMap<>();
-        List<String> errp_cids = new ArrayList<>();
+        Map<String, Integer> errp_cids = new HashMap<>();
 
         //部品
         int total = 0;
@@ -194,7 +194,9 @@ public class ErrorDataExport {
                     if (!sbns.containsKey(sbn)) {
                         continue;
                     }
-                    errp_cids.add(cid);
+                    if(errp_cids.get(cid) == null)
+                        errp_cids.put(cid, 0);
+                    errp_cids.put(cid, errp_cids.get(cid)+1);
                     cnt++;
 
                     sbns.put(sbn, "1");
@@ -209,10 +211,13 @@ public class ErrorDataExport {
         System.out.println("受注テーブル完了:" + cnt + "/" + total);
 
         //該当顧客
-        System.out.println("顧客:" + errp_cids.stream().distinct().count());
+        System.out.println("顧客:" + errp_cids.size());
 
         //作番重複除去
         System.out.println("作番:" + sbns.size());
+        
+        //出力
+        ListToCSV.toCSV("PC200_err_proc_cidrelate.csv", errp_cids.entrySet().stream().map(c -> c.getKey()+","+c.getValue()).collect(Collectors.toList()));
 
     }
 }

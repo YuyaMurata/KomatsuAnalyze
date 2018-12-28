@@ -17,23 +17,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-import file.SyaryoToCompress;
+import obj.LoadSyaryoObject;
 import obj.SyaryoObject;
 import param.KomatsuDataParameter;
+import rmi.SyaryoObjectClient;
 
 /**
  *
  * @author ZZ17390
  */
 public class EvaluateSyaryoData {
-
+    private static LoadSyaryoObject LOADER;
+    private static SyaryoObjectClient CLIENT = SyaryoObjectClient.getInstance();
     private Map<String, List> mainte = KomatsuDataParameter.PERIOD_MAINTE;
-    private Map<String, List> layout = KomatsuDataParameter.DATALAYOUT_INDEX;
-    private Map<String, Integer> evalMap = new LinkedHashMap<>();
-    private String name, company;
-    private Integer day, smr, rent;
-
-    public Map<String, List> results = new HashMap<>();
+    private Map<String, Integer> evalMainte = new LinkedHashMap<>();
+    private Map<String, Integer> evalAgeSMR = new LinkedHashMap<>();
+    private Map<String, Integer> evalUsage = new LinkedHashMap<>();
+    public String name, company;
+    public Integer day, smr, rent;
 
     public EvaluateSyaryoData(SyaryoObject syaryo) {
         try (SyaryoAnalizer analize = new SyaryoAnalizer(syaryo)) {
@@ -43,16 +44,14 @@ public class EvaluateSyaryoData {
             this.day = analize.currentAge_day;
             this.smr = analize.maxSMR[1];
 
-            //evalMap.putAll(useData(syaryo));
-            //evalMap.putAll(agingSMRData(syaryo));
-            evalMap.putAll(mainteData(analize));
+            evalAgeSMR.putAll(useData(syaryo));
+            evalUsage.putAll(agingSMRData(syaryo));
+            evalMainte.putAll(mainteData(analize));
         } catch (Exception ex) {
             ex.printStackTrace();
             System.out.println(syaryo.dump());
             System.exit(0);
         }
-
-        results = getResults();
     }
 
     /**
@@ -76,7 +75,6 @@ public class EvaluateSyaryoData {
      * インターバル) 油圧メンテ = 作動機オイル交換 / (SMR / インターバル) 定期メンテ = 作業形態回数 / (経年 / インターバル)
      */
     private Map mainteIndex = KomatsuDataParameter.PC_PID_DEFNAME;
-
     private Map mainteData(SyaryoAnalizer syaryo) {
         Map<Object, Integer> map = new LinkedHashMap<>();
 
@@ -89,7 +87,7 @@ public class EvaluateSyaryoData {
         if (syaryo.get().get("受注") != null) {
             for (List<String> service : syaryo.get().get("受注").values()) {
                 //作業形態カウント
-                String sg = service.get(layout.get("受注").indexOf("SGYO_KTICD"));
+                String sg = service.get(LOADER.index("受注", "SGYO_KTICD"));
                 Object key = mainteIndex.get(sg);
                 if (key != null) {
                     map.put(key, map.get(key) + 1);
@@ -107,18 +105,15 @@ public class EvaluateSyaryoData {
                     for (List<String> parts : syaryo.getSBNParts(sbn).values()) {
 
                         //品番カウント
-                        String p = parts.get(layout.get("部品").indexOf("HNBN"));
+                        String p = parts.get(LOADER.index("部品", "HNBN"));
                         Object key = mainteIndex.get(p);
                         if (map.get(key) != null && flgMap.get(key)) {
                             map.put(key, map.get(key) + 1);
                         }
 
                         //エンジンオイル
-                        String pn = parts.get(layout.get("部品").indexOf("BHN_NM"));
+                        String pn = parts.get(LOADER.index("部品", "BHN_NM"));
                         if (((p.contains("SYEO-") && !p.contains("SYEO-T")) || (p.contains("NYEO-") && !p.contains("NYEO-T"))) && flgMap.get("エンジンオイル")) {
-                            /*if(syaryo.no.equals("452771")){
-                                System.out.println(p+":"+pn);
-                            }*/
                             p = "エンジンオイル";
                             map.put(p, map.get(p) + 1);
                         }
@@ -141,14 +136,14 @@ public class EvaluateSyaryoData {
         return map;
     }
 
-    public List<String> getHeader() {
+    public List<String> getMainteHeader() {
         List<String> sb = new ArrayList();
         sb.add("sid");
         sb.add("会社");
         sb.add("レンタル");
         sb.add("経年");
         sb.add("SMR");
-        for (String k : evalMap.keySet()) {
+        for (String k : evalMainte.keySet()) {
             sb.add(k);
             //sb.add(",回数");
         }
@@ -156,7 +151,7 @@ public class EvaluateSyaryoData {
         return sb;
     }
 
-    private Map<String, List> getResults() {
+    public Map<String, List> getMainteResults() {
         List info = new ArrayList();
         info.add(name);
         info.add(company);
@@ -165,8 +160,8 @@ public class EvaluateSyaryoData {
         info.add(String.valueOf(smr));
 
         List data = new ArrayList();
-        for (String k : evalMap.keySet()) {
-            data.add(MainteEvaluate.eval(k, evalMap.get(k), smr, day / 365d));
+        for (String k : evalMainte.keySet()) {
+            data.add(MainteEvaluate.eval(k, evalMainte.get(k), smr, day / 365d));
             //sb.add(evalMap.get(k));
         }
 
@@ -175,39 +170,20 @@ public class EvaluateSyaryoData {
         map.put("data", data);
         return map;
     }
-
-    private static String PATH = KomatsuDataParameter.SYARYOOBJECT_FDPATH;
+    
     private static String KISY = "PC200";
-    static String filename = PATH + "syaryo_obj_" + KISY + "_km_form.bz2";
 
     public static void main(String[] args) {
-        Map<String, SyaryoObject> map = new SyaryoToCompress().read(filename);
-        SyaryoObject test = map.values().stream().findFirst().get();
-        EvaluateSyaryoData ev = new EvaluateSyaryoData(test);
-
+        CLIENT.setLoadFile(KISY+"_km_form");
+        LOADER = CLIENT.getLoader();
+        
+        Map<String, SyaryoObject> map = LOADER.getSyaryoMap();
+        
         //メンテナンス評価
-        Map<String, List> info = new TreeMap();
-        Map<String, List> data = new HashMap();
-        Map<String, List> zerodata = new HashMap();
+        List<EvaluateSyaryoData> data = new ArrayList<>();
         for (SyaryoObject syaryo : map.values()) {
             System.out.println(syaryo.name);
-            EvaluateSyaryoData eval = new EvaluateSyaryoData(syaryo);
-
-            //レンタル車両除く
-            if(eval.results.get("info").get(2).equals("1"))
-                continue;
-            
-            info.put(syaryo.name, eval.results.get("info"));
-            
-            
-            //評価値が全て0のものは分ける
-            if(eval.results.get("data").stream()
-                                    .mapToDouble(d -> Double.valueOf(d.toString()))
-                                    .filter(d -> d > 0)
-                                    .findFirst().isPresent())
-                data.put(syaryo.name, eval.results.get("data"));
-            else
-                zerodata.put(syaryo.name, eval.results.get("data"));
+            data.add(new EvaluateSyaryoData(syaryo));
         }
         
         //クラスタリング
