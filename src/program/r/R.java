@@ -28,7 +28,7 @@ public class R {
     private static Rengine engine;
 
     private R() {
-        settings();
+        //settings();
     }
 
     private static void settings() {

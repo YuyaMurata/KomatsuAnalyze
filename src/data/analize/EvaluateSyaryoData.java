@@ -159,7 +159,7 @@ public class EvaluateSyaryoData {
         info.add(String.valueOf(day / 365d));
         info.add(String.valueOf(smr));
 
-        List data = new ArrayList();
+        List<Double> data = new ArrayList();
         for (String k : evalMainte.keySet()) {
             data.add(MainteEvaluate.eval(k, evalMainte.get(k), smr, day / 365d));
             //sb.add(evalMap.get(k));
@@ -180,19 +180,19 @@ public class EvaluateSyaryoData {
         Map<String, SyaryoObject> map = LOADER.getSyaryoMap();
         
         //メンテナンス評価
-        List<EvaluateSyaryoData> data = new ArrayList<>();
+        Map<String, EvaluateSyaryoData> data = new HashMap();
         for (SyaryoObject syaryo : map.values()) {
             System.out.println(syaryo.name);
-            data.add(new EvaluateSyaryoData(syaryo));
+            data.put(syaryo.name, new EvaluateSyaryoData(syaryo));
         }
         
         //クラスタリング
         KMeansPP km = new KMeansPP();
-        km.set(3, data);
+        km.setEvalSyaryo(3, data);
         Map<String, Integer> kmresult = km.execute();
         
         //出力
-        try (PrintWriter pw = CSVFileReadWrite.writer(KISY + "_syaryo_eval_mainte.csv")) {
+        /*try (PrintWriter pw = CSVFileReadWrite.writer(KISY + "_syaryo_eval_mainte.csv")) {
             pw.println(String.join(",", ev.getHeader())+",AVG,CID");
             for(String key : info.keySet()){
                 pw.print(info.get(key).stream().map(s -> s.toString()).collect(Collectors.joining(","))+",");
@@ -202,6 +202,6 @@ public class EvaluateSyaryoData {
                 }else
                     pw.println(zerodata.get(key).stream().map(s -> s.toString()).collect(Collectors.joining(","))+",0,0");
             }
-        }
+        }*/
     }
 }

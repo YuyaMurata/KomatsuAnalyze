@@ -42,10 +42,10 @@ public class ExportData2 {
         //export("test.json", headers, new SyaryoAnalizer(map.get("PC200-8N1-313582")), null);
 
         //ヘッダーの登録
-        Map recmap = regHeader(headers);
+        //Map recmap = regHeader(headers);
         
         //車両の読み込み
-        map = new SyaryoToCompress().read(syaryofilename);
+        //map = new SyaryoToCompress().read(syaryofilename);
         
         //単体
         //String name = "PC200-8N1-313582";
@@ -54,10 +54,10 @@ public class ExportData2 {
         //String[] names = new String[]{"PC200-8N1-310531", "PC200-8N1-315586", "PC200-8N1-313998", "PC200-8N1-312914", "PC200-8N1-316882"};
         //multiExport(recmap, "ExportData_Multi_"+names.length+".json", headers, names);
         //全部
-        allExport(recmap, filename+"_ALL.json", headers);
+        //allExport(recmap, filename+"_ALL.json", headers);
         
         long stop = System.currentTimeMillis();
-        System.out.println("車両数:"+map.size()+" "+"抽出対象車両数:"+recmap.size());
+        //System.out.println("車両数:"+map.size()+" "+"抽出対象車両数:"+recmap.size());
         System.out.println("Time:"+(stop-start)+"ms");
     }
     
@@ -67,7 +67,7 @@ public class ExportData2 {
         
         for(String header : headers.keySet()){
             Map inMap = new HashMap();
-            inMap.put(header, Arrays.asList(headers.get(header)).stream().map(i -> i<0?(header+"key"):dataIndex.get(header).get(i)).collect(Collectors.toList()));
+            //inMap.put(header, Arrays.asList(headers.get(header)).stream().map(i -> i<0?(header+"key"):dataIndex.get(header).get(i)).collect(Collectors.toList()));
             headMap.put(header, inMap);
         }
        

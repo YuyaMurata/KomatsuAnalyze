@@ -14,6 +14,7 @@ import java.util.Random;
 import java.util.TreeMap;
 import obj.LoadSyaryoObject;
 import obj.SyaryoObject;
+import param.KomatsuDataParameter;
 
 /**
  *
@@ -24,9 +25,11 @@ public class ExportToCSV {
     private static Map<String, SyaryoObject> syaryoMap;
     static String KISY = "PC200";
     static Random rand = new Random();
+    private static LoadSyaryoObject LOADER = KomatsuDataParameter.LOADER;
 
     public static void main(String[] args) {
-        syaryoMap = LoadSyaryoObject.load(KISY + "_km_form.bz2");
+        LOADER.setFile(KISY+"_km_form");
+        syaryoMap = LOADER.getSyaryoMap();
 
         //単一データのみ
         String data = "KOMTRAX_SMR";

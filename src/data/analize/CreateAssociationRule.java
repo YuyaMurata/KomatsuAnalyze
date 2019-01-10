@@ -54,8 +54,8 @@ public class CreateAssociationRule {
             .filter(s -> s.get("作業") != null)
             .filter(s -> s.get("部品") != null)
             .forEach(s -> {
-                SyaryoAnalizer analize = new SyaryoAnalizer(s, dataHeader.toMap(true));
-                
+                //SyaryoAnalizer analize = new SyaryoAnalizer(s, dataHeader.toMap(true));
+                SyaryoAnalizer analize = new SyaryoAnalizer(s);
                 
                 //作業作番抽出
                 List<String> worksbn = analize.getValue("作業", new Integer[]{0}).keySet().stream()

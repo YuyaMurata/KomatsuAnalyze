@@ -44,7 +44,7 @@ public class SyaryoObjectFormatting {
     private static String currentKey;
 
     private static void form(String kisy) {
-        LOADER.setFile(kisy + "_km");
+        LOADER.setFile(kisy + "_sv");
         Map<String, SyaryoObject> syaryoMap = LOADER.getSyaryoMap();
         
         //本社コード
@@ -148,7 +148,7 @@ public class SyaryoObjectFormatting {
         }
 
         //R
-        R.close();
+        //R.close();
         
         //Headerの付加
         LOADER.close();

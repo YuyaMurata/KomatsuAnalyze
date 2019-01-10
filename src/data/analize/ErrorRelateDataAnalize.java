@@ -29,7 +29,7 @@ public class ErrorRelateDataAnalize {
     private static Map<String, List> dataIndex = SyaryoObjectElementsIndex.getInstance().getIndex();
 
     public static void main(String[] args) {
-        Map<String, SyaryoObject> syaryoMap = LoadSyaryoObject.load(KISY + "_km_form.bz2");
+        Map<String, SyaryoObject> syaryoMap = null;//LoadSyaryoObject.load(KISY + "_km_form.bz2");
 
         Map<String, List<String>> relate = syaryoMap.keySet().stream().collect(Collectors.toMap(e -> e, e -> new ArrayList<>()));
 

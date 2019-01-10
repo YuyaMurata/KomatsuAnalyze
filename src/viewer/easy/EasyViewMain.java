@@ -32,7 +32,7 @@ public class EasyViewMain extends Application {
 
         stage.showingProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue == true && newValue == false) {
-                R.close();
+                //R.close();
                 SyaryoToCompress.runnable = false;
             }
         });

@@ -5,6 +5,7 @@
  */
 package data.cluster;
 
+import data.analize.EvaluateSyaryoData;
 import file.CSVFileReadWrite;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -29,9 +30,17 @@ public class KMeansPP {
 
     int k = 0;
 
-    public void set(int k, Map sample) {
+    public void set(int k, Map<String, List<Double>> sample) {
         this.k = k;
         this.s = sample;
+    }
+    
+    public void setEvalSyaryo(int k, Map<String, EvaluateSyaryoData> evaldata) {
+        this.k = k;
+        
+        //車両評価データをクラスタリング用に変換
+        this.s = evaldata.entrySet().stream()
+                .collect(Collectors.toMap(e->e.getKey(), e->e.getValue().getMainteResults().get("data")));
     }
 
     //x, yでユークリッド距離計算
@@ -172,13 +181,13 @@ public class KMeansPP {
         return cluster;
     }
 
-    private static Map<String, List> testSample(int n) {
+    private static Map<String, List<Double>> testSample(int n) {
         Double r = 100d;
         Double a = r/2;
         Double b = r/2;
         
         Random rn = new Random();
-        Map<String, List> test = new HashMap();
+        Map<String, List<Double>> test = new HashMap();
         int i = 0;
         while (test.size() < n) {
             double x = rn.nextInt(r.intValue());
@@ -196,7 +205,7 @@ public class KMeansPP {
 
     public static void main(String[] args) {
         //Test Sample
-        Map<String, List> test = testSample(1000);
+        Map<String, List<Double>> test = testSample(1000);
 
         KMeansPP km = new KMeansPP();
 
