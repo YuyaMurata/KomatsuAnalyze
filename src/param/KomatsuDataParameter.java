@@ -164,6 +164,8 @@ public interface KomatsuDataParameter {
     public static Map PC_PID_DEFNAME = new MapToJSON().toMap(PC_PID_DEFNAME_INDEX_PATH);
     public static String PC_PID_SYSDEFNAME_INDEX_PATH = "define\\PC200_PartsID_SystemDefine_name.json";
     public static Map PC_PID_SYSDEFNAME = new MapToJSON().toMap(PC_PID_SYSDEFNAME_INDEX_PATH);
+    public static String WORK_DEVID_DEFNAME_INDEX_PATH = "define\\WorkDevID_Define_name.json";
+    public static Map WORK_DEVID_DEFNAME = new MapToJSON().toMap(WORK_DEVID_DEFNAME_INDEX_PATH);
 
     //PC200 KR
     public static String PC_KR_SMASTER_INDEX_PATH = "define\\PC200_KR_SyaryoMaster.json";

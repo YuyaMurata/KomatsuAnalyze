@@ -8,12 +8,11 @@ package data.analize;
 import data.code.CodeRedefine;
 import file.CSVFileReadWrite;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import file.SyaryoToCompress;
+import obj.LoadSyaryoObject;
 import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
@@ -22,19 +21,18 @@ import param.KomatsuDataParameter;
  * @author ZZ17390
  */
 public class CodeVariation {
-    private static final String exportFile = "ExportData_PC200_ALL.json";
-    
+    private static String KISY = "PC200";
+    private static LoadSyaryoObject LOADER = KomatsuDataParameter.LOADER;
+
     public static void main(String[] args) {
-        Map<String, SyaryoObject> syaryoMap = new SyaryoToCompress().readJSON(exportFile);
-        
-        SyaryoObject dataHeader = syaryoMap.get("_headers");
-        syaryoMap.remove("_headers");
-        System.out.println(dataHeader.dump());
+        LOADER.setFile(KISY+"_sv_form");
+        Map<String, SyaryoObject> syaryoMap = LOADER.getSyaryoMap();
         
         //部品フィルタ
-        AnalizeDataFilter.partsdatafilter(syaryoMap, dataHeader);
+        //AnalizeDataFilter.partsdatafilter(syaryoMap, LOADER._header);
         
-        partscd(syaryoMap, dataHeader);
+        //partscd(syaryoMap, dataHeader);
+        workcd(syaryoMap, LOADER._header);
     }
     
     //KOMTRAX エラーコード
@@ -72,7 +70,7 @@ public class CodeVariation {
             }
         });
         
-        try(PrintWriter csv = CSVFileReadWrite.writer(exportFile+"errcode.csv")){
+        try(PrintWriter csv = CSVFileReadWrite.writer(KISY+"_errcode.csv")){
             csv.println("KOMTRAXエラーコード,発生台数,発生日数");
             for(String er : occErrNum.keySet()){
                 csv.println(er+","+occErrNum.get(er)+","+occErrDays.get(er));
@@ -117,7 +115,7 @@ public class CodeVariation {
             }
         });
         
-        try(PrintWriter csv = CSVFileReadWrite.writer(exportFile+"sgcode.csv")){
+        try(PrintWriter csv = CSVFileReadWrite.writer(KISY+"_sgcode.csv")){
             csv.println("作業コード,発生台数,発生日数");
             for(String sg : occSgNum.keySet()){
                 csv.println(sg+","+occSgNum.get(sg)+","+occSgDays.get(sg));
@@ -168,7 +166,7 @@ public class CodeVariation {
             }
         });
         
-        try(PrintWriter csv = CSVFileReadWrite.writer(exportFile+"partsno.csv")){
+        try(PrintWriter csv = CSVFileReadWrite.writer(KISY+"_partsno.csv")){
             csv.println("再定義,品番,品名,発生台数,発生数");
             for(String pa : occPNum.keySet()){
                 csv.println(pa.split("_")[0]+","+pa.split("_")[1]+","+pa.split("_")[2]+","+occPNum.get(pa)+","+occPDays.get(pa));

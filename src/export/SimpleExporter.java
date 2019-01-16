@@ -35,9 +35,10 @@ public class SimpleExporter {
         
         //ヘッダー設定
         Map<String, Integer> headers = new LinkedHashMap();
-        headers.put("受注.会社", LOADER.index("受注", "会社CD"));
-        headers.put("受注.作番", LOADER.index("受注", "KEY"));
-        headers.put("受注.金額", LOADER.index("受注", "SKKG"));
+        headers.put("作業.会社", LOADER.index("作業", "会社CD"));
+        headers.put("作業.作番", LOADER.index("作業", "KEY"));
+        headers.put("作業.作業コード", LOADER.index("作業", "SGYOCD"));
+        headers.put("作業.作業名", LOADER.index("作業", "SGYO_NM"));
         //headers.put("顧客.顧客CD", dataIndex.get("顧客").indexOf("NNSCD"));
         //headers.put("顧客.区分", dataIndex.get("顧客").indexOf("KKYK_KBN"));
         //headers.put("顧客.業種", dataIndex.get("顧客").indexOf("GYSCD"));
