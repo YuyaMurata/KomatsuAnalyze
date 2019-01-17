@@ -113,6 +113,7 @@
                <children>
                   <Label fx:id="number_syaryo_label" layoutX="6.0" layoutY="3.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="15.0" prefWidth="134.0" text="0 / 0" textAlignment="RIGHT" />
                   <ProgressIndicator fx:id="fileProgress" layoutX="761.0" layoutY="1.0" prefHeight="19.0" prefWidth="32.0" progress="1.0" AnchorPane.rightAnchor="11.0" />
+                  <Label fx:id="amountData" contentDisplay="TOP" layoutX="205.0" layoutY="3.0" prefHeight="15.0" prefWidth="134.0" text="0" />
                </children>
             </AnchorPane>
          </children>

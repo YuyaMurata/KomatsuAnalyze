@@ -15,6 +15,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import file.SyaryoToCompress;
+import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import obj.LoadSyaryoObject;
 import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
@@ -26,79 +30,94 @@ public class CreateAssociationRule {
 
     //レイアウト
     private static String PATH = KomatsuDataParameter.SYARYOOBJECT_FDPATH;
-    private static final String KISY = "PC200";
-    private static final String exportFile = "ExportData_" + KISY + "_ALL.json";
+    private static String KISY = "PC200";
+    private static LoadSyaryoObject LOADER = KomatsuDataParameter.LOADER;
 
     public static void main(String[] args) {
         //車両の読み込み
-        Map<String, SyaryoObject> syaryoMap = new SyaryoToCompress().readJSON(exportFile);
-        SyaryoObject dataHeader = syaryoMap.get("_headers");
-        System.out.println(dataHeader.getMap());
-        syaryoMap.remove("_headers");
+        LOADER.setFile(KISY + "_km_form");
+        Map<String, SyaryoObject> syaryoMap = LOADER.getSyaryoMap();
 
         //部品フィルタ
-        AnalizeDataFilter.partsdatafilter(syaryoMap, dataHeader);
-
-        asscoiationRule(syaryoMap, dataHeader);
+        //AnalizeDataFilter.partsdatafilter(syaryoMap, LOADER._header);
+        asscoiationRule(syaryoMap, LOADER._header);
     }
 
     private static void asscoiationRule(Map<String, SyaryoObject> syaryoMap, SyaryoObject dataHeader) {
-        int ksycdIdx = dataHeader.get("作業").get("作業").indexOf("KSYCD");
+        int ksycdIdx = dataHeader.get("作業").get("作業").indexOf("会社CD");
         int sgcdIdx = dataHeader.get("作業").get("作業").indexOf("SGYOCD");
-        int mainflgIdx = dataHeader.get("作業").get("作業").indexOf("0");
+        int mainflgIdx = dataHeader.get("作業").get("作業").indexOf("DIHY_SGYO_FLG");
         int hnbnIdx = dataHeader.get("部品").get("部品").indexOf("HNBN");
 
         Map<List<String>, String> associationMap = new HashMap();
-        
+
         syaryoMap.values().stream()
             .filter(s -> s.get("作業") != null)
             .filter(s -> s.get("部品") != null)
             .forEach(s -> {
-                //SyaryoAnalizer analize = new SyaryoAnalizer(s, dataHeader.toMap(true));
-                SyaryoAnalizer analize = new SyaryoAnalizer(s);
-                
-                //作業作番抽出
-                List<String> worksbn = analize.getValue("作業", new Integer[]{0}).keySet().stream()
-                    .map(w -> w.split("#")[0])
-                    .distinct()
-                    .collect(Collectors.toList());
-
-                for (String sbn : worksbn) {
-                    Optional<String> sgcdCheck = analize.getSBNWork(sbn).values().stream()
-                        .filter(w -> w.get(mainflgIdx).equals("1"))
-                        .map(w -> w.get(ksycdIdx) + "_" + w.get(sgcdIdx))
-                        .findFirst();
-
-                    if (!sgcdCheck.isPresent() || analize.getSBNParts(sbn) == null) {
-                        continue;
-                    }
-
-                    String sgcd = sgcdCheck.get();
-
-                    List<String> parts = analize.getSBNParts(sbn).values().stream()
-                        .map(p -> CodeRedefine.partsCDRedefine(p.get(hnbnIdx))) //部品コードを再定義
-                        .filter(p -> p != null)
+                try (SyaryoAnalizer analize = new SyaryoAnalizer(s)) {
+                    System.out.println(s.name);
+                    
+                    //作業作番抽出
+                    List<String> worksbn = analize.getValue("作業", new Integer[]{0}).keySet().stream()
+                        .map(w -> w.split("#")[0])
                         .distinct()
                         .collect(Collectors.toList());
 
-                    if (parts.isEmpty()) {
-                        continue;
-                    }
+                    for (String sbn : worksbn) {
+                        Optional<String> sgcdCheck = analize.getSBNWork(sbn).values().stream()
+                            .filter(w -> w.get(mainflgIdx).equals("1"))
+                            .map(w -> w.get(ksycdIdx) + "_" + w.get(sgcdIdx))
+                            .findFirst();
 
-                    //アソシエーションルール
-                    String data = associationMap.get(parts);
-                    if(data == null)
-                        associationMap.put(parts, sgcd.split("_")[1]+"_1");
-                    else
-                        associationMap.put(parts, sgcd.split("_")[1]+"_"+(Integer.valueOf(data.split("_")[1])+1));
+                        if (!sgcdCheck.isPresent() || analize.getSBNParts(sbn) == null) {
+                            continue;
+                        }
+
+                        String sgcd = sgcdCheck.get();
+
+                        List<String> parts = analize.getSBNParts(sbn).values().stream()
+                            .map(p -> CodeRedefine.partsCDRedefine(p.get(hnbnIdx))) //部品コードを再定義
+                            .filter(p -> p != null)
+                            .distinct()
+                            .collect(Collectors.toList());
+
+                        if (parts.isEmpty()) {
+                            continue;
+                        }
+
+                        //アソシエーションルール
+                        String data = associationMap.get(parts);
+                        if (data == null) {
+                            associationMap.put(parts, sgcd.split("_")[1] + "_1");
+                        } else {
+                            associationMap.put(parts, sgcd.split("_")[1] + "_" + (Integer.valueOf(data.split("_")[1]) + 1));
+                        }
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
             });
 
-        try (PrintWriter pw = CSVFileReadWrite.writer(KISY + "_associationrule.csv")) {
+        try (PrintWriter pw = CSVFileReadWrite.writer(KISY + "_associationrule_new.csv")) {
             //Header
             pw.println("Info,N,Parts");
             associationMap.entrySet().stream()
-                .map(al -> "'" + al.getValue().split("_")[0] + "," + al.getValue().split("_")[1] +","+String.join(",", al.getKey()))
+                .map(al -> "'" + al.getValue().split("_")[0] + "," + al.getValue().split("_")[1] + "," + String.join(",", al.getKey()))
+                .forEach(pw::println);
+        }
+        
+        try (PrintWriter pw = CSVFileReadWrite.writer(KISY + "_associationrule_vector.csv")) {
+            Map redef = new TreeMap(KomatsuDataParameter.PC_PARTS_EDEFNAME);
+            //Header
+            pw.println("Info,N,"+String.join(",", redef.values()));
+            associationMap.entrySet().stream()
+                .map(   al -> "'" + 
+                        al.getValue().split("_")[0] + "," + 
+                        al.getValue().split("_")[1] + "," + 
+                        redef.keySet().stream()
+                                        .map(r -> al.getKey().contains(r.toString())==true?"1":"")
+                                        .collect(Collectors.joining(",")))
                 .forEach(pw::println);
         }
     }

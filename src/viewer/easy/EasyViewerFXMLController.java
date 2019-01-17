@@ -104,6 +104,8 @@ public class EasyViewerFXMLController implements Initializable {
     private ProgressIndicator fileProgress;
     @FXML
     private MenuItem showJSON;
+    @FXML
+    private Label amountData;
     
 
     /**
@@ -360,6 +362,9 @@ public class EasyViewerFXMLController implements Initializable {
                         disableFilterMap.put(s.getName(), 0);
                     }
                 });
+            
+            int cnt = enableFilterMap.values().stream().mapToInt(size -> Integer.valueOf(size.toString())).sum();
+            amountData.setText("合計:"+String.valueOf(cnt)+"件");
         }
 
         if (btnEnDis) {
