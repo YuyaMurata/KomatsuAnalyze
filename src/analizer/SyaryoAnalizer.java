@@ -38,7 +38,7 @@ public class SyaryoAnalizer implements AutoCloseable {
     public Boolean komtrax = false;
     public Boolean allsupport = false;
     public Boolean dead = false;
-    public Boolean rent = false;
+    public Integer rent = 0;
     public String lifestart = "";
     public String lifestop = "";
     public String currentLife = "";
@@ -200,12 +200,12 @@ public class SyaryoAnalizer implements AutoCloseable {
                     List<String> custKbn = getValue("顧客", "顧客区分", false);
                     List<String> custGycd = getValue("顧客", "業種CD", false);
                     if (custKbn.contains("0E") || custKbn.contains("0G") || custGycd.contains("17")) {
-                        rent = true;
+                        rent = 1;
                     }
 
                     //KR車両か判定
-                    if (!rent && kind.equals("PC200")) {
-                        rent = PC200_KR_MASTER.get(kind + "-" + no) != null;
+                    if (PC200_KR_MASTER.get(kind + "-" + no) != null) {
+                        rent = 2;
                     }
 
                     break;
@@ -510,7 +510,7 @@ public class SyaryoAnalizer implements AutoCloseable {
         data.add(used ? "1" : "0");
         data.add(dead ? "1" : "0");
         data.add(allsupport ? "1" : "0");
-        data.add(rent ? "1" : "0");
+        data.add(rent.toString());
         data.add(String.valueOf(maxSMR[0]));
         data.add(String.valueOf(maxSMR[1]));
         data.add(String.valueOf(maxSMR[2]));

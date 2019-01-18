@@ -25,6 +25,7 @@ public class ExportSyaryoAnalizerData {
     public static void main(String[] args) {
         LOADER.setFile(KISY+"_km_form");
         Map<String, SyaryoObject> syaryoMap = LOADER.getSyaryoMap();
+        
         try (PrintWriter csv = CSVFileReadWrite.writer(KISY + "_syaryo_analize_summary.csv")) {
             csv.println(SyaryoAnalizer.getHeader());
             for (SyaryoObject syaryo : syaryoMap.values()) {
