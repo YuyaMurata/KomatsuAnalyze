@@ -18,7 +18,7 @@ public class SimpleTemplate {
     public List<String> name = new ArrayList<>();
     public Map temp = new HashMap();
     
-    private static transient Map<String, String> validate = new HashMap();
+    public static transient Map<String, String> validate = new HashMap();
 
     public SimpleTemplate(String k, String t, String s, String b) {
         this.name.add(k);
