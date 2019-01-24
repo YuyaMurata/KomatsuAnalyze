@@ -2,15 +2,21 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 import linecache
+import sys
 
-filename = 'py/csv/graph_temp.csv'
-#filename = "csv/graph_temp.csv"
+file = "csv/graph_temp.csv"
+
+args = sys.argv
+
+#引数の処理
+if len(args) > 1:
+    file = args[1]
 
 dateparse = lambda x: pd.datetime.strptime(x, '%Y%m%d')
-data = pd.read_csv(filename, index_col='Date', header=1)
+data = pd.read_csv(file, index_col='Date', header=1)
 
 data.index = pd.to_datetime(data.index, format='%Y%m%d')
-syaryo = linecache.getline(filename, int(1))
+syaryo = linecache.getline(file, int(1))
 
 plt.style.use('ggplot')
 

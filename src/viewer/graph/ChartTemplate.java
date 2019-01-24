@@ -29,7 +29,7 @@ public abstract class ChartTemplate{
     public void exec(String name, String script){
         //Graph Python 実行
         System.out.println(name+"-Python 実行");
-        PythonCommand.py(script, KomatsuDataParameter.GRAPH_TEMP_FILE);
+        PythonCommand.py(script, new String[]{KomatsuDataParameter.GRAPH_TEMP_FILE});
     }
     
     public abstract List<String> graphFile(String select, int idx, SyaryoObject syaryo);

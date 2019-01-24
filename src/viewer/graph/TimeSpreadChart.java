@@ -42,6 +42,9 @@ public class TimeSpreadChart extends ChartTemplate {
 
             String c = syaryo.get("KOMTRAX_ERROR").get(date).get(errorCodeIdx).toString();
             String cnt = syaryo.get("KOMTRAX_ERROR").get(date).get(errorIdx).toString();
+            
+            date = date.split("#")[0];
+            
             for (String cd : code) {
                 if (c.equals(cd)) {
                     l.add(cnt);

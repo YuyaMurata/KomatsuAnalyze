@@ -3,12 +3,17 @@ import seaborn as sns
 import pandas as pd
 import numpy as np
 import linecache
+import sys
 
-filename = 'py/csv/graph_temp.csv'
-#filename = "csv/loadmap_heat.csv"
+file = "csv/loadmap_heat.csv"
+args = sys.argv
 
-df = pd.read_csv(filename, header=1)
-syaryo = linecache.getline(filename, int(1))
+#引数の処理
+if len(args) > 1:
+    file = args[1]
+
+df = pd.read_csv(file, header=1)
+syaryo = linecache.getline(file, int(1))
 
 plt.style.use('ggplot')
 

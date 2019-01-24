@@ -121,7 +121,7 @@ public class EasyViewerFXMLController implements Initializable {
         initializeAccordion();
 
         //default
-        fileLoad(new File("syaryo\\syaryo_obj_PC200_sv_form.bz2"));
+        //fileLoad(new File("syaryo\\syaryo_obj_PC200_sv_form.bz2"));
     }
 
     public void machineListInitialize() {

@@ -2,12 +2,17 @@ import linecache
 
 import matplotlib.pyplot as plt
 import pandas as pd
+import sys
 
-filename = 'py/csv/graph_temp.csv'
-#filename = "csv/loadmap_bar.csv"
+file = "csv/loadmap_bar.csv"
+args = sys.argv
 
-df = pd.read_csv(filename, header=1, index_col='label')
-syaryo = linecache.getline(filename, int(1))
+#引数の処理
+if len(args) > 1:
+    file = args[1]
+
+df = pd.read_csv(file, header=1, index_col='label')#sns.load_dataset('flights')
+syaryo = linecache.getline(file, int(1))
 
 print(df)
 
