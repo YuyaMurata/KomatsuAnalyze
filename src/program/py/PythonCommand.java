@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import org.apache.commons.lang.ArrayUtils;
 
 /**
  *
@@ -17,13 +18,13 @@ import java.io.InputStreamReader;
  */
 public class PythonCommand {
 
-    public static void py(String pyFile, String inFile) {
-        System.out.println(pyFile+" in "+inFile);
+    public static void py(String pyFile, String[] args) {
+        System.out.println(pyFile+" "+String.join(",", args));
         File file = new File(pyFile);
         
         String[] out;
         try {
-            out = execCommand(new String[]{"python", file.getAbsolutePath()});
+            out = execCommand((String[])ArrayUtils.addAll(new String[]{"python", file.getAbsolutePath()}, args));
             //Python出力
             System.out.println(out[0]);
             System.out.println(out[1]);

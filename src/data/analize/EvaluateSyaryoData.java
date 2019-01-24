@@ -8,8 +8,6 @@ package data.analize;
 import analizer.SyaryoAnalizer;
 import data.cluster.KMeansPP;
 import data.eval.MainteEvaluate;
-import file.CSVFileReadWrite;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -40,7 +38,7 @@ public class EvaluateSyaryoData {
         try (SyaryoAnalizer analize = new SyaryoAnalizer(syaryo)) {
             this.name = analize.get().name;
             this.company = analize.mcompany;
-            this.rent = analize.rent?1:0;
+            this.rent = analize.rent;
             this.day = analize.currentAge_day;
             this.smr = analize.maxSMR[1];
 

@@ -32,10 +32,10 @@ public class DBDataExport {
     public static void main(String[] args) {
         //System.out.println(allsyaryo.values().stream().findFirst().get().validate);
         //サービス経歴
-        export("作業工数分析_20190122.csv", "service", "SVCKR_KNRNO", "", new String[]{"KSYCD", "SVCKR_KNRNO","JSDAY", "KISY", "TYP", "KIBAN", "SGYOCD", "JKOS"});
+        export("作業工数分析_20190122.csv", "service", "SVCKR_KNRNO", "JSDAY", "", new String[]{"KSYCD", "SVCKR_KNRNO","JSDAY", "KISY", "TYP", "KIBAN", "SGYOCD", "JKOS"});
     }
 
-    public static List<String> export(String file, String db, String id, String kisy, String[] element) {
+    public static Map<String, String> export(String file, String db, String id, String idData, String kisy, String[] element) {
         Map sbnmap = new HashMap();
         
         try (PrintWriter pw = CSVFileReadWrite.writer(file)) {
@@ -74,8 +74,10 @@ public class DBDataExport {
                     
                     //ID reg
                     String _id = res.getString(id);
+                    String _data = res.getString(idData);
+                    sbnmap.put(_id, _data);
                     
-                    
+                    //
                     List<String> data = new ArrayList();
                     SimpleTemplate temp = allsyaryo.get(name);
                     data.add(String.join(",", temp.name));
@@ -93,5 +95,7 @@ public class DBDataExport {
             } catch (SQLException ex) {
             }
         }
+        
+        return sbnmap;
     }
 }

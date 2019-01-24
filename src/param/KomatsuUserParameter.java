@@ -31,4 +31,5 @@ public interface KomatsuUserParameter {
     
     //削除車両
     public static List<String> PC200_REJECT_LIST = ListToCSV.toList("user\\PC200_rejectSID.csv");
+    
 }

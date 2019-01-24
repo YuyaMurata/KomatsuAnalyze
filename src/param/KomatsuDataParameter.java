@@ -64,6 +64,9 @@ public interface KomatsuDataParameter {
     public static String PYTHONE_PATH = "py\\";
     public static Map<String, String> GRAPH_PY = new MapToJSON().toMap("define\\graph_relate_pyfile.json");
     public static String GRAPH_TEMP_FILE = PYTHONE_PATH+"csv\\graph_temp.csv";
+    
+    public static String DETECT_TEMP_FILE = PYTHONE_PATH+"csv\\detect_temp.csv";
+    public static String DETECT_PY = PYTHONE_PATH+"detect_abnomaly.py";
 
     //Layout
     //public static Map<String, List> DATALAYOUT_INDEX = SyaryoObjectElementsIndex.getInstance().getIndex();
