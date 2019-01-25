@@ -23,8 +23,8 @@ public class SyaryoObjectClient {
             stub = (RemoteSyaryoObjectLoader) registry.lookup(RemoteSyaryoObjectLoader.className);
             isRunnable = true;
         } catch (Exception e) {
-            System.err.println("Client exception:" + e.toString());
-            e.printStackTrace();
+            System.err.println("Not Launched Server!");
+            //e.printStackTrace();
             isRunnable = false;
         }
     }
@@ -34,21 +34,27 @@ public class SyaryoObjectClient {
     }
     
     public Boolean setLoadFile(String file){
+        if(file.equals("Default File"))
+            return false;
+        
         try {
             stub.setSyaryoObjectLoader(file);
             return true;
         } catch (RemoteException ex) {
-            ex.printStackTrace();
+            //ex.printStackTrace();
             return false;
         }
     }
     
     public Boolean setLoadFile(File file){
+        if(file.toString().equals("Default File"))
+            return false;
+        
         try {
             stub.setSyaryoObjectLoader(file);
             return true;
         } catch (RemoteException ex) {
-            ex.printStackTrace();
+            //ex.printStackTrace();
             return false;
         }
     }
@@ -63,17 +69,21 @@ public class SyaryoObjectClient {
     }
     
     public static void main(String[] args) {
-        String host = (args.length < 1) ? null : args[0];
+        /*String host = (args.length < 1) ? null : args[0];
         try {
             Registry registry = LocateRegistry.getRegistry(host);
             RemoteSyaryoObjectLoader stub = (RemoteSyaryoObjectLoader) registry.lookup(RemoteSyaryoObjectLoader.className);
             stub.setSyaryoObjectLoader("PC200_sv_form");
             LoadSyaryoObject response = stub.getSyaryoObjectLoader();
 
-            System.out.println("response:" + response.getSyaryoMap());
+            System.out.println("response:" + response._syaryoMap);
         } catch (Exception e) {
             System.err.println("Client exception:" + e.toString());
             e.printStackTrace();
-        }
+        }*/
+        
+        SyaryoObjectClient client = getInstance();
+        client.setLoadFile("PC200_sv_form");
+        System.out.println(client.getLoader()._syaryoMap);
     }
 }

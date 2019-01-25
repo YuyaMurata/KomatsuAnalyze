@@ -44,8 +44,8 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import obj.LoadSyaryoObject;
+import obj.SyaryoLoader;
 import obj.SyaryoObject;
-import rmi.SyaryoObjectClient;
 import viewer.service.ButtonService;
 
 /**
@@ -63,8 +63,7 @@ public class EasyViewerFXMLController implements Initializable {
     private ListView<?> keylist;
     private Accordion viewarea;
     
-    private static SyaryoObjectClient CLIENT = SyaryoObjectClient.getInstance();
-    private static LoadSyaryoObject LOADER = KomatsuDataParameter.LOADER;
+    private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     private Map<String, SyaryoObject> syaryoMap;
 
     @FXML
@@ -119,9 +118,9 @@ public class EasyViewerFXMLController implements Initializable {
         dataFilterSettings();
         graphMenuSettings();
         initializeAccordion();
-
-        //default
-        //fileLoad(new File("syaryo\\syaryo_obj_PC200_sv_form.bz2"));
+        
+        //default 動作しないため修正
+        //defaultFileLoad(new File("syaryo\\syaryo_obj_PC200_sv_form.bz2"));
     }
 
     public void machineListInitialize() {
@@ -212,7 +211,15 @@ public class EasyViewerFXMLController implements Initializable {
 
         fileLoad(file);
     }
-
+    
+    //default 動作しないため修正
+    private void defaultFileLoad(File file) {
+        if (LOADER.isServerRun() && LOADER.getFilePath().contains("syaryo_obj")) {
+            fileLoad(new File("Default File"));
+        }else
+            fileLoad(file);        
+    }
+    
     private void fileLoad(File file) {
         if (file != null) {
             id_label.setText(file.getName());
@@ -234,13 +241,10 @@ public class EasyViewerFXMLController implements Initializable {
                 Platform.runLater(() -> fileProgress.setProgress(-1));
                 Platform.runLater(() -> id_label.setText(file.getName()));
                 
-                if(CLIENT.isRunnable){
-                    CLIENT.setLoadFile(file);
-                    LOADER = CLIENT.getLoader();
-                }else{
-                    LOADER.setFile(file);
-                }
+                //
+                LOADER.setFile(file);
                 syaryoMap = LOADER.getSyaryoMap();
+                
                 Platform.runLater(() -> updateKeyList(new ArrayList(new TreeSet(syaryoMap.keySet()))));
                 Platform.runLater(() -> fileProgress.setProgress(1));
                 return null;

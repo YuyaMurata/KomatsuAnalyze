@@ -8,6 +8,7 @@ package creator.form;
 import file.SyaryoToCompress;
 import java.util.Map;
 import obj.LoadSyaryoObject;
+import obj.SyaryoLoader;
 import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 import param.KomatsuUserParameter;
@@ -17,7 +18,7 @@ import param.KomatsuUserParameter;
  * @author ZZ17390
  */
 public class UserSyaryoFormatting {
-    private static LoadSyaryoObject LOADER = KomatsuDataParameter.LOADER;
+    private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     public static void main(String[] args) {
         form();
     }

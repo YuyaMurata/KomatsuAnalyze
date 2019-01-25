@@ -10,6 +10,7 @@ import file.CSVFileReadWrite;
 import java.io.PrintWriter;
 import java.util.Map;
 import obj.LoadSyaryoObject;
+import obj.SyaryoLoader;
 import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
@@ -20,7 +21,7 @@ import param.KomatsuDataParameter;
 public class ExportSyaryoAnalizerData {
 
     private static String KISY = "PC200";
-    private static LoadSyaryoObject LOADER = KomatsuDataParameter.LOADER;
+    private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
 
     public static void main(String[] args) {
         LOADER.setFile(KISY+"_km_form");

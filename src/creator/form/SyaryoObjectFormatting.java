@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 import file.MapToJSON;
 import file.SyaryoToCompress;
 import obj.LoadSyaryoObject;
+import obj.SyaryoLoader;
 import obj.SyaryoObject;
 import program.r.R;
 
@@ -35,7 +36,7 @@ public class SyaryoObjectFormatting {
     private static String HONSY_INDEXPATH = KomatsuDataParameter.HONSYA_INDEX_PATH;
     private static String PRODUCT_INDEXPATH = KomatsuDataParameter.PRODUCT_INDEXPATH;
     private static DecimalFormat df = new DecimalFormat("0000");
-    private static LoadSyaryoObject LOADER = KomatsuDataParameter.LOADER;
+    private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
 
     public static void main(String[] args) {
         form(KISY);
@@ -44,7 +45,7 @@ public class SyaryoObjectFormatting {
     private static String currentKey;
 
     private static void form(String kisy) {
-        LOADER.setFile(kisy + "_sv");
+        LOADER.setFile(kisy + "_km");
         Map<String, SyaryoObject> syaryoMap = LOADER.getSyaryoMap();
         
         //本社コード

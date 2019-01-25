@@ -52,9 +52,6 @@ public interface KomatsuDataParameter {
     public static String HONSYA_INDEX_PATH = "index\\honsya_index.json";
     public static String SUMMARY_PATH = "summary\\";
     public static String PRODUCT_SOURCE = "index\\product_201703.csv";
-    
-    //Load SyaryoObject
-    public static LoadSyaryoObject LOADER = LoadSyaryoObject.getInstance();
 
     //EasyViewer
     public static String SYARYOOBJECT_FDPATH = "syaryo\\";

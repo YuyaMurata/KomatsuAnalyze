@@ -21,6 +21,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import file.SyaryoToCompress;
 import obj.LoadSyaryoObject;
+import obj.SyaryoLoader;
 import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
@@ -56,7 +57,7 @@ public class SyaryoAnalizer implements AutoCloseable {
     public Map<String, Integer> workKind = new HashMap<>();
     private List<String[]> termAllSupport;
     private static String DATE_FORMAT = KomatsuDataParameter.DATE_FORMAT;
-    private static LoadSyaryoObject LOADER = KomatsuDataParameter.LOADER;
+    private static SyaryoLoader LOADER;
     private static Map<String, String> POWERLINE_CHECK = KomatsuDataParameter.POWERLINE;
     private static List<String> ACCIDENT_WORDS = KomatsuDataParameter.ACCIDENT_WORDS;
     private static Map<String, String> PC200_KR_MASTER = KomatsuDataParameter.PC_KR_SMASTER;

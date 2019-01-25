@@ -12,6 +12,7 @@ import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import obj.LoadSyaryoObject;
+import obj.SyaryoLoader;
 import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
@@ -21,7 +22,7 @@ import param.KomatsuDataParameter;
  */
 public class AgentSimulator{
 
-    private static LoadSyaryoObject LOADER = KomatsuDataParameter.LOADER;
+    private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     private SyaryoObject syaryo;
     private Map<String, List<String>> dateToSBN = new HashMap();
     private BlockingQueue<OneDayForm> dq = new LinkedBlockingDeque(7);;

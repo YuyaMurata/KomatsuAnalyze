@@ -15,19 +15,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-import obj.LoadSyaryoObject;
+import obj.SyaryoLoader;
 import obj.SyaryoObject;
 import param.KomatsuDataParameter;
-import rmi.SyaryoObjectClient;
 
 /**
- *
+ * 車両評価
  * @author ZZ17390
  */
 public class EvaluateSyaryoData {
-    private static LoadSyaryoObject LOADER;
-    private static SyaryoObjectClient CLIENT = SyaryoObjectClient.getInstance();
-    private Map<String, List> mainte = KomatsuDataParameter.PERIOD_MAINTE;
+    private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     private Map<String, Integer> evalMainte = new LinkedHashMap<>();
     private Map<String, Integer> evalAgeSMR = new LinkedHashMap<>();
     private Map<String, Integer> evalUsage = new LinkedHashMap<>();
@@ -172,8 +169,7 @@ public class EvaluateSyaryoData {
     private static String KISY = "PC200";
 
     public static void main(String[] args) {
-        CLIENT.setLoadFile(KISY+"_km_form");
-        LOADER = CLIENT.getLoader();
+        LOADER.setFile(KISY+"_km_form");
         
         Map<String, SyaryoObject> map = LOADER.getSyaryoMap();
         

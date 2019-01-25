@@ -18,6 +18,7 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import obj.LoadSyaryoObject;
+import obj.SyaryoLoader;
 import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
@@ -28,7 +29,7 @@ import param.KomatsuDataParameter;
 public class AccidentData {
 
     private static String kisy = "PC200";
-    private static LoadSyaryoObject LOADER = KomatsuDataParameter.LOADER;
+    private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     private static List<String> ACCIDENT_WORDS = KomatsuDataParameter.ACCIDENT_WORDS;
 
     public static void main(String[] args) {

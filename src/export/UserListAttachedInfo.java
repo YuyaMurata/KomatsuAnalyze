@@ -17,6 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import obj.LoadSyaryoObject;
+import obj.SyaryoLoader;
 import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
@@ -26,7 +27,7 @@ import param.KomatsuDataParameter;
  */
 public class UserListAttachedInfo {
 
-    private static LoadSyaryoObject LOADER = KomatsuDataParameter.LOADER;
+    private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     private static String file = "user\\syaryo_list_anomaly_order.csv";
     private static String KISY = "PC200";
 

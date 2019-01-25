@@ -11,11 +11,8 @@ import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
-import java.awt.TrayIcon.MessageType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.rmi.registry.Registry;
@@ -24,17 +21,15 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import javax.imageio.ImageIO;
 import obj.LoadSyaryoObject;
-import param.KomatsuDataParameter;
 
 public class SyaryoObjectServer implements RemoteSyaryoObjectLoader {
-    private static LoadSyaryoObject loader = KomatsuDataParameter.LOADER;
+    private static final LoadSyaryoObject LOADER = LoadSyaryoObject.getInstance();
     private static TrayIcon icon;
     
     public SyaryoObjectServer() {
     }
 
     public static void main(String args[]) {
-
         try {
             SyaryoObjectServer obj = new SyaryoObjectServer();
             RemoteSyaryoObjectLoader stub = (RemoteSyaryoObjectLoader) UnicastRemoteObject.exportObject(obj, 0);
@@ -43,9 +38,12 @@ public class SyaryoObjectServer implements RemoteSyaryoObjectLoader {
             LocateRegistry.createRegistry(1099);
             Registry registry = LocateRegistry.getRegistry();
             registry.bind(RemoteSyaryoObjectLoader.className, stub);
-
+            
             System.err.println("Server ready");
             startTray();
+            
+            //Name
+            LOADER.setName("Server Data");
         } catch (Exception e) {
             System.err.println("Server exception:" + e.toString());
             e.printStackTrace();
@@ -59,7 +57,7 @@ public class SyaryoObjectServer implements RemoteSyaryoObjectLoader {
                 .getResourceAsStream("icon\\syaryo_obj.png"));
         
         // トレイアイコン生成
-        icon = new TrayIcon(image, loader.getFilePath());
+        icon = new TrayIcon(image, LOADER.getFilePath());
         
         // イベント登録
         
@@ -84,28 +82,32 @@ public class SyaryoObjectServer implements RemoteSyaryoObjectLoader {
 
     @Override
     public void setSyaryoObjectLoader(String file) throws RemoteException {
-        if(!loader.getFilePath().contains(file))
-            loader.setFile(file);
+        if(LOADER.getFilePath().contains(file))
+            return ;
         
-        System.out.println(loader.getFilePath());
-        icon.setToolTip(loader.getFilePath());
+        LOADER.setFile(file);
+        
+        System.out.println(LOADER.getFilePath());
+        icon.setToolTip(LOADER.getFilePath());
     }
     
     @Override
     public void setSyaryoObjectLoader(File file) throws RemoteException {
-        if(!loader.getFilePath().contains(file.getName()))
-            loader.setFile(file);
+        if(LOADER.getFilePath().contains(file.getName()))
+            return ;
         
-        System.out.println(loader.getFilePath());
-        icon.setToolTip(loader.getFilePath());
+        LOADER.setFile(file);
+        
+        System.out.println(LOADER.getFilePath());
+        icon.setToolTip(LOADER.getFilePath());
     }
 
     @Override
     public LoadSyaryoObject getSyaryoObjectLoader() throws RemoteException {
-        if(loader.getSyaryoMap() == null)
+        if(LOADER._syaryoMap == null)
             System.err.println("Do not set file!");
         
-        return loader;
+        return LOADER;
     }
 
 }

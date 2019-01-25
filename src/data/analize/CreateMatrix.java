@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import obj.LoadSyaryoObject;
+import obj.SyaryoLoader;
 import obj.SyaryoObject;
 import rmi.SyaryoObjectClient;
 
@@ -22,14 +23,12 @@ import rmi.SyaryoObjectClient;
  */
 public class CreateMatrix {
 
-    private static SyaryoObjectClient CLIENT = SyaryoObjectClient.getInstance();
-    private static LoadSyaryoObject LOADER;
+    private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
 
     private static String KISY = "PC200";
 
     public static void main(String[] args) {
-        CLIENT.setLoadFile(KISY + "_sv_form");
-        LOADER = CLIENT.getLoader();
+        LOADER.setFile(KISY + "_sv_form");
 
         String[][] mx = customerMatrix();
 

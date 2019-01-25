@@ -33,7 +33,7 @@ public class SyaryoToCompress {
     public static Boolean runnable = true;
     public static Integer fileSize, availSize;
     
-    private static LoadSyaryoObject LOADER = KomatsuDataParameter.LOADER;
+    private static LoadSyaryoObject LOADER = LoadSyaryoObject.getInstance();
     
     public void write(String file, Map map) {
         runnable = true;
@@ -42,7 +42,6 @@ public class SyaryoToCompress {
             System.exit(0);
         }
             
-        
         file = file.replace(".gz", "").replace(".bz2", "");
 
         int size = 1024;

@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 import obj.LoadSyaryoObject;
+import obj.SyaryoLoader;
 import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
@@ -25,7 +26,7 @@ public class ExportToCSV {
     private static Map<String, SyaryoObject> syaryoMap;
     static String KISY = "PC200";
     static Random rand = new Random();
-    private static LoadSyaryoObject LOADER = KomatsuDataParameter.LOADER;
+    private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
 
     public static void main(String[] args) {
         LOADER.setFile(KISY+"_km_form");

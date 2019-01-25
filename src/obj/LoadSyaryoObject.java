@@ -9,21 +9,22 @@ import java.util.Map;
 import file.SyaryoToCompress;
 import java.io.File;
 import java.io.Serializable;
-import java.util.List;
 import param.KomatsuDataParameter;
 
 /**
  *
  * @author ZZ17390
  */
-public class LoadSyaryoObject  implements Serializable {
+public class LoadSyaryoObject implements Serializable {
     private static final long serialVersionUID = 1L;
+    private String name;
     
     private static LoadSyaryoObject instance = new LoadSyaryoObject();
+    
     private String PATH = "Do not load file";
     public Boolean isClosable = true; //ファイル書き込み時のチェック用
     public SyaryoObject _header; //直接アクセスしない
-    private Map<String, SyaryoObject> syaryoMap;
+    public Map<String, SyaryoObject> _syaryoMap; //直接アクセスしない
     
     private LoadSyaryoObject() {
     }
@@ -32,18 +33,26 @@ public class LoadSyaryoObject  implements Serializable {
         return instance;
     }
     
+    public void setName(String n){
+        name = n;
+    }
+    
+    public String getName(){
+        return name;
+    }
+    
     public String getFilePath(){
         return PATH;
     }
     
     public void setFile(String file){
         PATH = KomatsuDataParameter.SYARYOOBJECT_FDPATH;
-        syaryoMap = load(file);
+        _syaryoMap = load(file);
     }
     
     public void setFile(File file){
         PATH = file.getAbsolutePath();
-        syaryoMap = load(file.getAbsolutePath());
+        _syaryoMap = load(file.getAbsolutePath());
     }
     
     private Map<String, SyaryoObject> load(String filename){
@@ -61,25 +70,5 @@ public class LoadSyaryoObject  implements Serializable {
         map.remove("_header");
         
         return map;
-    }
-    
-    public Integer index(String key, String element){        
-        return _header.get(key).get(key).indexOf(element);
-    }
-    
-    public List<String> indexes(String key){
-        return _header.get(key).get(key);
-    }
-    
-    public Map<String, SyaryoObject> getSyaryoMap(){
-        return syaryoMap;
-    }
-    
-    public void close(){
-        isClosable = true;
-        if(_header != null){
-            syaryoMap.put("_header", _header);
-        }else
-            System.out.println("header is null!");
     }
 }

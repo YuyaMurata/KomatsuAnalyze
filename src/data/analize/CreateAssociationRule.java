@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.TreeMap;
 import obj.LoadSyaryoObject;
+import obj.SyaryoLoader;
 import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
@@ -28,7 +29,7 @@ public class CreateAssociationRule {
     //レイアウト
     private static String PATH = KomatsuDataParameter.SYARYOOBJECT_FDPATH;
     private static String KISY = "PC200";
-    private static LoadSyaryoObject LOADER = KomatsuDataParameter.LOADER;
+    private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
 
     public static void main(String[] args) {
         //車両の読み込み
@@ -37,7 +38,7 @@ public class CreateAssociationRule {
 
         //部品フィルタ
         //AnalizeDataFilter.partsdatafilter(syaryoMap, LOADER._header);
-        asscoiationRule(syaryoMap, LOADER._header);
+        asscoiationRule(syaryoMap, LOADER.getHeader());
     }
 
     private static void asscoiationRule(Map<String, SyaryoObject> syaryoMap, SyaryoObject dataHeader) {

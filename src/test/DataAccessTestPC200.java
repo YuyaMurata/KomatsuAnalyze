@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 import obj.LoadSyaryoObject;
+import obj.SyaryoLoader;
 import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
@@ -25,7 +26,7 @@ import param.KomatsuDataParameter;
  */
 public class DataAccessTestPC200 {
 
-    private static LoadSyaryoObject LOADER = KomatsuDataParameter.LOADER;
+    private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     private static String[] testDB = new String[]{"service.受注", "komtrax_CW_SERVICE_METER.KOMTRAX_SMR"};
     
     private static Random rand = new Random();

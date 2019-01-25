@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import file.MapToJSON;
 import file.SyaryoToCompress;
+import obj.SyaryoLoader;
 import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
@@ -19,7 +20,9 @@ import param.KomatsuDataParameter;
  * @author kaeru_yuya
  */
 public class AttachedLayoutIndex {
+    private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     private static String LAYOUT_INDEX = KomatsuDataParameter.LAYOUT_FORMAT_PATH;
+    
     public static void main(String[] args) {
         attached("PC200");
     }
@@ -31,8 +34,8 @@ public class AttachedLayoutIndex {
             return;
         }
         
-        KomatsuDataParameter.LOADER.setFile(kisy);
-        Map<String, SyaryoObject> map = KomatsuDataParameter.LOADER.getSyaryoMap();
+        LOADER.setFile(kisy);
+        Map<String, SyaryoObject> map = LOADER.getSyaryoMap();
         
         SyaryoObject header = new SyaryoObject("_header");
         Map<String, List> layout = new MapToJSON().toMap(LAYOUT_INDEX);
@@ -46,8 +49,8 @@ public class AttachedLayoutIndex {
         header.putAll(formatter);
         map.put("_header", header);
         
-        KomatsuDataParameter.LOADER.close();
-        new SyaryoToCompress().write(KomatsuDataParameter.LOADER.getFilePath(), map);
+        LOADER.close();
+        new SyaryoToCompress().write(LOADER.getFilePath(), map);
         System.out.println("Attached SyaryoData Index!");
     }
 }

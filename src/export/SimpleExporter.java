@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import file.SyaryoToCompress;
 import obj.LoadSyaryoObject;
+import obj.SyaryoLoader;
 import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
@@ -25,7 +26,7 @@ import param.KomatsuDataParameter;
  * @author ZZ17390
  */
 public class SimpleExporter {
-    private static LoadSyaryoObject LOADER = KomatsuDataParameter.LOADER;
+    private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     private static String KISY = "PC200";
     private static Map<String, SyaryoObject> map;
 

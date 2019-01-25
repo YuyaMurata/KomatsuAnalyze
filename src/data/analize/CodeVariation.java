@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import obj.LoadSyaryoObject;
+import obj.SyaryoLoader;
 import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
@@ -22,7 +23,7 @@ import param.KomatsuDataParameter;
  */
 public class CodeVariation {
     private static String KISY = "PC200";
-    private static LoadSyaryoObject LOADER = KomatsuDataParameter.LOADER;
+    private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
 
     public static void main(String[] args) {
         LOADER.setFile(KISY+"_sv_form");
@@ -32,7 +33,7 @@ public class CodeVariation {
         //AnalizeDataFilter.partsdatafilter(syaryoMap, LOADER._header);
         
         //partscd(syaryoMap, dataHeader);
-        workcd(syaryoMap, LOADER._header);
+        workcd(syaryoMap, LOADER.getHeader());
     }
     
     //KOMTRAX エラーコード

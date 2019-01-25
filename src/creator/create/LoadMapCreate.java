@@ -37,7 +37,7 @@ public class LoadMapCreate {
         //add data
         Arrays.asList(keys).stream().map(s -> "\"LOADMAP_"+s+"\",").forEach(System.out::println);
 
-        //create("PC200");
+        create("PC200");
     }
 
     public static void create(String kisy) {
