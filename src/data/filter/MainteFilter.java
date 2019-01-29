@@ -14,7 +14,7 @@ import param.KomatsuDataParameter;
  * @author ZZ17390
  */
 public class MainteFilter {
-    private static Map<String, List> mainte = KomatsuDataParameter.PERIOD_MAINTE;
+    private static Map<String, List> mainte = KomatsuDataParameter.MAINTE_DEFINE;
     private static Integer priceTh = 5000;
     
     public static Boolean allDetect(String sgkt, String hnbn, Integer price){

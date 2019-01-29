@@ -7,16 +7,12 @@ package export;
 
 import analizer.SyaryoAnalizer;
 import file.CSVFileReadWrite;
-import index.SyaryoObjectElementsIndex;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import file.SyaryoToCompress;
-import obj.LoadSyaryoObject;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
 import param.KomatsuDataParameter;
@@ -45,8 +41,6 @@ public class SimpleExporter {
         //headers.put("顧客.業種", dataIndex.get("顧客").indexOf("GYSCD"));
         
         System.out.println(headers);
-        
-        Map filter = KomatsuDataParameter.PERIOD_MAINTE;
 
         //単体
         //String name = "PC200-8N1-313582";
@@ -57,16 +51,16 @@ public class SimpleExporter {
         //multiExport("ExportData_Multi_"+names.length+".csv", headers, names, filter);
         
         //全部
-        allExport("ExportData_"+KISY+"_ALL.csv", headers, filter);
+        allExport("ExportData_"+KISY+"_ALL.csv", headers);
     }
 
-    private static void allExport(String f, Map<String, Integer> headers, Map filter) {
+    private static void allExport(String f, Map<String, Integer> headers) {
         try (PrintWriter pw = CSVFileReadWrite.writer(f)) {
             pw.println("SID,"+headers.keySet().stream().collect(Collectors.joining(",")));
             for (String name : map.keySet()) {
                 System.out.println(name);
                 try (SyaryoAnalizer syaryo = new SyaryoAnalizer(map.get(name))) {
-                    export(pw, headers, syaryo, filter);
+                    export(pw, headers, syaryo);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -74,27 +68,27 @@ public class SimpleExporter {
         }
     }
 
-    private static void multiExport(String f, Map<String, Integer> headers, String[] names, Map filter) {
+    private static void multiExport(String f, Map<String, Integer> headers, String[] names) {
         try (PrintWriter pw = CSVFileReadWrite.writer(f)) {
             pw.println(headers.keySet().stream().collect(Collectors.joining(",")));
             for (String name : names) {
                 System.out.println(name);
                 SyaryoAnalizer syaryo = new SyaryoAnalizer(map.get(name));
-                export(pw, headers, syaryo, filter);
+                export(pw, headers, syaryo);
             }
         }
     }
 
-    private static void uniExport(String f, Map<String, Integer> headers, String name, Map filter) {
+    private static void uniExport(String f, Map<String, Integer> headers, String name) {
         try (PrintWriter pw = CSVFileReadWrite.writer(f)) {
             pw.println(headers.keySet().stream().collect(Collectors.joining(",")));
             System.out.println(name);
             SyaryoAnalizer syaryo = new SyaryoAnalizer(map.get(name));
-            export(pw, headers, syaryo, filter);
+            export(pw, headers, syaryo);
         }
     }
 
-    private static void export(PrintWriter pw, Map<String, Integer> headers, SyaryoAnalizer syaryo, Map filter) {
+    private static void export(PrintWriter pw, Map<String, Integer> headers, SyaryoAnalizer syaryo) {
         List<Integer> index = new ArrayList(headers.values());
         String key = headers.keySet().stream().findFirst().get().split("\\.")[0];
         syaryo.getValue(key, index.toArray(new Integer[index.size()])).values().stream()

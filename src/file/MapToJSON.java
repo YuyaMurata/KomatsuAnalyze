@@ -61,6 +61,7 @@ public class MapToJSON {
 			Gson gson = new Gson();
 			index = gson.fromJson(reader, type);
 		} catch (Exception e) {
+            System.err.println(filename);
 			e.printStackTrace();
             return null;
 		}

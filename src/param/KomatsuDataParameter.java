@@ -141,13 +141,8 @@ public interface KomatsuDataParameter {
     public static Map POWERLINE = new MapToJSON().toMap("index\\allsupport_index.json");
 
     //定期メンテナンスの定義
-    public static Map<String, List> PERIOD_MAINTE = new HashMap() {
-        {
-            put("受注.SGYO_KTICD", Arrays.asList(new String[]{"AA", "AB", "AC", "BC", "BF", "BJ", "BL", "JA", "KR", "LA"}));
-            put("部品.HNBN", Arrays.asList(new String[]{"6736-51-5142", "600-319-3610", "20Y-60-21470", "207-60-71182", "600-319-3750", "208-979-7620", "2A5-979-1551", "17M-911-3530"}));
-            put("作業.SGYOCD", Arrays.asList(new String[]{"B@BBB4"}));
-        }
-    };
+    public static Map<String, List> MAINTE_DEFINE = new MapToJSON().toMap("define\\PC200_MainteFilter_Define.json");
+    public static Map<String, String> MAINTE_CLUSTER = new MapToJSON().toMap("define\\PC200_MainteClustering.json");
 
     //KOMTRAXエラーコードのフラグの定義
     public static Map PC_ERROR = new MapToJSON().toMap(PC_ERRORFLG_INDEX_PATH);

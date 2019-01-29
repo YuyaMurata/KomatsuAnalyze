@@ -8,6 +8,8 @@ package data.analize;
 import analizer.SyaryoAnalizer;
 import data.cluster.KMeansPP;
 import data.eval.MainteEvaluate;
+import file.CSVFileReadWrite;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -21,9 +23,11 @@ import param.KomatsuDataParameter;
 
 /**
  * 車両評価
+ *
  * @author ZZ17390
  */
 public class EvaluateSyaryoData {
+
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     private Map<String, Integer> evalMainte = new LinkedHashMap<>();
     private Map<String, Integer> evalAgeSMR = new LinkedHashMap<>();
@@ -39,8 +43,8 @@ public class EvaluateSyaryoData {
             this.day = analize.currentAge_day;
             this.smr = analize.maxSMR[1];
 
-            evalAgeSMR.putAll(useData(syaryo));
-            evalUsage.putAll(agingSMRData(syaryo));
+            //evalAgeSMR.putAll(useData(syaryo));
+            //evalUsage.putAll(agingSMRData(syaryo));
             evalMainte.putAll(mainteData(analize));
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -70,6 +74,7 @@ public class EvaluateSyaryoData {
      * インターバル) 油圧メンテ = 作動機オイル交換 / (SMR / インターバル) 定期メンテ = 作業形態回数 / (経年 / インターバル)
      */
     private Map mainteIndex = KomatsuDataParameter.PC_PID_DEFNAME;
+
     private Map mainteData(SyaryoAnalizer syaryo) {
         Map<Object, Integer> map = new LinkedHashMap<>();
 
@@ -108,15 +113,19 @@ public class EvaluateSyaryoData {
 
                         //エンジンオイル
                         String pn = parts.get(LOADER.index("部品", "BHN_NM"));
-                        if (((p.contains("SYEO-") && !p.contains("SYEO-T")) || (p.contains("NYEO-") && !p.contains("NYEO-T"))) && flgMap.get("エンジンオイル")) {
-                            p = "エンジンオイル";
-                            map.put(p, map.get(p) + 1);
+                        if ((p.contains("SYEO") || p.contains("NYEO")) && flgMap.get("エンジンオイル")) {
+                            if (!p.contains("TO")) {
+                                p = "エンジンオイル";
+                                map.put(p, map.get(p) + 1);
+                            }
                         }
 
                         //パワーラインオイル
-                        if ((p.contains("SYEO-T") || p.contains("NYEO-T")) && flgMap.get("パワーラインオイル")) {
-                            p = "パワーラインオイル";
-                            map.put(p, map.get(p) + 1);
+                        if ((p.contains("SYEO") || p.contains("NYEO")) && flgMap.get("パワーラインオイル")) {
+                            if (p.contains("TO")) {
+                                p = "パワーラインオイル";
+                                map.put(p, map.get(p) + 1);
+                            }
                         }
                         //Check
                         if (flgMap.get(p) != null) {
@@ -165,37 +174,40 @@ public class EvaluateSyaryoData {
         map.put("data", data);
         return map;
     }
-    
+
     private static String KISY = "PC200";
 
     public static void main(String[] args) {
-        LOADER.setFile(KISY+"_km_form");
-        
+        LOADER.setFile(KISY + "_km_form");
+
         Map<String, SyaryoObject> map = LOADER.getSyaryoMap();
-        
+
         //メンテナンス評価
         Map<String, EvaluateSyaryoData> data = new HashMap();
+        EvaluateSyaryoData eval = null;
         for (SyaryoObject syaryo : map.values()) {
-            System.out.println(syaryo.name);
-            data.put(syaryo.name, new EvaluateSyaryoData(syaryo));
+            //System.out.println(syaryo.name);
+            eval = new EvaluateSyaryoData(syaryo);
+            data.put(syaryo.name, eval);
         }
-        
+        System.out.println("メンテナンス評価完了");
+
         //クラスタリング
         KMeansPP km = new KMeansPP();
         km.setEvalSyaryo(3, data);
         Map<String, Integer> kmresult = km.execute();
+        System.out.println("クラスタリング完了");
         
         //出力
-        /*try (PrintWriter pw = CSVFileReadWrite.writer(KISY + "_syaryo_eval_mainte.csv")) {
-            pw.println(String.join(",", ev.getHeader())+",AVG,CID");
-            for(String key : info.keySet()){
-                pw.print(info.get(key).stream().map(s -> s.toString()).collect(Collectors.joining(","))+",");
-                if(data.get(key) != null){
-                    double avg = data.get(key).stream().mapToDouble(d -> (Double)d).average().getAsDouble();
-                    pw.println(data.get(key).stream().map(s -> s.toString()).collect(Collectors.joining(","))+","+avg+","+kmresult.get(key));
-                }else
-                    pw.println(zerodata.get(key).stream().map(s -> s.toString()).collect(Collectors.joining(","))+",0,0");
+        try (PrintWriter pw = CSVFileReadWrite.writer(KISY + "_syaryo_eval_mainte.csv")) {
+            pw.println(String.join(",", eval.getMainteHeader())+",AVG,CID");
+            for(String name : data.keySet()){
+                if(kmresult.get(name) != null){
+                    pw.print(data.get(name).getMainteResults().get("info").stream().map(s -> s.toString()).collect(Collectors.joining(","))+",");
+                    double avg = data.get(name).getMainteResults().get("data").stream().mapToDouble(d -> (Double)d).average().getAsDouble();
+                    pw.println(data.get(name).getMainteResults().get("data").stream().map(s -> s.toString()).collect(Collectors.joining(","))+","+avg+","+kmresult.get(name));
+                }
             }
-        }*/
+        }
     }
 }

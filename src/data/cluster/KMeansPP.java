@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -26,6 +27,7 @@ public class KMeansPP {
 
     private static final Random rand = new Random();
     Map<String, List<Double>> s;
+    List<String> s_zero;
     Map<String, Integer> cluster;
 
     int k = 0;
@@ -41,6 +43,18 @@ public class KMeansPP {
         //車両評価データをクラスタリング用に変換
         this.s = evaldata.entrySet().stream()
                 .collect(Collectors.toMap(e->e.getKey(), e->e.getValue().getMainteResults().get("data")));
+        
+        //0データ排除
+        this.s_zero = s.entrySet().stream()
+                            .filter(e -> e.getValue().stream().mapToDouble(v -> v).sum() == 0)
+                            .map(e -> e.getKey())
+                            .collect(Collectors.toList());
+        
+        this.s = s.entrySet().stream()
+                        .filter(e -> !s_zero.contains(e.getKey()))
+                        .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+        
+        System.out.println(s.size()+" zero:"+s_zero.size());
     }
 
     //x, yでユークリッド距離計算
@@ -177,8 +191,44 @@ public class KMeansPP {
             cnt++;
             System.out.println(cnt + ":" + c);
         }
-
-        return cluster;
+        
+        //0データを戻す
+        //s_zero.stream().forEach(name -> cluster.put(name, 0));
+        
+        //スコアリング
+        Map<String, Integer> score = new HashMap<>();
+        Double[] evalmax = new Double[k];
+        Integer[] evalmaxidx = new Integer[k];
+        for(int i=0; i < k; i++){
+            final int ci = i+1;
+            Double max = cluster.entrySet().stream()
+                                .filter(ce -> ce.getValue().equals(ci))
+                                .mapToDouble(ce -> s.get(ce.getKey()).stream().mapToDouble(d -> d).sum())
+                                .max().getAsDouble();
+            evalmax[i] = max;
+            evalmaxidx[i] = i+1;
+        }
+        //ソ－ト
+        for(int i=0; i < k; i++)
+            for(int j=i+1; j < k; j++){
+                if(evalmax[i] > evalmax[j]){
+                    Object temp = evalmax[j];
+                    evalmax[j] = evalmax[i];
+                    evalmax[i] = (Double) temp;
+                    
+                    temp = evalmaxidx[j];
+                    evalmaxidx[j] = evalmaxidx[i];
+                    evalmaxidx[i] = (Integer) temp;   
+                }    
+            }
+        
+        for(int i=0; i < k; i++)
+            for(String name : cluster.keySet()){
+                if(evalmaxidx[i].equals(cluster.get(name)))
+                    score.put(name, i+1);
+            }
+        
+        return score;
     }
 
     private static Map<String, List<Double>> testSample(int n) {

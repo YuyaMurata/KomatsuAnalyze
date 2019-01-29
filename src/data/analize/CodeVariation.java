@@ -91,7 +91,7 @@ public class CodeVariation {
         Map<String, Integer> occSgNum = new HashMap();
         
         //作業コード 抽出
-        List mainte = KomatsuDataParameter.PERIOD_MAINTE.get("受注.SGYO_KTICD");
+        List mainte = KomatsuDataParameter.MAINTE_DEFINE.get("受注.SGYO_KTICD");
         syaryoMap.values().stream().forEach(s -> {
             if(s.get("作業") == null)
                 return ;

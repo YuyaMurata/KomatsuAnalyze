@@ -24,7 +24,7 @@ public class AnalizeDataFilter {
     public static void partsdatafilter(Map<String, SyaryoObject> syaryoMap, SyaryoObject dataHeader) {
         //定期メンテ削除
         List<String> reject = new ArrayList();
-        List mainte = KomatsuDataParameter.PERIOD_MAINTE.get("受注.SGYO_KTICD");
+        List mainte = KomatsuDataParameter.MAINTE_DEFINE.get("受注.SGYO_KTICD");
         int idx = dataHeader.get("受注").get("受注").indexOf("SGYO_KTICD");
         int order_idx = dataHeader.get("受注").get("受注").indexOf("ODR_KBN");
         int idx2 = dataHeader.get("部品").get("部品").indexOf("HNBN");
@@ -73,9 +73,8 @@ public class AnalizeDataFilter {
     public static void workdatafilter(Map<String, SyaryoObject> syaryoMap, SyaryoObject dataHeader) {
         //定期メンテ削除
         List<String> reject = new ArrayList();
-        List mainte = KomatsuDataParameter.PERIOD_MAINTE.get("受注.SGYO_KTICD");
+        List mainte = KomatsuDataParameter.MAINTE_DEFINE.get("受注.SGYO_KTICD");
         int idx = dataHeader.get("受注").get("受注").indexOf("SGYO_KTICD");
-        List mainte2 = KomatsuDataParameter.PERIOD_MAINTE.get("作業.SGYOCD");
         int idx2 = dataHeader.get("作業").get("作業").indexOf("SGYOCD");
         syaryoMap.values().stream().forEach(s -> {
             if (s.get("作業") == null) {
@@ -84,7 +83,6 @@ public class AnalizeDataFilter {
 
             Map works = s.get("作業").entrySet().stream()
                     .filter(w -> !mainte.contains(s.get("受注").get(w.getKey().split("#")[0]).get(idx)))
-                    .filter(w -> !mainte2.contains(w.getValue().get(idx2)))
                     .filter(w -> !w.getValue().get(idx2).equals("ZZU"))
                     .filter(w -> !w.getValue().get(idx2).equals("None"))
                     .collect(Collectors.toMap(w -> w.getKey(), w -> w.getValue()));

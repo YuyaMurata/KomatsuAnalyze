@@ -48,8 +48,7 @@ public class ExportStaffDataCheck {
         int tanto = dataIndex.get("受注").indexOf("ODR_TNTCD");
         int sgktcd = dataIndex.get("受注").indexOf("SGYO_KTICD");
         
-        List mainte = KomatsuDataParameter.PERIOD_MAINTE.get("受注.SGYO_KTICD");
-        List mainte2 = KomatsuDataParameter.PERIOD_MAINTE.get("作業.SGYOCD");
+        List mainte = KomatsuDataParameter.MAINTE_DEFINE.get("受注.SGYO_KTICD");
         
         for(String sbn : syaryo.get().get("作業").keySet()){
             //定期メンテ排除
@@ -57,8 +56,6 @@ public class ExportStaffDataCheck {
                 continue;
             
             String cd = syaryo.get().get("作業").get(sbn).get(sgcd).toString();
-            if(mainte2.contains(cd))
-                continue;
             
             String d = syaryo.getSBNDate(sbn, Boolean.TRUE);
             String pt = syaryo.get().get("受注").get(sbn.split("#")[0]).get(point).toString();

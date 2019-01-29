@@ -52,12 +52,13 @@ public class SyaryoAnalizer implements AutoCloseable {
     public Integer acmLCC = -1;
     public Integer numAccident = 0;
     public Integer acmAccidentPrice = 0;
+    public Integer[] cluster = new Integer[3];
     public Integer[] maxSMR = new Integer[]{-1, -1, -1, -1};
     public Map<String, Integer> odrKind = new HashMap<>();
     public Map<String, Integer> workKind = new HashMap<>();
     private List<String[]> termAllSupport;
     private static String DATE_FORMAT = KomatsuDataParameter.DATE_FORMAT;
-    private static SyaryoLoader LOADER;
+    private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     private static Map<String, String> POWERLINE_CHECK = KomatsuDataParameter.POWERLINE;
     private static List<String> ACCIDENT_WORDS = KomatsuDataParameter.ACCIDENT_WORDS;
     private static Map<String, String> PC200_KR_MASTER = KomatsuDataParameter.PC_KR_SMASTER;
@@ -92,6 +93,8 @@ public class SyaryoAnalizer implements AutoCloseable {
 
         //データ検証
         List<String> enableSet = check();
+        int cm = KomatsuDataParameter.MAINTE_CLUSTER.get(syaryo.name)!=null?Integer.valueOf(KomatsuDataParameter.MAINTE_CLUSTER.get(syaryo.name)):-1;
+        cluster = new Integer[]{-1,-1,cm};
 
         //Status
         for (String key : enableSet) {
@@ -312,7 +315,7 @@ public class SyaryoAnalizer implements AutoCloseable {
             List list = syaryo.get(key).keySet().stream().map(s -> s.split("#")[0]).collect(Collectors.toList());
             return list;
         }
-
+        
         int idx = LOADER.index(key, index);
         //例外処理2
         if (idx == -1) {
@@ -495,7 +498,10 @@ public class SyaryoAnalizer implements AutoCloseable {
         header += "事故,事故受注費計,";
 
         //受注情報
-        header += "顧客数,受注数,作業発注数,部品発注数,ライフサイクルコスト,受注情報1,受注情報2";
+        header += "顧客数,受注数,作業発注数,部品発注数,ライフサイクルコスト,受注情報1,受注情報2,";
+        
+        //評価情報
+        header += "使われ方,経年/SMR,メンテナンス";
 
         return header;
     }
@@ -545,6 +551,11 @@ public class SyaryoAnalizer implements AutoCloseable {
         data.add(String.valueOf(acmLCC));
         data.add(workKind.keySet().stream().collect(Collectors.joining("|")));
         data.add(odrKind.keySet().stream().collect(Collectors.joining("|")));
+        
+        //評価情報
+        data.add(String.valueOf(cluster[0]));
+        data.add(String.valueOf(cluster[1]));
+        data.add(String.valueOf(cluster[2]));
 
         return String.join(",", data);
     }
