@@ -9,7 +9,6 @@ import file.CSVFileReadWrite;
 import filter.DataFilter;
 import filter.MaintenanceFilter;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import obj.SyaryoLoader;
