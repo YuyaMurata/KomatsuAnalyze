@@ -731,8 +731,9 @@ public class SyaryoObjectFormatting {
             //System.out.println("Not found Work!");
             return null;
         }
-
+        
         int smridx = indexList.indexOf("VALUE");
+        String checkNumber = currentKey.split("-")[2].substring(0, 5);
 
         //日付重複除去
         List<String> dateList = smr.keySet().stream()
@@ -752,6 +753,7 @@ public class SyaryoObjectFormatting {
                 .filter(s -> !smr.get(s).get(smridx).equals("None")) //SMRが存在しない
                 .filter(s -> !smr.get(s).get(smridx).equals("999"))  //怪しい数値の削除
                 .filter(s -> !smr.get(s).get(smridx).equals("9999")) //怪しい数値の削除
+                .filter(s -> !smr.get(s).get(smridx).equals(checkNumber)) //怪しい数値の削除
                 .collect(Collectors.toList());
 
             //欠損データのみのため
