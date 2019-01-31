@@ -123,18 +123,6 @@ public class SyaryoObjectFormatting {
 
             //Komtrax
             formKomtrax(syaryo, syaryo.get("出荷"));
-            
-            //SMR  KOMTRAXと統合
-            /*if(syaryo.get("KOMTRAX_SMR") != null){
-                syaryo.put("KOMTRAX_SMR", 
-                        combine(
-                            reduce(syaryo.get("SMR"), Arrays.asList(new Integer[]{dataIndex.get("SMR").indexOf("SVC_MTR")})),
-                            syaryo.get("KOMTRAX_SMR")
-                        )
-                    );
-                //統合データを整形
-                
-            }*/
 
             //余計な情報を削除
             formExtra(syaryo, new String[]{"最終更新日", "国"});
@@ -757,10 +745,13 @@ public class SyaryoObjectFormatting {
         Boolean zeroflg = false;
         for (String date : dateList) {
             String stdate = date;
+            
             //重複日付を取り出す
             List<String> dateGroup = smr.keySet().stream()
                 .filter(s -> s.contains(stdate))
                 .filter(s -> !smr.get(s).get(smridx).equals("None")) //SMRが存在しない
+                .filter(s -> !smr.get(s).get(smridx).equals("999"))  //怪しい数値の削除
+                .filter(s -> !smr.get(s).get(smridx).equals("9999")) //怪しい数値の削除
                 .collect(Collectors.toList());
 
             //欠損データのみのため
