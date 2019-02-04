@@ -32,7 +32,7 @@ public class DBDataExport {
     public static void main(String[] args) {
         //System.out.println(allsyaryo.values().stream().findFirst().get().validate);
         //サービス経歴
-        export("作業工数分析_20190122.csv", "service", "SVCKR_KNRNO", "JSDAY", "", new String[]{"KSYCD", "SVCKR_KNRNO","JSDAY", "KISY", "TYP", "KIBAN", "SGYOCD", "JKOS"});
+        export("作業工数分析_20190204.csv", "service", "SVCKR_KNRNO", "JSDAY", "", new String[]{"KSYCD", "SVCKR_KNRNO","JSDAY", "KISY", "TYP", "KIBAN", "SGYOCD", "JKOS"});
     }
 
     public static Map<String, String> export(String file, String db, String id, String idData, String kisy, String[] element) {

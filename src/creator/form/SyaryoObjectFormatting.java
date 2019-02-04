@@ -45,7 +45,7 @@ public class SyaryoObjectFormatting {
     private static String currentKey;
 
     private static void form(String kisy) {
-        LOADER.setFile(kisy + "_km");
+        LOADER.setFile(kisy + "_sv");
         Map<String, SyaryoObject> syaryoMap = LOADER.getSyaryoMap();
         
         //本社コード
@@ -972,72 +972,5 @@ public class SyaryoObjectFormatting {
             k = key + "#" + df.format(++cnt);
         }
         return k;
-    }
-
-    //SMRの異常値を除去　出来が悪いのでつくり直し
-    private static Map rejectSMRData(Map<String, List<String>> smr, int idx) {
-
-        //MA
-        List smrList = smr.values().stream()
-            .map(s -> s.get(idx)).collect(Collectors.toList());
-        List dates = smr.keySet().stream().collect(Collectors.toList());
-        //List ma = MovingAverage.avg(smr, 5);
-
-        //Regression
-        Map<String, String> reg = R.getInstance().residuals(dates, smrList);
-        List res = new ArrayList();
-        for (String d : reg.keySet()) {
-            String c = String.valueOf(Double.valueOf(Double.valueOf(reg.get(d)) - Double.valueOf(smrList.get(dates.indexOf(d)).toString())).intValue());
-            res.add(c);
-        }
-        Map<String, String> sgtest = R.getInstance().detectOuters(dates, res);
-        for (String date : sgtest.keySet()) {
-            if (!sgtest.get(date).equals("NaN")) {
-                sgtest.put(date, smr.get(date).get(idx));
-            }
-        }
-
-        //異常データの排除
-        Map<String, Integer> sortMap = sgtest.entrySet().stream()
-            .filter(e -> !e.getValue().equals("NaN"))
-            .sorted(Map.Entry.comparingByKey())
-            .collect(Collectors.toMap(e -> e.getKey(), e -> Integer.valueOf(e.getValue()), (e, e2) -> e, LinkedHashMap::new));
-        //List list = R.getInstance().detectOuters(sortMap.keySet().stream().collect(Collectors.toList()));
-        //System.out.println(sortMap);
-        List<String> sortList = sortMap.entrySet().stream()
-            .sorted(Map.Entry.comparingByValue())
-            .map(e -> e.getKey())
-            .collect(Collectors.toList());
-        //System.out.println(sortList);
-        Deque<String> q = new ArrayDeque<String>();
-        for (String date : sortList) {
-            if (!q.isEmpty()) {
-                while (Integer.valueOf(q.getLast()) > Integer.valueOf(date)) {
-                    q.removeLast();
-                    if (q.isEmpty()) {
-                        break;
-                    }
-                }
-            }
-            q.addLast(date);
-        }
-
-        //System.out.println(q);
-        Map<String, String> resultMap = new TreeMap<>();
-        for (String date : sgtest.keySet()) {
-            if (q.contains(date)) {
-                resultMap.put(date, sortMap.get(date).toString());
-            } else {
-                resultMap.put(date, "NaN");
-            }
-        }
-
-        for (String date : resultMap.keySet()) {
-            if (resultMap.get(date).equals("NaN")) {
-                smr.remove(date);
-            }
-        }
-
-        return smr;
     }
 }

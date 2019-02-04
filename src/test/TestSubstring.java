@@ -14,5 +14,10 @@ public class TestSubstring {
         String s = "123456";
         System.out.println(s);
         System.out.println(s.substring(0, 5));
+        
+        String f = "syaryo_mid_PC200_経歴.bz2";
+        String d = f.split("_").length < 5?f.split("_")[3].replace(".bz2", ""):f.split("_")[3]+"_"+f.split("_")[4].replace(".bz2", "");
+        System.out.println(d);
+        
     }
 }

@@ -27,6 +27,7 @@ import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -43,7 +44,6 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import obj.LoadSyaryoObject;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
 import viewer.service.ButtonService;
@@ -115,9 +115,8 @@ public class EasyViewerFXMLController implements Initializable {
         // TODO
         syaryoMap = new HashMap();
         machineListInitialize();
-        dataFilterSettings();
         graphMenuSettings();
-        initializeAccordion();
+        initializeAccordion(KomatsuDataParameter.DATA_ORDER);
         
         //default 動作しないため修正
         //defaultFileLoad(new File("syaryo\\syaryo_obj_PC200_sv_form.bz2"));
@@ -150,12 +149,12 @@ public class EasyViewerFXMLController implements Initializable {
         settingData(currentSyaryo);
     }
 
-    private void initializeAccordion() {
-        TitledPane[] tps = new TitledPane[KomatsuDataParameter.DATA_ORDER.size()];
+    private void initializeAccordion(List<String> order) {
+        TitledPane[] tps = new TitledPane[order.size()];
         //TextArea[] tes = new TextArea[KomatsuDataParameter.DATA_ORDER.size()];
 
         int i = 0;
-        for (String data : KomatsuDataParameter.DATA_ORDER) {
+        for (String data : order) {
             TextArea ta = new TextArea();
             ta.prefHeight(250d);
             tps[i] = new TitledPane(data, ta);
@@ -164,14 +163,19 @@ public class EasyViewerFXMLController implements Initializable {
             i++;
         }
 
-        dataBox.getChildren().addAll(tps);
+        dataBox.getChildren().setAll(tps);
+        
+        //フィルタ設定
+        List<String> filter = new ArrayList<>(order);
+        filter.set(0, "ALL");
+        datafilter.getItems().setAll(filter);
     }
 
     //アコーディオンの設定
     private void settingData(SyaryoObject syaryo) {
         int i = 0;
-        for (String data : KomatsuDataParameter.DATA_ORDER) {
-            TitledPane title = (TitledPane) dataBox.getChildren().get(i);
+        for (Node node : dataBox.getChildren()) {
+            TitledPane title = (TitledPane) node;
             String[] str;
             str = textdump(syaryo.get(title.getText().split(" ")[0].replace("×", "")));
             ((TextArea) title.getContent()).setText(str[1]);
@@ -224,6 +228,14 @@ public class EasyViewerFXMLController implements Initializable {
         if (file != null) {
             id_label.setText(file.getName());
             
+            if(file.getName().contains("_mid_")){
+                String f = file.getName();
+                String od = f.split("_").length < 5?f.split("_")[3].replace(".bz2", ""):f.split("_")[3]+"_"+f.split("_")[4].replace(".bz2", "");
+                initializeAccordion(Arrays.asList(new String[]{od}));
+            }else{
+                initializeAccordion(KomatsuDataParameter.DATA_ORDER);
+            }
+                
             final ExecutorService exec = Executors.newSingleThreadExecutor();
             Task ft = fileLoadTask(file);
             exec.submit(ft);
@@ -241,7 +253,7 @@ public class EasyViewerFXMLController implements Initializable {
                 Platform.runLater(() -> fileProgress.setProgress(-1));
                 Platform.runLater(() -> id_label.setText(file.getName()));
                 
-                //
+                //車両マップの読み込み
                 LOADER.setFile(file);
                 syaryoMap = LOADER.getSyaryoMap();
                 
@@ -315,11 +327,6 @@ public class EasyViewerFXMLController implements Initializable {
         ClipboardContent content = new ClipboardContent();
         content.putString(id_label.getText());
         clipboard.setContent(content);
-    }
-
-    private void dataFilterSettings() {
-        datafilter.getItems().add("ALL");
-        datafilter.getItems().addAll(KomatsuDataParameter.DATA_ORDER);
     }
 
     private void graphMenuSettings() {
