@@ -28,7 +28,7 @@ public class R {
     private static Rengine engine;
 
     private R() {
-        //settings();
+        settings();
     }
 
     private static void settings() {
@@ -42,11 +42,11 @@ public class R {
     }
 
     //スミルノフ・グラブス検定 (http://aoki2.si.gunma-u.ac.jp/lecture/Grubbs/Grubbs.html)
-    public Map detectOuters(List time, List series) {
-        List<String> outers = new ArrayList();
+    public Map<String, Integer> detectOuters(List<String> time, List<Integer> series) {
+        List<Integer> outers = new ArrayList();
         
         //List<String> trend = trends(time, series);
-        String x = "x <- c(" + series.stream().collect(Collectors.joining(",")) + ")";
+        String x = "x <- c(" + series.stream().map(s -> s.toString()).collect(Collectors.joining(",")) + ")";
         //System.out.println(x);
         REXP result = engine.eval(x);
         //System.out.println(result);
@@ -56,7 +56,7 @@ public class R {
         double arr[] = result.asVector().at(1).asDoubleArray();
         if (arr != null) {
             for (double d : arr) {
-                outers.add(String.valueOf(Double.valueOf(d).intValue()));
+                outers.add(Double.valueOf(d).intValue());
             }
         }
 
@@ -64,12 +64,14 @@ public class R {
         for (int i = 0; i < time.size(); i++) {
             map.put(time.get(i), series.get(i));
         }
-
-        //System.out.println(series);
+        
+        System.out.println(outers);
+        
+        System.out.println(series);
         for (Object d : outers) {
             int i = series.indexOf(d);
-            //System.out.println(d+":"+i);
-            map.put(time.get(i), "NaN");
+            System.out.println(d+":"+i+"-> del#"+time.get(i));
+            map.remove(time.get(i));
         }
 
         return map;
