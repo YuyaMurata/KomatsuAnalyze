@@ -67,7 +67,7 @@ public class R {
         
         System.out.println(outers);
         
-        System.out.println(series);
+        //System.out.println(series);
         for (Object d : outers) {
             int i = series.indexOf(d);
             System.out.println(d+":"+i+"-> del#"+time.get(i));
