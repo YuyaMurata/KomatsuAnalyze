@@ -22,21 +22,25 @@ import param.KomatsuDataParameter;
 public class AttachedLayoutIndex {
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     private static String LAYOUT_INDEX = KomatsuDataParameter.LAYOUT_FORMAT_PATH;
+    private static String KISY ="PC200";
     
     public static void main(String[] args) {
-        attached("PC200");
-    }
-    
-    public static void attached(String kisy){
         File layoutfile = new File(LAYOUT_INDEX);
         if(!layoutfile.exists()){
             System.out.println("not find "+LAYOUT_INDEX);
             return;
         }
         
-        LOADER.setFile(kisy);
+        LOADER.setFile(KISY);
         Map<String, SyaryoObject> map = LOADER.getSyaryoMap();
         
+        attached(map);
+        
+        LOADER.close();
+        new SyaryoToCompress().write(LOADER.getFilePath(), map);
+    }
+    
+    public static void attached(Map<String, SyaryoObject> map){
         SyaryoObject header = new SyaryoObject("_header");
         Map<String, List> layout = new MapToJSON().toMap(LAYOUT_INDEX);
         Map<String, Map> formatter = new HashMap<>();
@@ -49,8 +53,6 @@ public class AttachedLayoutIndex {
         header.putAll(formatter);
         map.put("_header", header);
         
-        LOADER.close();
-        new SyaryoToCompress().write(LOADER.getFilePath(), map);
         System.out.println("Attached SyaryoData Index!");
     }
 }

@@ -255,7 +255,7 @@ public class EasyViewerFXMLController implements Initializable {
                 
                 //車両マップの読み込み
                 LOADER.setFile(file);
-                syaryoMap = LOADER.getSyaryoMap();
+                syaryoMap = LOADER.getSyaryoMapWithHeader();
                 
                 Platform.runLater(() -> updateKeyList(new ArrayList(new TreeSet(syaryoMap.keySet()))));
                 Platform.runLater(() -> fileProgress.setProgress(1));

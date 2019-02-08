@@ -61,6 +61,11 @@ public class SyaryoLoader {
     }
     
     public Map<String, SyaryoObject> getSyaryoMap(){
+        LOADER._syaryoMap.remove("_header");
+        return LOADER._syaryoMap;
+    }
+    
+    public Map<String, SyaryoObject> getSyaryoMapWithHeader(){
         return LOADER._syaryoMap;
     }
     

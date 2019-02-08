@@ -67,7 +67,6 @@ public class LoadSyaryoObject implements Serializable {
         
         //ヘッダの読み込み
         _header = map.get("_header");
-        map.remove("_header");
         
         return map;
     }
