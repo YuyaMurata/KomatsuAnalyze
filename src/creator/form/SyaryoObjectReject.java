@@ -29,9 +29,9 @@ public class SyaryoObjectReject {
         Map<String, SyaryoObject> syaryoMap = LOADER.getSyaryoMap();
         
         type(syaryoMap, Arrays.asList(new String[]{"8", "8N1", "10"}));
-        komtrax(syaryoMap, "KOMTRAX_SMR");
-        smr(syaryoMap, "KOMTRAX_SMR");
-        noop(syaryoMap, "KOMTRAX_SMR", "2017");
+        //komtrax(syaryoMap, "KOMTRAX_SMR");
+        //smr(syaryoMap, "KOMTRAX_SMR");
+        //noop(syaryoMap, "KOMTRAX_SMR", "2017");
         
         //レイアウトを付加
         AttachedLayoutIndex.attached(syaryoMap);
@@ -51,13 +51,13 @@ public class SyaryoObjectReject {
         map.keySet().stream().forEach(k -> {
             String typ = k.split("-")[1];
 
-            if (t.contains(k)) {
+            if (t.contains(typ)) {
                 m.put(k, map.get(k));
             } else {
-                if (detail.get(k) == null) {
-                    detail.put(k, 0);
+                if (detail.get(typ) == null) {
+                    detail.put(typ, 0);
                 }
-                detail.put(k, detail.get(k) + 1);
+                detail.put(typ, detail.get(typ) + 1);
             }
         });
         

@@ -443,6 +443,7 @@ public class EasyViewerFXMLController implements Initializable {
             //車両名部分一致
             searchList = Arrays.asList(searchWord).stream()
                 .map(s -> syaryoMap.keySet().stream()
+                    .filter(s2 -> s2.contains("-"))
                 .filter(s2 -> s2.split("-")[2].equals(s))
                 .findFirst())
                 .filter(f -> f.isPresent())

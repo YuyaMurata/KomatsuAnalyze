@@ -45,7 +45,7 @@ public class SyaryoObjectFormatting {
     private static String currentKey;
 
     private static void form(String kisy) {
-        LOADER.setFile(kisy + "_sv");
+        LOADER.setFile(kisy);
         Map<String, SyaryoObject> syaryoMap = LOADER.getSyaryoMap();
         
         //本社コード
@@ -878,7 +878,7 @@ public class SyaryoObjectFormatting {
             }
 
             //Formalize Date
-            Map newMap = new TreeMap();
+            Map<String, List> newMap = new TreeMap();
             String tmp = "";
             for (String date : syaryo.get(id).keySet()) {
                 
@@ -893,7 +893,14 @@ public class SyaryoObjectFormatting {
                     List value = getTransformValue(id, syaryo.get(id).get(date));
                     if(id.equals("KOMTRAX_SMR"))
                         newMap.put(d, value);
-                    else
+                    else if(id.equals("KOMTRAX_ACT_DATA")){  //ACT_DATAの構造が変わると使えない
+                        if(newMap.get(d) == null)
+                            newMap.put(d, value);
+                        else{
+                            Integer dup = Integer.valueOf(newMap.get(d).get(0).toString()) + Integer.valueOf(value.get(0).toString());
+                            newMap.get(d).set(0, dup.toString());
+                        }
+                    }else
                         newMap.put(dup(d, newMap), value);
                     tmp = str;
 

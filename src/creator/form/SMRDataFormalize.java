@@ -35,27 +35,31 @@ public class SMRDataFormalize {
     private static List<String> testList = ListToCSV.toList("user\\SMR異常系列.csv");
 
     public static void main(String[] args) {
-        LOADER.setFile(KISY + "_km_form");
+        LOADER.setFile(KISY + "_form");
         Map<String, SyaryoObject> syaryoMap = LOADER.getSyaryoMap();
 
         //for (String n : testList)
         //    oneSampleForm(syaryoMap.get(n));
         
-        oneSampleForm(syaryoMap.get("PC200-8N1-310707"));
-
+        oneSampleForm(syaryoMap.get("PC200-10-450730"));
+        
+        //Compare SMR ACT_SMR
+        
+        
         R.close();
     }
 
     private static void oneSampleForm(SyaryoObject syaryo) {
         Map<String, Integer> sv_smr = transSMRData(syaryo.get("SMR"), LOADER.index("SMR", "VALUE"));
         Map<String, Integer> km_smr = transSMRData(syaryo.get("KOMTRAX_SMR"), LOADER.index("KOMTRAX_SMR", "VALUE"));
+        Map<String, Integer> km_acsmr = transACTSMRData(syaryo.get("KOMTRAX_ACT_DATA"), LOADER.index("KOMTRAX_ACT_DATA", "VALUE"), LOADER.index("KOMTRAX_ACT_DATA", "DAILY_UNIT"));
         
-        sv_smr = formProcess(sv_smr);
-        km_smr = formProcess(km_smr);
+        //sv_smr = formProcess(sv_smr);
+        //km_smr = formProcess(km_smr);
         
-        Map<String, Integer> smr = mergeSMR(sv_smr, km_smr);
+        //Map<String, Integer> smr = mergeSMR(sv_smr, km_smr);
         
-        Map truth = mergeGraphData(km_smr, new HashMap());
+        Map truth = mergeGraphData(km_smr, km_acsmr);
         testGraph(syaryo, truth);
 
         //Map dm = mergeData(smr, m);
@@ -75,6 +79,28 @@ public class SMRDataFormalize {
 
         return map;
     }
+    
+    private static Map transACTSMRData(Map<String, List> smr, int idx, int unit) {
+        Map<String, Integer> map = new TreeMap();
+
+        if (smr == null) {
+            return map;
+        }
+
+        smr.entrySet().forEach(s -> {
+            map.put(s.getKey(), Integer.valueOf(s.getValue().get(idx).toString()) / Integer.valueOf(s.getValue().get(unit).toString()) / 60);
+        });
+        
+        //累積値に変換
+        Integer acm = 0;
+        for(String d : map.keySet()){
+            acm += map.get(d);
+            map.put(d, acm);
+        }
+        
+        return map;
+    }
+
 
     private static Map<String, Integer> formProcess(Map<String, Integer> smr) {
         while (true) {

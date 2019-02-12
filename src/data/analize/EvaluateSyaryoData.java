@@ -16,6 +16,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
@@ -197,15 +199,15 @@ public class EvaluateSyaryoData {
         km.setEvalSyaryo(3, data);
         Map<String, Integer> kmresult = km.execute();
         System.out.println("クラスタリング完了");
-        
+
         //出力
         try (PrintWriter pw = CSVFileReadWrite.writer(KISY + "_syaryo_eval_mainte.csv")) {
-            pw.println(String.join(",", eval.getMainteHeader())+",AVG,CID");
-            for(String name : data.keySet()){
-                if(kmresult.get(name) != null){
-                    pw.print(data.get(name).getMainteResults().get("info").stream().map(s -> s.toString()).collect(Collectors.joining(","))+",");
-                    double avg = data.get(name).getMainteResults().get("data").stream().mapToDouble(d -> (Double)d).average().getAsDouble();
-                    pw.println(data.get(name).getMainteResults().get("data").stream().map(s -> s.toString()).collect(Collectors.joining(","))+","+avg+","+kmresult.get(name));
+            pw.println(String.join(",", eval.getMainteHeader()) + ",AVG,CID");
+            for (String name : data.keySet()) {
+                if (kmresult.get(name) != null) {
+                    pw.print(data.get(name).getMainteResults().get("info").stream().map(s -> s.toString()).collect(Collectors.joining(",")) + ",");
+                    double avg = data.get(name).getMainteResults().get("data").stream().mapToDouble(d -> (Double) d).average().getAsDouble();
+                    pw.println(data.get(name).getMainteResults().get("data").stream().map(s -> s.toString()).collect(Collectors.joining(",")) + "," + avg + "," + kmresult.get(name));
                 }
             }
         }

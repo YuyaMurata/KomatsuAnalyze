@@ -16,11 +16,12 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import file.SyaryoToCompress;
-import obj.LoadSyaryoObject;
+import java.util.AbstractMap;
+import java.util.Calendar;
+import java.util.Set;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
 import param.KomatsuDataParameter;
@@ -30,6 +31,7 @@ import param.KomatsuDataParameter;
  * @author ZZ17390
  */
 public class SyaryoAnalizer implements AutoCloseable {
+
     public SyaryoObject syaryo;
     public String kind = "";
     public String type = "";
@@ -56,6 +58,7 @@ public class SyaryoAnalizer implements AutoCloseable {
     public Integer[] maxSMR = new Integer[]{-1, -1, -1, -1};
     public Map<String, Integer> odrKind = new HashMap<>();
     public Map<String, Integer> workKind = new HashMap<>();
+    public TreeMap<String, Map.Entry> ageSMR = new TreeMap<>();
     private List<String[]> termAllSupport;
     private static String DATE_FORMAT = KomatsuDataParameter.DATE_FORMAT;
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
@@ -93,8 +96,8 @@ public class SyaryoAnalizer implements AutoCloseable {
 
         //データ検証
         List<String> enableSet = check();
-        int cm = KomatsuDataParameter.MAINTE_CLUSTER.get(syaryo.name)!=null?Integer.valueOf(KomatsuDataParameter.MAINTE_CLUSTER.get(syaryo.name)):-1;
-        cluster = new Integer[]{-1,-1,cm};
+        int cm = KomatsuDataParameter.MAINTE_CLUSTER.get(syaryo.name) != null ? Integer.valueOf(KomatsuDataParameter.MAINTE_CLUSTER.get(syaryo.name)) : -1;
+        cluster = new Integer[]{-1, -1, cm};
 
         //Status
         for (String key : enableSet) {
@@ -107,6 +110,8 @@ public class SyaryoAnalizer implements AutoCloseable {
                     if (syaryo.get("KOMTRAX_SMR") != null) {
                         maxSMR[2] = Integer.valueOf(getValue("KOMTRAX_SMR", "-1", true).get(getValue("KOMTRAX_SMR", "-1", true).size() - 1));
                         maxSMR[3] = Integer.valueOf(getValue("KOMTRAX_SMR", "VALUE", true).get(getValue("KOMTRAX_SMR", "VALUE", true).size() - 1));
+                        //setAgeSMR(syaryo.get("KOMTRAX_ACT_DATA"), 30, 100);
+                        setAgeSMR(syaryo.get("KOMTRAX_SMR"), 30, 100);
                         komtrax = komtrax || true;
                     }
                     break;
@@ -176,8 +181,8 @@ public class SyaryoAnalizer implements AutoCloseable {
 
                             //事故カウント
                             String text = syaryo.get("受注").get(sbn).get(textIdx).toString() + ","
-                                        + syaryo.get("受注").get(sbn).get(text2Idx).toString() + ","
-                                        + (getSBNWork(sbn)!=null?getSBNWork(sbn).values().stream().map(w -> w.get(textworkIdx)).collect(Collectors.joining(",")):"");
+                                + syaryo.get("受注").get(sbn).get(text2Idx).toString() + ","
+                                + (getSBNWork(sbn) != null ? getSBNWork(sbn).values().stream().map(w -> w.get(textworkIdx)).collect(Collectors.joining(",")) : "");
                             //System.out.println(ACCIDENT_WORDS);
                             //System.out.println(text);
                             ACCIDENT_WORDS.stream().forEach(w -> {
@@ -235,7 +240,20 @@ public class SyaryoAnalizer implements AutoCloseable {
         }
 
     }
-
+    
+    private void setAgeSMR(Map<String, List> act_smr, Integer d, Integer s){
+        //初期値
+        ageSMR.put(lifestart, new AbstractMap.SimpleEntry<>(0, 0));
+        
+        // d刻みでSMRをsで丸める
+        Integer span = 0;
+        for(String date : act_smr.keySet()){
+            Integer t = age(date) / d;
+            Integer smr = Integer.valueOf(act_smr.get(date).get(0).toString()) / s;  //ACT_SMRの構成が変わるとエラー
+            ageSMR.put(date, new AbstractMap.SimpleEntry<>(t, smr*s));
+        }
+    }
+    
     //作番と日付をswで相互変換
     private Map<String, String> sbnDate = new HashMap<>();
     private Map<String, String> dateSBN = new HashMap<>();
@@ -315,7 +333,7 @@ public class SyaryoAnalizer implements AutoCloseable {
             List list = syaryo.get(key).keySet().stream().map(s -> s.split("#")[0]).collect(Collectors.toList());
             return list;
         }
-        
+
         int idx = LOADER.index(key, index);
         //例外処理2
         if (idx == -1) {
@@ -348,6 +366,11 @@ public class SyaryoAnalizer implements AutoCloseable {
     public Integer age(String stop) {
         String fstop = stop.split("#")[0];
         return time(lifestart, fstop);
+    }
+
+    //納車されてからstopまでの経過日数
+    public Map.Entry getAgeSMR(String current) {
+        return ageSMR.floorEntry(current);
     }
 
     //startからstopまでの経過日数計算
@@ -499,7 +522,7 @@ public class SyaryoAnalizer implements AutoCloseable {
 
         //受注情報
         header += "顧客数,受注数,作業発注数,部品発注数,ライフサイクルコスト,受注情報1,受注情報2,";
-        
+
         //評価情報
         header += "使われ方,経年/SMR,メンテナンス";
 
@@ -551,7 +574,7 @@ public class SyaryoAnalizer implements AutoCloseable {
         data.add(String.valueOf(acmLCC));
         data.add(workKind.keySet().stream().collect(Collectors.joining("|")));
         data.add(odrKind.keySet().stream().collect(Collectors.joining("|")));
-        
+
         //評価情報
         data.add(String.valueOf(cluster[0]));
         data.add(String.valueOf(cluster[1]));
@@ -561,13 +584,20 @@ public class SyaryoAnalizer implements AutoCloseable {
     }
 
     public static void main(String[] args) {
-        Map<String, SyaryoObject> syaryoMap = new SyaryoToCompress().read("syaryo\\syaryo_obj_PC200_sv_form.bz2");
+        SyaryoLoader LOADER = SyaryoLoader.getInstance();
+        LOADER.setFile("PC200_form");
+        Map<String, SyaryoObject> syaryoMap = LOADER.getSyaryoMap();
         SyaryoAnalizer analize = new SyaryoAnalizer(syaryoMap.get("PC200-10-451215"));
         System.out.println(analize.toString());
 
         //Check
-        System.out.println("20180801:" + analize.checkAS("20180801"));
-        System.out.println("20340801:" + analize.checkAS("20340801"));
+        //System.out.println("20180801:" + analize.checkAS("20180801"));
+        //System.out.println("20340801:" + analize.checkAS("20340801"));
+        
+        System.out.println(analize.ageSMR);
+        
+        System.out.println(analize.getAgeSMR("20140514"));
+        System.out.println(analize.getAgeSMR("20180801"));
     }
 
     @Override
