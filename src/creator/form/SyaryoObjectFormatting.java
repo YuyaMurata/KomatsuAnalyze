@@ -8,10 +8,8 @@ package creator.form;
 import analizer.SyaryoAnalizer;
 import google.map.MapPathData;
 import java.text.DecimalFormat;
-import java.util.ArrayDeque;
 import param.KomatsuDataParameter;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,10 +19,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import file.MapToJSON;
 import file.SyaryoToCompress;
-import obj.LoadSyaryoObject;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
-import program.r.R;
 
 /**
  *
@@ -53,9 +49,6 @@ public class SyaryoObjectFormatting {
 
         //生産日情報
         Map<String, String> productIndex = new MapToJSON().toMap(PRODUCT_INDEXPATH);
-
-        //車両の削除
-        rejectSyaryo(syaryoMap, new String[]{"company,UR", "company,GC", "新車,20170501"});
 
         int n = 0;
         for (String key : syaryoMap.keySet()) {
@@ -166,55 +159,6 @@ public class SyaryoObjectFormatting {
         }
         
         return map;
-    }
-
-    //車両の削除
-    private static void rejectSyaryo(Map<String, SyaryoObject> syaryoMap, String[] deleteRule) {
-        //List<String> reject = new ArrayList();
-        Map<String, Integer> reject = new ConcurrentHashMap();
-        syaryoMap.values().parallelStream().forEach(syaryo -> {
-            syaryo.startHighPerformaceAccess();
-
-            for (String rule : deleteRule) {
-                Boolean check = false;
-
-                String data = rule.split(",")[0];
-                String value = rule.split(",")[1];
-
-                if (data.equals("company")) {
-                    //Delete Company
-                    if (syaryo.get("最終更新日") != null) {
-                        check = syaryo.get("最終更新日").values().stream()
-                            .filter(list -> list.contains(value)) //Company
-                            .findFirst().isPresent();
-                    }
-                } else {
-                    //Delete 新車 日付閾値以降のデータ削除
-                    if (syaryo.get(data) == null) {
-                        data = "生産";
-                    }
-
-                    if (syaryo.get(data) != null) {
-                        check = syaryo.get(data).keySet().stream()
-                            .filter(k -> Integer.valueOf(k.split("#")[0].replace("/", "")) >= Integer.valueOf(value))
-                            .findFirst().isPresent();
-                    }
-                }
-
-                if (check) {
-                    //System.out.println(data+":"+key);
-                    reject.put(syaryo.name, 0);
-                    //reject.add(key);
-                }
-            }
-
-            syaryo.stopHighPerformaceAccess();
-        });
-
-        System.out.println("カンパニ、日付で削除される車両数:" + reject.size());
-        for (String key : reject.keySet()) {
-            syaryoMap.remove(key);
-        }
     }
 
     private static Map formProduct(Map<String, List> product, Map<String, String> index, String name) {

@@ -29,12 +29,10 @@ public class SyaryoObjectReject {
         Map<String, SyaryoObject> syaryoMap = LOADER.getSyaryoMap();
         
         type(syaryoMap, Arrays.asList(new String[]{"8", "8N1", "10"}));
-        //komtrax(syaryoMap, "KOMTRAX_SMR");
+        service(syaryoMap, "20170501");
+        //komtrax(syaryoMap, "KOMTRAX_ACT_DATA");
         //smr(syaryoMap, "KOMTRAX_SMR");
         //noop(syaryoMap, "KOMTRAX_SMR", "2017");
-        
-        //レイアウトを付加
-        AttachedLayoutIndex.attached(syaryoMap);
         
         LOADER.close();
         new SyaryoToCompress().write(LOADER.getFilePath(), syaryoMap);
@@ -64,7 +62,7 @@ public class SyaryoObjectReject {
         map.clear();
         map.putAll(m);
         
-        System.out.println("Number of Syaryo : " + map.size());
+        System.out.println("Number of Syaryo (型) : " + map.size());
         System.out.println("          Detail : " + detail);
     }
     
@@ -77,7 +75,7 @@ public class SyaryoObjectReject {
                         .filter(e -> e.getValue().get(baseKey) != null)
                         .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
         
-        System.out.println("Number of Syaryo : " + map.size());
+        System.out.println("Number of Syaryo (KOMTRAX) : " + map.size());
     }
     
     //SMR異常車両の削除
@@ -93,7 +91,7 @@ public class SyaryoObjectReject {
                         .filter(e -> ab.get(e.getKey()) == null)
                         .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
         
-        System.out.println("Number of Syaryo : " + map.size());
+        System.out.println("Number of Syaryo (SMR正常) : " + map.size());
     }
     
     //非稼動車両の削除
@@ -108,6 +106,34 @@ public class SyaryoObjectReject {
                         .filter(e -> ab.get(e.getKey()) == null)
                         .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
         
-        System.out.println("Number of Syaryo : " + map.size());
+        System.out.println("Number of Syaryo (稼働) : " + map.size());
+    }
+    
+    //サービス情報から車両を削除
+    private static void service(Map<String, SyaryoObject> map, String date){
+        System.out.println("サービス情報による車両の処理 data=[カンパニ UR, GC] 新車納入 : "+date+" 以降の車両の削除");
+        System.out.println("Before Number of Syaryo : " + map.size());
+        
+        //カンパニ車両除去
+        Map companyMap = map.entrySet().stream().filter(e -> !e.getValue().get("最終更新日").values().stream()
+                                                            .filter(c -> c.contains("UR") || c.contains("GC"))
+                                                            .findFirst().isPresent()
+                                                ).collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+        
+        System.out.println("Number of Syaryo (会社) : " + map.size());
+        
+        map.clear();
+        map.putAll(companyMap);
+        
+        ///新車除去
+        Map newMap = map.entrySet().stream().filter(e -> !(e.getValue().get("新車")==null ? 
+                                                        e.getValue().get("生産").keySet().stream().filter(d -> Integer.valueOf(date) <= Integer.valueOf(d.split("#")[0])).findFirst().isPresent() : 
+                                                        e.getValue().get("新車").keySet().stream().filter(d -> Integer.valueOf(date) <= Integer.valueOf(d.split("#")[0])).findFirst().isPresent() )
+                                                ).collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+        
+        System.out.println("Number of Syaryo (新車) : " + map.size());
+        
+        map.clear();
+        map.putAll(newMap);
     }
 }
