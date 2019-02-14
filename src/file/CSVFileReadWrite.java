@@ -31,6 +31,20 @@ public class CSVFileReadWrite {
         return null;
     }
     
+    public static PrintWriter writerSJIS(String filename){
+        try {
+            return  new PrintWriter(new OutputStreamWriter(new FileOutputStream(filename), "SJIS"));
+        } catch (FileNotFoundException ex) {
+            ex.printStackTrace();
+            System.exit(0);
+        } catch (UnsupportedEncodingException ex) {
+            ex.printStackTrace();
+            System.exit(0);
+        }
+        
+        return null;
+    }
+    
     public static PrintWriter addwriter(String filename){
         try {
             return  new PrintWriter(new OutputStreamWriter(new FileOutputStream(filename, true)));

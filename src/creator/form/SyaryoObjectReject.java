@@ -5,7 +5,6 @@
  */
 package creator.form;
 
-import creator.create.AttachedLayoutIndex;
 import file.SyaryoToCompress;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -46,7 +45,7 @@ public class SyaryoObjectReject {
 
         Map<String, SyaryoObject> m = new TreeMap<>();
         Map<String, Integer> detail = new HashMap<>();
-        map.keySet().stream().forEach(k -> {
+        map.keySet().parallelStream().forEach(k -> {
             String typ = k.split("-")[1];
 
             if (t.contains(typ)) {
@@ -115,25 +114,23 @@ public class SyaryoObjectReject {
         System.out.println("Before Number of Syaryo : " + map.size());
         
         //カンパニ車両除去
-        Map companyMap = map.entrySet().stream().filter(e -> !e.getValue().get("最終更新日").values().stream()
+        Map companyMap = map.entrySet().parallelStream().filter(e -> !e.getValue().get("最終更新日").values().stream()
                                                             .filter(c -> c.contains("UR") || c.contains("GC"))
                                                             .findFirst().isPresent()
                                                 ).collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
         
-        System.out.println("Number of Syaryo (会社) : " + map.size());
-        
         map.clear();
         map.putAll(companyMap);
+        System.out.println("Number of Syaryo (会社) : " + map.size());
         
         ///新車除去
-        Map newMap = map.entrySet().stream().filter(e -> !(e.getValue().get("新車")==null ? 
+        Map newMap = map.entrySet().parallelStream().filter(e -> !(e.getValue().get("新車")==null ? 
                                                         e.getValue().get("生産").keySet().stream().filter(d -> Integer.valueOf(date) <= Integer.valueOf(d.split("#")[0])).findFirst().isPresent() : 
                                                         e.getValue().get("新車").keySet().stream().filter(d -> Integer.valueOf(date) <= Integer.valueOf(d.split("#")[0])).findFirst().isPresent() )
                                                 ).collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
         
-        System.out.println("Number of Syaryo (新車) : " + map.size());
-        
         map.clear();
         map.putAll(newMap);
+        System.out.println("Number of Syaryo (新車) : " + map.size());
     }
 }

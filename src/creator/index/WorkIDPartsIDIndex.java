@@ -54,7 +54,7 @@ public class WorkIDPartsIDIndex {
             .filter(s -> s.get("作業") != null)
             .filter(s -> s.get("部品") != null)
             .forEach(s -> {
-                SyaryoAnalizer analize = new SyaryoAnalizer(s);
+                SyaryoAnalizer analize = new SyaryoAnalizer(s, true);
                 analize.getValue("受注", new Integer[]{odrkbnIdx}).entrySet().stream()
                     .filter(o -> o.getValue().get(0).equals("2"))
                     .filter(o -> analize.getSBNWork(o.getKey()) != null)

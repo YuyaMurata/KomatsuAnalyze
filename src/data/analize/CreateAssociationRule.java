@@ -53,7 +53,7 @@ public class CreateAssociationRule {
             .filter(s -> s.get("作業") != null)
             .filter(s -> s.get("部品") != null)
             .forEach(s -> {
-                try (SyaryoAnalizer analize = new SyaryoAnalizer(s)) {
+                try (SyaryoAnalizer analize = new SyaryoAnalizer(s, true)) {
                     System.out.println(s.name);
                     
                     //作業作番抽出

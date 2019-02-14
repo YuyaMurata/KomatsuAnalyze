@@ -5,7 +5,7 @@
  */
 package data.cluster;
 
-import data.analize.EvaluateSyaryoData;
+import data.eval.EvaluateSyaryoObject;
 import file.CSVFileReadWrite;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -36,12 +36,11 @@ public class KMeansPP {
         this.s = sample;
     }
     
-    public void setEvalSyaryo(int k, Map<String, EvaluateSyaryoData> evaldata) {
+    public void setEvalSyaryo(int k, Map<String, List<Double>> evaldata) {
         this.k = k;
         
         //車両評価データをクラスタリング用に変換
-        this.s = evaldata.entrySet().stream()
-                .collect(Collectors.toMap(e->e.getKey(), e->e.getValue().getMainteResults().get("data")));
+        this.s = evaldata;
         
         //0データ排除
         this.s_zero = s.entrySet().stream()
@@ -188,7 +187,7 @@ public class KMeansPP {
         while (changeCluster(c)) {
             c = calcMedian(c);
             cnt++;
-            System.out.println(cnt + ":" + c);
+            //System.out.println(cnt + ":" + c);
         }
         
         //0データを戻す

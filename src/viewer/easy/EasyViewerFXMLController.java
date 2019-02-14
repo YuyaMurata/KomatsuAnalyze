@@ -5,6 +5,7 @@
  */
 package viewer.easy;
 
+import analizer.SyaryoAnalizer;
 import file.CSVFileReadWrite;
 import param.KomatsuDataParameter;
 import java.io.File;
@@ -64,7 +65,7 @@ public class EasyViewerFXMLController implements Initializable {
     @FXML
     private ListView<?> keylist;
     private Accordion viewarea;
-    
+
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     private Map<String, SyaryoObject> syaryoMap;
 
@@ -109,7 +110,6 @@ public class EasyViewerFXMLController implements Initializable {
     private Label amountData;
     @FXML
     private Button csv_download;
-    
 
     /**
      * Initializes the controller class.
@@ -121,7 +121,7 @@ public class EasyViewerFXMLController implements Initializable {
         machineListInitialize();
         graphMenuSettings();
         initializeAccordion(KomatsuDataParameter.DATA_ORDER);
-        
+
         //default 動作しないため修正
         //defaultFileLoad(new File("syaryo\\syaryo_obj_PC200_sv_form.bz2"));
     }
@@ -155,7 +155,6 @@ public class EasyViewerFXMLController implements Initializable {
 
     private void initializeAccordion(List<String> order) {
         TitledPane[] tps = new TitledPane[order.size()];
-        //TextArea[] tes = new TextArea[KomatsuDataParameter.DATA_ORDER.size()];
 
         int i = 0;
         for (String data : order) {
@@ -168,7 +167,7 @@ public class EasyViewerFXMLController implements Initializable {
         }
 
         dataBox.getChildren().setAll(tps);
-        
+
         //フィルタ設定
         List<String> filter = new ArrayList<>(order);
         filter.set(0, "ALL");
@@ -219,27 +218,28 @@ public class EasyViewerFXMLController implements Initializable {
 
         fileLoad(file);
     }
-    
+
     //default 動作しないため修正
     private void defaultFileLoad(File file) {
         if (LOADER.isServerRun() && LOADER.getFilePath().contains("syaryo_obj")) {
             fileLoad(new File("Default File"));
-        }else
-            fileLoad(file);        
+        } else {
+            fileLoad(file);
+        }
     }
-    
+
     private void fileLoad(File file) {
         if (file != null) {
             id_label.setText(file.getName());
-            
-            if(file.getName().contains("_mid_")){
+
+            if (file.getName().contains("_mid_")) {
                 String f = file.getName();
-                String od = f.split("_").length < 5?f.split("_")[3].replace(".bz2", ""):f.split("_")[3]+"_"+f.split("_")[4].replace(".bz2", "");
+                String od = f.split("_").length < 5 ? f.split("_")[3].replace(".bz2", "") : f.split("_")[3] + "_" + f.split("_")[4].replace(".bz2", "");
                 initializeAccordion(Arrays.asList(new String[]{od}));
-            }else{
+            } else {
                 initializeAccordion(KomatsuDataParameter.DATA_ORDER);
             }
-                
+
             final ExecutorService exec = Executors.newSingleThreadExecutor();
             Task ft = fileLoadTask(file);
             exec.submit(ft);
@@ -256,11 +256,11 @@ public class EasyViewerFXMLController implements Initializable {
             protected Void call() throws Exception {
                 Platform.runLater(() -> fileProgress.setProgress(-1));
                 Platform.runLater(() -> id_label.setText(file.getName()));
-                
+
                 //車両マップの読み込み
                 LOADER.setFile(file);
                 syaryoMap = LOADER.getSyaryoMapWithHeader();
-                
+
                 Platform.runLater(() -> updateKeyList(new ArrayList(new TreeSet(syaryoMap.keySet()))));
                 Platform.runLater(() -> fileProgress.setProgress(1));
                 return null;
@@ -377,9 +377,9 @@ public class EasyViewerFXMLController implements Initializable {
                         disableFilterMap.put(s.getName(), 0);
                     }
                 });
-            
+
             int cnt = enableFilterMap.values().stream().mapToInt(size -> Integer.valueOf(size.toString())).sum();
-            amountData.setText("合計:"+String.valueOf(cnt)+"件");
+            amountData.setText("合計:" + String.valueOf(cnt) + "件");
         }
 
         if (btnEnDis) {
@@ -408,7 +408,7 @@ public class EasyViewerFXMLController implements Initializable {
             return;
         }
 
-        System.out.println(v+":"+LOADER.indexes(v));
+        System.out.println(v + ":" + LOADER.indexes(v));
         service.setInfo(v, LOADER.index(v, "VALUE"), currentSyaryo);
         service.restart();
     }
@@ -447,7 +447,7 @@ public class EasyViewerFXMLController implements Initializable {
             //車両名部分一致
             searchList = Arrays.asList(searchWord).stream()
                 .map(s -> syaryoMap.keySet().stream()
-                    .filter(s2 -> s2.contains("-"))
+                .filter(s2 -> s2.contains("-"))
                 .filter(s2 -> s2.split("-")[2].equals(s))
                 .findFirst())
                 .filter(f -> f.isPresent())
@@ -457,16 +457,14 @@ public class EasyViewerFXMLController implements Initializable {
                 updateKeyList(searchList);
                 return;
             }
-            
-            System.out.println("Not Found "+String.join(",", searchWord));
+
+            System.out.println("Not Found " + String.join(",", searchWord));
             updateKeyList(new ArrayList());
-            return ;
+            return;
         }
 
-        
         targets = Arrays.asList(new String[]{datafilter.getValue()});
         searchList = new ArrayList<>(currentFilterMap.keySet());
-        
 
         searchList.parallelStream().forEach(s -> {
             SyaryoObject syaryo = syaryoMap.get(s);
@@ -519,11 +517,53 @@ public class EasyViewerFXMLController implements Initializable {
 
     @FXML
     private void downloadCSV(ActionEvent event) {
-        if(currentSyaryo == null)
-            return ;
-            
-        try(PrintWriter pw = CSVFileReadWrite.writer(currentSyaryo.name+".csv")){
-            
+        if (currentSyaryo == null) {
+            return;
+        }
+
+        try (PrintWriter pw = CSVFileReadWrite.writerSJIS(currentSyaryo.name + ".csv")) {
+
+            try (SyaryoAnalizer a = new SyaryoAnalizer(currentSyaryo)) {
+                //基本情報
+                pw.println(a.get().name);
+                pw.println("会社CD," + a.mcompany + ",新車/生産," + a.lifestart+",最終SMR,"+a.maxSMR[2]+","+a.maxSMR[3]+",KOMTRAX_SMR,"+(a.get().get("KOMTRAX_SMR")!=null?a.get().get("KOMTRAX_SMR").size():"-1"));
+                
+                //顧客情報
+                pw.println("\n顧客情報");
+                LOADER.getHeader().get("顧客").values().stream().map(s -> String.join(",", s)).forEach(pw::println);
+                a.get().get("顧客").values().stream().distinct().map(s -> String.join(",", s)).forEach(pw::println);
+
+                //サービス情報
+                pw.println("\nサービス情報");
+                if (a.get().get("受注") != null) {
+                    LOADER.getHeader().get("受注").values().stream().map(s -> "作番," + String.join(",", s)).forEach(pw::println);
+                    a.get().get("受注").entrySet().stream().map(s -> s.getKey() + "," + String.join(",", s.getValue())).forEach(pw::println);
+                } else {
+                    pw.println("None");
+                }
+
+                //作業明細
+                pw.println("\n作業明細");
+                if (a.get().get("作業") != null) {
+                    LOADER.getHeader().get("作業").values().stream().map(s -> "作番," + String.join(",", s)).forEach(pw::println);
+                    a.get().get("作業").entrySet().stream().map(s -> s.getKey() + "," + String.join(",", s.getValue())).forEach(pw::println);
+                } else {
+                    pw.println("None");
+                }
+
+                //部品明細
+                pw.println("\n部品明細");
+                if (a.get().get("部品") != null) {
+                    LOADER.getHeader().get("部品").values().stream().map(s -> "作番," + String.join(",", s)).forEach(pw::println);
+                    a.get().get("部品").entrySet().stream().map(s -> s.getKey() + "," + String.join(",", s.getValue())).forEach(pw::println);
+                } else {
+                    pw.println("None");
+                }
+                
+                System.out.println(currentSyaryo.name+" CSV DL Done!");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
     }
 }

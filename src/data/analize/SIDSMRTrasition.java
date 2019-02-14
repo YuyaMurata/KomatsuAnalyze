@@ -235,7 +235,7 @@ public class SIDSMRTrasition {
         int fuelIdx = header.get("KOMTRAX_FUEL_CONSUME").get("KOMTRAX_FUEL_CONSUME").indexOf("CONSUME_COUNT");
 
         map.values().stream().forEach(s -> {
-            SyaryoAnalizer analizer = new SyaryoAnalizer(s);
+            SyaryoAnalizer analizer = new SyaryoAnalizer(s, true);
             int i = list.indexOf(s.name);
             analizer.get().get("KOMTRAX_SMR").entrySet().stream().forEach(smr -> {
                 String date = smr.getKey().split("#")[0];

@@ -18,10 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-import file.SyaryoToCompress;
 import java.util.AbstractMap;
-import java.util.Calendar;
-import java.util.Set;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
 import param.KomatsuDataParameter;
@@ -46,7 +43,7 @@ public class SyaryoAnalizer implements AutoCloseable {
     public String lifestop = "";
     public String currentLife = "";
     public Integer currentAge_day = -1;
-    public String[] usedlife = null;
+    public List<String> usedlife = null;
     public Integer numOwners = -1;
     public Integer numOrders = -1;
     public Integer numParts = -1;
@@ -66,10 +63,14 @@ public class SyaryoAnalizer implements AutoCloseable {
     private static List<String> ACCIDENT_WORDS = KomatsuDataParameter.ACCIDENT_WORDS;
     private static Map<String, String> PC200_KR_MASTER = KomatsuDataParameter.PC_KR_SMASTER;
 
-    public SyaryoAnalizer(SyaryoObject syaryo) {
+    public SyaryoAnalizer(SyaryoObject syaryo, Boolean flg) {
         this.syaryo = syaryo;
         this.syaryo.startHighPerformaceAccess();
-        settings(syaryo);
+        
+        //設定の詳細さを選択
+        simpleSettings(syaryo);
+        if(flg)
+            complexSettings(syaryo);
         //this.syaryo.stopHighPerformaceAccess();
     }
 
@@ -88,7 +89,7 @@ public class SyaryoAnalizer implements AutoCloseable {
         return enable;
     }
 
-    private void settings(SyaryoObject syaryo) {
+    private void simpleSettings(SyaryoObject syaryo) {
         //Name
         this.kind = syaryo.getName().split("-")[0];
         this.type = syaryo.getName().split("-")[1];
@@ -96,8 +97,6 @@ public class SyaryoAnalizer implements AutoCloseable {
 
         //データ検証
         List<String> enableSet = check();
-        int cm = KomatsuDataParameter.MAINTE_CLUSTER.get(syaryo.name) != null ? Integer.valueOf(KomatsuDataParameter.MAINTE_CLUSTER.get(syaryo.name)) : -1;
-        cluster = new Integer[]{-1, -1, cm};
 
         //Status
         for (String key : enableSet) {
@@ -110,8 +109,6 @@ public class SyaryoAnalizer implements AutoCloseable {
                     if (syaryo.get("KOMTRAX_SMR") != null) {
                         maxSMR[2] = Integer.valueOf(getValue("KOMTRAX_SMR", "-1", true).get(getValue("KOMTRAX_SMR", "-1", true).size() - 1));
                         maxSMR[3] = Integer.valueOf(getValue("KOMTRAX_SMR", "VALUE", true).get(getValue("KOMTRAX_SMR", "VALUE", true).size() - 1));
-                        //setAgeSMR(syaryo.get("KOMTRAX_ACT_DATA"), 30, 100);
-                        setAgeSMR(syaryo.get("KOMTRAX_SMR"), 30, 100);
                         komtrax = komtrax || true;
                     }
                     break;
@@ -120,13 +117,66 @@ public class SyaryoAnalizer implements AutoCloseable {
                     break;
                 case "中古車":
                     used = true;
-                    StringBuilder sb = new StringBuilder();
-                    for (String date : syaryo.get("中古車").keySet()) {
-                        sb.append(date);
-                        sb.append(",");
+                    usedlife = new ArrayList<>(syaryo.get("中古車").keySet());
+                    break;
+                case "廃車":
+                    dead = true;
+                    lifestop = syaryo.get("廃車").keySet().stream().findFirst().get();
+                    break;
+                case "受注":
+                    numOrders = syaryo.get("受注").size();
+                    int dayIdx = LOADER.index("受注", "ODDAY");
+                    
+                    //日付と作番の相互変換
+                    syaryo.get("受注").entrySet().stream().forEach(odr ->{
+                        String sbn = odr.getKey();
+                        String date = syaryo.get("受注").get(sbn).get(dayIdx).toString();
+                        sbnDate.put(sbn, date);
+                        if (dateSBN.get(date) == null) {
+                            dateSBN.put(date, sbn);
+                        } else {
+                            dateSBN.put(date, dateSBN.get(date) + "," + sbn);
+                        }
+                    });
+                case "顧客":
+                    List custv = getValue("顧客", "顧客CD", false);
+                    numOwners = custv == null ? -1 : ((Long) custv.stream().distinct().count()).intValue();
+                    break;
+                case "部品":
+                    numParts = syaryo.get("部品").size();
+                    break;
+                case "作業":
+                    numWorks = syaryo.get("作業").size();
+                    break;
+                case "新車":
+                    lifestart = syaryo.get("新車").keySet().stream().findFirst().get();
+                    mcompany = syaryo.get("仕様").get("0").get(0).toString();
+                    break;
+            }
+        }
+
+        //Life
+        if (!dead) {
+            currentAge_day = lifestart.equals("") ? -1 : age("20170501"); //データ受領日(データによって数日ずれている)
+        } else {
+            currentAge_day = lifestop.equals("") ? -1 : age(lifestop); //廃車日
+        }
+
+    }
+
+    private void complexSettings(SyaryoObject syaryo) {
+        //データ検証
+        List<String> enableSet = check();
+        int cm = KomatsuDataParameter.MAINTE_CLUSTER.get(syaryo.name) != null ? Integer.valueOf(KomatsuDataParameter.MAINTE_CLUSTER.get(syaryo.name)) : -1;
+        cluster = new Integer[]{-1, -1, cm};
+
+        //Status
+        for (String key : enableSet) {
+            switch (key) {
+                case "SMR":
+                    if (syaryo.get("KOMTRAX_SMR") != null) {
+                        setAgeSMR(syaryo.get("KOMTRAX_SMR"), 30, 100);
                     }
-                    sb.deleteCharAt(sb.length() - 1);
-                    usedlife = sb.toString().split(",");
                     break;
                 case "オールサポート":
                     allsupport = true;
@@ -138,12 +188,7 @@ public class SyaryoAnalizer implements AutoCloseable {
                         termAllSupport.add(new String[]{start.toString(), end.toString()});
                     }
                     break;
-                case "廃車":
-                    dead = true;
-                    lifestop = syaryo.get("廃車").keySet().stream().findFirst().get();
-                    break;
                 case "受注":
-                    numOrders = syaryo.get("受注").size();
                     List<String> odrv = getValue("受注", "ODDAY", true);
                     currentLife = odrv == null ? "NA" : odrv.get(numOrders - 1);
                     int dayIdx = LOADER.index("受注", "ODDAY");
@@ -156,9 +201,6 @@ public class SyaryoAnalizer implements AutoCloseable {
                     if (dayIdx > -1) {
                         acmLCC = 0;
                         for (String sbn : syaryo.get("受注").keySet()) {
-                            String date = (String) syaryo.get("受注").get(sbn).get(dayIdx);
-                            sbnDate.put(sbn, date);
-
                             //ライフサイクルコスト計算
                             Double price = Double.valueOf(syaryo.get("受注").get(sbn).get(priceIdx).toString());
                             acmLCC += price.intValue();
@@ -191,20 +233,10 @@ public class SyaryoAnalizer implements AutoCloseable {
                                     acmAccidentPrice += price.intValue();
                                 }
                             });
-
-                            //日付との相互変換用
-                            if (dateSBN.get(date) == null) {
-                                dateSBN.put(date, sbn);
-                            } else {
-                                dateSBN.put(date, dateSBN.get(date) + "," + sbn);
-                            }
                         }
                     }
                     break;
                 case "顧客":
-                    List custv = getValue("顧客", "顧客CD", false);
-                    numOwners = custv == null ? -1 : ((Long) custv.stream().distinct().count()).intValue();
-
                     //レンタル業者か判定
                     List<String> custKbn = getValue("顧客", "顧客区分", false);
                     List<String> custGycd = getValue("顧客", "業種CD", false);
@@ -218,42 +250,23 @@ public class SyaryoAnalizer implements AutoCloseable {
                     }
 
                     break;
-                case "部品":
-                    numParts = syaryo.get("部品").size();
-                    break;
-                case "作業":
-                    numWorks = syaryo.get("作業").size();
-                    break;
-                case "新車":
-                    lifestart = syaryo.get("新車").keySet().stream().findFirst().get();
-
-                    mcompany = syaryo.get("仕様").get("0").get(0).toString();
-                    break;
             }
         }
-
-        //Life
-        if (!dead) {
-            currentAge_day = lifestart.equals("") ? -1 : age("20170501"); //データ受領日(データによって数日ずれている)
-        } else {
-            currentAge_day = lifestop.equals("") ? -1 : age(lifestop); //廃車日
-        }
-
     }
-    
-    private void setAgeSMR(Map<String, List> act_smr, Integer d, Integer s){
+
+    private void setAgeSMR(Map<String, List> act_smr, Integer d, Integer s) {
         //初期値
         ageSMR.put(lifestart, new AbstractMap.SimpleEntry<>(0, 0));
-        
+
         // d刻みでSMRをsで丸める
         Integer span = 0;
-        for(String date : act_smr.keySet()){
+        for (String date : act_smr.keySet()) {
             Integer t = age(date) / d;
             Integer smr = Integer.valueOf(act_smr.get(date).get(0).toString()) / s;  //ACT_SMRの構成が変わるとエラー
-            ageSMR.put(date, new AbstractMap.SimpleEntry<>(t, smr*s));
+            ageSMR.put(date, new AbstractMap.SimpleEntry<>(t, smr * s));
         }
     }
-    
+
     //作番と日付をswで相互変換
     private Map<String, String> sbnDate = new HashMap<>();
     private Map<String, String> dateSBN = new HashMap<>();
@@ -587,15 +600,14 @@ public class SyaryoAnalizer implements AutoCloseable {
         SyaryoLoader LOADER = SyaryoLoader.getInstance();
         LOADER.setFile("PC200_form");
         Map<String, SyaryoObject> syaryoMap = LOADER.getSyaryoMap();
-        SyaryoAnalizer analize = new SyaryoAnalizer(syaryoMap.get("PC200-10-451215"));
+        SyaryoAnalizer analize = new SyaryoAnalizer(syaryoMap.get("PC200-10-451215"), true);
         System.out.println(analize.toString());
 
         //Check
         //System.out.println("20180801:" + analize.checkAS("20180801"));
         //System.out.println("20340801:" + analize.checkAS("20340801"));
-        
         System.out.println(analize.ageSMR);
-        
+
         System.out.println(analize.getAgeSMR("20140514"));
         System.out.println(analize.getAgeSMR("20180801"));
     }

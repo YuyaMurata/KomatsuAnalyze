@@ -204,17 +204,7 @@ public class SyaryoObject implements Serializable {
         sb.append(name);
         sb.append(":");
         sb.append(map);
-        /*for (Object key : map.keySet()) {
-            sb.append("\n    ");
-            sb.append(key);
-            sb.append(":");
-            Map<String, List> m = (Map<String, List>) map.get(key);
-            for(String d : m.keySet()){
-                sb.append("\n\t");
-                sb.append(d);
-                sb.append(m.get(d));
-            }
-        }*/
+        
         compress(true);
 
         return sb.toString();
