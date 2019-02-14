@@ -5,8 +5,10 @@
  */
 package viewer.easy;
 
+import file.CSVFileReadWrite;
 import param.KomatsuDataParameter;
 import java.io.File;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -105,6 +107,8 @@ public class EasyViewerFXMLController implements Initializable {
     private MenuItem showJSON;
     @FXML
     private Label amountData;
+    @FXML
+    private Button csv_download;
     
 
     /**
@@ -511,5 +515,15 @@ public class EasyViewerFXMLController implements Initializable {
     @FXML
     private void showJSON(ActionEvent event) {
         System.out.println(currentSyaryo.dump());
+    }
+
+    @FXML
+    private void downloadCSV(ActionEvent event) {
+        if(currentSyaryo == null)
+            return ;
+            
+        try(PrintWriter pw = CSVFileReadWrite.writer(currentSyaryo.name+".csv")){
+            
+        }
     }
 }

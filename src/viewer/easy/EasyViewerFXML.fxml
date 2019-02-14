@@ -97,6 +97,7 @@
                               <Region prefHeight="23.0" prefWidth="102.0" HBox.hgrow="ALWAYS" />
                               <ComboBox fx:id="graph_menu" prefHeight="23.0" prefWidth="118.0" promptText="None" />
                               <Button fx:id="graph_button" alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#graphAction" prefHeight="23.0" prefWidth="82.0" text="Graph" />
+                              <Button fx:id="csv_download" mnemonicParsing="false" onAction="#downloadCSV" text="↓" underline="true" />
                            </children>
                         </HBox>
                         <Region maxHeight="10.0" minHeight="2.0" prefHeight="2.0" prefWidth="604.0" VBox.vgrow="NEVER" />
