@@ -50,7 +50,7 @@ public class DataToCSV {
                 
                 System.out.println(s.name);
                 
-                Map<String, List> p = s.get("部品");
+                Map<String, List<String>> p = s.get("部品");
                 for (String id : p.keySet()) {
                     String sg = (String) s.get("受注").get(id.split("#")[0]).get(sgkt);
                     String odr = (String) s.get("受注").get(id.split("#")[0]).get(kbn);

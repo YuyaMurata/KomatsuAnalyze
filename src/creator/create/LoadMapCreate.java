@@ -98,7 +98,7 @@ public class LoadMapCreate {
                             line = csv.readLine();
                             String[] sarr = line.replace(" ", "").split(",");
                             for (int j = 1; j < sarr.length; j++) {
-                                temp.get(key + keys[idx]).put(sarr[0] + "_" + head[j], Arrays.asList(new String[]{sarr[j]}));
+                                temp.get(key + keys[idx]).put(fkey(sarr[0],head[j]), Arrays.asList(new String[]{sarr[j]}));
                             }
                         }
                         idx++;
@@ -117,7 +117,7 @@ public class LoadMapCreate {
                         line = csv.readLine();
                         String[] sarr = line.replace(" ", "").split(",");
                         for (int j = 1; j < sarr.length; j++) {
-                            temp.get(key + keys[idx]).put(head[j], Arrays.asList(new String[]{sarr[j]}));
+                            temp.get(key + keys[idx]).put(label(head[j]), Arrays.asList(new String[]{sarr[j]}));
                         }
                         idx++;
                     } else if (line.contains("作業モード選択状況")) {
@@ -136,7 +136,7 @@ public class LoadMapCreate {
                             line = csv.readLine();
                             String[] sarr = line.replace(" ", "").split(",");
                             for (int j = 1; j < sarr.length; j++) {
-                                temp.get(key + keys[idx]).put(sarr[0] + "_" + head[j], Arrays.asList(new String[]{sarr[j]}));
+                                temp.get(key + keys[idx]).put(fkey(sarr[0],head[j]), Arrays.asList(new String[]{sarr[j]}));
                             }
                         }
                         idx++;
@@ -154,7 +154,7 @@ public class LoadMapCreate {
                             line = csv.readLine();
                             String[] sarr = line.replace(" ", "").split(",");
                             for (int j = 1; j < sarr.length; j++) {
-                                temp.get(key + keys[idx]).put(sarr[0] + "_" + head[j], Arrays.asList(new String[]{sarr[j]}));
+                                temp.get(key + keys[idx]).put(fkey(sarr[0],head[j]), Arrays.asList(new String[]{sarr[j]}));
                             }
                         }
                         idx++;
@@ -164,7 +164,7 @@ public class LoadMapCreate {
                         line = csv.readLine();
                         String[] sarr = line.replace(" ", "").split(",");
                         for (int j = 1; j < sarr.length; j++) {
-                            temp.get(key + keys[idx]).put(head[j], Arrays.asList(new String[]{sarr[j]}));
+                            temp.get(key + keys[idx]).put(label(head[j]), Arrays.asList(new String[]{sarr[j]}));
                         }
                         idx++;
                     }
@@ -194,5 +194,26 @@ public class LoadMapCreate {
         //                        .forEach(System.out::println);
         new SyaryoToCompress().write(filename, syaryoMap);
         System.out.println(syaryoMap.size());
+    }
+    
+    private static String fkey(String x, String y){
+        String lx = label(x);
+        String ly = label(y);
+        
+        return lx+"_"+ly;
+    }
+    
+    private static String label(String x){
+        String lx = "";
+        
+        if(x.startsWith("〜"))
+            lx = x.replace("〜", "");
+        else
+            if(x.contains(".")){
+                lx = String.valueOf(Double.valueOf(x.replace("〜", ""))+0.1);
+            }else
+                lx = String.valueOf(Integer.valueOf(x.replace("〜", ""))+1);
+        
+        return lx;
     }
 }

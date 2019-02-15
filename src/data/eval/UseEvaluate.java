@@ -33,12 +33,12 @@ public class UseEvaluate {
             return null;
         
         int smr_idx = LOADER.index("LOADMAP_SMR", "VALUE");
-        Double smr = Double.valueOf(s.get().get("LOADMAP_SMR").values().stream().findFirst().get().get(smr_idx).toString());
+        Double smr = Double.valueOf(s.get().get("LOADMAP_SMR").values().stream().findFirst().get().get(smr_idx));
         
         int eg_idx = LOADER.index(key, "VALUE");
-        Map<String, List> engine = s.get().get(key);
+        Map<String, List<String>> engine = s.get().get(key);
         engine.entrySet().stream().forEach(e ->{
-            map.put(e.getKey(), Double.valueOf(e.getValue().get(eg_idx).toString())/smr);
+            map.put(e.getKey(), Double.valueOf(e.getValue().get(eg_idx))/smr);
         });
         
         h = new ArrayList(engine.keySet());

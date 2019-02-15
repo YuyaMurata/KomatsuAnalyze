@@ -135,7 +135,7 @@ public class SyaryoObjectFormatting {
         new SyaryoToCompress().write(LOADER.getFilePath().replace(".bz2", "_form.bz2"), syaryoMap);
     }
     
-    private static Map reduce(Map<String, List> r, List<Integer> exp){
+    private static Map reduce(Map<String, List<String>> r, List<Integer> exp){
         Map map =r.entrySet().stream()
                         .collect(Collectors.toMap(e -> e.getKey(), 
                                                     e ->exp.stream().map(i -> e.getValue().get(i)).collect(Collectors.toList())));
@@ -158,8 +158,8 @@ public class SyaryoObjectFormatting {
         return map;
     }
 
-    private static Map formProduct(Map<String, List> product, Map<String, String> index, String name) {
-        Map<String, List> map = new TreeMap();
+    private static Map formProduct(Map<String, List<String>> product, Map<String, String> index, String name) {
+        Map<String, List<String>> map = new TreeMap();
         String id = name.split("-")[0] + "-" + name.split("-")[2];
         String date = product.keySet().stream().findFirst().get();
         String pdate = index.get(id);
@@ -177,7 +177,7 @@ public class SyaryoObjectFormatting {
         return map;
     }
 
-    private static Map formOwner(Map<String, List> owner, List indexList, Map<String, String> honsyIndex, Map<String, List> history, List indexHisList, DataRejectRule reject) {
+    private static Map formOwner(Map<String, List<String>> owner, List indexList, Map<String, String> honsyIndex, Map<String, List<String>> history, List indexHisList, DataRejectRule reject) {
         if (owner == null || history == null) {
             //System.out.println("Not found owner!");
             return null;
@@ -236,7 +236,7 @@ public class SyaryoObjectFormatting {
             return null;
         }
 
-        Map<String, List> map = new TreeMap();
+        Map<String, List<String>> map = new TreeMap();
         int i = 0;
         for (String date : owner.keySet()) {
             if (date.length() >= 8) {
@@ -254,8 +254,8 @@ public class SyaryoObjectFormatting {
         return map;
     }
 
-    private static Map formNew(Map<String, List> news, Map<String, List> born, Map<String, List> deploy, List indexList) {
-        Map<String, List> map = new TreeMap();
+    private static Map formNew(Map<String, List<String>> news, Map<String, List<String>> born, Map<String, List<String>> deploy, List indexList) {
+        Map<String, List<String>> map = new TreeMap();
         
         Integer deff = 0;
         if(news != null){
@@ -334,7 +334,7 @@ public class SyaryoObjectFormatting {
         return map;
     }
 
-    private static Map formUsed(Map<String, List> used, List indexList, String newd, List kuec) {
+    private static Map formUsed(Map<String, List<String>> used, List indexList, String newd, List kuec) {
         if (used == null) {
             //System.out.println("Not found Used");
             return null;
@@ -348,7 +348,7 @@ public class SyaryoObjectFormatting {
         //日付揃え
         used = dateFormalize(used);
 
-        Map<String, List> map = new TreeMap();
+        Map<String, List<String>> map = new TreeMap();
 
         //修正しない
         if (used.size() == 1) {
@@ -418,13 +418,13 @@ public class SyaryoObjectFormatting {
         return map;
     }
 
-    private static Map formDead(Map<String, List> dead, String leastdate, List indexList) {
+    private static Map formDead(Map<String, List<String>> dead, String leastdate, List indexList) {
         if (dead == null) {
             //System.out.println("Not found Dead");
             return null;
         }
 
-        Map<String, List> map = new TreeMap();
+        Map<String, List<String>> map = new TreeMap();
         String date = "0";
         for (String d : dead.keySet()) {
             if (!d.equals("None")) {
@@ -444,7 +444,7 @@ public class SyaryoObjectFormatting {
     }
 
     //受注情報を整形
-    private static Map formOrder(Map<String, List> order, List indexList, DataRejectRule reject) {
+    private static Map formOrder(Map<String, List<String>> order, List indexList, DataRejectRule reject) {
         if (order == null) {
             //System.out.println("Not found Order!");
             return null;
@@ -482,9 +482,9 @@ public class SyaryoObjectFormatting {
                 .collect(Collectors.toList());
 
             //KOMPAS 受注テーブル情報が存在するときは取り出す
-            Optional<List> kom = sbnGroup.stream()
+            Optional<List<String>> kom = sbnGroup.stream()
                 .map(s -> order.get(s))
-                .filter(l -> l.get(db).toString().equals("kom_order"))
+                .filter(l -> l.get(db).equals("kom_order"))
                 .findFirst();
 
             if (kom.isPresent()) {
@@ -547,7 +547,7 @@ public class SyaryoObjectFormatting {
     }
 
     //作業明細を整形
-    private static Map formWork(Map<String, List> work, List odrSBN, List indexList, List workOrder) {
+    private static Map formWork(Map<String, List<String>> work, List odrSBN, List indexList, List workOrder) {
         if (work == null || odrSBN == null) {
             //System.out.println("Not found Work!");
             return null;
@@ -564,9 +564,9 @@ public class SyaryoObjectFormatting {
                 .collect(Collectors.toList());
 
             //KOMPAS 作業情報が存在するときは取り出す
-            Optional<List> kom = sbnGroup.stream()
+            Optional<List<String>> kom = sbnGroup.stream()
                 .map(s -> work.get(s))
-                .filter(l -> l.get(db).toString().equals("work_info"))
+                .filter(l -> l.get(db).equals("work_info"))
                 .findFirst();
             if (kom.isPresent()) {
                 sbnGroup.stream()
@@ -616,7 +616,7 @@ public class SyaryoObjectFormatting {
     }
 
     //部品明細を整形
-    private static Map formParts(Map<String, List> parts, List odrSBN, List indexList, List partsOrder) {
+    private static Map formParts(Map<String, List<String>> parts, List odrSBN, List indexList, List partsOrder) {
         if (parts == null || odrSBN == null) {
             //System.out.println("Not found Parts!");
             return null;
@@ -633,9 +633,9 @@ public class SyaryoObjectFormatting {
                 .collect(Collectors.toList());
 
             //KOMPAS 部品情報が存在するときは取り出す
-            Optional<List> kom = sbnGroup.stream()
+            Optional<List<String>> kom = sbnGroup.stream()
                 .map(s -> parts.get(s))
-                .filter(l -> l.get(db).toString().equals("parts"))
+                .filter(l -> l.get(db).equals("parts"))
                 .findFirst();
             if (kom.isPresent()) {
                 sbnGroup.stream()
@@ -667,7 +667,7 @@ public class SyaryoObjectFormatting {
     }
 
     //サービスのSMRを整形
-    private static Map formSMR(Map<String, List> smr, List indexList) {
+    private static Map formSMR(Map<String, List<String>> smr, List indexList) {
         if (smr == null) {
             //System.out.println("Not found Work!");
             return null;
@@ -738,7 +738,7 @@ public class SyaryoObjectFormatting {
     }
 
     //オールサポートの整形　(解約日を終了日とする)
-    private static Map formAS(Map<String, List> as, List indexList) {
+    private static Map formAS(Map<String, List<String>> as, List indexList) {
         if (as == null) {
             return null;
         }
@@ -769,7 +769,7 @@ public class SyaryoObjectFormatting {
     //日付に混じっているごみを削除 (日付が無い or 日付がおかしい)
     private static void formDate(SyaryoObject syaryo, List indexList, Integer date) {
         for (Object key : syaryo.getMap().keySet()) {
-            Map<String, List> map = syaryo.get(key.toString());
+            Map<String, List<String>> map = syaryo.get(key.toString());
             if (map == null) {
                 continue;
             }
@@ -808,7 +808,7 @@ public class SyaryoObjectFormatting {
     }
 
     //KOMTRAXデータの整形 (値の重複除去、日付の整形、小数->整数)
-    private static void formKomtrax(SyaryoObject syaryo, Map<String, List> deploy) {
+    private static void formKomtrax(SyaryoObject syaryo, Map<String, List<String>> deploy) {
         //ALL
         List<String> kmList = KomatsuDataParameter.DATA_ORDER.stream().filter(s -> s.contains("KOMTRAX")).collect(Collectors.toList());
         String stdate = deploy.keySet().stream().findFirst().get();
@@ -819,7 +819,7 @@ public class SyaryoObjectFormatting {
             }
 
             //Formalize Date
-            Map<String, List> newMap = new TreeMap();
+            Map<String, List<String>> newMap = new TreeMap();
             String tmp = "";
             for (String date : syaryo.get(id).keySet()) {
                 

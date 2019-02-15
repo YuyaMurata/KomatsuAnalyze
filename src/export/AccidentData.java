@@ -10,14 +10,9 @@ import file.CSVFileReadWrite;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
-import file.SyaryoToCompress;
 import java.util.ArrayList;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import obj.LoadSyaryoObject;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
 import param.KomatsuDataParameter;
@@ -54,7 +49,7 @@ public class AccidentData {
 
         csv.println("SID,会社CD,作番,判定,金額,テキスト");
         for (SyaryoObject syaryo : syaryoMap.values()) {
-            try (SyaryoAnalizer analize = new SyaryoAnalizer(syaryo)) {
+            try (SyaryoAnalizer analize = new SyaryoAnalizer(syaryo, true)) {
 
                 cnt++;
                 if (syaryo.get("受注") == null) {

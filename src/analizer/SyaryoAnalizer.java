@@ -5,6 +5,7 @@
  */
 package analizer;
 
+import data.detect.AccidentDetect;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -60,18 +61,28 @@ public class SyaryoAnalizer implements AutoCloseable {
     private static String DATE_FORMAT = KomatsuDataParameter.DATE_FORMAT;
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     private static Map<String, String> POWERLINE_CHECK = KomatsuDataParameter.POWERLINE;
-    private static List<String> ACCIDENT_WORDS = KomatsuDataParameter.ACCIDENT_WORDS;
+
     private static Map<String, String> PC200_KR_MASTER = KomatsuDataParameter.PC_KR_SMASTER;
 
+    private static int CNT = 0;
+
     public SyaryoAnalizer(SyaryoObject syaryo, Boolean flg) {
+        CNT++;
         this.syaryo = syaryo;
         this.syaryo.startHighPerformaceAccess();
-        
+
         //設定の詳細さを選択
         simpleSettings(syaryo);
-        if(flg)
+        if (flg) {
             complexSettings(syaryo);
+        }
         //this.syaryo.stopHighPerformaceAccess();
+
+        if (CNT % 1000 == 0) {
+            System.out.println(CNT + " Trans SyaryoAnalizer");
+        }
+        
+        syaryo.stopHighPerformaceAccess();
     }
 
     public SyaryoObject get() {
@@ -126,9 +137,9 @@ public class SyaryoAnalizer implements AutoCloseable {
                 case "受注":
                     numOrders = syaryo.get("受注").size();
                     int dayIdx = LOADER.index("受注", "ODDAY");
-                    
+
                     //日付と作番の相互変換
-                    syaryo.get("受注").entrySet().stream().forEach(odr ->{
+                    syaryo.get("受注").entrySet().stream().forEach(odr -> {
                         String sbn = odr.getKey();
                         String date = syaryo.get("受注").get(sbn).get(dayIdx).toString();
                         sbnDate.put(sbn, date);
@@ -195,9 +206,6 @@ public class SyaryoAnalizer implements AutoCloseable {
                     int priceIdx = LOADER.index("受注", "SKKG");
                     int sgktIdx = LOADER.index("受注", "SGYO_KTICD");
                     int odrIdx = LOADER.index("受注", "UAGE_KBN_1");
-                    int textIdx = LOADER.index("受注", "GAIYO_1");
-                    int text2Idx = LOADER.index("受注", "GAIYO_2");
-                    int textworkIdx = LOADER.index("作業", "SGYO_NM");
                     if (dayIdx > -1) {
                         acmLCC = 0;
                         for (String sbn : syaryo.get("受注").keySet()) {
@@ -220,20 +228,12 @@ public class SyaryoAnalizer implements AutoCloseable {
                                 odrKind.put(odr, 0);
                             }
                             odrKind.put(odr, odrKind.get(odr) + 1);
-
-                            //事故カウント
-                            String text = syaryo.get("受注").get(sbn).get(textIdx).toString() + ","
-                                + syaryo.get("受注").get(sbn).get(text2Idx).toString() + ","
-                                + (getSBNWork(sbn) != null ? getSBNWork(sbn).values().stream().map(w -> w.get(textworkIdx)).collect(Collectors.joining(",")) : "");
-                            //System.out.println(ACCIDENT_WORDS);
-                            //System.out.println(text);
-                            ACCIDENT_WORDS.stream().forEach(w -> {
-                                if (text.contains(w)) {
-                                    numAccident++;
-                                    acmAccidentPrice += price.intValue();
-                                }
-                            });
                         }
+
+                        //事故カウント
+                        List<String> sbns = AccidentDetect.wordsDetect(syaryo.get("受注"), syaryo.get("作業"));
+                        sbns.stream().map(s -> Integer.valueOf(syaryo.get("受注").get(s).get(priceIdx)))
+                            .forEach(p -> acmAccidentPrice += p);
                     }
                     break;
                 case "顧客":
@@ -254,7 +254,7 @@ public class SyaryoAnalizer implements AutoCloseable {
         }
     }
 
-    private void setAgeSMR(Map<String, List> act_smr, Integer d, Integer s) {
+    private void setAgeSMR(Map<String, List<String>> act_smr, Integer d, Integer s) {
         //初期値
         ageSMR.put(lifestart, new AbstractMap.SimpleEntry<>(0, 0));
 
@@ -412,7 +412,7 @@ public class SyaryoAnalizer implements AutoCloseable {
 
         int idx = LOADER.index("受注", "ODDAY");
         Map<String, List<String>> map = new LinkedHashMap<>();
-        Map<String, List> services = syaryo.get("受注");
+        Map<String, List<String>> services = syaryo.get("受注");
         for (String sbn : services.keySet()) {
             String date = services.get(sbn).get(idx).toString();
             if (!checkAS(date)) {
@@ -460,7 +460,7 @@ public class SyaryoAnalizer implements AutoCloseable {
 
         int idx = LOADER.index("受注", "ODDAY");
         Map<String, List<String>> map = new LinkedHashMap<>();
-        Map<String, List> services = syaryo.get("受注");
+        Map<String, List<String>> services = syaryo.get("受注");
         for (String sbn : services.keySet()) {
             if (!plSbns.contains(sbn)) {
                 continue;
@@ -614,6 +614,6 @@ public class SyaryoAnalizer implements AutoCloseable {
 
     @Override
     public void close() throws Exception {
-        syaryo.stopHighPerformaceAccess();
+        
     }
 }

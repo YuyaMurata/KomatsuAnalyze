@@ -24,7 +24,7 @@ public class AbnomalyDetection {
         Map<String, List> detect = new TreeMap<>();
         
         for (String sid : syaryoMap.keySet()) {
-            Map<String, List> smr = syaryoMap.get(sid).get(key);
+            Map<String, List<String>> smr = syaryoMap.get(sid).get(key);
             
             //存在しなかったら無視
             if(smr == null)
@@ -32,7 +32,7 @@ public class AbnomalyDetection {
             
             Integer temp = 0;
             for(String date : smr.keySet()){
-                Integer v = Integer.valueOf(smr.get(date).get(idx).toString());
+                Integer v = Integer.valueOf(smr.get(date).get(idx));
                 if(temp <= v) //SMR下降検出
                     temp = v;
                 else{
@@ -52,7 +52,7 @@ public class AbnomalyDetection {
         Map<String, String> detect = new TreeMap<>();
         
         for (String sid : syaryoMap.keySet()) {
-            Map<String, List> data = syaryoMap.get(sid).get(key);
+            Map<String, List<String>> data = syaryoMap.get(sid).get(key);
             
             //存在しなかったら無視
             if(data == null){

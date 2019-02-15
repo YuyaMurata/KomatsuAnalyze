@@ -25,7 +25,7 @@ public class ButtonTask extends Task<Void>{
             return null;
         }
         
-        Map<String, List> map = ButtonService.syaryo.get(ButtonService.smenu);
+        Map<String, List<String>> map = ButtonService.syaryo.get(ButtonService.smenu);
 
         if(map == null)
             return null;

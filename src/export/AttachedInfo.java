@@ -25,16 +25,47 @@ import param.KomatsuDataParameter;
  */
 public class AttachedInfo {
 
-    private static String csvFile = "PC200_事故車両推定_金額_不明.csv";
+    private static String csvFile = "PC200_culster_use.csv";
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
 
     public static void main(String[] args) {
         //workname(csvFile);
-        LOADER.setFile("PC200_sv_form");
+        LOADER.setFile("PC200_form");
         //serviceinfo(csvFile);
-        workinfo(csvFile);
+        //workinfo(csvFile);
+        analizeLCC(csvFile);
     }
 
+    /**
+     * 車両IDベースの紐付け
+     */
+    private static void analizeLCC(String file) {
+        Map<String, SyaryoObject> map = LOADER.getSyaryoMap();
+
+        try (PrintWriter csv = CSVFileReadWrite.writer(csvFile + "_attched_lcc.csv")) {
+            try (BufferedReader br = CSVFileReadWrite.reader(csvFile)) {
+                String line = br.readLine();
+                csv.println(line + ",y,SMR,LCC,ACC,LCC-ACCIDENT");
+                while ((line = br.readLine()) != null) {
+                    String name = line.split(",")[0];
+                    try (SyaryoAnalizer analize = new SyaryoAnalizer(map.get(name), true)) {
+                        if(analize.acmLCC >= 0)
+                            csv.println(line+","+(analize.currentAge_day/365d)+","+analize.maxSMR[3]+","+analize.acmLCC+","+analize.acmAccidentPrice+","+(analize.acmLCC-analize.acmAccidentPrice));
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * よく分からないので調査
+     *
+     * @param file
+     */
     private static void workname(String file) {
         Map devName = KomatsuDataParameter.WORK_DEVID_DEFNAME;
         try (PrintWriter csv = CSVFileReadWrite.writer(csvFile + "_work_id_name.csv")) {
@@ -56,6 +87,11 @@ public class AttachedInfo {
         }
     }
 
+    /**
+     * サービス情報の付加 車両ID＋作番から作業形態を紐付ける
+     *
+     * @param file
+     */
     private static void serviceinfo(String file) {
         Map<String, SyaryoObject> map = LOADER.getSyaryoMap();
         try (PrintWriter csv = CSVFileReadWrite.writer(csvFile + "_attached_info.csv")) {
@@ -82,6 +118,12 @@ public class AttachedInfo {
         }
     }
 
+    /**
+     * 作業明細を追加 車両ID＋作番をベースに作業明細情報をぶら下げる サービス情報　レコード#1 作業明細情報　レコード#1 作業明細情報
+     * レコード#2
+     *
+     * @param file
+     */
     private static void workinfo(String file) {
         Map<String, SyaryoObject> map = LOADER.getSyaryoMap();
         try (PrintWriter csv = CSVFileReadWrite.writer(csvFile + "_attached_info.csv")) {
@@ -93,20 +135,21 @@ public class AttachedInfo {
 
                 while ((line = br.readLine()) != null) {
                     l = Arrays.asList(line.split(","));
-                    String name = l.get(0);
-                    String sbn = l.get(2);
+                    String name = l.get(0); //車両ID
+                    String sbn = l.get(2);  //作番
 
-                    try (SyaryoAnalizer s = new SyaryoAnalizer(map.get(name))) {
+                    try (SyaryoAnalizer s = new SyaryoAnalizer(map.get(name), false)) {
                         csv.println(String.join(",", l));
-                        
+
                         Map<String, List<String>> work = s.getSBNWork(sbn);
-                        if(work != null)
-                            work.entrySet().stream().forEach(w ->{
-                                csv.println(",作業明細,"+w.getKey()+","+String.join(",", w.getValue()));
+                        if (work != null) {
+                            work.entrySet().stream().forEach(w -> {
+                                csv.println(",作業明細," + w.getKey() + "," + String.join(",", w.getValue()));
                             });
-                        else
+                        } else {
                             csv.println(",作業明細,なし");
-                        
+                        }
+
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }

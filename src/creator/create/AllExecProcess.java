@@ -34,8 +34,6 @@ public class AllExecProcess {
             int n= ObjectsJoiner.create(kisy, true);
             Long st_join = System.currentTimeMillis();
             
-            //AttachedLayoutIndex.attached(kisy);
-            
             //Time Check
             System.out.println("\n--- "+kisy+" ---\n"+
                                 "Total:"+(st_join-start)+"ms\n"+

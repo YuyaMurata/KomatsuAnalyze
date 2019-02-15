@@ -10,24 +10,20 @@ import static data.detect.AbnomalyDection.detectChiSquare;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import obj.LoadSyaryoObject;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
-import param.KomatsuDataParameter;
 
 /**
  *
  * @author ZZ17390
  */
-public class AbnomaryDataDetrct {
+public class AbnomaryDataDetect {
 
     private static String KISY = "PC200";
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
 
     public static void main(String[] args) {
-        LOADER.setFile(KISY + "_sv_form");
+        LOADER.setFile(KISY + "_form");
 
         //工数分析
         detectSteps();
@@ -43,8 +39,8 @@ public class AbnomaryDataDetrct {
         int idx = LOADER.index("作業", "INV_KOS");
 
         syaryoMap.values().stream().filter(s -> s.get("受注") != null).forEach(s -> {
-            try (SyaryoAnalizer sa = new SyaryoAnalizer(s)) {
-                Map<String, List> odr = s.get("受注");
+            try (SyaryoAnalizer sa = new SyaryoAnalizer(s, false)) {
+                Map<String, List<String>> odr = s.get("受注");
 
                 odr.keySet().stream().filter(sbn -> sa.getSBNWork(sbn) != null).forEach(sbn -> {
                     Map<String, List<String>> w = sa.getSBNWork(sbn);

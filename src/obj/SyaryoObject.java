@@ -25,14 +25,14 @@ public class SyaryoObject implements Serializable {
     private byte[] mapData; //圧縮後のバイナリデータ
 
     //車両オブジェクトファイルから削除される変数
-    private transient Map<String, Map<String, List>> map; //圧縮前の車両データ
+    private transient Map<String, Map<String, List<String>>> map; //圧縮前の車両データ
     private transient DecimalFormat dformat = new DecimalFormat("0000"); //キー重複番号の正規化
     private transient Boolean performanceAccess = false; //アクセス性能を管理するフラグ
 
     public SyaryoObject(String name) {
         this.name = name;
     }
-
+    
     /**
      * キー重複時にIDの重複数を計算
      * @param data : 重複を調べたいMap
@@ -86,7 +86,7 @@ public class SyaryoObject implements Serializable {
     }
 
     //Get Data
-    public Map<String, List> get(String key) {
+    public Map<String, List<String>> get(String key) {
         decompress();
         Map m = (Map) map.get(key);
         compress(true);
@@ -94,7 +94,7 @@ public class SyaryoObject implements Serializable {
     }
 
     //Get Map
-    public Map<String, Map<String, List>> getMap() {
+    public Map<String, Map<String, List<String>>> getMap() {
         decompress();
         Map m = map;
         compress(true);

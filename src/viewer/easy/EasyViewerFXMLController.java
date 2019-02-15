@@ -195,7 +195,7 @@ public class EasyViewerFXMLController implements Initializable {
         }
     }
 
-    private String[] textdump(Map<String, List> m) {
+    private String[] textdump(Map<String, List<String>> m) {
         if (m == null) {
             return new String[]{"", null};
         }
@@ -523,7 +523,7 @@ public class EasyViewerFXMLController implements Initializable {
 
         try (PrintWriter pw = CSVFileReadWrite.writerSJIS(currentSyaryo.name + ".csv")) {
 
-            try (SyaryoAnalizer a = new SyaryoAnalizer(currentSyaryo)) {
+            try (SyaryoAnalizer a = new SyaryoAnalizer(currentSyaryo, false)) {
                 //基本情報
                 pw.println(a.get().name);
                 pw.println("会社CD," + a.mcompany + ",新車/生産," + a.lifestart+",最終SMR,"+a.maxSMR[2]+","+a.maxSMR[3]+",KOMTRAX_SMR,"+(a.get().get("KOMTRAX_SMR")!=null?a.get().get("KOMTRAX_SMR").size():"-1"));

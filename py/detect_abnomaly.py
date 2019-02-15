@@ -49,7 +49,7 @@ for s in anomaly_scores:
         abno.append(0)
 
 df = pd.read_csv(file)
-df['t'] = abno
+df['detect'] = abno
 df.to_csv(file, index=None)
 
 if graph:

@@ -7,11 +7,8 @@ package creator.create;
 
 import param.KomatsuDataParameter;
 import java.io.File;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 import file.SyaryoToCompress;
 import obj.SyaryoObject;
 
@@ -31,7 +28,7 @@ public class ObjectsJoiner {
         //create(KISY, true);
 
         //追加で結合
-        add(KISY, false);
+        add(KISY, true);
     }
 
     public static Integer create(String kisy, Boolean iot) {
@@ -59,7 +56,7 @@ public class ObjectsJoiner {
         File[] flist = (new File(objPath)).listFiles();
         for (File file : flist) {
             //IoTデータは統合しない処理
-            if (iot) {
+            if (!iot) {
                 if (file.getName().contains("KOMTRAX")) {
                     continue;
                 }

@@ -22,14 +22,14 @@ public class ExportSyaryoAnalizerData {
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
 
     public static void main(String[] args) {
-        LOADER.setFile(KISY+"_km_form");
+        LOADER.setFile(KISY+"_form");
         Map<String, SyaryoObject> syaryoMap = LOADER.getSyaryoMap();
         
         try (PrintWriter csv = CSVFileReadWrite.writer(KISY + "_syaryo_analize_summary.csv")) {
             csv.println(SyaryoAnalizer.getHeader());
             for (SyaryoObject syaryo : syaryoMap.values()) {
                 System.out.println(syaryo.name);
-                try (SyaryoAnalizer analize = new SyaryoAnalizer(syaryo)) {
+                try (SyaryoAnalizer analize = new SyaryoAnalizer(syaryo, true)) {
                     csv.println(analize.toPrint());
                 } catch (Exception ex) {
                     ex.printStackTrace();

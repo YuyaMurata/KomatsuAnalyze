@@ -45,7 +45,7 @@ public class SyaryoObjectReject {
 
         Map<String, SyaryoObject> m = new TreeMap<>();
         Map<String, Integer> detail = new HashMap<>();
-        map.keySet().parallelStream().forEach(k -> {
+        map.keySet().stream().forEach(k -> {
             String typ = k.split("-")[1];
 
             if (t.contains(typ)) {
