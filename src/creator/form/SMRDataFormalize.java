@@ -66,7 +66,7 @@ public class SMRDataFormalize {
         //testGraph(syaryo, dm);
     }
 
-    private static Map transSMRData(Map<String, List> smr, int idx) {
+    private static Map transSMRData(Map<String, List<String>> smr, int idx) {
         Map map = new TreeMap();
 
         if (smr == null) {
@@ -80,7 +80,7 @@ public class SMRDataFormalize {
         return map;
     }
     
-    private static Map transACTSMRData(Map<String, List> smr, int idx, int unit) {
+    private static Map transACTSMRData(Map<String, List<String>> smr, int idx, int unit) {
         Map<String, Integer> map = new TreeMap();
 
         if (smr == null) {

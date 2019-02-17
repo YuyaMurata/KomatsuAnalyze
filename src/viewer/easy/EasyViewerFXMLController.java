@@ -443,7 +443,19 @@ public class EasyViewerFXMLController implements Initializable {
                 updateKeyList(searchList);
                 return;
             }
-
+            
+            //車両名部分一致（型）
+            /*searchList = Arrays.asList(searchWord).stream()
+                .map(s -> syaryoMap.keySet().stream()
+                .filter(s2 -> s2.contains("-"))
+                .filter(s2 -> s2.split("-")[1].equals(s)))
+                .flatMap(s -> s)
+                .collect(Collectors.toList());
+            if (!searchList.isEmpty()) {
+                updateKeyList(searchList);
+                return;
+            }*/
+            
             //車両名部分一致
             searchList = Arrays.asList(searchWord).stream()
                 .map(s -> syaryoMap.keySet().stream()

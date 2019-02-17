@@ -23,13 +23,13 @@ public class ExportTestFilter {
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     
     public static void main(String[] args) {
-        LOADER.setFile(KISY+"_km_form");
+        LOADER.setFile(KISY+"_form");
         Map<String, SyaryoObject> syaryoMap = LOADER.getSyaryoMap();
         
         //ライフサイクル評価
-        SyaryoObject s1 = syaryoMap.get("PC200-8N1-354503");
-        SyaryoObject s2 = syaryoMap.get("PC200-8N1-316482");
-        SyaryoObject s3 = syaryoMap.get("PC200-8N1-313689");
+        SyaryoObject s1 = syaryoMap.get("PC200-10-451910");
+        //SyaryoObject s2 = syaryoMap.get("PC200-8N1-316482");
+        //SyaryoObject s3 = syaryoMap.get("PC200-8N1-313689");
         
         //s1ライフサイクル
         lifeout(s1);
@@ -39,7 +39,7 @@ public class ExportTestFilter {
     private static void lifeout(SyaryoObject s){
         try(PrintWriter pw = CSVFileReadWrite.writer(s.name+"_life.csv")){
             pw.println("会社CD,作番,日付,メンテナンス累積,サービス累積,累積金額");
-            Map<String, List> odr = s.get("受注");
+            Map<String, List<String>> odr = s.get("受注");
             
             int idx = LOADER.index("受注", "SKKG");
             int idx_date = LOADER.index("受注", "ODDAY");

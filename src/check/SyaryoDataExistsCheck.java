@@ -62,7 +62,7 @@ public class SyaryoDataExistsCheck {
         }
     }
     
-    private static String komtraxCheck(Map<String, List> spec){
+    private static String komtraxCheck(Map<String, List<String>> spec){
         if(spec.get("1").get(0).equals("1"))
             return "○";
         else
