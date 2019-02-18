@@ -6,13 +6,11 @@
 package data.eval;
 
 import analizer.SyaryoAnalizer;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import obj.SyaryoLoader;
-import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
 /**
@@ -25,17 +23,17 @@ public class MainteEvaluate {
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
 
     public static List<String> header() {
-        List<String> h = new ArrayList<>(index.values());
+        List<String> h = index.values().stream().distinct().collect(Collectors.toList());
         return h;
     }
 
     //SMRを期間で分割するメソッドは未実装であるため期間は-1で利用する
-    public static Map<String, Integer> aggregate(SyaryoAnalizer s, String sd, String fd) {
-        Map<String, Integer> map = new LinkedHashMap<>();
+    public static Map<String, Double> aggregate(SyaryoAnalizer s, String sd, String fd) {
+        Map<String, Double> map = new LinkedHashMap<>();
 
         //初期化
-        for (String p : index.keySet()) {
-            map.put(index.get(p), 0);
+        for (String h : header()) {
+            map.put(h, 0d);
         }
 
         if (s.get().get("受注") == null) {
@@ -50,12 +48,12 @@ public class MainteEvaluate {
         int pd_idx = LOADER.index("受注", "SGYO_KTICD");
         int p_idx = LOADER.index("部品", "HNBN");
         s.get().get("受注").entrySet().stream().filter(odr
-            -> (st <= Integer.valueOf(odr.getValue().get(d_idx).toString()) //評価期間でフィルタリング
-            && Integer.valueOf(odr.getValue().get(d_idx).toString()) <= sp))
+            -> (st <= Integer.valueOf(odr.getValue().get(d_idx)) //評価期間でフィルタリング
+            && Integer.valueOf(odr.getValue().get(d_idx)) <= sp))
             .forEach(odr -> {
 
                 //定期点検
-                String pd_m = index.get(odr.getValue().get(pd_idx).toString());
+                String pd_m = index.get(odr.getValue().get(pd_idx));
                 if (pd_m != null) {
                     map.put(pd_m, map.get(pd_m) + 1);
                 }
@@ -79,8 +77,9 @@ public class MainteEvaluate {
         return map;
     }
 
-    public static Map<String, Double> evaluate(Map<String, Integer> agmap, int termsmr, double termday) {
-        Map<String, Double> map = new HashMap<>();
+    //正規化
+    public static Map<String, Double> nomalize(Map<String, Double> agmap, int termsmr, double termday) {
+        Map<String, Double> map = new LinkedHashMap<>();
         agmap.entrySet().stream().forEach(ag -> {
             map.put(ag.getKey(), eval(ag.getKey(), ag.getValue(), termsmr, termday / 365d));
         });
@@ -88,10 +87,13 @@ public class MainteEvaluate {
         return map;
     }
 
-    private static Double eval(String s, int num, int smr, double y) {
+    private static Double eval(String s, double num, int smr, double y) {
         //経年の数値を切捨て
         //y = Math.floor(y);
-
+        
+        if(smr < 0) //異常値は評価しない
+            return 0d;
+        
         Double d = period(s, num, smr, y);
         if (d == null) {
             d = parts(s, num, smr, y);
@@ -108,7 +110,7 @@ public class MainteEvaluate {
     }
 
     //定期メンテ評価
-    private static Double period(String sk, int num, int smr, double y) {
+    private static Double period(String sk, double num, int smr, double y) {
         Double d = null;
         switch (sk) {
             case "特定自主検査":
@@ -153,7 +155,7 @@ public class MainteEvaluate {
     }
 
     //交換部品
-    private static Double parts(String hnbn, int num, int smr, double y) {
+    private static Double parts(String hnbn, double num, int smr, double y) {
         String p = hnbn.replace(" ", "");
         double d = 0;
 

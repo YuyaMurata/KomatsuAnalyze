@@ -6,13 +6,12 @@
 package data.eval;
 
 import analizer.SyaryoAnalizer;
-import data.eval.MainteEvaluate;
-import data.eval.UseEvaluate;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import obj.SyaryoLoader;
+import java.util.stream.Collectors;
 import obj.SyaryoObject;
-import param.KomatsuDataParameter;
 
 /**
  * 車両評価
@@ -20,9 +19,7 @@ import param.KomatsuDataParameter;
  * @author ZZ17390
  */
 public class EvaluateSyaryoObject {
-    public Map<String, Double> evalMainte = new LinkedHashMap<>();
-    public Map<String, Double> evalAgeSMR = new LinkedHashMap<>();
-    public Map<String, Double> evalUsage = new LinkedHashMap<>();
+    public Map<String, Map<String, Double>> eval = new LinkedHashMap<>();
     public String name, company;
     public Integer day, smr, rent;
 
@@ -30,18 +27,21 @@ public class EvaluateSyaryoObject {
         try (SyaryoAnalizer analize = new SyaryoAnalizer(syaryo, false)) {
             this.name = analize.get().name;
             this.company = analize.mcompany;
-            //this.rent = analize.rent;
             this.day = analize.currentAge_day;
             this.smr = analize.maxSMR[3];
-
-            //evalAgeSMR.putAll();
-            evalUsage = useData(analize);
-            //evalMainte.putAll(mainteData(analize));
+            
+            //eval.put("use", useData(analize));
+            //eval.put("age/smr", agingSMRData(analize));
+            eval.put("mainte",mainteData(analize));
         } catch (Exception ex) {
             ex.printStackTrace();
             System.out.println(syaryo.dump());
             System.exit(0);
         }
+    }
+    
+    public Boolean isNULL(String select){
+        return eval.get(select) == null;
     }
 
     /**
@@ -58,7 +58,7 @@ public class EvaluateSyaryoObject {
     /**
      * 経年/SMRのデータ 定義 : v[経年, ACT_SMR]
      */
-    private Map agingSMRData(SyaryoObject syaryo) {
+    private Map agingSMRData(SyaryoAnalizer syaryo) {
         return null;
     }
 
@@ -66,16 +66,34 @@ public class EvaluateSyaryoObject {
      * メンテナンスデータ 定義 : v[エンジンメンテ, 油圧メンテ, 定期メンテ] エンジンメンテ = エンジンOIL交換回数 / (SMR /
      * インターバル) 油圧メンテ = 作動機オイル交換 / (SMR / インターバル) 定期メンテ = 作業形態回数 / (経年 / インターバル)
      */
-    private Map mainteIndex = KomatsuDataParameter.PC_PID_DEFNAME;
     private Map<String, Double> mainteData(SyaryoAnalizer syaryo) {
-        Map<String, Integer> quantity = MainteEvaluate.aggregate(syaryo, "-1", "-1");
-        Map<String, Double> quality = MainteEvaluate.evaluate(quantity, smr, day);
+        Map<String, Double> quantity = MainteEvaluate.aggregate(syaryo, "-1", "-1");
+        Map<String, Double> quality = MainteEvaluate.nomalize(quantity, smr, day);
         
+        //return quantity;
         return quality;
     }
-
     
-    public static void main(String[] args) {
+    public List<Double> getData(String select){
+        //System.out.println(eval.get(select).values());
+        return new ArrayList(eval.get(select).values());
+    }
+    
+    public static String printh(String select){
+        switch(select){
+            case "mainte" :
+                return String.join(",", MainteEvaluate.header());
+            case "use" :
+                return String.join(",", UseEvaluate.header());
+        }
         
+        return "none";
+    }
+    
+    public String print(String select){
+        if(eval.get(select) != null)
+            return eval.get(select).values().stream().map(e -> e.toString()).collect(Collectors.joining(","));
+        
+        return "none";
     }
 }

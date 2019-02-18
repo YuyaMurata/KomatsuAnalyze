@@ -9,10 +9,9 @@ import data.cluster.KMeansPP;
 import data.eval.EvaluateSyaryoObject;
 import file.CSVFileReadWrite;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
 
@@ -21,47 +20,71 @@ import obj.SyaryoObject;
  * @author ZZ17390
  */
 public class EvaluateSyaryo {
+
     private static Map<String, EvaluateSyaryoObject> EVAL = new HashMap();
-    private static Map<String, List<Double>> DATA = new HashMap();
-    private static Map<String, Integer> RESULTS = new HashMap<>();
-    
+    private static Map<String, Map<String, Integer>> RESULTS = new HashMap<>();
+
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     private static String KISY = "PC200";
-    
-    public static void evalSyaryoMap(Map<String, SyaryoObject> map){
+
+    public static void evalSyaryoMap(Map<String, SyaryoObject> map) {
+        //Test
+        String data = "mainte";
+
         //評価
-        Long st = System.currentTimeMillis();
-        System.out.println("車両評価プログラム実行");
-        for (SyaryoObject syaryo : map.values()){
-            EvaluateSyaryoObject evalobj = new EvaluateSyaryoObject(syaryo);
-            if(evalobj.evalUsage == null)
-                continue;
-            
-            EVAL.put(syaryo.name, evalobj);
-            DATA.put(syaryo.name, new ArrayList<>(evalobj.evalUsage.values())); //Useのみ
-        }
-        Long sp = System.currentTimeMillis();
-        System.out.println("車両評価プログラム完了 - "+(sp-st)+"ms");
+        evaluate(map, data);
 
         //クラスタリング
-        System.out.println("クラスタリング実行");
-        KMeansPP km = new KMeansPP();
-        km.setEvalSyaryo(3, DATA);
-        RESULTS = km.execute();
-        st = System.currentTimeMillis();
-        System.out.println("クラスタリング完了 - "+(st-sp)+"ms");
+        clustering(data);
+
+        fprint(KISY + "_evaluation.csv", data, true);
     }
-    
-    public static void fprint(String filename){
-        try(PrintWriter pw = CSVFileReadWrite.writerSJIS(filename)){
-            pw.println("SID,CID");
-            RESULTS.entrySet().stream().map(r -> r.getKey()+","+r.getValue()).forEach(pw::println);
+
+    private static void evaluate(Map<String, SyaryoObject> map, String data) {
+        Long st = System.currentTimeMillis();
+        System.out.println("車両評価プログラム実行");
+        map.values().stream().forEach(syaryo -> {
+            EvaluateSyaryoObject evalobj = new EvaluateSyaryoObject(syaryo);
+
+            if (!evalobj.isNULL(data)) {
+                EVAL.put(syaryo.name, evalobj);
+            }
+        });
+        Long sp = System.currentTimeMillis();
+        System.out.println("車両評価プログラム完了 - " + (sp - st) + "ms");
+    }
+
+    private static void clustering(String data) {
+        Long st = System.currentTimeMillis();
+        System.out.println("クラスタリング実行 - " + data);
+        KMeansPP km = new KMeansPP();
+        km.setEvalSyaryo(3, EVAL.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().getData(data))));
+        RESULTS.put(data, km.execute());
+        Long sp = System.currentTimeMillis();
+        System.out.println("クラスタリング完了 - " + (sp - st) + "ms");
+    }
+
+    public static void fprint(String filename, String data, Boolean flg) {
+        try (PrintWriter pw = CSVFileReadWrite.writerSJIS(filename)) {
+            if (flg) {
+                pw.println("SID,Y,SMR," + EvaluateSyaryoObject.printh(data) + ",AVG,CID");
+                EVAL.entrySet().stream()
+                    .map(e -> e.getKey() + "," + (e.getValue().day/365d) + "," + e.getValue().smr + "," +  //基本情報
+                        e.getValue().print(data) + "," +                                                      //データ
+                        e.getValue().getData(data).stream().mapToDouble(d -> d).average().getAsDouble() + "," + //平均
+                        (RESULTS.get(data).get(e.getKey()) != null ? RESULTS.get(data).get(e.getKey()) : 0))  //クラスタ
+                    .forEach(pw::println);
+            } else {
+                pw.println("SID,CID");
+                RESULTS.get(data).entrySet().stream()
+                    .map(r -> r.getKey() + "," + (r.getValue() != null ? r.getValue() : 0))
+                    .forEach(pw::println);
+            }
         }
     }
-    
+
     public static void main(String[] args) {
-        LOADER.setFile(KISY+"_form");
+        LOADER.setFile(KISY + "_form");
         evalSyaryoMap(LOADER.getSyaryoMap());
-        fprint(KISY+"_culster_use.csv");
     }
 }

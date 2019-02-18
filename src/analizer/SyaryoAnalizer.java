@@ -41,7 +41,7 @@ public class SyaryoAnalizer implements AutoCloseable {
     public Boolean dead = false;
     public Integer rent = 0;
     public String lifestart = "";
-    public String lifestop = "";
+    public String lifestop = "20170501";
     public String currentLife = "";
     public Integer currentAge_day = -1;
     public List<String> usedlife = null;
@@ -81,8 +81,6 @@ public class SyaryoAnalizer implements AutoCloseable {
         if (CNT % 1000 == 0) {
             System.out.println(CNT + " Trans SyaryoAnalizer");
         }
-        
-        syaryo.stopHighPerformaceAccess();
     }
 
     public SyaryoObject get() {
@@ -113,15 +111,14 @@ public class SyaryoAnalizer implements AutoCloseable {
         for (String key : enableSet) {
             switch (key) {
                 case "SMR":
-                    if (syaryo.get("SMR") != null) {
-                        maxSMR[0] = Integer.valueOf(getValue("SMR", "-1", true).get(getValue("SMR", "-1", true).size() - 1));
-                        maxSMR[1] = Integer.valueOf(getValue("SMR", "VALUE", true).get(getValue("SMR", "VALUE", true).size() - 1));
-                    }
-                    if (syaryo.get("KOMTRAX_SMR") != null) {
-                        maxSMR[2] = Integer.valueOf(getValue("KOMTRAX_SMR", "-1", true).get(getValue("KOMTRAX_SMR", "-1", true).size() - 1));
-                        maxSMR[3] = Integer.valueOf(getValue("KOMTRAX_SMR", "VALUE", true).get(getValue("KOMTRAX_SMR", "VALUE", true).size() - 1));
-                        komtrax = komtrax || true;
-                    }
+                    maxSMR[0] = Integer.valueOf(getValue("SMR", "-1", true).get(getValue("SMR", "-1", true).size() - 1));
+                    maxSMR[1] = Integer.valueOf(getValue("SMR", "VALUE", true).get(getValue("SMR", "VALUE", true).size() - 1));
+
+                    break;
+                case "KOMTRAX_SMR":
+                    maxSMR[2] = Integer.valueOf(getValue("KOMTRAX_SMR", "-1", true).get(getValue("KOMTRAX_SMR", "-1", true).size() - 1));
+                    maxSMR[3] = Integer.valueOf(getValue("KOMTRAX_SMR", "VALUE", true).get(getValue("KOMTRAX_SMR", "VALUE", true).size() - 1));
+                    komtrax = komtrax || true;
                     break;
                 case "仕様":
                     komtrax = komtrax || syaryo.get("仕様").get("1").get(0).equals("1");
@@ -161,18 +158,13 @@ public class SyaryoAnalizer implements AutoCloseable {
                     break;
                 case "新車":
                     lifestart = syaryo.get("新車").keySet().stream().findFirst().get();
-                    mcompany = syaryo.get("仕様").get("0").get(0).toString();
+                    mcompany = syaryo.get("仕様").get("0").get(0);
                     break;
             }
         }
 
         //Life
-        if (!dead) {
-            currentAge_day = lifestart.equals("") ? -1 : age("20170501"); //データ受領日(データによって数日ずれている)
-        } else {
-            currentAge_day = lifestop.equals("") ? -1 : age(lifestop); //廃車日
-        }
-
+        currentAge_day = age(lifestop); //廃車日
     }
 
     private void complexSettings(SyaryoObject syaryo) {
@@ -184,7 +176,7 @@ public class SyaryoAnalizer implements AutoCloseable {
         //Status
         for (String key : enableSet) {
             switch (key) {
-                case "SMR":
+                case "KOMTRAX_SMR":
                     if (syaryo.get("KOMTRAX_SMR") != null) {
                         setAgeSMR(syaryo.get("KOMTRAX_SMR"), 30, 100);
                     }
@@ -614,6 +606,6 @@ public class SyaryoAnalizer implements AutoCloseable {
 
     @Override
     public void close() throws Exception {
-        
+        syaryo.stopHighPerformaceAccess();
     }
 }

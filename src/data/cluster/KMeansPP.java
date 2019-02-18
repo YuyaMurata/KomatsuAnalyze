@@ -5,7 +5,6 @@
  */
 package data.cluster;
 
-import data.eval.EvaluateSyaryoObject;
 import file.CSVFileReadWrite;
 import java.io.PrintWriter;
 import java.util.ArrayList;
