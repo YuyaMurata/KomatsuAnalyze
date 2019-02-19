@@ -47,7 +47,7 @@ public class ExportToCSV {
                 s.startHighPerformaceAccess();
 
                 if (s.get(data) != null) {
-                    Map<String, List> dmap = randomPick(s.get(data), 100);
+                    Map<String, List<String>> dmap = randomPick(s.get(data), 100);
                     dmap.entrySet().stream()
                         .map(d -> s.name + "," + d.getKey() + "," + String.join(",", d.getValue()))
                         .forEach(pw::println);

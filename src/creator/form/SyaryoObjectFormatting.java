@@ -48,7 +48,7 @@ public class SyaryoObjectFormatting {
 
         //生産日情報
         Map<String, String> productIndex = new MapToJSON().toMap(PRODUCT_INDEXPATH);
-
+        
         int n = 0;
         for (String key : syaryoMap.keySet()) {
             //System.out.println(key);

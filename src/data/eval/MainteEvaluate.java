@@ -6,6 +6,7 @@
 package data.eval;
 
 import analizer.SyaryoAnalizer;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,7 @@ public class MainteEvaluate {
         int d_idx = LOADER.index("受注", "ODDAY");
         int pd_idx = LOADER.index("受注", "SGYO_KTICD");
         int p_idx = LOADER.index("部品", "HNBN");
+        int p_price_idx = LOADER.index("部品", "SKKG");
         s.get().get("受注").entrySet().stream().filter(odr
             -> (st <= Integer.valueOf(odr.getValue().get(d_idx)) //評価期間でフィルタリング
             && Integer.valueOf(odr.getValue().get(d_idx)) <= sp))
@@ -61,20 +63,57 @@ public class MainteEvaluate {
                 //定期交換品
                 Map<String, List<String>> parts = s.getSBNParts(odr.getKey());
                 if (parts != null) {
+                    //1作番の各メンテナンス合計部品金額
+                    Map<String, Integer> price = new HashMap<>();
+
                     //品番用のカウントロジック
                     parts.values().stream()
-                        .map(p -> p.get(p_idx))
-                        .map(p -> (p.contains("SYEO-TO") || p.contains("NYEO-TO")) ? "パワーラインオイル" : p)
-                        .map(p -> (p.contains("SYEO") || p.contains("NYEO")) ? "エンジンオイル" : p)
-                        .map(p -> index.get(p))
-                        .filter(m -> m != null).distinct()
-                        .forEach(m -> {
-                            map.put(m, map.get(m) + 1);
+                        .filter(p -> mainteCheck(p.get(p_idx)))
+                        .forEach(p -> {
+                            String m = mainteDefName(p.get(p_idx));
+                            if (price.get(m) == null) {
+                                price.put(m, 0);
+                            }
+                            price.put(m, price.get(m) + (Integer.valueOf(p.get(p_price_idx))));
                         });
+                    
+                    //金額で判定
+                    price.entrySet().stream().forEach(p -> {
+                        if (p.getKey().equals("パワーラインオイル")) {
+                            if (p.getValue() >= 40000) {
+                                map.put(p.getKey(), map.get(p.getKey()) + 1);
+                            }
+                        } else {
+                            map.put(p.getKey(), map.get(p.getKey()) + 1);
+                        }
+
+                    });
                 }
             });
 
         return map;
+    }
+
+    private static Boolean mainteCheck(String pid) {
+        if (pid.contains("SYEO-T") || pid.contains("NYEO-T")) {
+            return true;
+        } else if (pid.contains("SYEO") || pid.contains("NYEO")) {
+            return true;
+        } else if (index.get(pid) != null) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private static String mainteDefName(String pid) {
+        if (pid.contains("SYEO-T") || pid.contains("NYEO-T")) {
+            return "パワーラインオイル";
+        } else if (pid.contains("SYEO") || pid.contains("NYEO")) {
+            return "エンジンオイル";
+        } else {
+            return index.get(pid);
+        }
     }
 
     //正規化
@@ -90,10 +129,12 @@ public class MainteEvaluate {
     private static Double eval(String s, double num, int smr, double y) {
         //経年の数値を切捨て
         //y = Math.floor(y);
-        
-        if(smr < 0) //異常値は評価しない
+
+        if (smr < 0) //異常値は評価しない
+        {
             return 0d;
-        
+        }
+
         Double d = period(s, num, smr, y);
         if (d == null) {
             d = parts(s, num, smr, y);

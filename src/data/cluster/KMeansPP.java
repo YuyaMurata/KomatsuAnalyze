@@ -22,13 +22,12 @@ import java.util.stream.IntStream;
  * @author ZZ17390
  */
 public class KMeansPP {
-
     private static final Random rand = new Random();
-    Map<String, List<Double>> s;
-    List<String> s_zero;
-    Map<String, Integer> cluster;
+    private Map<String, List<Double>> s;
+    private List<String> s_zero;
+    private Map<String, Integer> cluster;
 
-    int k = 0;
+    private int k = 0;
 
     public void set(int k, Map<String, List<Double>> sample) {
         this.k = k;

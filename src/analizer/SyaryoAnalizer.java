@@ -170,8 +170,8 @@ public class SyaryoAnalizer implements AutoCloseable {
     private void complexSettings(SyaryoObject syaryo) {
         //データ検証
         List<String> enableSet = check();
-        int cm = KomatsuDataParameter.MAINTE_CLUSTER.get(syaryo.name) != null ? Integer.valueOf(KomatsuDataParameter.MAINTE_CLUSTER.get(syaryo.name)) : -1;
-        cluster = new Integer[]{-1, -1, cm};
+        //int cm = KomatsuDataParameter.MAINTE_CLUSTER.get(syaryo.name) != null ? Integer.valueOf(KomatsuDataParameter.MAINTE_CLUSTER.get(syaryo.name)) : -1;
+        //cluster = new Integer[]{-1, -1, cm};
 
         //Status
         for (String key : enableSet) {

@@ -31,6 +31,7 @@ public class AllExecProcess {
             LoadMapCreate.create(kisy);
             Long st_shuffle = System.currentTimeMillis();
             
+            //false = Service Only, true = with KOMTRAX
             int n= ObjectsJoiner.create(kisy, true);
             Long st_join = System.currentTimeMillis();
             

@@ -14,6 +14,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
+import param.KomatsuUserParameter;
 
 /**
  *
@@ -29,6 +30,7 @@ public class SyaryoObjectReject {
         
         type(syaryoMap, Arrays.asList(new String[]{"8", "8N1", "10"}));
         service(syaryoMap, "20170501");
+        syaryo(syaryoMap);
         //komtrax(syaryoMap, "KOMTRAX_ACT_DATA");
         //smr(syaryoMap, "KOMTRAX_SMR");
         //noop(syaryoMap, "KOMTRAX_SMR", "2017");
@@ -63,6 +65,39 @@ public class SyaryoObjectReject {
         
         System.out.println("Number of Syaryo (型) : " + map.size());
         System.out.println("          Detail : " + detail);
+    }
+    
+    //車両マスタの仕様情報から車両を削除
+    private static void syaryo(Map<String, SyaryoObject> map){
+        System.out.println("仕様情報から車両の削除処理 data=[サブディーラ担当ポイントコード]");
+        System.out.println("Before Number of Syaryo : " + map.size());
+        
+        List<String> DEALER_LIST = KomatsuUserParameter.DEALER_REJECT_LIST;
+        System.out.println("リスト_"+DEALER_LIST);
+        
+        String specNo = "0";
+        final int comp_idx = 0;
+        final int dealer_idx = 7;
+        
+        Map<String, SyaryoObject> m = new TreeMap<>();
+        Map<String, Integer> rej = new TreeMap<>();
+        map.values().parallelStream().forEach(s ->{
+            String comp = s.get("仕様").get(specNo).get(comp_idx);
+            String dealer = s.get("仕様").get(specNo).get(dealer_idx);
+            
+            if(DEALER_LIST.contains(comp+","+dealer)){
+                if(rej.get(comp+","+dealer) == null)
+                    rej.put(comp+","+dealer, 0);
+                rej.put(comp+","+dealer, rej.get(comp+","+dealer)+1);
+            }else
+                m.put(s.name, s);
+        });
+        
+        map.clear();
+        map.putAll(m);
+        
+        System.out.println("Number of Syaryo (SPEC) : " + map.size());
+        System.out.println("          Detail : " + rej);
     }
     
     //KOMTRAX対応していない車両の削除
