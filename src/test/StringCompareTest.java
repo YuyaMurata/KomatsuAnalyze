@@ -5,6 +5,9 @@
  */
 package test;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  *
  * @author ZZ17390
@@ -15,5 +18,9 @@ public class StringCompareTest {
         String test2 = "2018";
         
         System.out.println(test2.compareTo(test1));
+        
+        String id = "XXXXXXXXXXXX";
+        List<String> s = Arrays.asList(new String[]{"XXX"});
+        System.out.println(id.contains("-"));
     }
 }

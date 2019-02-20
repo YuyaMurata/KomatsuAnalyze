@@ -40,7 +40,7 @@
                            <children>
                               <ComboBox fx:id="datafilter" maxWidth="200.0" minWidth="136.0" onAction="#selectFilter" prefHeight="23.0" prefWidth="147.0" promptText="ALL" />
                               <ToggleButton fx:id="filter_button" mnemonicParsing="false" onAction="#onFilter" prefHeight="23.0" prefWidth="36.0" text="NF" />
-                              <ToggleButton fx:id="order_button" mnemonicParsing="false" onAction="#onOrder" text="N" />
+                              <ToggleButton fx:id="order_button" mnemonicParsing="false" onAction="#onOrder" prefHeight="25.0" prefWidth="29.0" text="N" />
                            </children>
                         </HBox>
                         <HBox>
@@ -114,7 +114,7 @@
                <children>
                   <Label fx:id="number_syaryo_label" layoutX="6.0" layoutY="3.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="15.0" prefWidth="134.0" text="0 / 0" textAlignment="RIGHT" />
                   <ProgressIndicator fx:id="fileProgress" layoutX="761.0" layoutY="1.0" prefHeight="19.0" prefWidth="32.0" progress="1.0" AnchorPane.rightAnchor="11.0" />
-                  <Label fx:id="amountData" contentDisplay="TOP" layoutX="205.0" layoutY="3.0" prefHeight="15.0" prefWidth="134.0" text="0" />
+                  <Label fx:id="amountData" contentDisplay="TOP" layoutX="205.0" layoutY="3.0" prefHeight="17.0" prefWidth="215.0" text="0" />
                </children>
             </AnchorPane>
          </children>

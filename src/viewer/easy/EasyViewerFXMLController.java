@@ -49,6 +49,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
+import viewer.fanction.SyaryoIDFilter;
+import viewer.fanction.SyaryoIDOrder;
+import viewer.output.SyaryoDataHistory;
+import viewer.fanction.SyaryoIDSearch;
 import viewer.service.ButtonService;
 
 /**
@@ -301,28 +305,13 @@ public class EasyViewerFXMLController implements Initializable {
 
         //Filter Button
         filter_button.setSelected(true);
+        SyaryoIDFilter.filtering(datafilter.getValue(), syaryoMap);
         onFilter(event);
     }
 
     private void selectOrder(ActionEvent event) {
-        List list;
-        if (datafilter.getValue().equals("ALL") || currentFilterMap == null) {
-            return;
-        } else if (order_button.isSelected()) {
-            list = (List) currentFilterMap.entrySet().stream()
-                .sorted(Map.Entry.comparingByValue().reversed())
-                .map(s -> ((Map.Entry) s).getKey().toString())
-                .collect(Collectors.toList());
-            order_button.setText("D");
-        } else {
-            list = (List) currentFilterMap.entrySet().stream()
-                .sorted(Map.Entry.comparingByValue())
-                .map(s -> ((Map.Entry) s).getKey().toString())
-                .collect(Collectors.toList());
-            order_button.setText("A");
-        }
         //更新処理
-        updateKeyList(list);
+        updateKeyList(SyaryoIDOrder.order(datafilter.getValue(), order_button, SyaryoIDFilter.getCurrent(filter_button.isSelected(), filter_button)));
     }
 
     @FXML
@@ -352,47 +341,11 @@ public class EasyViewerFXMLController implements Initializable {
 
     @FXML
     private void onFilter(ActionEvent event) {
-        filtering(datafilter.getValue(), filter_button.isSelected());
+        amountData.setText(SyaryoIDFilter.getAmount(filter_button.isSelected()));
+        updateKeyList(SyaryoIDFilter.getCurrentList(filter_button.isSelected(), filter_button));
     }
 
-    //Curent Filter
-    private Map enableFilterMap;
-    private Map disableFilterMap;
-
-    private void filtering(String filter, Boolean btnEnDis) {
-        if (filter.equals("ALL")) {
-            updateKeyList((new ArrayList(new TreeSet(syaryoMap.keySet()))));
-            return;
-        }
-
-        if (currentFilterMap == null) {
-            enableFilterMap = new ConcurrentHashMap();
-            disableFilterMap = new ConcurrentHashMap();
-            syaryoMap.values().parallelStream()
-                .forEach(s -> {
-                    Map data = s.get(filter);
-                    if (data != null) {
-                        enableFilterMap.put(s.getName(), data.size());
-                    } else {
-                        disableFilterMap.put(s.getName(), 0);
-                    }
-                });
-
-            int cnt = enableFilterMap.values().stream().mapToInt(size -> Integer.valueOf(size.toString())).sum();
-            amountData.setText("合計:" + String.valueOf(cnt) + "件");
-        }
-
-        if (btnEnDis) {
-            currentFilterMap = enableFilterMap;
-            filter_button.setText("EN");
-        } else {
-            currentFilterMap = disableFilterMap;
-            filter_button.setText("DS");
-        }
-
-        //更新処理
-        updateKeyList((new ArrayList(new TreeSet(currentFilterMap.keySet()))));
-    }
+    
 
     @FXML
     private void onOrder(ActionEvent event) {
@@ -438,7 +391,7 @@ public class EasyViewerFXMLController implements Initializable {
 
         if (datafilter.getValue().equals("ALL")) {
             //車両名完全一致
-            searchList = Arrays.asList(searchWord).stream().filter(s -> syaryoMap.get(s) != null).collect(Collectors.toList());
+            /*searchList = Arrays.asList(searchWord).stream().filter(s -> syaryoMap.get(s) != null).collect(Collectors.toList());
             if (!searchList.isEmpty()) {
                 updateKeyList(searchList);
                 return;
@@ -454,7 +407,7 @@ public class EasyViewerFXMLController implements Initializable {
             if (!searchList.isEmpty()) {
                 updateKeyList(searchList);
                 return;
-            }*/
+            }
             
             //車両名部分一致
             searchList = Arrays.asList(searchWord).stream()
@@ -470,8 +423,8 @@ public class EasyViewerFXMLController implements Initializable {
                 return;
             }
 
-            System.out.println("Not Found " + String.join(",", searchWord));
-            updateKeyList(new ArrayList());
+            System.out.println("Not Found " + String.join(",", searchWord));*/
+            updateKeyList(SyaryoIDSearch.search(searchBox.getText(), syaryoMap));
             return;
         }
 
@@ -533,49 +486,6 @@ public class EasyViewerFXMLController implements Initializable {
             return;
         }
 
-        try (PrintWriter pw = CSVFileReadWrite.writerSJIS(currentSyaryo.name + ".csv")) {
-
-            try (SyaryoAnalizer a = new SyaryoAnalizer(currentSyaryo, false)) {
-                //基本情報
-                pw.println(a.get().name);
-                pw.println("会社CD," + a.mcompany + ",新車/生産," + a.lifestart+",最終SMR,"+a.maxSMR[2]+","+a.maxSMR[3]+",KOMTRAX_SMR,"+(a.get().get("KOMTRAX_SMR")!=null?a.get().get("KOMTRAX_SMR").size():"-1"));
-                
-                //顧客情報
-                pw.println("\n顧客情報");
-                LOADER.getHeader().get("顧客").values().stream().map(s -> String.join(",", s)).forEach(pw::println);
-                a.get().get("顧客").values().stream().distinct().map(s -> String.join(",", s)).forEach(pw::println);
-
-                //サービス情報
-                pw.println("\nサービス情報");
-                if (a.get().get("受注") != null) {
-                    LOADER.getHeader().get("受注").values().stream().map(s -> "作番," + String.join(",", s)).forEach(pw::println);
-                    a.get().get("受注").entrySet().stream().map(s -> s.getKey() + "," + String.join(",", s.getValue())).forEach(pw::println);
-                } else {
-                    pw.println("None");
-                }
-
-                //作業明細
-                pw.println("\n作業明細");
-                if (a.get().get("作業") != null) {
-                    LOADER.getHeader().get("作業").values().stream().map(s -> "作番," + String.join(",", s)).forEach(pw::println);
-                    a.get().get("作業").entrySet().stream().map(s -> s.getKey() + "," + String.join(",", s.getValue())).forEach(pw::println);
-                } else {
-                    pw.println("None");
-                }
-
-                //部品明細
-                pw.println("\n部品明細");
-                if (a.get().get("部品") != null) {
-                    LOADER.getHeader().get("部品").values().stream().map(s -> "作番," + String.join(",", s)).forEach(pw::println);
-                    a.get().get("部品").entrySet().stream().map(s -> s.getKey() + "," + String.join(",", s.getValue())).forEach(pw::println);
-                } else {
-                    pw.println("None");
-                }
-                
-                System.out.println(currentSyaryo.name+" CSV DL Done!");
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
+        SyaryoDataHistory.output(currentSyaryo.name + ".csv", currentSyaryo);
     }
 }
