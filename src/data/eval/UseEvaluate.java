@@ -7,6 +7,7 @@ package data.eval;
 
 import analizer.SyaryoAnalizer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,37 +18,54 @@ import obj.SyaryoLoader;
  * @author ZZ17390
  */
 public class UseEvaluate {
+
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
-    private static List<String> h = new ArrayList<>();
-    
-    //未定
-    public static List<String> header(){
-        return h;
+    private static Map<String, List<String>> h = new HashMap<>();
+
+    public static List<String> header(String load) {
+        return h.get(load);
     }
     
-    public static Map<String, Double> nomalize(SyaryoAnalizer s, String key){
-        Map<String, Double> map = new LinkedHashMap<>();
+    public static List<String> addHeader(String kind, List<String> load) {
+        return h.put(kind, load);
+    }
+
+    public static Map<String, Map<String, Double>> nomalize(SyaryoAnalizer s, List<String> keys) {
+        Map<String, Map<String, Double>> map = new LinkedHashMap<>();
         
-        if(s.get().get(key) == null)
-            return null;
-        
-        //Header
-        h = new ArrayList(s.get().get(key).keySet());
-        
-        //初期化
-        h.stream().forEach(d -> map.put(d, 0d));
+        int idx = LOADER.index("LOADMAP_SMR", "VALUE"); //共通で利用可能
         
         //正規化時の分母
-        int smr_idx = LOADER.index("LOADMAP_SMR", "VALUE");
-        Double smr = Double.valueOf(s.get().get("LOADMAP_SMR").values().stream().findFirst().get().get(smr_idx));
-        
-        //正規化処理
-        int eg_idx = LOADER.index(key, "VALUE");
-        Map<String, List<String>> engine = s.get().get(key);
-        engine.entrySet().stream().forEach(e ->{
-            map.put(e.getKey(), Double.valueOf(e.getValue().get(eg_idx))/smr);
-        });
-        
+        Double smr = Double.valueOf(s.get().get("LOADMAP_SMR").values().stream().findFirst().get().get(idx));
+
+        for (String key : keys) {
+            if (s.get().get(key) == null) {
+                return null;
+            }
+
+            //Header
+            h.put(key, new ArrayList(s.get().get(key).keySet()));
+
+            //初期化
+            h.get(key).stream().forEach(d -> {
+                if (map.get(key) == null) {
+                    map.put(key, new LinkedHashMap());
+                }
+                map.get(key).put(d, 0d);
+            });
+
+            //正規化処理
+            
+            Map<String, List<String>> loadmap = s.get().get(key);
+            loadmap.entrySet().stream().forEach(e -> {
+                map.get(key).put(e.getKey(), Double.valueOf(e.getValue().get(idx)) / smr);
+            });
+        }
+
         return map;
+    }
+    
+    private static Map<String, Double> eval(Map<String, List<String>> s.get().get(key)){
+        
     }
 }

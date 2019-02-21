@@ -5,11 +5,8 @@
  */
 package viewer.easy;
 
-import analizer.SyaryoAnalizer;
-import file.CSVFileReadWrite;
 import param.KomatsuDataParameter;
 import java.io.File;
-import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,10 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -390,40 +385,6 @@ public class EasyViewerFXMLController implements Initializable {
         Map<String, Integer> result = new HashMap<>();
 
         if (datafilter.getValue().equals("ALL")) {
-            //車両名完全一致
-            /*searchList = Arrays.asList(searchWord).stream().filter(s -> syaryoMap.get(s) != null).collect(Collectors.toList());
-            if (!searchList.isEmpty()) {
-                updateKeyList(searchList);
-                return;
-            }
-            
-            //車両名部分一致（型）
-            /*searchList = Arrays.asList(searchWord).stream()
-                .map(s -> syaryoMap.keySet().stream()
-                .filter(s2 -> s2.contains("-"))
-                .filter(s2 -> s2.split("-")[1].equals(s)))
-                .flatMap(s -> s)
-                .collect(Collectors.toList());
-            if (!searchList.isEmpty()) {
-                updateKeyList(searchList);
-                return;
-            }
-            
-            //車両名部分一致
-            searchList = Arrays.asList(searchWord).stream()
-                .map(s -> syaryoMap.keySet().stream()
-                .filter(s2 -> s2.contains("-"))
-                .filter(s2 -> s2.split("-")[2].equals(s))
-                .findFirst())
-                .filter(f -> f.isPresent())
-                .map(f -> f.get())
-                .collect(Collectors.toList());
-            if (!searchList.isEmpty()) {
-                updateKeyList(searchList);
-                return;
-            }
-
-            System.out.println("Not Found " + String.join(",", searchWord));*/
             updateKeyList(SyaryoIDSearch.search(searchBox.getText(), syaryoMap));
             return;
         }
