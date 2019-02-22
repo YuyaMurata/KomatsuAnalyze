@@ -43,7 +43,7 @@ public class EvaluateSyaryoObject {
 
             eval.put("use", useData(analize));
             //eval.put("age/smr", agingSMRData(analize));
-            //eval.put("mainte", mainteData(analize));
+            eval.put("mainte", mainteData(analize));
         } catch (Exception ex) {
             ex.printStackTrace();
             System.out.println(syaryo.name);
@@ -69,9 +69,7 @@ public class EvaluateSyaryoObject {
     private Map<String, Map<String, Double>> useData(SyaryoAnalizer syaryo) {
         //負荷マップを正規化
         Map<String, Map<String, Double>> loadmap = UseEvaluate.nomalize(syaryo, USELIST);
-
-        //System.out.println(syaryo.get().name);
-        //loadmap.entrySet().stream().map(e -> e.getKey()+":"+e.getValue()).forEach(System.out::println);
+        
         return loadmap;
     }
 
@@ -97,13 +95,15 @@ public class EvaluateSyaryoObject {
         return mainte;
     }
 
+    //評価結果をリストで取得
     public List<Double> getData(String select, String kind) {
         if (eval.get(select).get(kind) == null) {
             return getHeaderList(select, kind).stream().map(h -> 0d).collect(Collectors.toList());
         }
         return new ArrayList(eval.get(select).get(kind).values());
     }
-
+    
+    //内部での定義データ
     public static List<String> getDataList(String select) {
         switch (select) {
             case "mainte":
@@ -115,6 +115,7 @@ public class EvaluateSyaryoObject {
         return new ArrayList<>();
     }
 
+    //ヘッダ情報を取得
     public static List<String> getHeaderList(String select, String kind) {
         switch (select) {
             case "mainte":
@@ -126,10 +127,12 @@ public class EvaluateSyaryoObject {
         return new ArrayList<>(Arrays.asList(new String[]{"None"}));
     }
 
+    //出力用(ヘッダ)
     public static String printh(String select, String kind) {
         return String.join(",", getHeaderList(select, kind));
     }
 
+    //出力用(評価結果)
     public String print(String select, String kind) {
         return getData(select, kind).stream().map(v -> v.toString()).collect(Collectors.joining(","));
     }
