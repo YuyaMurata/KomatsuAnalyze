@@ -23,49 +23,52 @@ import java.util.Map;
  * @author ZZ17390
  */
 public class MapToJSON {
-    public void toJSON(String filename, Map index){
-        try(JsonWriter writer = new JsonWriter(new BufferedWriter(new FileWriter(filename)))){
-            writer.setIndent("  ");
-            
-            Gson gson = new Gson();
-            gson.toJson(index, Map.class, writer);    
 
-        }catch(IOException e){
+    public void toJSON(String filename, Map index) {
+        try (JsonWriter writer = new JsonWriter(new BufferedWriter(new FileWriter(filename)))) {
+            writer.setIndent("  ");
+
+            Gson gson = new Gson();
+            gson.toJson(index, Map.class, writer);
+
+        } catch (IOException e) {
             e.printStackTrace();
+            System.out.println(index);
         }
     }
-    
+
     public Map toMapSJIS(String filename) {
-		Map<String, String> index;
+        Map<String, String> index;
         try (JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(new FileInputStream(filename), "SJIS")))) {
 
-			Type type = new TypeToken<Map>() {
-			}.getType();
+            Type type = new TypeToken<Map>() {
+            }.getType();
 
-			Gson gson = new Gson();
-			index = gson.fromJson(reader, type);
-		} catch (Exception e) {
-			e.printStackTrace();
+            Gson gson = new Gson();
+            index = gson.fromJson(reader, type);
+        } catch (Exception e) {
+            e.printStackTrace();
             return null;
-		}
-        
+        }
+
         return index;
-	}
+    }
+
     public Map toMap(String filename) {
-		Map<String, String> index;
+        Map<String, String> index;
         try (JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(new FileInputStream(filename))))) {
 
-			Type type = new TypeToken<Map>() {
-			}.getType();
+            Type type = new TypeToken<Map>() {
+            }.getType();
 
-			Gson gson = new Gson();
-			index = gson.fromJson(reader, type);
-		} catch (Exception e) {
+            Gson gson = new Gson();
+            index = gson.fromJson(reader, type);
+        } catch (Exception e) {
             System.err.println(filename);
-			e.printStackTrace();
+            e.printStackTrace();
             return null;
-		}
-        
+        }
+
         return index;
-	}
+    }
 }

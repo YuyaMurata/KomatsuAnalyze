@@ -7,8 +7,8 @@ package data.analize;
 
 import data.cluster.KMeansPP;
 import data.eval.EvaluateSyaryoObject;
-import data.eval.UseEvaluate;
 import file.CSVFileReadWrite;
+import file.MapToJSON;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,7 +33,7 @@ public class EvaluateSyaryo {
         evaluate(map);
 
         //クラスタリング
-        //mainte();
+        mainte();
         use();
 
     }
@@ -45,6 +45,10 @@ public class EvaluateSyaryo {
             EvaluateSyaryoObject evalobj = new EvaluateSyaryoObject(syaryo);
             EVAL.put(syaryo.name, evalobj);
         });
+        
+        //Test Output
+        new MapToJSON().toJSON("eval_map.json", EVAL);
+        
         Long sp = System.currentTimeMillis();
         System.out.println("車両評価プログラム完了 - "+ EVAL.size()+ " <" + (sp - st) + "ms>");
     }
@@ -82,7 +86,8 @@ public class EvaluateSyaryo {
             Map<String, Double> map = new HashMap();
             for(String load : EvaluateSyaryoObject.getDataList("use")){
                 int idx = EvaluateSyaryoObject.getDataList("use").indexOf(load);
-                map.put(load, Double.valueOf(results.get(idx).get(e.getKey())));
+                Double cid = results.get(idx).get(e.getKey()) != null?Double.valueOf(results.get(idx).get(e.getKey())):0d;
+                map.put(load, cid);
             }
             e.getValue().addEval("use", "clusters", map);
         });

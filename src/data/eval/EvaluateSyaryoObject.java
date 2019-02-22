@@ -29,9 +29,10 @@ public class EvaluateSyaryoObject {
 
     //負荷リスト
     private static List<String> USELIST = KomatsuDataParameter.DATA_ORDER.stream()
-        .filter(d -> d.contains("LOADMAP"))
-        .filter(d -> !d.contains("SMR"))
-        .collect(Collectors.toList());
+            .filter(d -> d.contains("LOADMAP"))
+            .filter(d -> !d.contains("SMR"))
+            .filter(d -> !d.contains("USERTIME"))
+            .collect(Collectors.toList());
 
     public EvaluateSyaryoObject(SyaryoObject syaryo) {
         try (SyaryoAnalizer analize = new SyaryoAnalizer(syaryo, false)) {
@@ -40,9 +41,9 @@ public class EvaluateSyaryoObject {
             this.day = analize.currentAge_day;
             this.smr = analize.maxSMR[3];
 
-            //eval.put("use", useData(analize));
+            eval.put("use", useData(analize));
             //eval.put("age/smr", agingSMRData(analize));
-            eval.put("mainte", mainteData(analize));
+            //eval.put("mainte", mainteData(analize));
         } catch (Exception ex) {
             ex.printStackTrace();
             System.out.println(syaryo.name);
@@ -50,17 +51,14 @@ public class EvaluateSyaryoObject {
         }
     }
 
-    public Boolean isNULL() {
-        return eval.get("use") == null;
-    }
-    
     //評価結果をさらに評価する場合に利用
     public void addEval(String data, String kind, Map<String, Double> addData) {
         eval.get(data).put(kind, addData);
-        
+
         //ヘッダ登録
         switch (data) {
-            case "use": UseEvaluate.addHeader(kind, new ArrayList<>(addData.keySet()));
+            case "use":
+                UseEvaluate.addHeader(kind, new ArrayList<>(addData.keySet()));
         }
     }
 
@@ -69,12 +67,11 @@ public class EvaluateSyaryoObject {
      *
      */
     private Map<String, Map<String, Double>> useData(SyaryoAnalizer syaryo) {
-        if(syaryo.get().get(USELIST.get(0)) == null)
-            return null;
-        
         //負荷マップを正規化
         Map<String, Map<String, Double>> loadmap = UseEvaluate.nomalize(syaryo, USELIST);
 
+        //System.out.println(syaryo.get().name);
+        //loadmap.entrySet().stream().map(e -> e.getKey()+":"+e.getValue()).forEach(System.out::println);
         return loadmap;
     }
 
@@ -101,6 +98,9 @@ public class EvaluateSyaryoObject {
     }
 
     public List<Double> getData(String select, String kind) {
+        if (eval.get(select).get(kind) == null) {
+            return getHeaderList(select, kind).stream().map(h -> 0d).collect(Collectors.toList());
+        }
         return new ArrayList(eval.get(select).get(kind).values());
     }
 
@@ -115,24 +115,22 @@ public class EvaluateSyaryoObject {
         return new ArrayList<>();
     }
 
-    public static String printh(String select, String kind) {
+    public static List<String> getHeaderList(String select, String kind) {
         switch (select) {
             case "mainte":
-                return String.join(",", MainteEvaluate.header());
+                return MainteEvaluate.header();
             case "use":
-                return String.join(",", UseEvaluate.header(kind));
+                return UseEvaluate.header(kind);
         }
 
-        return "none";
+        return new ArrayList<>(Arrays.asList(new String[]{"None"}));
+    }
+
+    public static String printh(String select, String kind) {
+        return String.join(",", getHeaderList(select, kind));
     }
 
     public String print(String select, String kind) {
-        if (eval.get(select) != null) {
-            if (eval.get(select).get(kind) != null) {
-                return eval.get(select).get(kind).values().stream().map(e -> e.toString()).collect(Collectors.joining(","));
-            }
-        }
-
-        return "none";
+        return getData(select, kind).stream().map(v -> v.toString()).collect(Collectors.joining(","));
     }
 }

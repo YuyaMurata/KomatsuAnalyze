@@ -22,23 +22,26 @@ public class MainteEvaluate {
 
     private static Map<String, String> index = KomatsuDataParameter.PC_PID_DEFNAME;
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
+    private static List<String> _header;
 
     public static List<String> header() {
-        List<String> h = index.values().stream().distinct().collect(Collectors.toList());
-        return h;
+        return _header;
     }
 
     //SMRを期間で分割するメソッドは未実装であるため期間は-1で利用する
     public static Map<String, Double> aggregate(SyaryoAnalizer s, String sd, String fd) {
         Map<String, Double> map = new LinkedHashMap<>();
-
+        
+        if(_header == null)
+            _header = index.values().stream().distinct().collect(Collectors.toList());
+        
+        if (s.get().get("受注") == null) {
+            return null;
+        }
+        
         //初期化
         for (String h : header()) {
             map.put(h, 0d);
-        }
-
-        if (s.get().get("受注") == null) {
-            return map;
         }
 
         //評価期間
@@ -118,6 +121,9 @@ public class MainteEvaluate {
 
     //正規化
     public static Map<String, Double> nomalize(Map<String, Double> agmap, int termsmr, double termday) {
+        if(agmap == null)
+            return null;
+            
         Map<String, Double> map = new LinkedHashMap<>();
         agmap.entrySet().stream().forEach(ag -> {
             map.put(ag.getKey(), eval(ag.getKey(), ag.getValue(), termsmr, termday / 365d));

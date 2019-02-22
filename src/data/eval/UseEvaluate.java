@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import obj.SyaryoLoader;
 
 /**
@@ -20,52 +21,49 @@ import obj.SyaryoLoader;
 public class UseEvaluate {
 
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
-    private static Map<String, List<String>> h = new HashMap<>();
+    private static Map<String, List<String>> _header = new HashMap<>();
 
     public static List<String> header(String load) {
-        return h.get(load);
+        return _header.get(load);
     }
-    
+
     public static List<String> addHeader(String kind, List<String> load) {
-        return h.put(kind, load);
+        return _header.put(kind, load);
     }
 
     public static Map<String, Map<String, Double>> nomalize(SyaryoAnalizer s, List<String> keys) {
         Map<String, Map<String, Double>> map = new LinkedHashMap<>();
-        
+
         int idx = LOADER.index("LOADMAP_SMR", "VALUE"); //共通で利用可能
-        
-        //正規化時の分母
-        Double smr = Double.valueOf(s.get().get("LOADMAP_SMR").values().stream().findFirst().get().get(idx));
 
         for (String key : keys) {
-            if (s.get().get(key) == null) {
-                return null;
-            }
-
-            //Header
-            h.put(key, new ArrayList(s.get().get(key).keySet()));
-
-            //初期化
-            h.get(key).stream().forEach(d -> {
-                if (map.get(key) == null) {
-                    map.put(key, new LinkedHashMap());
-                }
-                map.get(key).put(d, 0d);
-            });
-
-            //正規化処理
-            
-            Map<String, List<String>> loadmap = s.get().get(key);
-            loadmap.entrySet().stream().forEach(e -> {
-                map.get(key).put(e.getKey(), Double.valueOf(e.getValue().get(idx)) / smr);
-            });
+            map.put(key, eval(key, s.get().get(key), s.get().get("LOADMAP_SMR"), idx));
         }
 
         return map;
     }
-    
-    private static Map<String, Double> eval(Map<String, List<String>> s.get().get(key)){
+
+    private static Map<String, Double> eval(String key, Map<String, List<String>> loadmap, Map<String, List<String>> denom, int idx) {
+        if (loadmap == null) {
+            return null;
+        }
         
+        //正規化時の分母
+        Double smr = Double.valueOf(denom.values().stream().findFirst().get().get(idx));
+
+        //Header
+        if (_header.get(key) == null) {
+            _header.put(key, new ArrayList(loadmap.keySet()));
+        }
+
+        //初期化
+        Map<String, Double> map = _header.get(key).stream().collect(Collectors.toMap(d -> d, d -> 0d));
+
+        //正規化処理
+        loadmap.entrySet().stream().forEach(e -> {
+            map.put(e.getKey(), Double.valueOf(e.getValue().get(idx)) / smr);
+        });
+        
+        return map;
     }
 }
