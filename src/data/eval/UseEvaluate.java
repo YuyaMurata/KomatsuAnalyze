@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import obj.SyaryoLoader;
 
 /**
@@ -57,11 +56,13 @@ public class UseEvaluate {
         }
 
         //初期化
-        Map<String, Double> map = _header.get(key).stream().collect(Collectors.toMap(d -> d, d -> 0d));
+        Map<String, Double> map = new LinkedHashMap<>();
+        _header.get(key).stream().forEach(h -> map.put(h, 0d));
 
         //正規化処理
         loadmap.entrySet().stream().forEach(e -> {
-            map.put(e.getKey(), Double.valueOf(e.getValue().get(idx)) / smr);
+            //map.put(e.getKey(), Double.valueOf(e.getValue().get(idx)) / smr);
+            map.put(e.getKey(), Double.valueOf(e.getValue().get(idx)));
         });
         
         return map;
