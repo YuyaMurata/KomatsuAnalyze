@@ -6,6 +6,7 @@
 /nbproject/check/
 /nbproject/中間データ/
 /nbproject/分析結果/
+/nbproject/data/
 
 *.json
 *.csv
@@ -20,4 +21,5 @@
 *.7z
 *.tar
 *.log
+*.png
 project.properties
