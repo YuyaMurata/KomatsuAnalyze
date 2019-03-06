@@ -34,7 +34,7 @@ public class EvaluateSyaryo {
 
         //クラスタリング
         mainte();
-        use();
+        //use();
 
     }
 
