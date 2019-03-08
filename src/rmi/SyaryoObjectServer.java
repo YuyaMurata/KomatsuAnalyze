@@ -21,8 +21,10 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import javax.imageio.ImageIO;
 import obj.LoadSyaryoObject;
+import param.KomatsuDataParameter;
 
 public class SyaryoObjectServer implements RemoteSyaryoObjectLoader {
+	private static final String ICON_IMG = KomatsuDataParameter.ICON_IMG;
     private static final LoadSyaryoObject LOADER = LoadSyaryoObject.getInstance();
     private static TrayIcon icon;
     
@@ -54,7 +56,7 @@ public class SyaryoObjectServer implements RemoteSyaryoObjectLoader {
         // アイコンイメージの読み込み
         Image image = ImageIO.read(Thread.currentThread()
                 .getContextClassLoader()
-                .getResourceAsStream("icon\\syaryo_obj.png"));
+                .getResourceAsStream(ICON_IMG));
         
         // トレイアイコン生成
         icon = new TrayIcon(image, LOADER.getFilePath());

@@ -38,7 +38,7 @@ public interface KomatsuDataParameter {
             put("PC138US", new String[]{"2", "8", "10"});
         }
     };
-
+	
     //Create Syaryo Object
     public static String TEMPLATE_PATH = "template\\";
     public static String MIDDLEDATA_PATH = "middle\\";
@@ -56,7 +56,8 @@ public interface KomatsuDataParameter {
     //EasyViewer
     public static String SYARYOOBJECT_FDPATH = "syaryo\\";
     public static String SETTING_DATAFILETER_PATH = "index\\easyviwer_datafilter.csv";
-    
+    public static String ICON_IMG = "icon\\syaryo_obj.png";
+	
     //Python
     public static String PYTHONE_PATH = "py\\";
     public static Map<String, String> GRAPH_PY = new MapToJSON().toMap("define\\graph_relate_pyfile.json");

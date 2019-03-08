@@ -97,7 +97,7 @@ public class MainteEvaluate {
         return map;
     }
 
-    private static Boolean mainteCheck(String pid) {
+    public static Boolean mainteCheck(String pid) {
         if (pid.contains("SYEO-T") || pid.contains("NYEO-T")) {
             return true;
         } else if (pid.contains("SYEO") || pid.contains("NYEO")) {
@@ -109,7 +109,7 @@ public class MainteEvaluate {
         return false;
     }
 
-    private static String mainteDefName(String pid) {
+    public static String mainteDefName(String pid) {
         if (pid.contains("SYEO-T") || pid.contains("NYEO-T")) {
             return "パワーラインオイル";
         } else if (pid.contains("SYEO") || pid.contains("NYEO")) {
