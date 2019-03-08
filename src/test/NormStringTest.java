@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  */
 public class NormStringTest {
 	public static void main(String[] args) {
-		String[] pid = new String[]{"ABCD", "SYEO-10-76453", "SYEO-10TO-76453", "NYEO-10-76453", "SYEO-TO10-76453"};
+		String[] pid = new String[]{"ABCD", "SYEO-10-76453", "NSYESYEO-10TO-76453", "NYEO-10-76453", "SYEO-TO10-76453"};
 		
 		Pattern p1 = Pattern.compile("^*YEO-[*[^TO]]");
 		Pattern p2 = Pattern.compile("^*YEO-TO*");
