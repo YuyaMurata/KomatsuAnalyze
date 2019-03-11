@@ -29,7 +29,7 @@ public class TimeSpreadChart extends ChartTemplate {
 
         //エラーコード抽出
         List<String> code = syaryo.get("KOMTRAX_ERROR").values().stream()
-            .map(s -> s.get(errorCodeIdx).toString())
+            .map(s -> s.get(errorCodeIdx))
             .distinct()
             .collect(Collectors.toList());
 
@@ -40,8 +40,8 @@ public class TimeSpreadChart extends ChartTemplate {
         for (String date : syaryo.get("KOMTRAX_ERROR").keySet()) {
             List l = new ArrayList();
 
-            String c = syaryo.get("KOMTRAX_ERROR").get(date).get(errorCodeIdx).toString();
-            String cnt = syaryo.get("KOMTRAX_ERROR").get(date).get(errorIdx).toString();
+            String c = syaryo.get("KOMTRAX_ERROR").get(date).get(errorCodeIdx);
+            String cnt = syaryo.get("KOMTRAX_ERROR").get(date).get(errorIdx);
             
             date = date.split("#")[0];
             
@@ -92,7 +92,7 @@ public class TimeSpreadChart extends ChartTemplate {
             List<String> graphData = new ArrayList<>();
             graphData.add("Syaryo,"+syaryo.name+":"+select);
             
-            if (select.equals("SMR") || select.equals("KOMTRAX_SMR") || select.equals("KOMTRAX_FUEL_CONSUME")) {
+            if (select.equals("SMR") || select.equals("KOMTRAX_SMR") || select.equals("KOMTRAX_FUEL_CONSUME") || select.equals("KOMTRAX_ACT_DATA") ) {
                 //header
                 graphData.add("Date,SMR");
                 

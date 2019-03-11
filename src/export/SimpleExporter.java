@@ -33,9 +33,10 @@ public class SimpleExporter {
         //ヘッダー設定
         Map<String, Integer> headers = new LinkedHashMap();
         headers.put("作業.会社", LOADER.index("作業", "会社CD"));
-        headers.put("作業.作番", LOADER.index("作業", "KEY"));
-        headers.put("作業.作業コード", LOADER.index("作業", "SGYOCD"));
-        headers.put("作業.作業名", LOADER.index("作業", "SGYO_NM"));
+        //headers.put("作業.会社", LOADER.index("作業", "会社CD"));
+        //headers.put("作業.作番", LOADER.index("作業", "KEY"));
+        //headers.put("作業.作業コード", LOADER.index("作業", "SGYOCD"));
+        //headers.put("作業.作業名", LOADER.index("作業", "SGYO_NM"));
         //headers.put("顧客.顧客CD", dataIndex.get("顧客").indexOf("NNSCD"));
         //headers.put("顧客.区分", dataIndex.get("顧客").indexOf("KKYK_KBN"));
         //headers.put("顧客.業種", dataIndex.get("顧客").indexOf("GYSCD"));
@@ -59,7 +60,7 @@ public class SimpleExporter {
             pw.println("SID,"+headers.keySet().stream().collect(Collectors.joining(",")));
             for (String name : map.keySet()) {
                 System.out.println(name);
-                try (SyaryoAnalizer syaryo = new SyaryoAnalizer(map.get(name))) {
+                try (SyaryoAnalizer syaryo = new SyaryoAnalizer(map.get(name), false)) {
                     export(pw, headers, syaryo);
                 } catch (Exception ex) {
                     ex.printStackTrace();
