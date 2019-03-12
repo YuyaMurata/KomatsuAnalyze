@@ -5,7 +5,7 @@
  */
 package data.analize;
 
-import data.code.CodeRedefine;
+import data.code.PartsCodeConv;
 import file.CSVFileReadWrite;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -65,8 +65,8 @@ public class CodeHistgram {
                 }
 
                 List<String> parts = s.get("部品").entrySet().stream()
-                    .filter(d -> CodeRedefine.partsCDRedefine((String) d.getValue().get(hnbn)) != null)
-                    .map(d -> CodeRedefine.partsCDRedefine((String) d.getValue().get(hnbn))
+                    .filter(d -> PartsCodeConv.mainPartsDefineCode((String) d.getValue().get(hnbn)) != null)
+                    .map(d -> PartsCodeConv.mainPartsDefineCode((String) d.getValue().get(hnbn))
                     + "," + d.getValue().get(hnbn)
                     + "," + d.getValue().get(bname)
                     + "," + (Integer.valueOf(d.getValue().get(price).toString()) / Integer.valueOf(d.getValue().get(quant).toString())))

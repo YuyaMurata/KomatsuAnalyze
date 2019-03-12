@@ -5,7 +5,7 @@
  */
 package data.analize;
 
-import data.code.CodeRedefine;
+import data.code.PartsCodeConv;
 import file.CSVFileReadWrite;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -152,7 +152,7 @@ public class CreateEvaluateMatrix {
 
                 //部品コード表
                 s.get("部品").entrySet().stream()
-                        .map(p -> CodeRedefine.partsCDRedefine(p.getValue().get(parts_idx).toString())) //コード再定義
+                        .map(p -> PartsCodeConv.mainPartsDefineCode(p.getValue().get(parts_idx).toString())) //コード再定義
                         .filter(p -> p != null) //再定義の例外確認
                         .forEach(cd -> {
                             if (partscd.get(cd) == null) {

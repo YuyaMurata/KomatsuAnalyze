@@ -5,7 +5,7 @@
  */
 package data.analize;
 
-import data.code.CodeRedefine;
+import data.code.PartsCodeConv;
 import file.CSVFileReadWrite;
 import java.io.PrintWriter;
 import java.util.HashMap;
@@ -142,8 +142,8 @@ public class CodeVariation {
             
             List<String> parts = s.get("部品").entrySet().stream()
                                             .filter(d -> d.getValue().get(dataHeader.get("部品").get("部品").indexOf("None")).equals("10"))
-                                            .filter(d -> CodeRedefine.partsCDRedefine((String) d.getValue().get(dataHeader.get("部品").get("部品").indexOf("HNBN"))) != null)
-                                            .map(d ->  CodeRedefine.partsCDRedefine((String) d.getValue().get(dataHeader.get("部品").get("部品").indexOf("HNBN")))
+                                            .filter(d -> PartsCodeConv.mainPartsDefineCode((String) d.getValue().get(dataHeader.get("部品").get("部品").indexOf("HNBN"))) != null)
+                                            .map(d ->  PartsCodeConv.mainPartsDefineCode((String) d.getValue().get(dataHeader.get("部品").get("部品").indexOf("HNBN")))
                                                         +"_"+d.getValue().get(dataHeader.get("部品").get("部品").indexOf("HNBN"))
                                                         +"_"+d.getValue().get(dataHeader.get("部品").get("部品").indexOf("BHN_NM")))
                                             .collect(Collectors.toList());

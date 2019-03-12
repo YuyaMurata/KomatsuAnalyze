@@ -26,7 +26,7 @@ public class PartsDataFormalize {
 		Map<String, List<String>> defParts = new LinkedHashMap<>();
 		
 		parts.entrySet().stream().forEach(p->{
-			
+                    
 		});
 		
 		return null;

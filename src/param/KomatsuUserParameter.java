@@ -22,8 +22,10 @@ public interface KomatsuUserParameter {
     public static Integer PARTS_FILTER_PRICE = 0;
     
     //部品コードの再定義
-    public static String PC_PARTS_REDEF_INDEX_PATH = "user\\pc200_parts_redefine.json";
-    public static Map<String, String> PC_PARTS_REDEF = new MapToJSON().toMap(PC_PARTS_REDEF_INDEX_PATH);
+    public static Map<String, String> PC200_MAINPARTS_DEF = new MapToJSON().toMap("user\\PC200_mainparts_define.json");
+    
+    //メンテナンス
+    public static Map<String, String> PC200_MAINTEPARTS_DEF = new MapToJSON().toMap("define\\PC200_mainteparts_define.json");
     
     //評価行列
     public static String PC200_PARTS_EVAL_FILE="PC200_partscd_evalarray.csv";

@@ -142,8 +142,7 @@ public interface KomatsuDataParameter {
     public static Map POWERLINE = new MapToJSON().toMap("index\\allsupport_index.json");
 
     //定期メンテナンスの定義
-    public static Map<String, List> MAINTE_DEFINE = new MapToJSON().toMap("define\\PC200_PartsID_MainteName.json");
-    //public static Map<String, String> MAINTE_CLUSTER = new MapToJSON().toMap("define\\PC200_MainteClustering.json");
+    //public static Map<String, List> MAINTE_DEFINE = new MapToJSON().toMap("define\\PC200_PartsID_MainteName.json");
 
     //KOMTRAXエラーコードのフラグの定義
     public static Map PC_ERROR = new MapToJSON().toMap(PC_ERRORFLG_INDEX_PATH);

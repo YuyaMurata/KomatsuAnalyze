@@ -6,7 +6,7 @@
 package data.analize;
 
 import analizer.SyaryoAnalizer;
-import data.code.CodeRedefine;
+import data.code.PartsCodeConv;
 import file.CSVFileReadWrite;
 import java.io.PrintWriter;
 import java.util.HashMap;
@@ -75,7 +75,7 @@ public class CreateAssociationRule {
                         String sgcd = sgcdCheck.get();
 
                         List<String> parts = analize.getSBNParts(sbn).values().stream()
-                            .map(p -> CodeRedefine.partsCDRedefine(p.get(hnbnIdx))) //部品コードを再定義
+                            .map(p -> PartsCodeConv.mainPartsDefineCode(p.get(hnbnIdx))) //部品コードを再定義
                             .filter(p -> p != null)
                             .distinct()
                             .collect(Collectors.toList());
