@@ -27,12 +27,17 @@ public class SimpleExporter {
     private static Map<String, SyaryoObject> map;
 
     public static void main(String[] args) {
-        LOADER.setFile(KISY+"_sv_form");
+        LOADER.setFile(KISY+"_loadmap");
         map = LOADER.getSyaryoMap();
         
         //ヘッダー設定
         Map<String, Integer> headers = new LinkedHashMap();
-        headers.put("作業.会社", LOADER.index("作業", "会社CD"));
+        headers.put("部品.会社", LOADER.index("部品", "会社CD"));
+        headers.put("部品.作番", LOADER.index("部品", "KEY"));
+        headers.put("部品.品番", LOADER.index("部品", "HNBN"));
+        headers.put("部品.品名", LOADER.index("部品", "BHN_NM"));
+        headers.put("部品.数量", LOADER.index("部品", "JISI_SU"));
+        headers.put("部品.金額", LOADER.index("部品", "SKKG"));
         //headers.put("作業.会社", LOADER.index("作業", "会社CD"));
         //headers.put("作業.作番", LOADER.index("作業", "KEY"));
         //headers.put("作業.作業コード", LOADER.index("作業", "SGYOCD"));
@@ -74,7 +79,7 @@ public class SimpleExporter {
             pw.println(headers.keySet().stream().collect(Collectors.joining(",")));
             for (String name : names) {
                 System.out.println(name);
-                SyaryoAnalizer syaryo = new SyaryoAnalizer(map.get(name));
+                SyaryoAnalizer syaryo = new SyaryoAnalizer(map.get(name), false);
                 export(pw, headers, syaryo);
             }
         }
@@ -84,7 +89,7 @@ public class SimpleExporter {
         try (PrintWriter pw = CSVFileReadWrite.writer(f)) {
             pw.println(headers.keySet().stream().collect(Collectors.joining(",")));
             System.out.println(name);
-            SyaryoAnalizer syaryo = new SyaryoAnalizer(map.get(name));
+            SyaryoAnalizer syaryo = new SyaryoAnalizer(map.get(name), false);
             export(pw, headers, syaryo);
         }
     }

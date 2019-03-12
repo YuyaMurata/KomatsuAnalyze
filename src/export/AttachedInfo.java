@@ -6,6 +6,7 @@
 package export;
 
 import analizer.SyaryoAnalizer;
+import data.code.PartsCodeConv;
 import file.CSVFileReadWrite;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,8 +14,6 @@ import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
 import param.KomatsuDataParameter;
@@ -24,16 +23,15 @@ import param.KomatsuDataParameter;
  * @author ZZ17390
  */
 public class AttachedInfo {
-
-    private static String csvFile = "PC200_culster_use.csv";
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
 
     public static void main(String[] args) {
-        //workname(csvFile);
-        LOADER.setFile("PC200_form");
-        //serviceinfo(csvFile);
-        //workinfo(csvFile);
-        analizeLCC(csvFile);
+        //workname(file);
+        //LOADER.setFile("PC200_form");
+        //serviceinfo(file);
+        //workinfo(file);
+        //analizeLCC("PC200_culster_use.csv");
+        partsinfo("ExportData_PC200_ALL.csv");
     }
 
     /**
@@ -42,8 +40,8 @@ public class AttachedInfo {
     private static void analizeLCC(String file) {
         Map<String, SyaryoObject> map = LOADER.getSyaryoMap();
 
-        try (PrintWriter csv = CSVFileReadWrite.writer(csvFile + "_attched_lcc.csv")) {
-            try (BufferedReader br = CSVFileReadWrite.reader(csvFile)) {
+        try (PrintWriter csv = CSVFileReadWrite.writer(file + "_attched_lcc.csv")) {
+            try (BufferedReader br = CSVFileReadWrite.reader(file)) {
                 String line = br.readLine();
                 csv.println(line + ",y,SMR,LCC,ACC,LCC-ACCIDENT");
                 while ((line = br.readLine()) != null) {
@@ -68,8 +66,8 @@ public class AttachedInfo {
      */
     private static void workname(String file) {
         Map devName = KomatsuDataParameter.WORK_DEVID_DEFNAME;
-        try (PrintWriter csv = CSVFileReadWrite.writer(csvFile + "_work_id_name.csv")) {
-            try (BufferedReader br = CSVFileReadWrite.reader(csvFile)) {
+        try (PrintWriter csv = CSVFileReadWrite.writer(file + "_work_id_name.csv")) {
+            try (BufferedReader br = CSVFileReadWrite.reader(file)) {
                 String line = br.readLine();
                 csv.println(line + ",devID,devName");
                 while ((line = br.readLine()) != null) {
@@ -94,8 +92,8 @@ public class AttachedInfo {
      */
     private static void serviceinfo(String file) {
         Map<String, SyaryoObject> map = LOADER.getSyaryoMap();
-        try (PrintWriter csv = CSVFileReadWrite.writer(csvFile + "_attached_info.csv")) {
-            try (BufferedReader br = CSVFileReadWrite.reader(csvFile)) {
+        try (PrintWriter csv = CSVFileReadWrite.writer(file + "_attached_info.csv")) {
+            try (BufferedReader br = CSVFileReadWrite.reader(file)) {
                 String line = br.readLine();
                 List<String> l = Arrays.asList(line.split(","));
                 l.set(3, "作業形態");
@@ -126,8 +124,8 @@ public class AttachedInfo {
      */
     private static void workinfo(String file) {
         Map<String, SyaryoObject> map = LOADER.getSyaryoMap();
-        try (PrintWriter csv = CSVFileReadWrite.writer(csvFile + "_attached_info.csv")) {
-            try (BufferedReader br = CSVFileReadWrite.reader(csvFile)) {
+        try (PrintWriter csv = CSVFileReadWrite.writer(file + "_attached_info.csv")) {
+            try (BufferedReader br = CSVFileReadWrite.reader(file)) {
                 String line = br.readLine();
                 List<String> l = Arrays.asList(line.split(","));
                 //l.set(12, "作業明細");
@@ -153,6 +151,25 @@ public class AttachedInfo {
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+    
+    private static void partsinfo(String file){
+        try (PrintWriter csv = CSVFileReadWrite.writer(file + "_attached_info.csv")) {
+            try (BufferedReader br = CSVFileReadWrite.reader(file)) {
+                String line = br.readLine();
+                csv.println(line);
+
+                while ((line = br.readLine()) != null) {
+                    String pid = line.split(",")[3];
+                    String cd = PartsCodeConv.conv(pid);
+                    
+                    String l = line.replace(","+pid+",", ","+cd+","+pid+",");
+                    csv.println(l);
                 }
             } catch (IOException ex) {
                 ex.printStackTrace();

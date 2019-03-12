@@ -141,9 +141,6 @@ public interface KomatsuDataParameter {
     //オールサポート対象 パワーライン
     public static Map POWERLINE = new MapToJSON().toMap("index\\allsupport_index.json");
 
-    //定期メンテナンスの定義
-    //public static Map<String, List> MAINTE_DEFINE = new MapToJSON().toMap("define\\PC200_PartsID_MainteName.json");
-
     //KOMTRAXエラーコードのフラグの定義
     public static Map PC_ERROR = new MapToJSON().toMap(PC_ERRORFLG_INDEX_PATH);
 
@@ -153,10 +150,6 @@ public interface KomatsuDataParameter {
     //名称定義
     public static String PC_KMERR_DEFNAME_INDEX_PATH = "define\\PC200_Komtrax_Error_name.json";
     public static Map PC_KMERR_EDEFNAME = new MapToJSON().toMap(PC_KMERR_DEFNAME_INDEX_PATH);
-    public static String PC_PARTS_DEFNAME_INDEX_PATH = "define\\PC200_Parts_Redefine_name.json";
-    public static Map PC_PARTS_EDEFNAME = new MapToJSON().toMap(PC_PARTS_DEFNAME_INDEX_PATH);
-    public static String PC_PID_DEFNAME_INDEX_PATH = "define\\PC200_PartsID_MainteName.json";
-    public static Map PC_PID_DEFNAME = new MapToJSON().toMap(PC_PID_DEFNAME_INDEX_PATH);
     public static String PC_PID_SYSDEFNAME_INDEX_PATH = "define\\PC200_PartsID_SystemDefine_name.json";
     public static Map PC_PID_SYSDEFNAME = new MapToJSON().toMap(PC_PID_SYSDEFNAME_INDEX_PATH);
     public static String WORK_DEVID_DEFNAME_INDEX_PATH = "define\\WorkDevID_Define_name.json";

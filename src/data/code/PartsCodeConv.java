@@ -5,36 +5,37 @@
  */
 package data.code;
 
-import data.eval.MainteEvaluate;
-import data.filter.MainteFilter;
 import java.util.Optional;
 import param.KomatsuUserParameter;
 
 /**
- *
+ * 品番の変換プログラム
  * @author ZZ17390
  */
 public class PartsCodeConv {
-
     public static String conv(String pid) {
         String define = null;
         
         //コマツ品番ではない
-        if (!pid.contains("-")) {
-            return "UNKNOWN:" + pid;
-        }
-
+        if (!pid.contains("-"))
+            define = "UNKNOWN";
+        
+        //KES
+        if (define == null) 
+            define = kesPartsDefineCode(pid);
+        
         //メンテナンス
-        if (MainteFilter.kesDetect(pid)) {
-            return "KES";
-        }
-        define = maintePartsDefineCode(pid);
+        if(define == null)
+            define = maintePartsDefineCode(pid);
         
         //主要部品
         if(define == null)
-            return mainPartsDefineCode(pid);
+            define = mainPartsDefineCode(pid);
+        
+        if(define == null)
+            return "UNKNOWN";
         else
-            return null;
+            return define;
     }
 
     /**
@@ -43,23 +44,20 @@ public class PartsCodeConv {
      * サービス　<- 7XX-XXX-XXXX
      *
      * origin code @return redefined code
+     * @param origin
+     * @return 
      */
     public static String mainPartsDefineCode(String origin) {
         String define = "";
 
-        //汎用部品除外
-        if (origin.split("-").length < 3) {
+        //主要部品以外除外
+        if (!origin.matches("^[0-9]{1}[0-9A-Z]{2,}-[0-9A-Z]{2,}-[0-9A-Z]{4,}$")) {
             return null;
         }
-
+        
         String kind = origin.split("-")[0];
         String dev = origin.split("-")[1];
         String indv = origin.split("-")[2];
-
-        //未使用除外
-        if (kind.charAt(0) == '7') {
-            return null;
-        }
 
         //主要部品
         if (kind.charAt(0) == '6') {
@@ -69,7 +67,8 @@ public class PartsCodeConv {
             } else {
                 dev = dev.substring(0, 2);
             }
-
+        } else if (kind.charAt(0) == '7') {
+            define = "SV";
         } else if (dev.length() == 3 && (dev.charAt(0) == '8' || dev.charAt(0) == '9')) {
             define = "A";
         } else {
@@ -89,7 +88,7 @@ public class PartsCodeConv {
         //return define;
         return define;
     }
-
+    
     public static String maintePartsDefineCode(String origin) {
         Optional<String> define = KomatsuUserParameter.PC200_MAINTEPARTS_DEF.entrySet().stream()
                 .filter(p -> origin.matches(p.getKey()))
@@ -101,6 +100,13 @@ public class PartsCodeConv {
         } else {
             return null;
         }
+    }
+    
+    public static String kesPartsDefineCode(String origin){
+        if(origin.matches("^[0-9A-Z]{5}-[0-9A-Z]{5}$")){
+            return "KES";
+        }else
+            return null;
     }
 
     private static void codeCheck(String origin, String define) {
