@@ -39,9 +39,11 @@ public class PartsCodeConv {
     }
 
     /**
-     * 主要部品のみ (品番体系で解釈可能) 車体部品 : BXXX <- XXX-○○-XXXXX エンジン部品 : EXXX <-
-     * 6XX-○○X-XXXX 6XXX-○○-○XXX 付属部品 : AXXX <- XXX-8○○-XXXX, XXXX-9○○-XXXX 未使用
-     * サービス　<- 7XX-XXX-XXXX
+     * 主要部品の変換 (品番体系で解釈可能) 
+     * 車体部品 : BXXX <- XXX-○○-XXXXX
+     * エンジン部品 : EXXX <- 6XX-○○X-XXXX 6XXX-○○-○XXX 
+     * 付属部品 : AXXX <- XXX-8○○-XXXX, XXXX-9○○-XXXX 未使用
+     * サービス : SVXXX　<- 7XX-XXX-XXXX
      *
      * origin code @return redefined code
      * @param origin
@@ -89,6 +91,7 @@ public class PartsCodeConv {
         return define;
     }
     
+    //メンテナンス部品の変換
     public static String maintePartsDefineCode(String origin) {
         Optional<String> define = KomatsuUserParameter.PC200_MAINTEPARTS_DEF.entrySet().stream()
                 .filter(p -> origin.matches(p.getKey()))
@@ -102,6 +105,7 @@ public class PartsCodeConv {
         }
     }
     
+    //KES部品の変換
     public static String kesPartsDefineCode(String origin){
         if(origin.matches("^[0-9A-Z]{5}-[0-9A-Z]{5}$")){
             return "KES";

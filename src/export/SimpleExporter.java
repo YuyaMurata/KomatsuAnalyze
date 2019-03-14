@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
-import param.KomatsuDataParameter;
 
 /**
  *

@@ -43,7 +43,8 @@ public class SMRDataFormalize {
 		for (SyaryoObject s : LOADER.getSyaryoMap().values()) {
 			System.out.println(s.name);
 			Map actsmr = actToSMR(s);
-			s.put("KOMTRAX_ACT_DATA", actsmr);
+			if(actsmr != null)
+                            s.put("KOMTRAX_ACT_DATA", actsmr);
 		}
 		
 		LOADER.close();
@@ -114,18 +115,18 @@ public class SMRDataFormalize {
 	}
 
 	private static Map transACTSMRData(Map<String, List<String>> smr, int idx, int unit) {
-		Map<String, Integer> map = new TreeMap();
+		Map<String, Double> map = new TreeMap();
 
 		if (smr == null) {
 			return map;
 		}
 
 		smr.entrySet().forEach(s -> {
-			map.put(s.getKey(), Integer.valueOf(s.getValue().get(idx)) / Integer.valueOf(s.getValue().get(unit)) / 60);
+			map.put(s.getKey(), calcActSMR(s.getValue()));
 		});
 
 		//累積値に変換
-		Integer acm = 0;
+		Double acm = 0d;
 		Map<String, List<String>>actmap = new TreeMap();
 		for (String d : map.keySet()) {
 			acm += map.get(d);

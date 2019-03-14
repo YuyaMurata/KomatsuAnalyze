@@ -15,7 +15,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import file.SyaryoToCompress;
 import obj.SyaryoObject;
-import param.KomatsuDataParameter;
+import param.KomatsuDataParameter; 
 
 /**
  *

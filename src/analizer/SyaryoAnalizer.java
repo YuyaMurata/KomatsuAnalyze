@@ -57,6 +57,7 @@ public class SyaryoAnalizer implements AutoCloseable {
     public Map<String, Integer> odrKind = new HashMap<>();
     public Map<String, Integer> workKind = new HashMap<>();
     public TreeMap<String, Map.Entry> ageSMR = new TreeMap<>();
+    public TreeMap<Integer, String> smrAge = new TreeMap<>();
     private List<String[]> termAllSupport;
     private static String DATE_FORMAT = KomatsuDataParameter.DATE_FORMAT;
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
@@ -138,7 +139,7 @@ public class SyaryoAnalizer implements AutoCloseable {
                     //日付と作番の相互変換
                     syaryo.get("受注").entrySet().stream().forEach(odr -> {
                         String sbn = odr.getKey();
-                        String date = syaryo.get("受注").get(sbn).get(dayIdx).toString();
+                        String date = syaryo.get("受注").get(sbn).get(dayIdx);
                         sbnDate.put(sbn, date);
                         if (dateSBN.get(date) == null) {
                             dateSBN.put(date, sbn);
@@ -176,9 +177,9 @@ public class SyaryoAnalizer implements AutoCloseable {
         //Status
         for (String key : enableSet) {
             switch (key) {
-                case "KOMTRAX_SMR":
-                    if (syaryo.get("KOMTRAX_SMR") != null) {
-                        setAgeSMR(syaryo.get("KOMTRAX_SMR"), 30, 100);
+                case "KOMTRAX_ACT_DATA":
+                    if (syaryo.get("KOMTRAX_ACT_DATA") != null) {
+                        setAgeSMR(syaryo.get("KOMTRAX_ACT_DATA"), 30, 10);
                     }
                     break;
                 case "オールサポート":
@@ -254,11 +255,30 @@ public class SyaryoAnalizer implements AutoCloseable {
         Integer span = 0;
         for (String date : act_smr.keySet()) {
             Integer t = age(date) / d;
-            Integer smr = Integer.valueOf(act_smr.get(date).get(0).toString()) / s;  //ACT_SMRの構成が変わるとエラー
-            ageSMR.put(date, new AbstractMap.SimpleEntry<>(t, smr * s));
+            Integer smr = (Double.valueOf(act_smr.get(date).get(0)).intValue() / s) * s;  //ACT_SMRの構成が変わるとエラー
+            ageSMR.put(date, new AbstractMap.SimpleEntry<>(t, smr));
+            
+            if(smrAge.get(smr) == null)
+                smrAge.put(smr, date);
+        }
+    }
+    
+    public String getSMRToDate(Integer smr){
+        try{
+            return smrAge.ceilingEntry(smr).getValue();
+        }catch(NullPointerException ne){
+            return null;
         }
     }
 
+    public Map.Entry<Integer, Integer> getDateToSMR(String date){
+        try{
+            return ageSMR.floorEntry(date).getValue();
+        }catch(NullPointerException ne){
+            return null;
+        }
+    }
+    
     //作番と日付をswで相互変換
     private Map<String, String> sbnDate = new HashMap<>();
     private Map<String, String> dateSBN = new HashMap<>();

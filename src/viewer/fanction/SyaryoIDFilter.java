@@ -41,6 +41,7 @@ public class SyaryoIDFilter {
         total = map.values().parallelStream()
                     .mapToInt(s -> s.getMap().values().stream().mapToInt(v -> v.size()).sum())
                     .sum();
+        
         System.out.println("total="+total);
     }
     
