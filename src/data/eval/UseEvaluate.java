@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 import obj.SyaryoLoader;
 
 /**
@@ -33,15 +35,28 @@ public class UseEvaluate {
     public static Map<String, Map<String, Double>> nomalize(SyaryoAnalizer s, List<String> keys) {
         Map<String, Map<String, Double>> map = new LinkedHashMap<>();
 
-        int idx = LOADER.index("LOADMAP_SMR", "VALUE"); //共通で利用可能
-
         for (String key : keys) {
-            map.put(key, eval(key, s.get().get(key), s.get().get("LOADMAP_SMR"), idx));
+            if(key.equals("エンジン"))
+                map.put(key, evalEngine(s.get().get(key), LOADER.index(key, "VALUE")));     
         }
 
         return map;
     }
-
+    
+    private static Map<String, Double> evalEngine(Map<String, List<String>> loadmap, int idx){
+        //トルク10の値を削除
+        Map<String, Double> data = loadmap.entrySet().stream()
+                                        .filter(e -> !e.getKey().split("_")[1].contains("10"))
+                                        .collect(Collectors.toMap(e -> e.getKey(), e -> Double.valueOf(e.getValue().get(idx))));
+        
+        Double peek = data.values().stream().mapToDouble(d -> d).max().getAsDouble();
+        
+        //正規化
+        data = data.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()/peek, (e1, e2) -> e1, TreeMap::new));
+        
+        return data;
+    }
+    
     private static Map<String, Double> eval(String key, Map<String, List<String>> loadmap, Map<String, List<String>> denom, int idx) {
         if (loadmap == null) {
             return null;

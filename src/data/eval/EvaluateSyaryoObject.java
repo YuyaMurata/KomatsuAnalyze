@@ -29,9 +29,7 @@ public class EvaluateSyaryoObject {
 
     //負荷リスト
     private static List<String> USELIST = KomatsuDataParameter.DATA_ORDER.stream()
-            .filter(d -> d.contains("LOADMAP"))
-            .filter(d -> !d.contains("SMR"))
-            .filter(d -> !d.contains("USERTIME"))
+            .filter(d -> d.contains("LOADMAP_実エンジン回転") || d.contains("LOADMAP_ポンプ圧MAX"))
             .collect(Collectors.toList());
 
     public EvaluateSyaryoObject(SyaryoObject syaryo) {

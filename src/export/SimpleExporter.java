@@ -26,7 +26,7 @@ public class SimpleExporter {
     private static Map<String, SyaryoObject> map;
 
     public static void main(String[] args) {
-        LOADER.setFile(KISY+"_loadmap");
+        LOADER.setFile(KISY+"_form");
         map = LOADER.getSyaryoMap();
         
         //ヘッダー設定
