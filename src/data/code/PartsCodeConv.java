@@ -13,8 +13,10 @@ import param.KomatsuUserParameter;
  * @author ZZ17390
  */
 public class PartsCodeConv {
-    public static String conv(String pid) {
+    public static String conv(String pid, String name, String price) {
         String define = null;
+        
+        //品番判断
         
         //コマツ品番ではない
         if (!pid.contains("-"))
@@ -31,6 +33,10 @@ public class PartsCodeConv {
         //主要部品
         if(define == null)
             define = mainPartsDefineCode(pid);
+        
+        //品名判断 (機種依存性が大幅に上がるためPC200以外で利用不可能)
+        if(define == null || define.equals("UNKNOWN"))
+            define = partsNameAndPriceDefineCode(name, price);
         
         if(define == null)
             return "UNKNOWN";
@@ -53,7 +59,7 @@ public class PartsCodeConv {
         String define = "";
 
         //主要部品以外除外
-        if (!origin.matches("^[0-9]{1}[0-9A-Z]{2,}-[0-9A-Z]{2,}-[0-9A-Z]{4,}$")) {
+        if (!origin.matches("^[0-9]{1}[0-9A-Z]{2,4}-[0-9]{2,3}-[0-9A-Z]{4,}$")) {
             return null;
         }
         
@@ -111,6 +117,15 @@ public class PartsCodeConv {
             return "KES";
         }else
             return null;
+    }
+    
+    //品名判断
+    public static String partsNameAndPriceDefineCode(String name, String price){
+        if (name.matches("^.*(エンジン|E/G).*$") && Integer.valueOf(price) > 1000000){
+            return "ENGINE";
+        }else{
+            return null;
+        }
     }
 
     private static void codeCheck(String origin, String define) {

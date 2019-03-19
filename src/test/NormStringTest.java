@@ -16,7 +16,7 @@ import param.KomatsuUserParameter;
  */
 public class NormStringTest {
 	public static void main(String[] args) {
-		String[] pid = new String[]{"08085-00001","ABCD", "SYEO-10-76453", "NSYESYEO-10TO-76453", "NYEO-10-76453", "SYEO-TO10-73"};
+		String[] pid = new String[]{"08085-00001","ABCD", "SYEO-10-76453", "NSYESYEO-10TO-76453", "NYEO-10-76453", "SYEO-TO10-73", "エンジン", "中古エンジン再生", "E/G", "エンジンオイル", "E/G OIL"};
 		
 		Pattern p1 = Pattern.compile("^*YEO-[*[^TO]]");
 		Pattern p2 = Pattern.compile("^*YEO-TO*");
@@ -36,6 +36,9 @@ public class NormStringTest {
                 System.out.println("NSYESYEO-10TO-76453".matches("^[0-9A-Z]{2,}-[0-9A-Z]{2,}-[0-9A-Z]{4,}$"));
                 System.out.println("NSYESYEO-10TO-73".matches("^[0-9A-Z]{2,}-[0-9A-Z]{2,}-[0-9A-Z]{4,}$"));
                 
+                for(String p : pid){
+                    System.out.println(p+"="+p.matches("^.*(エンジン|E/G).*$"));
+		}
                 
                 //Test
                // KomatsuUserParameter.PC200_MAINTEPARTS_DEF.entrySet().stream().forEach(s ->{

@@ -132,16 +132,19 @@ public class AttachedInfo {
     }
     
     private static void partsinfo(String file){
-        try (PrintWriter csv = CSVFileReadWrite.writer(file + "_attached_info.csv")) {
+        
+        try (PrintWriter csv = CSVFileReadWrite.writerSJIS(file + "_attached_info.csv")) {
             try (BufferedReader br = CSVFileReadWrite.reader(file)) {
                 String line = br.readLine();
                 csv.println(line);
 
                 while ((line = br.readLine()) != null) {
                     String pid = line.split(",")[3];
-                    String cd = PartsCodeConv.conv(pid);
+                    String pnm = line.split(",")[4];
+                    String price = line.split(",")[6];
+                    String cd = PartsCodeConv.conv(pid, pnm, price);
                     
-                    String l = line.replace(","+pid+",", ","+cd+","+pid+",");
+                    String l = line.replace(pid+","+pnm, cd+","+pid+","+pnm);
                     csv.println(l);
                 }
             } catch (IOException ex) {

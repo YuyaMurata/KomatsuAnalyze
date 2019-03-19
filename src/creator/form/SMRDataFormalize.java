@@ -132,6 +132,7 @@ public class SMRDataFormalize {
 			acm += map.get(d);
 			List v = new ArrayList();
 			v.add(acm.toString());
+                        v.add(map.get(d));
 			actmap.put(d, v);
 		}
 
