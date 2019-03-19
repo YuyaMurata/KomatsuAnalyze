@@ -19,6 +19,7 @@ import obj.LoadSyaryoObject;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
 import param.KomatsuDataParameter;
+import param.KomatsuUserParameter;
 
 /**
  *
@@ -106,7 +107,7 @@ public class CreateAssociationRule {
         }
         
         try (PrintWriter pw = CSVFileReadWrite.writer(KISY + "_associationrule_vector.csv")) {
-            Map redef = new TreeMap(KomatsuDataParameter.PC_PARTS_EDEFNAME);
+            Map redef = new TreeMap(KomatsuUserParameter.PC200_MAINPARTS_DEFNAME);
             //Header
             pw.println("Info,N,"+String.join(",", redef.values()));
             associationMap.entrySet().stream()

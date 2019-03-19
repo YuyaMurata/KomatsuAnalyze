@@ -44,8 +44,8 @@ public class SMRFormvsNone {
             SyaryoObject syaryo = syaryoMap.get(id);
             syaryo.startHighPerformaceAccess();
             
-            Map<String, List> smr = syaryo.get("SMR") != null ? syaryo.get("SMR") : new HashMap<>();
-            Map<String, List> kmsmr = syaryo.get("KOMTRAX_SMR") != null ? syaryo.get("KOMTRAX_SMR") : new HashMap<>();
+            Map<String, List<String>> smr = syaryo.get("SMR") != null ? syaryo.get("SMR") : new HashMap<>();
+            Map<String, List<String>> kmsmr = syaryo.get("KOMTRAX_SMR") != null ? syaryo.get("KOMTRAX_SMR") : new HashMap<>();
             Map<String, List> fsmr = formSMR(smr, 2);
             Map<String, List> fkmsmr = formSMR(kmsmr, 0);
             String ly = "";
@@ -99,7 +99,7 @@ public class SMRFormvsNone {
     }
     
     //サービスのSMRを整形
-    private static Map formSMR(Map<String, List> smr, int smridx) {
+    private static Map formSMR(Map<String, List<String>> smr, int smridx) {
         if (smr == null) {
             //System.out.println("Not found Work!");
             return new HashMap();

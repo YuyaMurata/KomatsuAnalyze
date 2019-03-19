@@ -12,10 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
-import obj.LoadSyaryoObject;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
-import param.KomatsuDataParameter;
 
 /**
  *
@@ -58,8 +56,8 @@ public class ExportToCSV {
         }
     }
 
-    private static Map<String, List> randomPick(Map<String, List> d, int n) {
-        Map<String, List> pick = new TreeMap();
+    private static Map<String, List<String>> randomPick(Map<String, List<String>> d, int n) {
+        Map<String, List<String>> pick = new TreeMap();
 
         if (d.size() < n) {
             return d;

@@ -30,7 +30,7 @@ public class EvaluateCorrelation {
     //private static String filename = "PC200_rank_correlationMap_parts_kme.csv";
     private static String filename = "PC200_rank_correlationMap_kme.csv";
     //private static String filename = "PC200_rank_correlationMap_parts.csv";
-    private static Map defpMap = KomatsuDataParameter.PC_PARTS_EDEFNAME;
+    private static Map defpMap = KomatsuUserParameter.PC200_MAINPARTS_DEFNAME;
     private static Map defeMap = KomatsuDataParameter.PC_KMERR_EDEFNAME;
 
     public static void main(String[] args) {

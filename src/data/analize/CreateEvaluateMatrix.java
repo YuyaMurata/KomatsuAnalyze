@@ -42,9 +42,6 @@ public class CreateEvaluateMatrix {
 
         //作業フィルタ
         //workdatafilter(syaryoMap, dataHeader);
-
-        //部品フィルタ
-        AnalizeDataFilter.partsdatafilter(syaryoMap, dataHeader);
         
         //評価行列作成
         evalArrayKMError(syaryoMap, dataHeader, null);

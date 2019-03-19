@@ -29,7 +29,7 @@ public class CountData {
         syaryoMap = zip3.read(filename);
         
         Map<Integer, List> filter = new HashMap<>();
-        filter.put(dataIndex.get("受注").indexOf("SGYO_KTICD"), KomatsuDataParameter.MAINTE_DEFINE.get("受注.SGYO_KTICD"));
+        //filter.put(dataIndex.get("受注").indexOf("SGYO_KTICD"), KomatsuDataParameter.MAINTE_DEFINE.get("受注.SGYO_KTICD"));
         
         //PC200
         System.out.println(filter);

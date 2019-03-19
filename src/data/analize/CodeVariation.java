@@ -90,13 +90,11 @@ public class CodeVariation {
         Map<String, Integer> occSgNum = new HashMap();
         
         //作業コード 抽出
-        List mainte = KomatsuDataParameter.MAINTE_DEFINE.get("受注.SGYO_KTICD");
         syaryoMap.values().stream().forEach(s -> {
             if(s.get("作業") == null)
                 return ;
             
             List<String> sgs = s.get("作業").entrySet().stream()
-                                            .filter(d -> !mainte.contains(s.get("受注").get(d.getKey().split("#")[0]).get(dataHeader.get("受注").get("受注").indexOf("SGYO_KTICD"))))
                                             .map(d -> "'"+d.getValue().get(dataHeader.get("作業").get("作業").indexOf("SGYOCD")).toString())
                                             .collect(Collectors.toList());
             

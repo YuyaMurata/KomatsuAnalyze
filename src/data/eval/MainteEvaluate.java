@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import obj.SyaryoLoader;
 import param.KomatsuDataParameter;
+import param.KomatsuUserParameter;
 
 /**
  *
@@ -20,7 +21,7 @@ import param.KomatsuDataParameter;
  */
 public class MainteEvaluate {
 
-    private static Map<String, String> index = KomatsuDataParameter.PC_PID_DEFNAME;
+    private static Map<String, String> index = KomatsuUserParameter.PC200_MAINTEPARTS_DEFNAME;
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     private static List<String> _header;
 

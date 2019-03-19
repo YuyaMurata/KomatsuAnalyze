@@ -49,12 +49,12 @@ public class ExportIrregularData {
             csv.println("SID,SMR_N,KOMTRAX_SMR_N,最終更新日,MaxSMR,KM最終更新日,KMMaxSMR,稼働時間が下がった(SMR),稼働時間が24Hオーバー(SMR),稼働時間が下がった(KOMTRAX_SMR),稼働時間が24Hオーバー(KOMTRAX_SMR),サービス_KOMTRAXの乖離(標準偏差)");
 
             for (String sid : syaryoMap.keySet()) {
-                try (SyaryoAnalizer syaryo = new SyaryoAnalizer(syaryoMap.get(sid))) {
+                try (SyaryoAnalizer syaryo = new SyaryoAnalizer(syaryoMap.get(sid), true)) {
                     System.out.print(sid + ":");
                     String line = "";
 
                     //SMR 評価
-                    Map<String, List> smr = syaryo.get().get("SMR");
+                    Map<String, List<String>> smr = syaryo.get().get("SMR");
                     Integer smrSize = 0;
                     String temp = "";
                     Integer tempSMR = 0;
@@ -88,7 +88,7 @@ public class ExportIrregularData {
                     line = line + "," + down + "," + dayover;
 
                     //KOMTRAX SMR 評価
-                    Map<String, List> kmsmr = syaryo.get().get("KOMTRAX_SMR");
+                    Map<String, List<String>> kmsmr = syaryo.get().get("KOMTRAX_SMR");
                     Integer kmsmrSize = 0;
                     temp = "";
                     tempSMR = 0;

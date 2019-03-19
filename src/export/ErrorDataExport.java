@@ -5,7 +5,6 @@
  */
 package export;
 
-import data.filter.MainteFilter;
 import file.CSVFileReadWrite;
 import file.ListToCSV;
 import java.io.BufferedReader;
@@ -165,9 +164,6 @@ public class ErrorDataExport {
                     String sbn = line.split(",")[2] + "_" + line.split(",")[3];
                     String hnbn = line.split(",")[5];
                     total++;
-                    if (!MainteFilter.egoilDetect(hnbn)) {
-                        continue;
-                    }
                     cnt++;
 
                     sbns.put(sbn, "1");
