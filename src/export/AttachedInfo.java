@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
-import param.KomatsuDataParameter;
 
 /**
  *
@@ -52,32 +51,6 @@ public class AttachedInfo {
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
-                }
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
-
-    /**
-     * よく分からないので調査
-     *
-     * @param file
-     */
-    private static void workname(String file) {
-        Map devName = KomatsuDataParameter.WORK_DEVID_DEFNAME;
-        try (PrintWriter csv = CSVFileReadWrite.writer(file + "_work_id_name.csv")) {
-            try (BufferedReader br = CSVFileReadWrite.reader(file)) {
-                String line = br.readLine();
-                csv.println(line + ",devID,devName");
-                while ((line = br.readLine()) != null) {
-                    if (line.split(",")[3].length() > 3) {
-                        String devID = line.split(",")[3].substring(0, 4);
-                        line = line + "," + devID + "," + devName.get(devID);
-                    } else {
-                        line = line + ",None,None";
-                    }
-                    csv.println(line);
                 }
             } catch (IOException ex) {
                 ex.printStackTrace();
