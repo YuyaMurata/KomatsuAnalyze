@@ -53,11 +53,14 @@ public class MaintenanceTimeSeries {
 
         int idx = LOADER.index("受注", "SGYO_KRDAY");
         int idx2 = LOADER.index("部品", "HNBN");
+        int idx3 = LOADER.index("部品", "BHN_NM");
+        int idx5 = LOADER.index("部品", "JISI_SU");
+        int idx4 = LOADER.index("部品", "SKKG");
 
-        List<String> c = Arrays.asList(new String[]{"A", "B", "E", "M", "TH"});
+        List<String> c = Arrays.asList(new String[]{"A", "B", "E", "M","S","U","TH"});
 
         Map<String, List<String>> out = new TreeMap();
-
+        List<String> parts = new ArrayList<>();
         //時系列データ生成
         Map<String, List<String>> odr = s.get().get("受注");
         for (String sbn : odr.keySet()) {
@@ -70,41 +73,52 @@ public class MaintenanceTimeSeries {
 
             List<String> cnt = c.stream()
                 .map(f -> p.values().stream()
-                .map(h -> PartsCodeConv.conv(h.get(idx2)).charAt(0))
-                .filter(dh -> dh.toString().equals(f)).count())
+                    .map(h -> PartsCodeConv.conv(h.get(idx2), h.get(idx3), h.get(idx4)).charAt(0))
+                    .filter(dh -> dh.toString().equals(f)).count())
                 .map(dh -> dh.toString())
+                .map(dh -> dh.equals("0")?"":dh)
                 .collect(Collectors.toList());
             out.put(d, cnt);
+            
+            //部品情報の取得
+            parts.addAll(p.values().stream()
+                .map(h -> sbn+","+d+","+h.get(idx2)+","+h.get(idx3)+","+PartsCodeConv.conv(h.get(idx2), h.get(idx3), h.get(idx4))+","+h.get(idx5)+","+h.get(idx4)).collect(Collectors.toList()));
         }
 
         if (out.get(b) == null) {
-            out.put(b, c.stream().map(f -> "0").collect(Collectors.toList()));
+            out.put(b, c.stream().map(f -> "").collect(Collectors.toList()));
         }
 
         if (out.get(a) == null) {
-            out.put(a, c.stream().map(f -> "0").collect(Collectors.toList()));
+            out.put(a, c.stream().map(f -> "").collect(Collectors.toList()));
         }
 
         for (String d1 : dsmr) {
             if (out.get(d1) == null) {
-                out.put(d1, c.stream().map(f -> f.equals("TH") ? "100" : "0").collect(Collectors.toList()));
+                out.put(d1, c.stream().map(f -> f.equals("TH") ? "100" : "").collect(Collectors.toList()));
             } else {
-                out.get(d1).set(out.get(d1).size()-1, "100");
+                out.get(d1).set(out.get(d1).size() - 1, "100");
             }
         }
 
         try (PrintWriter pw = CSVFileReadWrite.writerSJIS(s.get().name + "_mante_series.csv")) {
             pw.println("日付," + String.join(",", c));
             out.entrySet().stream()
-                .filter(o -> !o.getKey().equals("None"))
-                .map(o -> toDate(o.getKey()) + "," + String.join(",", o.getValue()))
-                .forEach(pw::println);
+                    .filter(o -> !o.getKey().equals("None"))
+                    .map(o -> toDate(o.getKey()) + "," + String.join(",", o.getValue()))
+                    .forEach(pw::println);
+        }
+        
+        try (PrintWriter pw = CSVFileReadWrite.writerSJIS(s.get().name + "_mante_series_detail.csv")) {
+            pw.println("日付,作番,品番,品名,変換コード,数量,金額");
+            parts.stream()
+                    .forEach(pw::println);
         }
 
         return null;
     }
-    
-    private static String toDate(String date){
-        return date.substring(0,4)+"/"+date.substring(4,6)+"/"+date.substring(6,8);
+
+    private static String toDate(String date) {
+        return date.substring(0, 4) + "/" + date.substring(4, 6) + "/" + date.substring(6, 8);
     }
 }

@@ -252,7 +252,6 @@ public class SyaryoAnalizer implements AutoCloseable {
         ageSMR.put(lifestart, new AbstractMap.SimpleEntry<>(0, 0));
 
         // d刻みでSMRをsで丸める
-        Integer span = 0;
         for (String date : act_smr.keySet()) {
             Integer t = age(date) / d;
             Integer smr = (Double.valueOf(act_smr.get(date).get(0)).intValue() / s) * s;  //ACT_SMRの構成が変わるとエラー

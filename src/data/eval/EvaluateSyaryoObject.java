@@ -29,7 +29,7 @@ public class EvaluateSyaryoObject {
 
     //負荷リスト
     private static List<String> USELIST = KomatsuDataParameter.DATA_ORDER.stream()
-            .filter(d -> d.contains("LOADMAP_実エンジン回転") || d.contains("LOADMAP_ポンプ圧MAX"))
+            .filter(d -> d.contains("LOADMAP_実エンジン回転"))
             .collect(Collectors.toList());
 
     public EvaluateSyaryoObject(SyaryoObject syaryo) {
@@ -41,7 +41,7 @@ public class EvaluateSyaryoObject {
 
             eval.put("use", useData(analize));
             //eval.put("age/smr", agingSMRData(analize));
-            eval.put("mainte", mainteData(analize));
+            //eval.put("mainte", mainteData(analize));
         } catch (Exception ex) {
             ex.printStackTrace();
             System.out.println(syaryo.name);

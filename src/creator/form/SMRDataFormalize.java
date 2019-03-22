@@ -45,6 +45,10 @@ public class SMRDataFormalize {
 			Map actsmr = actToSMR(s);
 			if(actsmr != null)
                             s.put("KOMTRAX_ACT_DATA", actsmr);
+                        
+                        Map loadeng = formEngineLoad(s);
+			if(loadeng != null)
+                            s.put("LOADMAP_実エンジン回転VSエンジントルク", loadeng);
 		}
 		
 		LOADER.close();
@@ -52,6 +56,12 @@ public class SMRDataFormalize {
 		
 		//R.close();
 	}
+        
+        //負荷情報の一部削除　
+        private static Map<String, List<String>> formEngineLoad(SyaryoObject s){
+            Map<String, List<String>> load = s.get("LOADMAP_実エンジン回転VSエンジントルク");
+            return load.entrySet().stream().filter(e -> !e.getKey().split("_")[1].equals("10")).collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+        }
 
 	private static Map<String, List<String>> actToSMR(SyaryoObject s) {
 		if (s.get("KOMTRAX_ACT_DATA") == null) {

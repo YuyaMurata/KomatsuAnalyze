@@ -28,22 +28,26 @@ public class UseEvaluate {
         return _header.get(load);
     }
 
-    public static List<String> addHeader(String kind, List<String> load) {
-        return _header.put(kind, load);
+    public static void addHeader(String kind, List<String> load) {
+        if(_header.get(kind) == null){
+            _header.put(kind, load);
+            System.out.println(_header);
+        }
     }
 
     public static Map<String, Map<String, Double>> nomalize(SyaryoAnalizer s, List<String> keys) {
         Map<String, Map<String, Double>> map = new LinkedHashMap<>();
 
         for (String key : keys) {
-            if(key.equals("エンジン"))
-                map.put(key, evalEngine(s.get().get(key), LOADER.index(key, "VALUE")));     
+            if(key.contains("実エンジン回転")){
+                map.put(key, evalEngine(key, s.get().get(key), LOADER.index(key, "VALUE")));     
+            }
         }
 
         return map;
     }
     
-    private static Map<String, Double> evalEngine(Map<String, List<String>> loadmap, int idx){
+    private static Map<String, Double> evalEngine(String key, Map<String, List<String>> loadmap, int idx){
         //トルク10の値を削除
         Map<String, Double> data = loadmap.entrySet().stream()
                                         .filter(e -> !e.getKey().split("_")[1].contains("10"))
@@ -53,6 +57,8 @@ public class UseEvaluate {
         
         //正規化
         data = data.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()/peek, (e1, e2) -> e1, TreeMap::new));
+        
+        addHeader(key, new ArrayList<>(data.keySet()));
         
         return data;
     }

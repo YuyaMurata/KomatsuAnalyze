@@ -33,8 +33,8 @@ public class EvaluateSyaryo {
         evaluate(map);
 
         //クラスタリング
-        mainte();
-        //use();
+        //mainte();
+        use();
 
     }
 
@@ -82,7 +82,7 @@ public class EvaluateSyaryo {
         }
         
         //クラスタリング結果をEvalObjに戻す処理
-        EVAL.entrySet().stream().forEach(e ->{
+        /*EVAL.entrySet().stream().forEach(e ->{
             Map<String, Double> map = new HashMap();
             for(String load : EvaluateSyaryoObject.getDataList("use")){
                 int idx = EvaluateSyaryoObject.getDataList("use").indexOf(load);
@@ -94,7 +94,7 @@ public class EvaluateSyaryo {
         
         Map<String, Integer> result = clustering("use", "clusters");
         
-        fprint(KISY + "_use_eval.csv", "use", "clusters", true, result);
+        fprint(KISY + "_use_eval.csv", "use", "clusters", true, result);*/
     }
 
     public static void fprint(String filename, String data, String kind, Boolean flg, Map<String, Integer> result) {
@@ -117,7 +117,7 @@ public class EvaluateSyaryo {
     }
 
     public static void main(String[] args) {
-        LOADER.setFile(KISY + "_form");
+        LOADER.setFile(KISY + "_form_loadmap");
         evalSyaryoMap(LOADER.getSyaryoMap());
     }
 }
