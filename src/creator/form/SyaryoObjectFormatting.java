@@ -456,7 +456,7 @@ public class SyaryoObjectFormatting {
 
         Map<String, Integer> sortMap = order.entrySet().stream()
             .filter(e -> !e.getValue().get(date).equals("None"))
-            .collect(Collectors.toMap(e -> e.getKey(), e -> Integer.valueOf(e.getValue().get(date).toString())));
+            .collect(Collectors.toMap(e -> e.getKey(), e -> Integer.valueOf(e.getValue().get(date))));
         
         //作番重複除去
         List<String> sbnList = sortMap.entrySet().stream()
@@ -471,6 +471,7 @@ public class SyaryoObjectFormatting {
         int db = indexList.indexOf("DB");
         int price = indexList.indexOf("SKKG");
         int kind = indexList.indexOf("ODR_KBN");
+        int fin_date = indexList.indexOf("SGYO_KRDAY");
 
         //6桁以下の規格外の作番を取得するリスト
         List<String> sixSBN = new ArrayList();
@@ -497,7 +498,7 @@ public class SyaryoObjectFormatting {
                     } else {
                         //System.out.println("サービス経歴に金額の入ったデータが2つ以上存在");
                         if (!(map.get(sbn).get(price).equals("None") || list.get(price).equals("None"))) {
-                            if (Double.valueOf(map.get(sbn).get(price).toString()) < Double.valueOf(list.get(price))) {
+                            if (Double.valueOf(map.get(sbn).get(price)) < Double.valueOf(list.get(price))) {
                                 map.put(sbn, list);
                             }
                         } else if (list.get(price).contains("+")) {
@@ -534,15 +535,19 @@ public class SyaryoObjectFormatting {
         }
         removeSixSBN.stream().forEach(s -> map.remove(s));
 
-        //金額の整形処理
+        //金額と作業完了日の整形処理
         for (String sbn : map.keySet()) {
             List<String> list = map.get(sbn);
             list.set(price, String.valueOf(Double.valueOf(list.get(price)).intValue()));
-
+            
+            if(list.get(fin_date).equals("None"))
+                list.set(fin_date, list.get(date));
+            
             //最新の受注日
             reject.currentDate = list.get(date);
         }
-
+        
+        
         return map;
     }
 

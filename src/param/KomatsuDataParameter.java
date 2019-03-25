@@ -6,13 +6,11 @@
 package param;
 
 import file.ListToCSV;
-import index.SyaryoObjectElementsIndex;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import file.MapToJSON;
-import obj.LoadSyaryoObject;
 
 /**
  *
@@ -152,6 +150,7 @@ public interface KomatsuDataParameter {
     public static Map PC_KMERR_EDEFNAME = new MapToJSON().toMap(PC_KMERR_DEFNAME_INDEX_PATH);
     public static String PC_PID_SYSDEFNAME_INDEX_PATH = "define\\PC200_PartsID_SystemDefine_name.json";
     public static Map PC_PID_SYSDEFNAME = new MapToJSON().toMap(PC_PID_SYSDEFNAME_INDEX_PATH);
+    public static String KOMTRAX_FILE_DEFINE = "define\\komtrax_data_define.csv";
 
     //PC200 KR
     public static String PC_KR_SMASTER_INDEX_PATH = "define\\PC200_KR_SyaryoMaster.json";

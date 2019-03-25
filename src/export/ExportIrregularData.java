@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import file.SyaryoToCompress;
+import obj.SyaryoLoader;
 import obj.SyaryoObject;
 import param.KomatsuDataParameter;
 
@@ -26,19 +27,35 @@ public class ExportIrregularData {
 
     private static String KISY = "PC200";
     private static String OBJPATH = KomatsuDataParameter.OBJECT_PATH;
+    private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
 
     public static void main(String[] args) {
-        SyaryoToCompress zip3 = new SyaryoToCompress();
-        String filename = OBJPATH + "syaryo_obj_" + KISY + "_km_form.bz2";
-        Map<String, SyaryoObject> syaryoMap = zip3.read(filename);
+        LOADER.setFile(KISY + "_form");
+        Map<String, SyaryoObject> syaryoMap = LOADER.getSyaryoMap();
 
-        Map<String, List> dataIndex = SyaryoObjectElementsIndex.getInstance().getIndex();
+        //Map<String, List> dataIndex = SyaryoObjectElementsIndex.getInstance().getIndex();
 
-        errSMR(syaryoMap, dataIndex.get("SMR"), dataIndex.get("KOMTRAX_SMR"));
+        errOrderDate(syaryoMap);
+        //errSMR(syaryoMap, dataIndex.get("SMR"), dataIndex.get("KOMTRAX_SMR"));
 
         //errFUEL(syaryoMap, dataIndex.get("FUEL_CONSUME"));
         //errSBN(syaryoMap, "受注");
         //errSGCD(syaryoMap, "作業");
+    }
+
+    private static void errOrderDate(Map<String, SyaryoObject> syaryoMap) {
+        
+        try (PrintWriter pw = CSVFileReadWrite.writerSJIS("errdata_ORDERDATE_" + KISY + ".csv")) {
+            pw.println("SID,作番,"+String.join(",", LOADER.indexes("受注")));
+            int krday_idx = LOADER.index("受注", "SGYO_KRDAY");
+            
+            syaryoMap.values().stream().filter(s -> s.get("受注") != null).forEach(s -> {
+                Map<String, List<String>> odr = s.get("受注");
+                odr.entrySet().stream().filter(o -> o.getValue().get(krday_idx).equals("None"))
+                            .map(o -> s.name+","+o.getKey()+","+String.join(",", o.getValue()))
+                            .forEach(pw::println);
+            });
+        }
     }
 
     private static void errSMR(Map<String, SyaryoObject> syaryoMap, List smrList, List kmsmrList) {
@@ -58,7 +75,7 @@ public class ExportIrregularData {
                     Integer smrSize = 0;
                     String temp = "";
                     Integer tempSMR = 0;
-                    
+
                     //評価基準
                     Integer dayover = 0;
                     Integer down = 0;
@@ -118,8 +135,8 @@ public class ExportIrregularData {
                             tempSMR = value;
                         }
                     }
-                    
-                    line = sid + "," + smrSize + ","+ kmsmrSize + "," + syaryo.maxSMR[0] + "," + syaryo.maxSMR[1] + "," + syaryo.maxSMR[2] + "," + syaryo.maxSMR[3] + line + "," + down + "," + dayover;
+
+                    line = sid + "," + smrSize + "," + kmsmrSize + "," + syaryo.maxSMR[0] + "," + syaryo.maxSMR[1] + "," + syaryo.maxSMR[2] + "," + syaryo.maxSMR[3] + line + "," + down + "," + dayover;
 
                     //サービス - KOMTRAXの乖離を評価
                     List<Double> dg = new ArrayList<>();

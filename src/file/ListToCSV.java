@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -33,6 +35,20 @@ public class ListToCSV {
             ex.printStackTrace();
             return null;
         }
+    }
+    
+    public static Map<String, String> toMap(String csv, int k, int v){
+        List<String> l = toList(csv);
+        
+        Map<String, String> map = l.stream()
+                                    .map(s -> s.split(","))
+                                    .filter(s -> !s[k].equals(""))
+                                    .collect(Collectors.toMap(
+                                            s -> s[k], 
+                                            s -> s[v]
+                                    ));
+        
+        return map;
     }
     
     public static void toCSV(String csv, List list){
