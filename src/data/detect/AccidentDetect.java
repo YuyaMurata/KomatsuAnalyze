@@ -5,6 +5,7 @@
  */
 package data.detect;
 
+import static data.detect.AbnomalyDection.detectChiSquare;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +50,12 @@ public class AccidentDetect {
         sbns = sbns.stream().distinct().collect(Collectors.toList());
         
         return sbns;
+    }
+    
+    private static List<String> priceDetect(Map<String, String> allservice){
+        Map<String, String> map = detectChiSquare(allservice, 0.01, true);
+        
+        return new ArrayList<>(map.keySet());
     }
 
     public static Boolean stopwords(String str) {
