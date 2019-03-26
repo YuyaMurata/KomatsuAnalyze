@@ -62,30 +62,4 @@ public class UseEvaluate {
         
         return data;
     }
-    
-    private static Map<String, Double> eval(String key, Map<String, List<String>> loadmap, Map<String, List<String>> denom, int idx) {
-        if (loadmap == null) {
-            return null;
-        }
-        
-        //正規化時の分母
-        Double smr = Double.valueOf(denom.values().stream().findFirst().get().get(idx));
-
-        //Header
-        if (_header.get(key) == null) {
-            _header.put(key, new ArrayList(loadmap.keySet()));
-        }
-
-        //初期化
-        Map<String, Double> map = new LinkedHashMap<>();
-        _header.get(key).stream().forEach(h -> map.put(h, 0d));
-
-        //正規化処理
-        loadmap.entrySet().stream().forEach(e -> {
-            //map.put(e.getKey(), Double.valueOf(e.getValue().get(idx)) / smr);
-            map.put(e.getKey(), Double.valueOf(e.getValue().get(idx)));
-        });
-        
-        return map;
-    }
 }

@@ -27,7 +27,20 @@ public class MainteEvaluate {
     public static List<String> header() {
         return _header;
     }
+    
+    public static Map<String, Map<String, Double>> nomalize(SyaryoAnalizer s, List<String> keys) {
+        Map<String, Map<String, Double>> map = new LinkedHashMap<>();
+        
+        //部品情報の変換
+        
 
+        return map;
+    }
+    
+    private static Map<String, Double> evalMainte(){
+        
+    }
+    
     //SMRを期間で分割するメソッドは未実装であるため期間は-1で利用する
     public static Map<String, Double> aggregate(SyaryoAnalizer s, String sd, String fd) {
         Map<String, Double> map = new LinkedHashMap<>();
