@@ -43,7 +43,7 @@ public class AbnomalyDection {
             br.lines().forEach(l ->{
                 String[] sarr = l.split(",");
                 
-                String key = IntStream.range(0, sarr.length-1).mapToObj(i -> sarr[i]).collect(Collectors.joining("_"));
+                String key = sarr[0];
                 String value = sarr[sarr.length-1];
                 
                 map.put(key, value);

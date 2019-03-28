@@ -85,6 +85,10 @@ public class SyaryoLoader {
         return LOADER.getFilePath();
     }
     
+    public void updateHeader(SyaryoObject header){
+        LOADER._header = header;
+    }
+    
     public void close(){
         LOADER.isClosable = true;
         if(LOADER._header != null){

@@ -1,0 +1,189 @@
+{
+  "顧客": [
+    "会社CD",
+    "DB",
+    "顧客CD",
+    "顧客名",
+    "都道府県",
+    "業種",
+    "業種CD",
+    "顧客区分"
+  ],
+  "オールサポート": [
+    "会社CD",
+    "DB",
+    "PLAN",
+    "契約日",
+    "満了日"
+  ],
+  "コマツケア": [
+    "HSY_KIND",
+    "PRICE",
+    "DAIRI_CD",
+    "CRM_NO"
+  ],
+  "KOMTRAX_ERROR": [
+    "ERROR_CODE",
+    "VALUE",
+    "ERROR_KIND"
+  ],
+  "新車": [
+    "会社CD",
+    "DB",
+    "HM_URI_KN",
+    "RL_URI_KN",
+    "STD_SY_KKU"
+  ],
+  "中古車": [
+    "会社CD",
+    "DB",
+    "HM_URI_KN",
+    "RL_URI_KN",
+    "STD_SY_KKU"
+  ],
+  "作業": [
+    "会社CD",
+    "DB",
+    "SGYO_SJDAY",
+    "SGYOCD",
+    "SGYO_NM",
+    "DIHY_SGYO_FLG",
+    "HJUN_KOS",
+    "INV_KOS",
+    "SIJI_KOS",
+    "SKKG",
+    "GTWT_UMFLG"
+  ],
+  "最終更新日": [
+    "会社CD",
+    "DB"
+  ],
+  "受注": [
+    "会社CD",
+    "DB",
+    "ODR_KBN",
+    "ODDAY",
+    "SGYO_KRDAY",
+    "SKSK_KKYKCD",
+    "SKSK_KYKNM_1",
+    "SGYO_KTICD",
+    "SGKT_NM",
+    "UAGE_KBN_1",
+    "UAGE_KBN_2",
+    "UAGE_KBN_3",
+    "GAIYO_1",
+    "GAIYO_2",
+    "SKKG"
+  ],
+  "SMR": [
+    "会社CD",
+    "DB",
+    "VALUE"
+  ],
+  "KOMTRAX_FUEL_CONSUME": [
+    "VALUE"
+  ],
+  "KOMTRAX_ACT_DATA": [
+    "VALUE",
+    "DAILY_UNIT"
+  ],
+  "KOMTRAX_GPS": [
+    "LATITUDE",
+    "LONGITUDE"
+  ],
+  "KOMTRAX_SMR": [
+    "VALUE"
+  ],
+  "KOMTRAX_ATT": [
+    "VALUE",
+    "DAILY_UNIT"
+  ],
+  "KOMTRAX_RUNNING": [
+    "VALUE",
+    "DAILY_UNIT"
+  ],
+  "国": [
+    "DB",
+    "CNTRY"
+  ],
+  "経歴": [
+    "会社CD",
+    "DB",
+    "SYRK_KBN",
+    "顧客CD"
+  ],
+  "工場経歴": [
+    "DB",
+    "HIS_INFO_CD"
+  ],
+  "コマツケア前受け金": [
+    "HSY_KIND",
+    "PRICE",
+    "AKKRO_KBN"
+  ],
+  "詳細": [
+    "SALES_UNIT_CD",
+    "CTG_M_CD",
+    "CTG_S_CD",
+    "CTG_M_NM",
+    "CTG_S_NM"
+  ],
+  "部品": [
+    "会社CD",
+    "DB",
+    "JSDAY",
+    "HNBN",
+    "BHN_NM",
+    "MAKER_CD",
+    "JISI_SU",
+    "SKKG"
+  ],
+  "仕様": [
+    "VHMS_APP_CTG"
+  ],
+  "生産": [
+    "PLANT"
+  ],
+  "出荷": [
+    "SHIP_DATE"
+  ],
+  "廃車": [
+    "SCRAP_DATE"
+  ],
+  "LOADMAP_SMR": [
+    "VALUE"
+  ],
+  "LOADMAP_実エンジン回転VSエンジントルク": [
+    "VALUE"
+  ],
+  "LOADMAP_作業機操作状況": [
+    "VALUE"
+  ],
+  "LOADMAP_ポンプ圧_MAX": [
+    "VALUE"
+  ],
+  "LOADMAP_ポンプ圧_F": [
+    "VALUE"
+  ],
+  "LOADMAP_ポンプ圧_R": [
+    "VALUE"
+  ],
+  "LOADMAP_作業モード選択状況": [
+    "VALUE"
+  ],
+  "LOADMAP_エンジン水温VS作動油温": [
+    "VALUE"
+  ],
+  "LOADMAP_ST_USERTIME": [
+    "VALUE"
+  ],
+  "LOADMAP_ポンプ斜板_F": [
+    "VALUE"
+  ],
+  "LOADMAP_ポンプ斜板_R": [
+    "VALUE"
+  ],
+  "LOADMAP_可変マッチング": [
+    "VALUE"
+  ]
+}

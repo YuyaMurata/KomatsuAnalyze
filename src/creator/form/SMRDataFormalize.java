@@ -33,7 +33,7 @@ public class SMRDataFormalize {
 	//private static List<String> testList = ListToCSV.toList("user\\SMR異常系列.csv");
 
 	public static void main(String[] args) {
-		LOADER.setFile(KISY + "_loadmap");
+		LOADER.setFile(KISY + "_form");
 		Map<String, SyaryoObject> syaryoMap = LOADER.getSyaryoMap();
 
 		//for (String n : testList)
@@ -46,9 +46,9 @@ public class SMRDataFormalize {
 			if(actsmr != null)
                             s.put("KOMTRAX_ACT_DATA", actsmr);
                         
-                        Map loadeng = formEngineLoad(s);
-			if(loadeng != null)
-                            s.put("LOADMAP_実エンジン回転VSエンジントルク", loadeng);
+                        //Map loadeng = formEngineLoad(s);
+			//if(loadeng != null)
+                        //    s.put("LOADMAP_実エンジン回転VSエンジントルク", loadeng);
 		}
 		
 		LOADER.close();

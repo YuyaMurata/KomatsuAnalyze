@@ -72,7 +72,7 @@ public class ObjectsJoiner {
         }
 
         //レイアウトを付加
-        AttachedLayoutIndex.attached(syaryoMap);
+        syaryoMap.put("_header", AttachedLayoutIndex.createHeader());
 
         zip3.write(filename, syaryoMap);
 
@@ -114,7 +114,7 @@ public class ObjectsJoiner {
         }
 
         //レイアウトを付加
-        AttachedLayoutIndex.attached(syaryoMap);
+        syaryoMap.put("_header", AttachedLayoutIndex.createHeader());
 
         zip3.write(filename, syaryoMap);
 

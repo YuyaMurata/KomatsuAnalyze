@@ -25,7 +25,9 @@ public class AccidentDetect {
     public static List<String> wordsDetect(Map<String, List<String>> service, Map<String, List<String>> work) {
         int sv_txt = LOADER.index("受注", "GAIYO_1");
         int sv_txt2 = LOADER.index("受注", "GAIYO_2");
+        int sv_c = LOADER.index("受注", "会社CD");
         int wk_txt = LOADER.index("作業", "SGYO_NM");
+        int wk_c = LOADER.index("作業", "会社CD");
         
         List<String> sbns = new ArrayList<>();
         
@@ -34,7 +36,7 @@ public class AccidentDetect {
             sbns.addAll(
                 service.entrySet().stream()
                     .filter(e -> stopwords(e.getValue().get(sv_txt)+e.getValue().get(sv_txt2)))
-                    .map(e -> e.getKey())
+                    .map(e -> e.getValue().get(sv_c)+"."+e.getKey())
                     .collect(Collectors.toList())
             );
         
@@ -43,7 +45,7 @@ public class AccidentDetect {
             sbns.addAll(
                 work.entrySet().stream()
                     .filter(e -> stopwords(e.getValue().get(wk_txt)))
-                    .map(e -> e.getKey().split("#")[0])
+                    .map(e -> e.getValue().get(wk_c)+"."+e.getKey().split("#")[0])
                     .collect(Collectors.toList())
             );
         
@@ -52,13 +54,17 @@ public class AccidentDetect {
         return sbns;
     }
     
-    private static List<String> priceDetect(Map<String, String> allservice){
-        Map<String, String> map = detectChiSquare(allservice, 0.01, true);
+    public static List<String> priceDetect(Map<String, String> allservice){
+        Map<String, String> map = detectChiSquare(allservice, 0.01, false);
+        List<String> sbns = map.entrySet().stream()
+                                        .filter(s -> s.getValue().equals("1"))
+                                        .map(s -> s.getKey())
+                                        .collect(Collectors.toList());
         
-        return new ArrayList<>(map.keySet());
+        return sbns;
     }
 
-    public static Boolean stopwords(String str) {
+    private static Boolean stopwords(String str) {
         return ACCIDENT_WORDS.parallelStream().filter(w -> str.contains(w)).findFirst().isPresent();
     }
 }

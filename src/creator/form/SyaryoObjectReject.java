@@ -23,16 +23,17 @@ import param.KomatsuUserParameter;
 public class SyaryoObjectReject {
 
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
-    private static String KISY = "PC200";
+    private static String KISY = "PC200_form";
 
     public static void main(String[] args) {
         LOADER.setFile(KISY);
         Map<String, SyaryoObject> syaryoMap = LOADER.getSyaryoMap();
 
-        type(syaryoMap, Arrays.asList(new String[]{"8", "8N1", "10"}));
-        service(syaryoMap, "20170501", true);
-        syaryo(syaryoMap);
-        komtrax(syaryoMap, "KOMTRAX_ACT_DATA");
+        //type(syaryoMap, Arrays.asList(new String[]{"8", "8N1", "10"}));
+        //service(syaryoMap, "20170501", true);
+        //syaryo(syaryoMap);
+        //komtrax(syaryoMap, "KOMTRAX_ACT_DATA");
+        empty(syaryoMap, "受注");
         //smr(syaryoMap, "KOMTRAX_SMR");
         //noop(syaryoMap, "KOMTRAX_SMR", "2017");
 
@@ -108,7 +109,6 @@ public class SyaryoObjectReject {
         System.out.println("KOMTRAX非対応車両の処理 data=[" + baseKey + "]");
         System.out.println("Before Number of Syaryo : " + map.size());
 
-        Map<String, SyaryoObject> m = new TreeMap<>();
         Map<String, SyaryoObject> kmmap = map.entrySet().stream()
                 .filter(e -> e.getValue().get(baseKey) != null)
                 .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
@@ -117,6 +117,21 @@ public class SyaryoObjectReject {
         map.putAll(kmmap);
         
         System.out.println("Number of Syaryo (KOMTRAX) : " + map.size());
+    }
+    
+    //KOMTRAX対応していない車両の削除
+    private static void empty(Map<String, SyaryoObject> map, String baseKey) {
+        System.out.println(baseKey+"が空の車両を処理 data=[" + baseKey + "]");
+        System.out.println("Before Number of Syaryo : " + map.size());
+
+        Map<String, SyaryoObject> emap = map.entrySet().stream()
+                .filter(e -> e.getValue().get(baseKey) != null)
+                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+        
+        map.clear();
+        map.putAll(emap);
+        
+        System.out.println("Number of Syaryo ("+baseKey+") : " + map.size());
     }
 
     //SMR異常車両の削除

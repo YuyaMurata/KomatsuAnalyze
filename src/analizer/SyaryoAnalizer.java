@@ -6,6 +6,8 @@
 package analizer;
 
 import data.detect.AccidentDetect;
+import file.CSVFileReadWrite;
+import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -20,6 +22,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.AbstractMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
 import param.KomatsuDataParameter;
@@ -87,6 +91,10 @@ public class SyaryoAnalizer implements AutoCloseable {
     public SyaryoObject get() {
         SyaryoObject s = syaryo;
         return s;
+    }
+    
+    public Map<String, List<String>> get(String key) {
+        return syaryo.get(key);
     }
 
     private List<String> check() {
@@ -610,17 +618,15 @@ public class SyaryoAnalizer implements AutoCloseable {
     public static void main(String[] args) {
         SyaryoLoader LOADER = SyaryoLoader.getInstance();
         LOADER.setFile("PC200_form");
-        Map<String, SyaryoObject> syaryoMap = LOADER.getSyaryoMap();
-        SyaryoAnalizer analize = new SyaryoAnalizer(syaryoMap.get("PC200-10-451215"), true);
-        System.out.println(analize.toString());
-
-        //Check
-        //System.out.println("20180801:" + analize.checkAS("20180801"));
-        //System.out.println("20340801:" + analize.checkAS("20340801"));
-        System.out.println(analize.ageSMR);
-
-        System.out.println(analize.getAgeSMR("20140514"));
-        System.out.println(analize.getAgeSMR("20180801"));
+        try(PrintWriter pw = CSVFileReadWrite.writerSJIS("syaryo_analize_summary.csv")){
+            LOADER.getSyaryoMap().values().stream().forEach(syaryo -> {
+                try(SyaryoAnalizer s = new SyaryoAnalizer(syaryo, true)){
+                    pw.println(s.toPrint());
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            });
+        }
     }
 
     @Override
