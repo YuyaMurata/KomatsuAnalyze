@@ -17,6 +17,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
+import param.KomatsuUserParameter;
 
 /**
  *
@@ -25,18 +26,55 @@ import obj.SyaryoObject;
 public class MaintenanceTimeSeries {
 
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
-
+    private static Map<String, Integer> interval = KomatsuUserParameter.PC200_MAINTEPARTS_INTERVAL;
+    
     public static void main(String[] args) {
-        LOADER.setFile("PC200_form_loadmap");
-        SyaryoObject syaryo = LOADER.getSyaryoMap().get("PC200-10-450635");
+        LOADER.setFile("PC200_form");
+        SyaryoObject syaryo = LOADER.getSyaryoMap().get("PC200-8N1-315586");
 
         try (SyaryoAnalizer analize = new SyaryoAnalizer(syaryo, true)) {
-            toTimeSeries(analize);
+            //toTimeSeries(analize);
+            series(analize, interval);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
-
+    
+    private static void series(SyaryoAnalizer s, Map<String, Integer> target){
+        //各メンテ部品の交換実績を調査
+        Map<String, List<String>> mainte = new TreeMap<>();
+        List<String> sbns = new ArrayList<>(s.get("受注").keySet());
+        sbns.stream()
+                .filter(sbn -> s.getSBNParts(sbn) != null)
+                .forEach(sbn -> {
+                    s.getSBNParts(sbn).values().stream()
+                                    .map(p -> PartsCodeConv.partsConv(LOADER, p))
+                                    .filter(pdef -> target.get(pdef) != null)
+                                    .forEach(pdef -> {
+                                        if(mainte.get(pdef) == null)
+                                            mainte.put(pdef, new ArrayList<>());
+                                        mainte.get(pdef).add(sbn);
+                                    });
+                });
+        
+        //重複除去と変換
+        Map<String, List<String>> map = new TreeMap<>();
+        for(String key : mainte.keySet()){
+            List<String> list = mainte.get(key).stream()
+                        .distinct()
+                        .map(sbn -> s.getDateToSMR(s.get("受注").get(sbn).get(LOADER.index("受注", "SGYO_KRDAY"))).toString())
+                        .collect(Collectors.toList());
+            map.put(key, list);
+        }
+        
+        try (PrintWriter pw = CSVFileReadWrite.writerSJIS(s.get().name + "_mante_testseries.csv")) {
+            pw.println("KEY,SMR系列");
+            map.entrySet().stream()
+                    .map(m -> m.getKey()+","+m.getValue().stream().map(smr -> smr).collect(Collectors.joining(",")))
+                    .forEach(pw::println);
+        }
+    }
+    
     private static Map<String, List<Long>> toTimeSeries(SyaryoAnalizer s) {
         System.out.println(s.get().name);
 

@@ -28,6 +28,7 @@ public interface KomatsuUserParameter {
     //メンテナンス
     public static Map<String, String> PC200_MAINTEPARTS_DEF = new MapToJSON().toMap("user\\PC200_mainteparts_define.json");
     public static Map<String, String> PC200_MAINTEPARTS_DEFNAME = new MapToJSON().toMap("user\\PC200_mainteparts_definename.json");
+    public static Map<String, Integer> PC200_MAINTEPARTS_INTERVAL = new MapToJSON().toMap("user\\PC200_mainteparts_interval.json");
     
     //評価行列
     public static String PC200_PARTS_EVAL_FILE="PC200_partscd_evalarray.csv";

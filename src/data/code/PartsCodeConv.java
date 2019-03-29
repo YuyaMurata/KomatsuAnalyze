@@ -5,7 +5,9 @@
  */
 package data.code;
 
+import java.util.List;
 import java.util.Optional;
+import obj.SyaryoLoader;
 import param.KomatsuUserParameter;
 
 /**
@@ -13,6 +15,13 @@ import param.KomatsuUserParameter;
  * @author ZZ17390
  */
 public class PartsCodeConv {
+    public static String partsConv(SyaryoLoader LOADER, List<String> parts){
+        String pid = parts.get(LOADER.index("部品", "HNBN"));
+        String pn = parts.get(LOADER.index("部品", "BHN_NM"));
+        String ppr = parts.get(LOADER.index("部品", "SKKG"));
+        return conv(pid, pn, ppr);
+    }
+    
     public static String conv(String pid, String name, String price) {
         String define = null;
         
