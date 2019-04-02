@@ -22,7 +22,7 @@ import param.KomatsuDataParameter;
 public class AttachedLayoutIndex {
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     private static String LAYOUT_INDEX = KomatsuDataParameter.LAYOUT_FORMAT_PATH;
-    private static String KISY ="PC200_form";
+    private static String KISY ="PC200";
     
     public static void main(String[] args) {
         File layoutfile = new File(LAYOUT_INDEX);

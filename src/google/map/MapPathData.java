@@ -59,6 +59,7 @@ public class MapPathData {
     }
     
     public static double compValue(String str) {
+        
         //変換
         str = str.replace("N", "").replace("S", "-").replace("E", "").replace("W", "-");
 

@@ -58,8 +58,10 @@ public class SyaryoAnalizer implements AutoCloseable {
     public Integer[] maxSMR = new Integer[]{-1, -1, -1, -1};
     public Map<String, Integer> odrKind = new HashMap<>();
     public Map<String, Integer> workKind = new HashMap<>();
-    public TreeMap<String, Map.Entry> ageSMR = new TreeMap<>();
-    public TreeMap<Integer, String> smrAge = new TreeMap<>();
+    public TreeMap<String, Map.Entry<Integer, Integer>> ageSMR = new TreeMap<>();
+    public TreeMap<Integer, String> smrDate = new TreeMap<>();
+    private int D_DATE = 365;
+    private int D_SMR = 10;
     private List<String[]> termAllSupport;
     private static String DATE_FORMAT = KomatsuDataParameter.DATE_FORMAT;
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
@@ -185,7 +187,7 @@ public class SyaryoAnalizer implements AutoCloseable {
             switch (key) {
                 case "KOMTRAX_ACT_DATA":
                     if (syaryo.get("KOMTRAX_ACT_DATA") != null) {
-                        setAgeSMR(syaryo.get("KOMTRAX_ACT_DATA"), 30, 10);
+                        setAgeSMR(syaryo.get("KOMTRAX_ACT_DATA"), D_DATE, D_SMR);
                     }
                     break;
                 case "オールサポート":
@@ -255,7 +257,7 @@ public class SyaryoAnalizer implements AutoCloseable {
 
     private void setAgeSMR(Map<String, List<String>> act_smr, Integer d, Integer s) {
         //初期値
-        ageSMR.put(lifestart, new AbstractMap.SimpleEntry<>(0, 0));
+        ageSMR.put("0", new AbstractMap.SimpleEntry<>(0, 0));
 
         // d刻みでSMRをsで丸める
         for (String date : act_smr.keySet()) {
@@ -263,25 +265,68 @@ public class SyaryoAnalizer implements AutoCloseable {
             Integer smr = (Double.valueOf(act_smr.get(date).get(0)).intValue() / s) * s;  //ACT_SMRの構成が変わるとエラー
             ageSMR.put(date, new AbstractMap.SimpleEntry<>(t, smr));
             
-            if(smrAge.get(smr) == null)
-                smrAge.put(smr, date);
+            if(smrDate.get(smr) == null)
+                smrDate.put(smr, date);
+        }
+        
+        List<String> l = new ArrayList<>(ageSMR.keySet());
+        Integer last = Integer.valueOf(l.get(l.size()-1));
+        //取得できていない箇所を手入力サービスメータから取得
+        List<String> svsmr = syaryo.get("SMR").keySet().stream()
+                    .filter(date -> last < Integer.valueOf(date.split("#")[0]))
+                    .collect(Collectors.toList());
+        for(String date : svsmr){
+            Integer t = age(date) / d;
+            Integer smr = (Double.valueOf(syaryo.get("SMR").get(date).get(2)).intValue() / s) * s;  //ACT_SMRの構成が変わるとエラー
+            ageSMR.put(date, new AbstractMap.SimpleEntry<>(t, smr));
+            
+            if(smrDate.get(smr) == null)
+                smrDate.put(smr, date);
         }
     }
     
     public String getSMRToDate(Integer smr){
         try{
-            return smrAge.ceilingEntry(smr).getValue();
+            return smrDate.ceilingEntry(smr).getValue();
         }catch(NullPointerException ne){
             return null;
         }
     }
 
     public Map.Entry<Integer, Integer> getDateToSMR(String date){
+        if(ageSMR.get(date) != null)
+            return ageSMR.get(date);
+        else
+            return forecast(date);
+        
+        /*
         try{
             return ageSMR.floorEntry(date).getValue();
         }catch(NullPointerException ne){
-            return null;
+            return forecast(date);
+        }*/
+    }
+    
+    //周辺2点から予測 精度低
+    public Map.Entry<Integer, Integer> forecast(String date){
+        Integer t = age(date) / D_DATE;
+        Integer smr = 0;
+        Map.Entry<String, Map.Entry<Integer, Integer>> a1 = ageSMR.floorEntry(date);
+        try{
+            //区間点を予測
+            Map.Entry<String, Map.Entry<Integer, Integer>> a2 = ageSMR.higherEntry(date);
+            if(!a1.getKey().equals("0")){
+                Double a = (a2.getValue().getValue() - a1.getValue().getValue()) / time(a2.getKey(), a1.getKey()).doubleValue();
+                smr = ((Double)(a1.getValue().getValue().doubleValue() + a * time(date, a1.getKey()))).intValue() / D_SMR * D_SMR;
+            }
+        }catch(NullPointerException ne){
+            //最終2点から未来を予測
+            Map.Entry<String, Map.Entry<Integer, Integer>> a0 = ageSMR.lowerEntry(ageSMR.floorKey(date));
+            Double a = (a1.getValue().getValue() - a0.getValue().getValue()) / time(a1.getKey(), a0.getKey()).doubleValue();
+            smr = ((Double)(a1.getValue().getValue().doubleValue() + a * time(date, a1.getKey()))).intValue() / D_SMR * D_SMR;
         }
+        
+        return new AbstractMap.SimpleEntry<>(t, smr);
     }
     
     //作番と日付をswで相互変換

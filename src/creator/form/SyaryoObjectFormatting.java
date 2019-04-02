@@ -449,7 +449,7 @@ public class SyaryoObjectFormatting {
             //System.out.println("Not found Order!");
             return null;
         }
-
+        
         //日付ソート
         int date = indexList.indexOf("ODDAY"); //kom_orderが紐づく場合 ODDAY
         //System.out.println(order);
@@ -540,8 +540,10 @@ public class SyaryoObjectFormatting {
             List<String> list = map.get(sbn);
             list.set(price, String.valueOf(Double.valueOf(list.get(price)).intValue()));
             
-            if(list.get(fin_date).equals("None"))
+            if(list.get(fin_date).equals("None")){
                 list.set(fin_date, list.get(date));
+                //System.out.println(list);
+            }
             
             //最新の受注日
             reject.currentDate = list.get(date);
