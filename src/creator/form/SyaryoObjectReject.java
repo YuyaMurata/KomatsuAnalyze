@@ -23,17 +23,17 @@ import param.KomatsuUserParameter;
 public class SyaryoObjectReject {
 
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
-    private static String KISY = "PC200";
+    private static String KISY = "PC200_form";
 
     public static void main(String[] args) {
         LOADER.setFile(KISY);
         Map<String, SyaryoObject> syaryoMap = LOADER.getSyaryoMap();
 
-        type(syaryoMap, Arrays.asList(new String[]{"8", "8N1", "10"}));
-        service(syaryoMap, "20170501", true);
-        syaryo(syaryoMap);
+        //type(syaryoMap, Arrays.asList(new String[]{"8", "8N1", "10"}));
+        //service(syaryoMap, "20170501", true);
+        //syaryo(syaryoMap);
         komtrax(syaryoMap, "KOMTRAX_ACT_DATA");
-        empty(syaryoMap, "受注");
+        //empty(syaryoMap, "受注");
         //smr(syaryoMap, "KOMTRAX_SMR");
         //noop(syaryoMap, "KOMTRAX_SMR", "2017");
 

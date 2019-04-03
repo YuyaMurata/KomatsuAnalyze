@@ -34,7 +34,6 @@ public class ExportIrregularData {
         Map<String, SyaryoObject> syaryoMap = LOADER.getSyaryoMap();
 
         //Map<String, List> dataIndex = SyaryoObjectElementsIndex.getInstance().getIndex();
-
         errOrderDate(syaryoMap);
         //errSMR(syaryoMap, dataIndex.get("SMR"), dataIndex.get("KOMTRAX_SMR"));
 
@@ -44,17 +43,20 @@ public class ExportIrregularData {
     }
 
     private static void errOrderDate(Map<String, SyaryoObject> syaryoMap) {
-        
+
         try (PrintWriter pw = CSVFileReadWrite.writerSJIS("errdata_ORDERDATE_" + KISY + ".csv")) {
-            pw.println("SID,作番,"+String.join(",", LOADER.indexes("受注")));
-            int krday_idx = LOADER.index("受注", "SGYO_KRDAY");
-            
-            syaryoMap.values().stream().filter(s -> s.get("受注") != null).forEach(s -> {
-                Map<String, List<String>> odr = s.get("受注");
-                odr.entrySet().stream().filter(o -> o.getValue().get(krday_idx).equals("None"))
-                            .map(o -> s.name+","+o.getKey()+","+String.join(",", o.getValue()))
-                            .forEach(pw::println);
-            });
+            pw.println("SID,納入日,作番," + String.join(",", LOADER.indexes("受注")));
+            int krday_idx = LOADER.index("受注", "ODDAY");
+
+            syaryoMap.values().stream()
+                    .filter(s -> s.get("受注") != null)
+                    .forEach(s -> {
+                        String date = s.get("新車").keySet().stream().findFirst().get();
+                        Map<String, List<String>> odr = s.get("受注");
+                        odr.entrySet().stream().filter(o -> Integer.valueOf(o.getValue().get(krday_idx)) < Integer.valueOf(date))
+                                .map(o -> s.name + "," +date+","+o.getKey() + "," + String.join(",", o.getValue()))
+                                .forEach(pw::println);
+                    });
         }
     }
 

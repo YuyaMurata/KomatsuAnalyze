@@ -92,7 +92,7 @@ public class SyaryoAnalizer implements AutoCloseable {
         SyaryoObject s = syaryo;
         return s;
     }
-    
+
     public Map<String, List<String>> get(String key) {
         return syaryo.get(key);
     }
@@ -187,7 +187,7 @@ public class SyaryoAnalizer implements AutoCloseable {
             switch (key) {
                 case "KOMTRAX_ACT_DATA":
                     if (syaryo.get("KOMTRAX_ACT_DATA") != null) {
-                        setAgeSMR(syaryo.get("KOMTRAX_ACT_DATA"), D_DATE, D_SMR);
+                        setAgeSMR(syaryo.get("KOMTRAX_ACT_DATA"));
                     }
                     break;
                 case "オールサポート":
@@ -211,20 +211,20 @@ public class SyaryoAnalizer implements AutoCloseable {
                         acmLCC = 0;
                         for (String sbn : syaryo.get("受注").keySet()) {
                             //ライフサイクルコスト計算
-                            Double price = Double.valueOf(syaryo.get("受注").get(sbn).get(priceIdx).toString());
+                            Double price = Double.valueOf(syaryo.get("受注").get(sbn).get(priceIdx));
                             acmLCC += price.intValue();
 
                             //作業形態カウント
-                            String sgkt = syaryo.get("受注").get(sbn).get(sgktIdx).toString();
+                            String sgkt = syaryo.get("受注").get(sbn).get(sgktIdx);
                             if (workKind.get(sgkt) == null) {
                                 workKind.put(sgkt, 0);
                             }
                             workKind.put(sgkt, workKind.get(sgkt) + 1);
 
                             //売上区分カウント
-                            String odr = syaryo.get("受注").get(sbn).get(odrIdx).toString()
-                                + syaryo.get("受注").get(sbn).get(odrIdx + 1).toString()
-                                + syaryo.get("受注").get(sbn).get(odrIdx + 2).toString();
+                            String odr = syaryo.get("受注").get(sbn).get(odrIdx)
+                                    + syaryo.get("受注").get(sbn).get(odrIdx + 1)
+                                    + syaryo.get("受注").get(sbn).get(odrIdx + 2);
                             if (odrKind.get(odr) == null) {
                                 odrKind.put(odr, 0);
                             }
@@ -233,8 +233,8 @@ public class SyaryoAnalizer implements AutoCloseable {
 
                         //事故カウント
                         List<String> sbns = AccidentDetect.wordsDetect(syaryo.get("受注"), syaryo.get("作業"));
-                        sbns.stream().map(s -> Integer.valueOf(syaryo.get("受注").get(s).get(priceIdx)))
-                            .forEach(p -> acmAccidentPrice += p);
+                        sbns.stream().map(s -> Integer.valueOf(syaryo.get("受注").get(s.split("\\.")[1]).get(priceIdx)))
+                                .forEach(p -> acmAccidentPrice += p);
                     }
                     break;
                 case "顧客":
@@ -255,50 +255,57 @@ public class SyaryoAnalizer implements AutoCloseable {
         }
     }
 
-    private void setAgeSMR(Map<String, List<String>> act_smr, Integer d, Integer s) {
+    private void setAgeSMR(Map<String, List<String>> act_smr) {
         //初期値
         ageSMR.put("0", new AbstractMap.SimpleEntry<>(0, 0));
 
         // d刻みでSMRをsで丸める
         for (String date : act_smr.keySet()) {
-            Integer t = age(date) / d;
-            Integer smr = (Double.valueOf(act_smr.get(date).get(0)).intValue() / s) * s;  //ACT_SMRの構成が変わるとエラー
+            Integer t = age(date) / D_DATE;
+            Integer smr = (Double.valueOf(act_smr.get(date).get(0)).intValue() / D_SMR) * D_SMR;  //ACT_SMRの構成が変わるとエラー
             ageSMR.put(date, new AbstractMap.SimpleEntry<>(t, smr));
-            
-            if(smrDate.get(smr) == null)
+
+            if (smrDate.get(smr) == null) {
                 smrDate.put(smr, date);
+            }
         }
-        
-        List<String> l = new ArrayList<>(ageSMR.keySet());
-        Integer last = Integer.valueOf(l.get(l.size()-1));
+
         //取得できていない箇所を手入力サービスメータから取得
+        if (syaryo.get("SMR") == null) {
+            return;
+        }
+
+        List<String> l = new ArrayList<>(ageSMR.keySet());
+        Integer last = Integer.valueOf(l.get(l.size() - 1));
         List<String> svsmr = syaryo.get("SMR").keySet().stream()
-                    .filter(date -> last < Integer.valueOf(date.split("#")[0]))
-                    .collect(Collectors.toList());
-        for(String date : svsmr){
-            Integer t = age(date) / d;
-            Integer smr = (Double.valueOf(syaryo.get("SMR").get(date).get(2)).intValue() / s) * s;  //ACT_SMRの構成が変わるとエラー
+                .filter(date -> last < Integer.valueOf(date.split("#")[0]))
+                .collect(Collectors.toList());
+        for (String date : svsmr) {
+            Integer t = age(date) / D_DATE;
+            Integer smr = (Double.valueOf(syaryo.get("SMR").get(date).get(2)).intValue() / D_SMR) * D_SMR;  //SMRの構成が変わるとエラー
             ageSMR.put(date, new AbstractMap.SimpleEntry<>(t, smr));
-            
-            if(smrDate.get(smr) == null)
+
+            if (smrDate.get(smr) == null) {
                 smrDate.put(smr, date);
+            }
         }
     }
-    
-    public String getSMRToDate(Integer smr){
-        try{
+
+    public String getSMRToDate(Integer smr) {
+        try {
             return smrDate.ceilingEntry(smr).getValue();
-        }catch(NullPointerException ne){
+        } catch (NullPointerException ne) {
             return null;
         }
     }
 
-    public Map.Entry<Integer, Integer> getDateToSMR(String date){
-        if(ageSMR.get(date) != null)
+    public Map.Entry<Integer, Integer> getDateToSMR(String date) {
+        if (ageSMR.get(date) != null) {
             return ageSMR.get(date);
-        else
+        } else {
             return forecast(date);
-        
+        }
+
         /*
         try{
             return ageSMR.floorEntry(date).getValue();
@@ -306,29 +313,37 @@ public class SyaryoAnalizer implements AutoCloseable {
             return forecast(date);
         }*/
     }
-    
+
     //周辺2点から予測 精度低
-    public Map.Entry<Integer, Integer> forecast(String date){
+    public Map.Entry<Integer, Integer> forecast(String date) {
         Integer t = age(date) / D_DATE;
         Integer smr = 0;
         Map.Entry<String, Map.Entry<Integer, Integer>> a1 = ageSMR.floorEntry(date);
-        try{
+        try {
             //区間点を予測
             Map.Entry<String, Map.Entry<Integer, Integer>> a2 = ageSMR.higherEntry(date);
-            if(!a1.getKey().equals("0")){
+            if (!a1.getKey().equals("0")) {
                 Double a = (a2.getValue().getValue() - a1.getValue().getValue()) / time(a2.getKey(), a1.getKey()).doubleValue();
-                smr = ((Double)(a1.getValue().getValue().doubleValue() + a * time(date, a1.getKey()))).intValue() / D_SMR * D_SMR;
+                smr = ((Double) (a1.getValue().getValue().doubleValue() + a * time(date, a1.getKey()))).intValue() / D_SMR * D_SMR;
             }
-        }catch(NullPointerException ne){
-            //最終2点から未来を予測
-            Map.Entry<String, Map.Entry<Integer, Integer>> a0 = ageSMR.lowerEntry(ageSMR.floorKey(date));
-            Double a = (a1.getValue().getValue() - a0.getValue().getValue()) / time(a1.getKey(), a0.getKey()).doubleValue();
-            smr = ((Double)(a1.getValue().getValue().doubleValue() + a * time(date, a1.getKey()))).intValue() / D_SMR * D_SMR;
+        } catch (NullPointerException ne) {
+            try {
+                //最終2点から未来を予測
+                Map.Entry<String, Map.Entry<Integer, Integer>> a0 = ageSMR.lowerEntry(ageSMR.floorKey(date));
+                Double a = (a1.getValue().getValue() - a0.getValue().getValue()) / time(a1.getKey(), a0.getKey()).doubleValue();
+                smr = ((Double) (a1.getValue().getValue().doubleValue() + a * time(date, a1.getKey()))).intValue() / D_SMR * D_SMR;
+            } catch (NullPointerException ne2) {
+                System.out.println(syaryo.name);
+                System.out.println("a0="+ageSMR.lowerEntry(ageSMR.floorKey(date))+" , a1="+a1);
+                ageSMR.entrySet().stream().map(a -> a.getKey()+","+a.getValue()).forEach(System.out::println);
+                ne2.printStackTrace();
+                System.exit(0);
+            }
         }
-        
+
         return new AbstractMap.SimpleEntry<>(t, smr);
     }
-    
+
     //作番と日付をswで相互変換
     private Map<String, String> sbnDate = new HashMap<>();
     private Map<String, String> dateSBN = new HashMap<>();
@@ -360,8 +375,8 @@ public class SyaryoAnalizer implements AutoCloseable {
         }
 
         List<String> sbns = syaryo.get(key).keySet().stream()
-            .filter(s -> s.split("#")[0].equals(sbn))
-            .collect(Collectors.toList());
+                .filter(s -> s.split("#")[0].equals(sbn))
+                .collect(Collectors.toList());
 
         Map map = new LinkedHashMap();
         for (String ksbn : sbns) {
@@ -389,10 +404,10 @@ public class SyaryoAnalizer implements AutoCloseable {
 
         //指定列を抽出したKey-Valueデータを作成
         Map map = syaryo.get(key).entrySet().stream()
-            .collect(Collectors.toMap(s -> s.getKey(), s -> idxs.stream()
-            .map(i -> i < 0 ? s.getKey() : s.getValue().get(i))
-            .collect(Collectors.toList())
-            ));
+                .collect(Collectors.toMap(s -> s.getKey(), s -> idxs.stream()
+                .map(i -> i < 0 ? s.getKey() : s.getValue().get(i))
+                .collect(Collectors.toList())
+                ));
 
         return map;
     }
@@ -429,8 +444,8 @@ public class SyaryoAnalizer implements AutoCloseable {
 
         //エクスポートヘッダで指定した要素の取得
         exportHeader.entrySet().stream()
-            .filter(h -> syaryo.get(h.getKey()) != null)
-            .forEach(h -> exportMap.put(h.getKey(), getValue(h.getKey(), h.getValue())));
+                .filter(h -> syaryo.get(h.getKey()) != null)
+                .forEach(h -> exportMap.put(h.getKey(), getValue(h.getKey(), h.getValue())));
 
         return exportMap;
     }
@@ -516,9 +531,9 @@ public class SyaryoAnalizer implements AutoCloseable {
 
         int sg_idx = LOADER.index("作業", "SGYOCD");
         List<String> plSbns = syaryo.get("作業").entrySet().parallelStream()
-            .filter(e -> checkPL(e.getValue().get(sg_idx).toString()))
-            .map(e -> e.getKey())
-            .collect(Collectors.toList());
+                .filter(e -> checkPL(e.getValue().get(sg_idx).toString()))
+                .map(e -> e.getKey())
+                .collect(Collectors.toList());
 
         int idx = LOADER.index("受注", "ODDAY");
         Map<String, List<String>> map = new LinkedHashMap<>();
@@ -661,9 +676,11 @@ public class SyaryoAnalizer implements AutoCloseable {
     public static void main(String[] args) {
         SyaryoLoader LOADER = SyaryoLoader.getInstance();
         LOADER.setFile("PC200_form");
-        try(PrintWriter pw = CSVFileReadWrite.writerSJIS("syaryo_analize_summary.csv")){
+        try (PrintWriter pw = CSVFileReadWrite.writerSJIS("syaryo_analize_summary.csv")) {
+            pw.println(getHeader());
+            
             LOADER.getSyaryoMap().values().stream().forEach(syaryo -> {
-                try(SyaryoAnalizer s = new SyaryoAnalizer(syaryo, true)){
+                try (SyaryoAnalizer s = new SyaryoAnalizer(syaryo, true)) {
                     pw.println(s.toPrint());
                 } catch (Exception ex) {
                     ex.printStackTrace();

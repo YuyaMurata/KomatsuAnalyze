@@ -9,7 +9,6 @@ import analizer.SyaryoAnalizer;
 import data.code.PartsCodeConv;
 import file.CSVFileReadWrite;
 import java.io.PrintWriter;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,13 +30,21 @@ public class MaintenanceTimeSeries {
 
     public static void main(String[] args) {
         LOADER.setFile("PC200_form");
-        //SyaryoObject syaryo = LOADER.getSyaryoMap().get("PC200-8N1-315586");
+        //SyaryoObject syaryo = LOADER.getSyaryoMap().get("PC200-10-452681");
 
         List<String> target = new ArrayList<>();
         //target = new ArrayList<>(interval.keySet());
-        target.add("ENGINE");
+        target.add("M001");
 
         Map map = new TreeMap();
+        /*try (SyaryoAnalizer analize = new SyaryoAnalizer(syaryo, true)) {
+            //toTimeSeries(analize);
+            Map m = series(analize, target);
+            print(analize.get().name, m);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }*/
+
         for (SyaryoObject syaryo : LOADER.getSyaryoMap().values()) {
             try (SyaryoAnalizer analize = new SyaryoAnalizer(syaryo, true)) {
                 //toTimeSeries(analize);
@@ -47,14 +54,15 @@ public class MaintenanceTimeSeries {
                 map.put(analize.get().name, m);
                 //print(analize.get().name, m);
             } catch (Exception ex) {
-                //ex.printStackTrace();
+                ex.printStackTrace();
+                System.exit(0);
             }
         }
-        allprint(map);
+        allprintToCSV(map);
     }
 
     private static Map<String, List<Map.Entry>> series(SyaryoAnalizer s, List<String> target) {
-        //各メンテ部品の交換実績を調査
+        //各部品の交換実績を調査
         Map<String, List<String>> partsSBN = new TreeMap<>();
         List<String> sbns = new ArrayList<>(s.get("受注").keySet());
         sbns.stream()
@@ -70,10 +78,11 @@ public class MaintenanceTimeSeries {
                                 partsSBN.get(pdef).add(sbn);
                             });
                 });
-        
-        if(partsSBN.isEmpty())
+
+        if (partsSBN.isEmpty()) {
             return null;
-        
+        }
+
         //重複除去と変換
         Map<String, List<Map.Entry>> agesmr = new TreeMap<>();
         for (String key : partsSBN.keySet()) {
@@ -103,6 +112,17 @@ public class MaintenanceTimeSeries {
                 m.getValue().entrySet().stream()
                         .map(m2 -> m.getKey() + "," + m2.getKey() + "," + m2.getValue().stream().map(smr -> smr.toString()).collect(Collectors.joining(",")))
                         .forEach(pw::println);
+            });
+        }
+    }
+    
+    private static void allprintToCSV(Map<String, Map<String, List<Map.Entry>>> map) {
+        try (PrintWriter pw = CSVFileReadWrite.writerSJIS("all_mante_testseries2.csv")) {
+            pw.println("SID,KEY,Y,SMR");
+            map.entrySet().stream().forEach(m -> {
+                m.getValue().entrySet().stream().forEach(m2 -> {
+                    m2.getValue().stream().map(e -> m.getKey()+","+m2.getKey()+","+e.getKey()+","+e.getValue()).forEach(pw::println);
+                });
             });
         }
     }
