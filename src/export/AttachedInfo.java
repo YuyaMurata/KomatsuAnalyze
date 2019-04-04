@@ -8,12 +8,19 @@ package export;
 import analizer.SyaryoAnalizer;
 import data.code.PartsCodeConv;
 import file.CSVFileReadWrite;
+import file.ListToCSV;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
 
@@ -26,11 +33,11 @@ public class AttachedInfo {
 
     public static void main(String[] args) {
         //workname(file);
-        //LOADER.setFile("PC200_form");
-        //serviceinfo(file);
+        LOADER.setFile("PC200_form");
+        serviceinfo("PC200_エンジン.csv", true, true);
         //workinfo(file);
         //analizeLCC("PC200_culster_use.csv");
-        partsinfo("ExportData_PC200_ALL.csv");
+        //partsinfo("PC200_エンジン.csv");
     }
 
     /**
@@ -59,33 +66,59 @@ public class AttachedInfo {
     }
 
     /**
-     * サービス情報の付加 車両ID＋作番から作業形態を紐付ける
+     * サービス情報の付加 車両ID＋会社ID+作番からサービスを紐付ける
      *
      * @param file
      */
-    private static void serviceinfo(String file) {
+    private static void serviceinfo(String file, Boolean w, Boolean p) {
         Map<String, SyaryoObject> map = LOADER.getSyaryoMap();
-        try (PrintWriter csv = CSVFileReadWrite.writer(file + "_attached_info.csv")) {
-            try (BufferedReader br = CSVFileReadWrite.reader(file)) {
-                String line = br.readLine();
-                List<String> l = Arrays.asList(line.split(","));
-                l.set(3, "作業形態");
-                csv.println(String.join(",", l));
-
-                while ((line = br.readLine()) != null) {
-                    l = Arrays.asList(line.split(","));
-                    String name = l.get(0);
-                    String sbn = l.get(2);
-
-                    SyaryoObject s = map.get(name);
-                    List<String> sv = s.get("受注").get(sbn);
-                    l.set(3, sv.get(LOADER.index("受注", "SGYO_KTICD")));
-
-                    csv.println(String.join(",", l));
+        try (PrintWriter pw = CSVFileReadWrite.writerSJIS(file + "_attached_info.csv")) {
+            //header
+            pw.println("SID,受注情報,作番,"+String.join(",", LOADER.indexes("受注")));
+            if(w) pw.println("SID,作業明細,作番,"+String.join(",", LOADER.indexes("作業")));
+            if(p) pw.println("SID,部品明細,作番,"+String.join(",", LOADER.indexes("部品")));
+            
+            List<String> csv = ListToCSV.toList(file);
+            List<String> h = Arrays.asList(csv.get(0).split(","));
+            csv.remove(0);
+            
+            Map<String, Map<String, String>> source = new HashMap<>();
+            csv.stream()
+                    .map(l -> l.split(","))
+                    .forEach(s ->{
+                        String key = s[h.indexOf("SID")];
+                        String value = s[h.indexOf("作番")].split("#")[0];
+                        if(source.get(key) == null)
+                            source.put(key, new HashMap<>());
+                        
+                        source.get(key).put(value, "");
+                    });
+            
+            source.entrySet().stream().forEach(e -> {
+                try(SyaryoAnalizer s = new SyaryoAnalizer(map.get(e.getKey()), true)){
+                    if(s.numAccident == 0)
+                    e.getValue().keySet().stream().forEach(key ->{
+                        //受注情報の追加
+                        List<String> odr = s.get("受注").get(key);
+                        pw.println(s.name+",受注情報,"+key+","+String.join(",", odr));
+                        
+                        //作業明細の追加
+                        if(w && s.getSBNWork(key) != null)
+                            s.getSBNWork(key).entrySet().stream()
+                                    .map(m -> s.name+",作業明細,"+key+","+String.join(",", m.getValue()))
+                                    .forEach(pw::println);
+                        
+                        //部品明細の追加
+                        if(p && s.getSBNParts(key) != null)
+                            s.getSBNParts(key).entrySet().stream()
+                                    .map(m -> s.name+",部品明細,"+key+","+String.join(",", m.getValue()))
+                                    .forEach(pw::println);
+                    });
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
+            });
+            
         }
     }
 

@@ -15,11 +15,26 @@ import param.KomatsuUserParameter;
  * @author ZZ17390
  */
 public class PartsCodeConv {
-    public static String partsConv(SyaryoLoader LOADER, List<String> parts){
+    public static String partsConv(SyaryoLoader LOADER, String sid, String id, List<String> parts){
+        String comp = parts.get(LOADER.index("部品", "会社CD"));
         String pid = parts.get(LOADER.index("部品", "HNBN"));
         String pn = parts.get(LOADER.index("部品", "BHN_NM"));
         String ppr = parts.get(LOADER.index("部品", "SKKG"));
-        return conv(pid, pn, ppr);
+        
+        //ユーザー定義
+        String ucvparts = uconv(sid, comp, id, pid, pn);
+        if(ucvparts != null)
+            return ucvparts;
+        
+        //自動定義
+        String cvparts = conv(pid, pn, ppr);
+        
+        return cvparts;
+    }
+    
+    public static String uconv(String sid, String comp, String id, String pid, String name) {
+        String define = userPartsDefineCode(sid, comp, id, pid, name);
+        return define;
     }
     
     public static String conv(String pid, String name, String price) {
@@ -42,10 +57,6 @@ public class PartsCodeConv {
         //主要部品
         if(define == null)
             define = mainPartsDefineCode(pid);
-        
-        //品名判断 (機種依存性が大幅に上がるためPC200以外で利用不可能)
-        if(define == null || define.equals("UNKNOWN"))
-            define = partsNameAndPriceDefineCode(name, price);
         
         if(define == null)
             return "UNKNOWN";
@@ -128,13 +139,12 @@ public class PartsCodeConv {
             return null;
     }
     
-    //品名判断
-    public static String partsNameAndPriceDefineCode(String name, String price){
-        if (name.matches("^.*(エンジン|E/G).*$") && Integer.valueOf(price) > 1000000){
-            return "ENGINE";
-        }else{
+    //ユーザー定義
+    public static String userPartsDefineCode(String sid, String comp, String psbn, String pid, String name){
+        if(KomatsuUserParameter.PC200_USERPARTS_DEF.check(sid))
+            return KomatsuUserParameter.PC200_USERPARTS_DEF.defineName(sid, comp+psbn.split("#")[0]+pid+name);
+        else
             return null;
-        }
     }
 
     private static void codeCheck(String origin, String define) {

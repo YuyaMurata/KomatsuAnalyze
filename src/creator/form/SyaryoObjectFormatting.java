@@ -27,7 +27,7 @@ import obj.SyaryoObject;
  */
 public class SyaryoObjectFormatting {
 
-    private static String KISY = "PC200";
+    private static String KISY = "PC200_form";
     private static String HONSY_INDEXPATH = KomatsuDataParameter.HONSYA_INDEX_PATH;
     private static String PRODUCT_INDEXPATH = KomatsuDataParameter.PRODUCT_INDEXPATH;
     private static DecimalFormat df = new DecimalFormat("0000");
@@ -114,7 +114,7 @@ public class SyaryoObjectFormatting {
             syaryo.put("オールサポート", newMap);
 
             //Komtrax
-            formKomtrax(syaryo, syaryo.get("出荷"));
+            //formKomtrax(syaryo, syaryo.get("出荷"));
 
             //余計な情報を削除
             formExtra(syaryo, new String[]{"最終更新日", "国"});
@@ -456,6 +456,7 @@ public class SyaryoObjectFormatting {
 
         Map<String, Integer> sortMap = order.entrySet().stream()
             .filter(e -> !e.getValue().get(date).equals("None"))
+            .filter(e -> Integer.valueOf(reject.getNew()) <= Integer.valueOf(e.getValue().get(date)))
             .collect(Collectors.toMap(e -> e.getKey(), e -> Integer.valueOf(e.getValue().get(date))));
         
         //作番重複除去

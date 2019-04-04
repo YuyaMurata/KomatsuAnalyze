@@ -25,7 +25,8 @@ import param.KomatsuDataParameter;
  */
 public class WorkIDPartsIDIndex {
 
-    private static String OUTPATH = KomatsuDataParameter.INDEX_PATH;
+    private static String OUTPATH = "";
+    
     //レイアウト
     private static Map<String, List> dataIndex = SyaryoObjectElementsIndex.getInstance().getIndex();
     private static String PATH = KomatsuDataParameter.SYARYOOBJECT_FDPATH;

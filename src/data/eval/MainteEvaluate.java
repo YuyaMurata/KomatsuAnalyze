@@ -38,7 +38,7 @@ public class MainteEvaluate {
     }
     
     private static Map<String, Double> evalMainte(){
-        
+        return null;
     }
     
     //SMRを期間で分割するメソッドは未実装であるため期間は-1で利用する

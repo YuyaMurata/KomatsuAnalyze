@@ -14,7 +14,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
-import param.KomatsuUserParameter;
+import param.KomatsuDataParameter;
 
 /**
  *
@@ -32,8 +32,8 @@ public class SyaryoObjectReject {
         //type(syaryoMap, Arrays.asList(new String[]{"8", "8N1", "10"}));
         //service(syaryoMap, "20170501", true);
         //syaryo(syaryoMap);
-        komtrax(syaryoMap, "KOMTRAX_ACT_DATA");
-        //empty(syaryoMap, "受注");
+        //komtrax(syaryoMap, "KOMTRAX_ACT_DATA");
+        empty(syaryoMap, "受注");
         //smr(syaryoMap, "KOMTRAX_SMR");
         //noop(syaryoMap, "KOMTRAX_SMR", "2017");
 
@@ -74,7 +74,7 @@ public class SyaryoObjectReject {
         System.out.println("仕様情報から車両の削除処理 data=[サブディーラ担当ポイントコード]");
         System.out.println("Before Number of Syaryo : " + map.size());
 
-        List<String> DEALER_LIST = KomatsuUserParameter.DEALER_REJECT_LIST;
+        List<String> DEALER_LIST = KomatsuDataParameter.DEALER_REJECT_LIST;
         System.out.println("リスト_" + DEALER_LIST);
 
         String specNo = "0";

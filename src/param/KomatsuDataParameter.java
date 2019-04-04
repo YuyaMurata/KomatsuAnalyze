@@ -41,36 +41,41 @@ public interface KomatsuDataParameter {
     public static String TEMPLATE_PATH = "template\\";
     public static String MIDDLEDATA_PATH = "middle\\";
     public static String OBJECT_PATH = "syaryo\\";
-    public static String INDEX_PATH = "index\\";
-    public static String SHUFFLE_FORMAT_PATH = "index\\shuffle_format.json";
-    public static String SETTING_GETDATA_PATH = "index\\syaryo_data_index.csv";
-    public static String SETTING_GECUSTTDATA_PATH = "index\\customer_data_index.csv";
-    public static String CUSTOMER_INDEX_PATH = "index\\customer_data_index.json";
-    public static String PC_ERRORFLG_INDEX_PATH = "index\\pc_errorflg_index.json";
-    public static String HONSYA_INDEX_PATH = "index\\honsya_index.json";
+    public static String GEN_PATH = "settings\\generator\\";
+    public static String GEN_INDEX_PATH = GEN_PATH+"index\\";
+    public static String SHUFFLE_FORMAT_PATH = GEN_INDEX_PATH+"shuffle_format.json";
+    public static String SETTING_GETDATA_PATH = GEN_INDEX_PATH+"syaryo_data_index.csv";
+    public static String SETTING_GECUSTTDATA_PATH = GEN_INDEX_PATH+"customer_data_index.csv";
+    public static String CUSTOMER_INDEX_PATH = GEN_INDEX_PATH+"customer_data_index.json";
+    public static String HONSYA_INDEX_PATH = GEN_INDEX_PATH+"honsya_index.json";
     public static String SUMMARY_PATH = "summary\\";
-    public static String PRODUCT_SOURCE = "index\\product_201703.csv";
-
+    public static String PRODUCT_SOURCE = GEN_INDEX_PATH+"product_201703.csv";
+    
+    //Formalize
+    public static String PRODUCT_INDEXPATH = GEN_INDEX_PATH+"product_index.json";
+    public static String DATE_FORMAT = "yyyyMMdd";
+    
+    //Layout
+    //public static Map<String, List> DATALAYOUT_INDEX = SyaryoObjectElementsIndex.getInstance().getIndex();
+    public static String LAYOUT_FORMAT_PATH = GEN_INDEX_PATH+"obj_layout_format.json";
+    
+    //KUECコード
+    public static List KUEC_LIST = ListToCSV.toList(GEN_PATH+"define\\kuec_custercd.csv");
+    
+    //車両分析用
+    public static String AZ_PATH = "settings\\analizer\\";
+    
     //EasyViewer
     public static String SYARYOOBJECT_FDPATH = "syaryo\\";
-    public static String SETTING_DATAFILETER_PATH = "index\\easyviwer_datafilter.csv";
     public static String ICON_IMG = "icon\\syaryo_obj.png";
 	
     //Python
     public static String PYTHONE_PATH = "py\\";
-    public static Map<String, String> GRAPH_PY = new MapToJSON().toMap("define\\graph_relate_pyfile.json");
+    public static Map<String, String> GRAPH_PY = new MapToJSON().toMap(AZ_PATH+"define\\graph_relate_pyfile.json");
     public static String GRAPH_TEMP_FILE = PYTHONE_PATH+"csv\\graph_temp.csv";
     
     public static String DETECT_TEMP_FILE = PYTHONE_PATH+"csv\\detect_temp.csv";
     public static String DETECT_PY = PYTHONE_PATH+"detect_abnomaly.py";
-
-    //Layout
-    //public static Map<String, List> DATALAYOUT_INDEX = SyaryoObjectElementsIndex.getInstance().getIndex();
-    public static String LAYOUT_FORMAT_PATH = "index\\obj_layout_format.json";
-
-    //Formalize
-    public static String PRODUCT_INDEXPATH = "index\\product_index.json";
-    public static String DATE_FORMAT = "yyyyMMdd";
 
     //Exporter
     public static String EXPORT_PATH = "export\\";
@@ -119,40 +124,35 @@ public interface KomatsuDataParameter {
         "廃車",
         "経歴"
     });
-    //KUECコード
-    public static List KUEC_LIST = ListToCSV.toList("define\\kuec_custercd.csv");
 
     //R
     public static String R_FUNC_PATH = "R\\KMRFunction.R";
 
     //事故抽出
-    public static List ACCIDENT_WORDS = ListToCSV.toList("define\\accident_words.csv");
+    public static List ACCIDENT_WORDS = ListToCSV.toList(AZ_PATH+"define\\accident_words.csv");
 
     //エラー紐付け処理時のデータソース
     public static String[] ERR_SOURCE = new String[]{"kom_order", "parts", "work_info", "service"};
     public static String ERR_DATAPROCESS_PATH = "error_proc\\";
 
     //認証関連
-    public static String AUTH_PATH = "index\\autholize.json";
+    public static String AUTH_PATH = AZ_PATH+"index\\autholize.json";
 
     //分析用 (将来的にはユーザーが定義できるようにする)
     //オールサポート対象 パワーライン
-    public static Map POWERLINE = new MapToJSON().toMap("index\\allsupport_index.json");
-
-    //KOMTRAXエラーコードのフラグの定義
-    public static Map PC_ERROR = new MapToJSON().toMap(PC_ERRORFLG_INDEX_PATH);
+    public static Map POWERLINE = new MapToJSON().toMap(AZ_PATH+"index\\allsupport_index.json");
 
     //サブキーの変換が必要なものの対応表
     public static List TRANS_DATE = Arrays.asList(new String[]{"受注", "作業", "部品"});
 
     //名称定義
-    public static String PC_KMERR_DEFNAME_INDEX_PATH = "define\\PC200_Komtrax_Error_name.json";
-    public static Map PC_KMERR_EDEFNAME = new MapToJSON().toMap(PC_KMERR_DEFNAME_INDEX_PATH);
-    public static String PC_PID_SYSDEFNAME_INDEX_PATH = "define\\PC200_PartsID_SystemDefine_name.json";
-    public static Map PC_PID_SYSDEFNAME = new MapToJSON().toMap(PC_PID_SYSDEFNAME_INDEX_PATH);
-    public static String KOMTRAX_FILE_DEFINE = "define\\komtrax_data_define.csv";
+    public static Map PC_KMERR_EDEFNAME = new MapToJSON().toMap(AZ_PATH+"define\\PC200_Komtrax_Error_name.json");
+    public static Map PC_PID_SYSDEFNAME = new MapToJSON().toMap(AZ_PATH+"define\\PC200_PartsID_SystemDefine_name.json");
+    public static String KOMTRAX_FILE_DEFINE = AZ_PATH+"define\\komtrax_data_define.csv";
 
     //PC200 KR
-    public static String PC_KR_SMASTER_INDEX_PATH = "define\\PC200_KR_SyaryoMaster.json";
-    public static Map PC_KR_SMASTER = new MapToJSON().toMap(PC_KR_SMASTER_INDEX_PATH);
+    public static Map PC_KR_SMASTER = new MapToJSON().toMap(GEN_PATH+"define\\PC200_KR_SyaryoMaster.json");
+    
+    //サブディーラ
+    public static List<String> DEALER_REJECT_LIST = ListToCSV.toList(GEN_PATH+"define\\reject_サブディーラ担当コード.csv");
 }

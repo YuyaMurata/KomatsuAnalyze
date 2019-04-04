@@ -33,6 +33,7 @@ import param.KomatsuDataParameter;
 public class SyaryoAnalizer implements AutoCloseable {
 
     public SyaryoObject syaryo;
+    public String name = "";
     public String kind = "";
     public String type = "";
     public String no = "";
@@ -74,6 +75,7 @@ public class SyaryoAnalizer implements AutoCloseable {
     public SyaryoAnalizer(SyaryoObject syaryo, Boolean flg) {
         CNT++;
         this.syaryo = syaryo;
+        this.name = syaryo.name;
         this.syaryo.startHighPerformaceAccess();
 
         //設定の詳細さを選択
@@ -234,7 +236,10 @@ public class SyaryoAnalizer implements AutoCloseable {
                         //事故カウント
                         List<String> sbns = AccidentDetect.wordsDetect(syaryo.get("受注"), syaryo.get("作業"));
                         sbns.stream().map(s -> Integer.valueOf(syaryo.get("受注").get(s.split("\\.")[1]).get(priceIdx)))
-                                .forEach(p -> acmAccidentPrice += p);
+                                .forEach(p -> {
+                                    numAccident += 1;
+                                    acmAccidentPrice += p;
+                                });
                     }
                     break;
                 case "顧客":

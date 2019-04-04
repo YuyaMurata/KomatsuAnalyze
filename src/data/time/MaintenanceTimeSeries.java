@@ -30,12 +30,12 @@ public class MaintenanceTimeSeries {
 
     public static void main(String[] args) {
         LOADER.setFile("PC200_form");
-        //SyaryoObject syaryo = LOADER.getSyaryoMap().get("PC200-10-452681");
+        //SyaryoObject syaryo = LOADER.getSyaryoMap().get("PC200-8N1-315764");
 
         List<String> target = new ArrayList<>();
         //target = new ArrayList<>(interval.keySet());
-        target.add("M001");
-
+        target.add("エンジン");
+        
         Map map = new TreeMap();
         /*try (SyaryoAnalizer analize = new SyaryoAnalizer(syaryo, true)) {
             //toTimeSeries(analize);
@@ -46,12 +46,21 @@ public class MaintenanceTimeSeries {
         }*/
 
         for (SyaryoObject syaryo : LOADER.getSyaryoMap().values()) {
+            if(!KomatsuUserParameter.PC200_USERPARTS_DEF.check(syaryo.name))
+                continue;
             try (SyaryoAnalizer analize = new SyaryoAnalizer(syaryo, true)) {
                 //toTimeSeries(analize);
+                
+                if(analize.numAccident > 0)
+                    continue;
+                    
                 Map m = series(analize, target);
+                
                 if(m == null)
                     continue;
+                
                 map.put(analize.get().name, m);
+                System.out.println(analize.get().name+":"+analize.numAccident);
                 //print(analize.get().name, m);
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -69,7 +78,7 @@ public class MaintenanceTimeSeries {
                 .filter(sbn -> s.getSBNParts(sbn) != null)
                 .forEach(sbn -> {
                     s.getSBNParts(sbn).values().stream()
-                            .map(p -> PartsCodeConv.partsConv(LOADER, p))
+                            .map(p -> PartsCodeConv.partsConv(LOADER, s.name, sbn, p))
                             .filter(pdef -> target.contains(pdef))
                             .forEach(pdef -> {
                                 if (partsSBN.get(pdef) == null) {
