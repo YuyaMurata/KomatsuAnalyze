@@ -44,7 +44,7 @@ public class SyaryoAnalizer implements AutoCloseable {
     public Boolean dead = false;
     public Integer rent = 0;
     public String lifestart = "";
-    public String lifestop = "20170501";
+    public String lifestop = "";
     public String currentLife = "";
     public Integer currentAge_day = -1;
     public List<String> usedlife = null;
@@ -117,18 +117,20 @@ public class SyaryoAnalizer implements AutoCloseable {
 
         //データ検証
         List<String> enableSet = check();
-
+        List<String> dates = new ArrayList<>();
+        
         //Status
         for (String key : enableSet) {
             switch (key) {
                 case "SMR":
                     maxSMR[0] = Integer.valueOf(getValue("SMR", "-1", true).get(getValue("SMR", "-1", true).size() - 1));
                     maxSMR[1] = Integer.valueOf(getValue("SMR", "VALUE", true).get(getValue("SMR", "VALUE", true).size() - 1));
-
+                    dates.addAll(getValue("SMR", "-1", false));
                     break;
-                case "KOMTRAX_SMR":
-                    maxSMR[2] = Integer.valueOf(getValue("KOMTRAX_SMR", "-1", true).get(getValue("KOMTRAX_SMR", "-1", true).size() - 1));
-                    maxSMR[3] = Integer.valueOf(getValue("KOMTRAX_SMR", "VALUE", true).get(getValue("KOMTRAX_SMR", "VALUE", true).size() - 1));
+                case "KOMTRAX_ACT_DATA":
+                    maxSMR[2] = Integer.valueOf(getValue("KOMTRAX_ACT_DATA", "-1", true).get(getValue("KOMTRAX_ACT_DATA", "-1", true).size() - 1));
+                    maxSMR[3] = Integer.valueOf(getValue("KOMTRAX_ACT_DATA", "VALUE", true).get(getValue("KOMTRAX_ACT_DATA", "VALUE", true).size() - 1));
+                    dates.addAll(getValue("KOMTRAX_ACT_DATA","-1",false));
                     komtrax = komtrax || true;
                     break;
                 case "仕様":
@@ -137,10 +139,11 @@ public class SyaryoAnalizer implements AutoCloseable {
                 case "中古車":
                     used = true;
                     usedlife = new ArrayList<>(syaryo.get("中古車").keySet());
+                    dates.addAll(usedlife);
                     break;
                 case "廃車":
                     dead = true;
-                    lifestop = syaryo.get("廃車").keySet().stream().findFirst().get();
+                    dates.addAll(new ArrayList(syaryo.get("廃車").keySet()));
                     break;
                 case "受注":
                     numOrders = syaryo.get("受注").size();
@@ -156,6 +159,7 @@ public class SyaryoAnalizer implements AutoCloseable {
                         } else {
                             dateSBN.put(date, dateSBN.get(date) + "," + sbn);
                         }
+                        dates.add(date);
                     });
                 case "顧客":
                     List custv = getValue("顧客", "顧客CD", false);
@@ -168,14 +172,16 @@ public class SyaryoAnalizer implements AutoCloseable {
                     numWorks = syaryo.get("作業").size();
                     break;
                 case "新車":
-                    lifestart = syaryo.get("新車").keySet().stream().findFirst().get();
+                    dates.addAll(new ArrayList(syaryo.get("新車").keySet()));
                     mcompany = syaryo.get("仕様").get("0").get(0);
                     break;
             }
         }
 
-        //Life
-        currentAge_day = age(lifestop); //廃車日
+        //データ上の日付を計算
+        List<Integer> datesInt = dates.stream().map(d -> Integer.valueOf(d.split("#")[0])).distinct().sorted().collect(Collectors.toList());
+        lifestart = String.valueOf(datesInt.stream().mapToInt(d -> d).min().getAsInt()); //データ上の最初
+        lifestop = String.valueOf(datesInt.stream().mapToInt(d -> d).max().getAsInt()); //データ上の最終
     }
 
     private void complexSettings(SyaryoObject syaryo) {
@@ -263,6 +269,7 @@ public class SyaryoAnalizer implements AutoCloseable {
     private void setAgeSMR(Map<String, List<String>> act_smr) {
         //初期値
         ageSMR.put("0", new AbstractMap.SimpleEntry<>(0, 0));
+        smrDate.put(0, lifestart);
 
         // d刻みでSMRをsで丸める
         for (String date : act_smr.keySet()) {
@@ -285,6 +292,7 @@ public class SyaryoAnalizer implements AutoCloseable {
         List<String> svsmr = syaryo.get("SMR").keySet().stream()
                 .filter(date -> last < Integer.valueOf(date.split("#")[0]))
                 .collect(Collectors.toList());
+        
         for (String date : svsmr) {
             Integer t = age(date) / D_DATE;
             Integer smr = (Double.valueOf(syaryo.get("SMR").get(date).get(2)).intValue() / D_SMR) * D_SMR;  //SMRの構成が変わるとエラー
@@ -438,7 +446,7 @@ public class SyaryoAnalizer implements AutoCloseable {
         List list = syaryo.get(key).values().stream().map(l -> l.get(idx)).collect(Collectors.toList());
 
         if (sorted) {
-            list = (List) list.stream().map(v -> Integer.valueOf(v.toString().split("#")[0])).sorted().map(v -> v.toString()).collect(Collectors.toList());
+            list = (List) list.stream().map(v -> Double.valueOf(v.toString().split("#")[0]).intValue()).sorted().map(v -> v.toString()).collect(Collectors.toList());
         }
 
         return list;

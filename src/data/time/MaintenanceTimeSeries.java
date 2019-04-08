@@ -34,7 +34,7 @@ public class MaintenanceTimeSeries {
 
         List<String> target = new ArrayList<>();
         //target = new ArrayList<>(interval.keySet());
-        target.add("エンジン");
+        target.add("セルモータ");
         
         Map map = new TreeMap();
         /*try (SyaryoAnalizer analize = new SyaryoAnalizer(syaryo, true)) {
