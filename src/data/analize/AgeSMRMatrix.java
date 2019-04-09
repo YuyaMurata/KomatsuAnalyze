@@ -32,17 +32,23 @@ public class AgeSMRMatrix {
             try(SyaryoAnalizer s = new SyaryoAnalizer(syaryo, true)){
                 String date;
                 int smr = 0;
+                Map<Integer, Integer> ysmr = new TreeMap();
+                
                 while((date = s.getSMRToDate(smr))!= null){
-                    int y = s.age(date) /365;
-                    String key = smr+"_"+y;
+                    int y = s.age(date) / 365;
+
+                    ysmr.put(y, smr);
                     
+                    smr += 500;
+                }
+                
+                ysmr.entrySet().stream().map(k -> k.getValue()+"_"+k.getKey()).forEach(key ->{
                     if(map.get(key) == null)
                         map.put(key, 0);
                     
                     map.put(key, map.get(key)+1);
-                    
-                    smr += 500;
-                }
+                });
+                
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -60,8 +66,6 @@ public class AgeSMRMatrix {
             mat[hsmr.indexOf(smr)][hy.indexOf(y)] = e.getValue();
             
         });
-        
-        
         
         //print
         try(PrintWriter pw = CSVFileReadWrite.writerSJIS("age_smr_all_matrix.csv")){
