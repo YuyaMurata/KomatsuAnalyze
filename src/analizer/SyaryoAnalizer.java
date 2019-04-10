@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 import java.util.AbstractMap;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
-import param.KomatsuDataParameter;
+import param.KomatsuUserParameter;
 
 /**
  *
@@ -64,11 +64,11 @@ public class SyaryoAnalizer implements AutoCloseable {
     private int D_DATE = 365;
     private int D_SMR = 10;
     private List<String[]> termAllSupport;
-    private static String DATE_FORMAT = KomatsuDataParameter.DATE_FORMAT;
+    private static String DATE_FORMAT = KomatsuUserParameter.DATE_FORMAT;
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
-    private static Map<String, String> POWERLINE_CHECK = KomatsuDataParameter.POWERLINE;
+    private static Map<String, String> POWERLINE_CHECK = KomatsuUserParameter.POWERLINE;
 
-    private static Map<String, String> PC200_KR_MASTER = KomatsuDataParameter.PC_KR_SMASTER;
+    private static Map<String, String> PC200_KR_MASTER = KomatsuUserParameter.PC_KR_SMASTER;
 
     private static int CNT = 0;
 
@@ -101,7 +101,7 @@ public class SyaryoAnalizer implements AutoCloseable {
 
     private List<String> check() {
         List<String> enable = new ArrayList<>();
-        for (String d : KomatsuDataParameter.DATA_ORDER) {
+        for (String d : KomatsuUserParameter.DATA_ORDER) {
             if (syaryo.get(d) != null) {
                 enable.add(d);
             }

@@ -19,6 +19,7 @@ import java.util.stream.IntStream;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
 import param.KomatsuDataParameter;
+import param.KomatsuUserParameter;
 import program.r.R;
 import viewer.graph.TimeSpreadChart;
 
@@ -240,9 +241,9 @@ public class SMRDataFormalize {
 		return data;
 	}
 
-	private static Map<String, String> PY_SCRIPT = KomatsuDataParameter.GRAPH_PY;
-	private static String PY_CSV_FILE = KomatsuDataParameter.GRAPH_TEMP_FILE;
-	private static String PY_PATH = KomatsuDataParameter.PYTHONE_PATH;
+	private static Map<String, String> PY_SCRIPT = KomatsuUserParameter.GRAPH_PY;
+	private static String PY_CSV_FILE = KomatsuUserParameter.GRAPH_TEMP_FILE;
+	private static String PY_PATH = KomatsuUserParameter.PYTHONE_PATH;
 
 	private static void testGraph(SyaryoObject syaryo, Map<String, String> smr) {
 		String select = "SMR";

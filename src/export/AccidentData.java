@@ -16,6 +16,7 @@ import java.util.Optional;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
 import param.KomatsuDataParameter;
+import param.KomatsuUserParameter;
 
 /**
  *
@@ -25,7 +26,7 @@ public class AccidentData {
 
     private static String kisy = "PC200";
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
-    private static List<String> ACCIDENT_WORDS = KomatsuDataParameter.ACCIDENT_WORDS;
+    private static List<String> ACCIDENT_WORDS = KomatsuUserParameter.ACCIDENT_WORDS;
 
     public static void main(String[] args) {
         LOADER.setFile(kisy + "_sv_form");

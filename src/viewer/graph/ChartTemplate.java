@@ -11,7 +11,7 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
 import obj.SyaryoObject;
-import param.KomatsuDataParameter;
+import param.KomatsuUserParameter;
 import program.py.PythonCommand;
 
 /**
@@ -20,9 +20,9 @@ import program.py.PythonCommand;
  */
 public abstract class ChartTemplate {
 
-    private static String PY_PATH = KomatsuDataParameter.PYTHONE_PATH;
-    private static Map<String, String> PY_SCRIPT = KomatsuDataParameter.GRAPH_PY;
-    private static String PY_CSV_FILE = KomatsuDataParameter.GRAPH_TEMP_FILE;
+    private static String PY_PATH = KomatsuUserParameter.PYTHONE_PATH;
+    private static Map<String, String> PY_SCRIPT = KomatsuUserParameter.GRAPH_PY;
+    private static String PY_CSV_FILE = KomatsuUserParameter.GRAPH_TEMP_FILE;
 
     public ChartTemplate() {
     }
@@ -30,7 +30,7 @@ public abstract class ChartTemplate {
     public void exec(String name, String script) {
         //Graph Python 実行
         System.out.println(name + "-Python 実行");
-        PythonCommand.py(script, new String[]{KomatsuDataParameter.GRAPH_TEMP_FILE});
+        PythonCommand.py(script, new String[]{KomatsuUserParameter.GRAPH_TEMP_FILE});
     }
 
     public abstract List<String> graphFile(String select, int idx, SyaryoObject syaryo);

@@ -28,6 +28,7 @@ public class AgeSMRMatrix {
         
         //
         Map<String, Integer> map = new TreeMap();
+        Map<Integer, Integer> smrmap = new TreeMap();
         LOADER.getSyaryoMap().values().stream().forEach(syaryo ->{
             try(SyaryoAnalizer s = new SyaryoAnalizer(syaryo, true)){
                 String date;
@@ -38,6 +39,9 @@ public class AgeSMRMatrix {
                     int y = s.age(date) / 365;
 
                     ysmr.put(y, smr);
+                    if(smrmap.get(smr) == null)
+                        smrmap.put(smr, 0);
+                    smrmap.put(smr, smrmap.get(smr)+1);
                     
                     smr += 500;
                 }
@@ -79,5 +83,7 @@ public class AgeSMRMatrix {
             }
         }
         
+        //print SMR
+        smrmap.entrySet().stream().map(s -> s.getKey()+","+s.getValue()).forEach(System.out::println);
     }
 }

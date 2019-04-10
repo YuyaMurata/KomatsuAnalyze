@@ -12,7 +12,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import file.SyaryoToCompress;
-import program.r.R;
 
 /**
  *

@@ -21,10 +21,10 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import javax.imageio.ImageIO;
 import obj.LoadSyaryoObject;
-import param.KomatsuDataParameter;
+import param.KomatsuUserParameter;
 
 public class SyaryoObjectServer implements RemoteSyaryoObjectLoader {
-	private static final String ICON_IMG = KomatsuDataParameter.ICON_IMG;
+	private static final String ICON_IMG = KomatsuUserParameter.ICON_IMG;
     private static final LoadSyaryoObject LOADER = LoadSyaryoObject.getInstance();
     private static TrayIcon icon;
     

@@ -5,7 +5,7 @@
  */
 package viewer.easy;
 
-import param.KomatsuDataParameter;
+//import param.KomatsuDataParameter;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
@@ -44,6 +44,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
+import param.KomatsuUserParameter;
 import viewer.fanction.SyaryoIDFilter;
 import viewer.fanction.SyaryoIDOrder;
 import viewer.output.SyaryoDataHistory;
@@ -119,7 +120,7 @@ public class EasyViewerFXMLController implements Initializable {
         syaryoMap = new HashMap();
         machineListInitialize();
         graphMenuSettings();
-        initializeAccordion(KomatsuDataParameter.DATA_ORDER);
+        initializeAccordion(KomatsuUserParameter.DATA_ORDER);
 
         //default 動作しないため修正
         //defaultFileLoad(new File("syaryo\\syaryo_obj_PC200_sv_form.bz2"));
@@ -212,7 +213,7 @@ public class EasyViewerFXMLController implements Initializable {
     @FXML
     private void loadJSONFile(ActionEvent event) {
         FileChooser filechooser = new FileChooser();
-        filechooser.setInitialDirectory(new File(KomatsuDataParameter.SYARYOOBJECT_FDPATH));
+        filechooser.setInitialDirectory(new File(KomatsuUserParameter.SYARYOOBJECT_FDPATH));
         File file = filechooser.showOpenDialog(menu.getScene().getWindow());
 
         fileLoad(file);
@@ -236,7 +237,7 @@ public class EasyViewerFXMLController implements Initializable {
                 String od = f.split("_").length < 5 ? f.split("_")[3].replace(".bz2", "") : f.split("_")[3] + "_" + f.split("_")[4].replace(".bz2", "");
                 initializeAccordion(Arrays.asList(new String[]{od}));
             } else {
-                initializeAccordion(KomatsuDataParameter.DATA_ORDER);
+                initializeAccordion(KomatsuUserParameter.DATA_ORDER);
             }
 
             final ExecutorService exec = Executors.newSingleThreadExecutor();
@@ -318,7 +319,7 @@ public class EasyViewerFXMLController implements Initializable {
     }
 
     private void graphMenuSettings() {
-        graph_menu.getItems().addAll(KomatsuDataParameter.GRAPH_PY.keySet());
+        graph_menu.getItems().addAll(KomatsuUserParameter.GRAPH_PY.keySet());
     }
 
     @FXML

@@ -15,6 +15,7 @@ import java.util.Map;
 import file.SyaryoToCompress;
 import obj.SyaryoObject;
 import param.KomatsuDataParameter;
+import param.KomatsuUserParameter;
 
 /**
  *
@@ -91,7 +92,7 @@ public class SyaryoDataSummary {
             List head = new ArrayList();head.add("ヘッダ");
             List data = new ArrayList();data.add("データ数");
             List num = new ArrayList();num.add("車両数");
-            for(String header : KomatsuDataParameter.DATA_ORDER){
+            for(String header : KomatsuUserParameter.DATA_ORDER){
                 head.add(header);
                 if(dataSizeMap.get(header) != null){
                     data.add(dataSizeMap.get(header).toString());
@@ -111,7 +112,7 @@ public class SyaryoDataSummary {
             for(String name : syaryoSummary.keySet()){
                 data = new ArrayList();data.add(name);
                 //System.out.println(name);
-                for(String header : KomatsuDataParameter.DATA_ORDER){
+                for(String header : KomatsuUserParameter.DATA_ORDER){
                     //System.out.println(header+":"+syaryoSummary.get(name).get(header));
                     if(syaryoSummary.get(name).get(header) != null)
                         data.add(syaryoSummary.get(name).get(header).toString());

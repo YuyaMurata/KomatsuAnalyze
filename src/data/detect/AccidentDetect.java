@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import obj.SyaryoLoader;
 import param.KomatsuDataParameter;
+import param.KomatsuUserParameter;
 
 /**
  *
@@ -19,7 +20,7 @@ import param.KomatsuDataParameter;
  */
 public class AccidentDetect {
 
-    private static List<String> ACCIDENT_WORDS = KomatsuDataParameter.ACCIDENT_WORDS;
+    private static List<String> ACCIDENT_WORDS = KomatsuUserParameter.ACCIDENT_WORDS;
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     
     public static List<String> wordsDetect(Map<String, List<String>> service, Map<String, List<String>> work) {

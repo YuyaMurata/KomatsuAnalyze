@@ -11,12 +11,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import param.KomatsuUserParameter;
 
 /**
  *
  * @author ZZ17807
  */
 public class UserPartsObject {
+    private static String PATH = KomatsuUserParameter.AZ_PATH;
     public Map<String, Map<String, String>> index;
 
     public UserPartsObject(String file) {
@@ -30,7 +32,7 @@ public class UserPartsObject {
         //Create Map
         fmap.entrySet().stream().forEach(f ->{
             String defname = f.getKey();
-            List<String> csv = ListToCSV.toList(f.getValue());
+            List<String> csv = ListToCSV.toList(PATH+f.getValue());
             List<String> h = Arrays.asList(csv.get(0).split(","));
             csv.remove(0);
             

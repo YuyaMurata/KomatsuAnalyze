@@ -20,6 +20,7 @@ import file.MapToJSON;
 import file.SyaryoToCompress;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
+import param.KomatsuUserParameter;
 
 /**
  *
@@ -818,7 +819,7 @@ public class SyaryoObjectFormatting {
     //KOMTRAXデータの整形 (値の重複除去、日付の整形、小数->整数)
     private static void formKomtrax(SyaryoObject syaryo, Map<String, List<String>> deploy) {
         //ALL
-        List<String> kmList = KomatsuDataParameter.DATA_ORDER.stream().filter(s -> s.contains("KOMTRAX")).collect(Collectors.toList());
+        List<String> kmList = KomatsuUserParameter.DATA_ORDER.stream().filter(s -> s.contains("KOMTRAX")).collect(Collectors.toList());
         String stdate = deploy.keySet().stream().findFirst().get();
         
         for (String id : kmList) {

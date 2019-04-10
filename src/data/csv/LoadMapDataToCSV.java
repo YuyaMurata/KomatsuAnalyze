@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
-import param.KomatsuDataParameter;
+import param.KomatsuUserParameter;
 
 /**
  *
@@ -34,7 +34,7 @@ public class LoadMapDataToCSV {
         System.out.println("num of syaryo = " + f.size());
 
         //CSVData
-        List<String> dh = KomatsuDataParameter.DATA_ORDER.stream().filter(d -> d.contains("LOADMAP")).collect(Collectors.toList());
+        List<String> dh = KomatsuUserParameter.DATA_ORDER.stream().filter(d -> d.contains("LOADMAP")).collect(Collectors.toList());
         System.out.println(dh);
 
         //CSV

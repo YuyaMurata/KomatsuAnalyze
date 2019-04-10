@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import obj.SyaryoObject;
 import param.KomatsuDataParameter;
+import param.KomatsuUserParameter;
 
 /**
  * 車両評価
@@ -28,7 +29,7 @@ public class EvaluateSyaryoObject {
     public Integer day, smr, rent;
 
     //負荷リスト
-    private static List<String> USELIST = KomatsuDataParameter.DATA_ORDER.stream()
+    private static List<String> USELIST = KomatsuUserParameter.DATA_ORDER.stream()
             .filter(d -> d.contains("LOADMAP_実エンジン回転"))
             .collect(Collectors.toList());
 

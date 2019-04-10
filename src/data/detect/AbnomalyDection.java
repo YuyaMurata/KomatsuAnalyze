@@ -11,9 +11,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import param.KomatsuDataParameter;
+import param.KomatsuUserParameter;
 import program.py.PythonCommand;
 
 /**
@@ -24,19 +22,19 @@ public class AbnomalyDection {
     //X^2検定
     public static Map<String, String> detectChiSquare(Map<String, String> data, Double alpha, Boolean graph){
         //一時ファイルの生成
-        output(KomatsuDataParameter.DETECT_TEMP_FILE, data);
+        output(KomatsuUserParameter.DETECT_TEMP_FILE, data);
         
         //Pythonの実行 AbnomalyDetect
         String[] args;
         if(graph)
-            args = new String[]{KomatsuDataParameter.DETECT_TEMP_FILE, alpha.toString(), "g"};
+            args = new String[]{KomatsuUserParameter.DETECT_TEMP_FILE, alpha.toString(), "g"};
         else
-            args = new String[]{KomatsuDataParameter.DETECT_TEMP_FILE, alpha.toString()};
-        PythonCommand.py(KomatsuDataParameter.DETECT_PY, args);
+            args = new String[]{KomatsuUserParameter.DETECT_TEMP_FILE, alpha.toString()};
+        PythonCommand.py(KomatsuUserParameter.DETECT_PY, args);
         
         //生成ファイルの読み込み
         Map<String, String> map = new HashMap<>();
-        try(BufferedReader br = CSVFileReadWrite.reader(KomatsuDataParameter.DETECT_TEMP_FILE)){
+        try(BufferedReader br = CSVFileReadWrite.reader(KomatsuUserParameter.DETECT_TEMP_FILE)){
             //Header 除去
             String header = br.readLine();
             

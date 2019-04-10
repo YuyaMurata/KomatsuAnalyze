@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import obj.SyaryoObject;
-import param.KomatsuDataParameter;
+import param.KomatsuUserParameter;
 
 /**
  *
@@ -108,7 +108,7 @@ public class TimeSpreadChart extends ChartTemplate {
                 graphFormatter(graphData, data, -1);
             } else if (select.contains("LOADMAP")) {
                 Map data = syaryo.get(select);
-                if(KomatsuDataParameter.GRAPH_PY.get(select).contains("bar")){
+                if(KomatsuUserParameter.GRAPH_PY.get(select).contains("bar")){
                     //header
                     graphData.add("label,v");
                     graphFormatter(graphData, data, -1);
