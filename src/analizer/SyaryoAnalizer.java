@@ -53,7 +53,7 @@ public class SyaryoAnalizer implements AutoCloseable {
     public Integer numParts = -1;
     public Integer numWorks = -1;
     public Integer acmLCC = -1;
-    public Integer numAccident = 0;
+    public Long numAccident = 0L;
     public Integer acmAccidentPrice = 0;
     public Integer[] cluster = new Integer[3];
     public Integer[] maxSMR = new Integer[]{-1, -1, -1, -1};
@@ -69,6 +69,7 @@ public class SyaryoAnalizer implements AutoCloseable {
     private static Map<String, String> POWERLINE_CHECK = KomatsuUserParameter.POWERLINE;
 
     private static Map<String, String> PC200_KR_MASTER = KomatsuUserParameter.PC_KR_SMASTER;
+    private static Map<String, String> PC200_ACCIDENT = KomatsuUserParameter.PC200_ACCIDENT;
 
     private static int CNT = 0;
 
@@ -240,12 +241,8 @@ public class SyaryoAnalizer implements AutoCloseable {
                         }
 
                         //事故カウント
-                        List<String> sbns = AccidentDetect.wordsDetect(syaryo.get("受注"), syaryo.get("作業"));
-                        sbns.stream().map(s -> Integer.valueOf(syaryo.get("受注").get(s.split("\\.")[1]).get(priceIdx)))
-                                .forEach(p -> {
-                                    numAccident += 1;
-                                    acmAccidentPrice += p;
-                                });
+                        numAccident = PC200_ACCIDENT.values().stream().filter(a -> name.equals(a)).count();
+                        
                     }
                     break;
                 case "顧客":

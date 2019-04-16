@@ -19,14 +19,14 @@ import param.KomatsuUserParameter;
  */
 public class UserPartsObject {
     private static String PATH = KomatsuUserParameter.AZ_PATH;
-    public Map<String, Map<String, String>> index;
+    public Map<String, Map<String[], String>> index;
 
     public UserPartsObject(String file) {
         index = createObject(file);
     }
     
     private Map createObject(String file){
-        Map<String, Map<String, String>> map = new HashMap<>();
+        Map<String, Map<String[], String>> map = new HashMap<>();
         Map<String, String> fmap = new MapToJSON().toMap(file);
         
         //Create Map
@@ -40,10 +40,11 @@ public class UserPartsObject {
             csv.stream().map(l -> l.split(",")).forEach(s ->{
                 String sid = s[h.indexOf("SID")];
                 
-                String key = s[h.indexOf("部品.会社")]
-                            +s[h.indexOf("部品.作番")].split("#")[0]
-                            +s[h.indexOf("部品.品番")]
-                            +s[h.indexOf("部品.品名")];
+                String[] key = new String[]{
+                            s[h.indexOf("部品.会社")],
+                            s[h.indexOf("部品.作番")].split("#")[0],
+                            s[h.indexOf("部品.品番")],
+                            s[h.indexOf("部品.品名")]};
                 
                 if(map.get(sid) == null)
                     map.put(sid, new HashMap<>());
@@ -59,7 +60,7 @@ public class UserPartsObject {
         return index.get(sid) != null;
     }
     
-    public String defineName(String sid, String key){
+    public String defineName(String sid, String[] key){
         return index.get(sid).get(key);
     }
 }

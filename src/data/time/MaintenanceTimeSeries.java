@@ -34,7 +34,7 @@ public class MaintenanceTimeSeries {
 
         List<String> target = new ArrayList<>();
         //target = new ArrayList<>(interval.keySet());
-        target.add("セルモータ");
+        target.add("オルタネータ");
         
         Map map = new TreeMap();
         /*try (SyaryoAnalizer analize = new SyaryoAnalizer(syaryo, true)) {
@@ -70,7 +70,7 @@ public class MaintenanceTimeSeries {
         allprintToCSV(map);
     }
 
-    private static Map<String, List<Map.Entry>> series(SyaryoAnalizer s, List<String> target) {
+    private static Map<String, Map<String, Map.Entry>> series(SyaryoAnalizer s, List<String> target) {
         //各部品の交換実績を調査
         Map<String, List<String>> partsSBN = new TreeMap<>();
         List<String> sbns = new ArrayList<>(s.get("受注").keySet());
@@ -93,18 +93,18 @@ public class MaintenanceTimeSeries {
         }
 
         //重複除去と変換
-        Map<String, List<Map.Entry>> agesmr = new TreeMap<>();
+        Map<String, Map<String, Map.Entry>> agesmr = new TreeMap<>();
         for (String key : partsSBN.keySet()) {
-            List<Map.Entry> list = partsSBN.get(key).stream()
+            Map<String, Map.Entry> m = partsSBN.get(key).stream()
                     .distinct()
-                    .map(sbn -> s.getDateToSMR(s.get("受注").get(sbn).get(LOADER.index("受注", "SGYO_KRDAY"))))
-                    .collect(Collectors.toList());
-            agesmr.put(key, list);
+                    .collect(Collectors.toMap(sbn -> s.get("受注").get(sbn).get(LOADER.index("受注", "SGYO_KRDAY"))
+                            , sbn -> s.getDateToSMR(s.get("受注").get(sbn).get(LOADER.index("受注", "SGYO_KRDAY")))));
+            agesmr.put(key, m);
         }
 
         return agesmr;
     }
-
+    
     private static void print(String name, Map<String, List<Map.Entry>> map) {
         try (PrintWriter pw = CSVFileReadWrite.writerSJIS(name + "_mante_testseries.csv")) {
             pw.println("KEY,SMR系列");
@@ -125,12 +125,12 @@ public class MaintenanceTimeSeries {
         }
     }
     
-    private static void allprintToCSV(Map<String, Map<String, List<Map.Entry>>> map) {
+    private static void allprintToCSV(Map<String, Map<String, Map<String, Map.Entry>>> map) {
         try (PrintWriter pw = CSVFileReadWrite.writerSJIS("all_mante_testseries2.csv")) {
-            pw.println("SID,KEY,Y,SMR");
+            pw.println("SID,KEY,DATE,Y,SMR");
             map.entrySet().stream().forEach(m -> {
                 m.getValue().entrySet().stream().forEach(m2 -> {
-                    m2.getValue().stream().map(e -> m.getKey()+","+m2.getKey()+","+e.getKey()+","+e.getValue()).forEach(pw::println);
+                    m2.getValue().entrySet().stream().map(e -> m.getKey()+","+m2.getKey()+","+e.getKey()+","+e.getValue().getKey()+","+e.getValue().getValue()).forEach(pw::println);
                 });
             });
         }

@@ -32,6 +32,9 @@ public interface KomatsuUserParameter {
     public static Map<String, Integer> PC200_MAINTEPARTS_INTERVAL = new MapToJSON().toMap(AZ_PATH+"user\\PC200_mainteparts_interval.json");
     public static UserPartsObject PC200_USERPARTS_DEF = new UserPartsObject(AZ_PATH+"user\\PC200_parts_userdefine.json");
     
+    //事故リスト
+    public static Map<String, String> PC200_ACCIDENT = ListToCSV.toMap(AZ_PATH+"user\\PC200_事故車両推定リスト.csv", 1, 0);
+    
     //評価行列
     public static String PC200_PARTS_EVAL_FILE="PC200_partscd_evalarray.csv";
     public static String PC200_KMERR_EVAL_FILE="PC200_kmerrcd_evalarray.csv";
