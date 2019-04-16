@@ -12,8 +12,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  *
@@ -22,7 +20,7 @@ import java.util.Map;
 public class TestMetaSetGenerator {
 
     public static void main(String[] args) {
-        tableToMetaSet("SYARYO");
+        tableToMetaSet("SERVICE");
     }
 
     public static void tableToMetaSet(String table) {
