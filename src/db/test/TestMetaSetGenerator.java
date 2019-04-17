@@ -5,6 +5,8 @@
  */
 package db.test;
 
+import db.HiveDB;
+import db.HiveDB.TABLE;
 import static db.HiveDB.getConnection;
 import file.MapToJSON;
 import java.sql.Connection;
@@ -20,15 +22,16 @@ import java.sql.Statement;
 public class TestMetaSetGenerator {
 
     public static void main(String[] args) {
-        tableToMetaSet("SERVICE");
+        for(TABLE t : HiveDB.TABLE.values()){
+            if(!t.get().equals("service") && !t.get().equals("syaryo") && !t.get().equals("komtrax") && !t.get().contains("customer"))
+                tableToMetaSet(t.get());
+        }
     }
 
     public static void tableToMetaSet(String table) {
-        //DB接続
-        Connection con = getConnection(); //HiveDB
-
-        try {
-            Statement stmt = con.createStatement();
+        //DB接続 HiveDB
+        try(Connection con = getConnection();
+            Statement stmt = con.createStatement();) {
 
             String sql = "select * from " + table;
 
@@ -57,6 +60,7 @@ public class TestMetaSetGenerator {
             
             new MapToJSON().toJSON("test_"+table+".json", meta.metaSet);
             
+            rs.close();
         } catch (SQLException ex) {
             //System.out.println("Not kisy and type !");
             ex.printStackTrace();

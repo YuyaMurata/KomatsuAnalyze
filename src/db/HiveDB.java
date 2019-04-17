@@ -78,8 +78,8 @@ public abstract class HiveDB {
         EQP_HANBAI("eqp_hanbai", EQP.Hanbai.values()),
         EQP_SPEC("eqp_spec", EQP.Spec.values()),
         SELL("sell", Sell._Sell.values()),
-        SELL_ATTSPEC("sell_attspec", Sell.ATTSpec.values()),
-        SELL_SPEC("sell_spec", Sell.Spec.values()),
+        //SELL_ATTSPEC("sell_attspec", Sell.ATTSpec.values()),
+        //SELL_SPEC("sell_spec", Sell.Spec.values()),
         SELL_TRADE("sell_trade", Sell.Trade.values()),
         SELL_USED("sell_used", Sell.Used.values()),
         SELL_OLD("sell_old", Sell.Old.values()),
@@ -88,6 +88,11 @@ public abstract class HiveDB {
         //GAICHU_WORK_INFO("gaichu_work_info", Gaichu.Work_Info.values()),
         CARE("kom_care_genka", Care._Care.values()),
         CARE_PRICE("kom_care_preprice", Care.PrePrice.values()),
+        CARE_CRAME_DEL("kom_care_crame_delete", Care._Care.values()),
+        CARE_CRAME_REL("kom_care_crame_relate", Care._Care.values()),
+        CARE_KEIYAKU_DEL("kom_care_keiyaku_delete", Care._Care.values()),
+        CARE_KEIYAKU_ENT("kom_care_keiyaku_entyo", Care._Care.values()),
+        CARE_KEIYAKU_FIN("kom_care_keiyaku_finish", Care._Care.values()),
         ALLSUPPORT("as_keiyaku", Allsupport._Allsupport.values()),
         KOMTRAX("komtrax", Komtrax.TABLE.values());
 
