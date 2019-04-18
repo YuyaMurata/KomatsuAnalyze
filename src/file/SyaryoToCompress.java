@@ -32,6 +32,7 @@ import param.KomatsuDataParameter;
 public class SyaryoToCompress {
     public static Boolean runnable = true;
     public static Integer fileSize, availSize;
+    private static Integer BUFFER_SIZE=1048576;
     
     private static LoadSyaryoObject LOADER = LoadSyaryoObject.getInstance();
     
@@ -44,7 +45,7 @@ public class SyaryoToCompress {
             
         file = file.replace(".gz", "").replace(".bz2", "");
 
-        int size = 1024;
+        int size = BUFFER_SIZE;
         try (ByteArrayInputStream in = new ByteArrayInputStream(getBytes(map));
             OutputStream fout = Files.newOutputStream(Paths.get(file + ".bz2"));
             BufferedOutputStream out = new BufferedOutputStream(fout);
@@ -70,7 +71,7 @@ public class SyaryoToCompress {
         runnable = true;
         Map readObj = null;
         
-        int size = 1024;
+        int size = BUFFER_SIZE;
         try (InputStream fin = Files.newInputStream(Paths.get(file));
             BufferedInputStream in = new BufferedInputStream(fin);
             ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -100,7 +101,7 @@ public class SyaryoToCompress {
         runnable = true;
         Map readObj = null;
         
-        int size = 1024;
+        int size = BUFFER_SIZE;
         try (InputStream fin = Files.newInputStream(Paths.get(file));
             BufferedInputStream in = new BufferedInputStream(fin);
             ByteArrayOutputStream out = new ByteArrayOutputStream();
