@@ -15,10 +15,15 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import obj.LoadSyaryoObject;
 import obj.SyaryoObject;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
@@ -30,26 +35,27 @@ import param.KomatsuDataParameter;
  * @author ZZ17390
  */
 public class SyaryoToCompress {
+
     public static Boolean runnable = true;
     public static Integer fileSize, availSize;
-    private static Integer BUFFER_SIZE=1048576;
-    
+    private static Integer BUFFER_SIZE = 8192;
+
     private static LoadSyaryoObject LOADER = LoadSyaryoObject.getInstance();
-    
+
     public void write(String file, Map map) {
         runnable = true;
-        if(!LOADER.isClosable){
+        if (!LOADER.isClosable) {
             System.err.println("LoadSyaryoObject is not close!");
             System.exit(0);
         }
-            
+
         file = file.replace(".gz", "").replace(".bz2", "");
 
         int size = BUFFER_SIZE;
         try (ByteArrayInputStream in = new ByteArrayInputStream(getBytes(map));
-            OutputStream fout = Files.newOutputStream(Paths.get(file + ".bz2"));
-            BufferedOutputStream out = new BufferedOutputStream(fout);
-            BZip2CompressorOutputStream bzOut = new BZip2CompressorOutputStream(out)) {
+                OutputStream fout = Files.newOutputStream(Paths.get(file + ".bz2"));
+                BufferedOutputStream out = new BufferedOutputStream(fout);
+                BZip2CompressorOutputStream bzOut = new BZip2CompressorOutputStream(out)) {
             final byte[] buffer = new byte[size];
             int n = 0;
             while (-1 != (n = in.read(buffer))) {
@@ -58,7 +64,7 @@ public class SyaryoToCompress {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        
+
         runnable = false;
     }
 
@@ -67,63 +73,38 @@ public class SyaryoToCompress {
             System.out.println("ファイル拡張子が異なります:" + file);
             System.exit(0);
         }
-        
+
         runnable = true;
         Map readObj = null;
         
+        long start = System.currentTimeMillis();
+        
         int size = BUFFER_SIZE;
+        
         try (InputStream fin = Files.newInputStream(Paths.get(file));
-            BufferedInputStream in = new BufferedInputStream(fin);
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            BZip2CompressorInputStream bzIn = new BZip2CompressorInputStream(in)) {
+                BufferedInputStream in = new BufferedInputStream(fin);
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                BZip2CompressorInputStream bzIn = new BZip2CompressorInputStream(in)) {
 
             final byte[] buffer = new byte[size];
             int n = 0;
+            long bystart = System.currentTimeMillis();
             while (-1 != (n = bzIn.read(buffer))) {
                 out.write(buffer, 0, n);
             }
+            long bystop = System.currentTimeMillis();
+            System.out.println("Byte DC="+(bystop-bystart));
 
             readObj = (Map) getObject(out.toByteArray());
+            long objstop = System.currentTimeMillis();
+            System.out.println("Obj DC="+(objstop - bystop));
         } catch (IOException ex) {
             ex.printStackTrace();
         }
         
-        runnable = false;
-        return readObj;
-    }
-
-    public Map guiRead(String file) {
-        if (!file.contains(".bz2")) {
-            System.out.println("ファイル拡張子が異なります:" + file);
-            System.exit(0);
-        }
+        long stop = System.currentTimeMillis();
         
-        runnable = true;
-        Map readObj = null;
-        
-        int size = BUFFER_SIZE;
-        try (InputStream fin = Files.newInputStream(Paths.get(file));
-            BufferedInputStream in = new BufferedInputStream(fin);
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            BZip2CompressorInputStream bzIn = new BZip2CompressorInputStream(in)) {
-
-            //fileSize = 2 * in.available();
-            //availSize = 0;
-            
-            final byte[] buffer = new byte[size];
-            int n = 0;
-            while (-1 != (n = bzIn.read(buffer))) {
-                out.write(buffer, 0, n);
-                //availSize += size;
-                
-                if(!runnable)
-                    System.exit(0);
-            }
-
-            readObj = (Map) getObject(out.toByteArray());
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+        System.out.println("Time="+(stop-start));
         
         runnable = false;
         return readObj;
@@ -149,7 +130,7 @@ public class SyaryoToCompress {
 
     private static byte[] getBytes(Object obj) {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(baos)) {
+                ObjectOutputStream oos = new ObjectOutputStream(baos)) {
             oos.writeObject(obj);
             return baos.toByteArray();
         } catch (IOException ex) {
@@ -160,7 +141,7 @@ public class SyaryoToCompress {
 
     private static Object getObject(byte[] bytes) {
         try (ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-            ObjectInputStream ois = new ObjectInputStream(bais)) {
+                ObjectInputStream ois = new ObjectInputStream(bais)) {
             return ois.readObject();
         } catch (IOException ex) {
             ex.printStackTrace();
