@@ -56,11 +56,12 @@ public class SyaryoAnalizer implements AutoCloseable {
     public Long numAccident = 0L;
     public Integer acmAccidentPrice = 0;
     public Integer[] cluster = new Integer[3];
-    public Integer[] maxSMR = new Integer[]{-1, -1, -1, -1};
+    public Integer[] maxSMR = new Integer[]{-1, -1, -1, -1, -1};
     public Map<String, Integer> odrKind = new HashMap<>();
     public Map<String, Integer> workKind = new HashMap<>();
     public TreeMap<String, Map.Entry<Integer, Integer>> ageSMR = new TreeMap<>();
     public TreeMap<Integer, String> smrDate = new TreeMap<>();
+    public static Boolean DISP_COUNT = true;
     private int D_DATE = 365;
     private int D_SMR = 10;
     private List<String[]> termAllSupport;
@@ -86,7 +87,7 @@ public class SyaryoAnalizer implements AutoCloseable {
         }
         //this.syaryo.stopHighPerformaceAccess();
 
-        if (CNT % 1000 == 0) {
+        if (CNT % 1000 == 0 && DISP_COUNT) {
             System.out.println(CNT + " Trans SyaryoAnalizer");
         }
     }
@@ -130,7 +131,7 @@ public class SyaryoAnalizer implements AutoCloseable {
                     break;
                 case "KOMTRAX_ACT_DATA":
                     maxSMR[2] = Integer.valueOf(getValue("KOMTRAX_ACT_DATA", "-1", true).get(getValue("KOMTRAX_ACT_DATA", "-1", true).size() - 1));
-                    maxSMR[3] = Integer.valueOf(getValue("KOMTRAX_ACT_DATA", "VALUE", true).get(getValue("KOMTRAX_ACT_DATA", "VALUE", true).size() - 1));
+                    maxSMR[3] = Double.valueOf(getValue("KOMTRAX_ACT_DATA", "VALUE", true).get(getValue("KOMTRAX_ACT_DATA", "VALUE", true).size() - 1)).intValue();
                     dates.addAll(getValue("KOMTRAX_ACT_DATA","-1",false));
                     komtrax = komtrax || true;
                     break;
@@ -277,6 +278,9 @@ public class SyaryoAnalizer implements AutoCloseable {
             if (smrDate.get(smr) == null) {
                 smrDate.put(smr, date);
             }
+            
+            if(maxSMR[4] < smr)
+                maxSMR[4] = smr;
         }
 
         //取得できていない箇所を手入力サービスメータから取得
@@ -294,10 +298,13 @@ public class SyaryoAnalizer implements AutoCloseable {
             Integer t = age(date) / D_DATE;
             Integer smr = (Double.valueOf(syaryo.get("SMR").get(date).get(2)).intValue() / D_SMR) * D_SMR;  //SMRの構成が変わるとエラー
             ageSMR.put(date, new AbstractMap.SimpleEntry<>(t, smr));
-
+            
             if (smrDate.get(smr) == null) {
                 smrDate.put(smr, date);
             }
+            
+            if(maxSMR[4] < smr)
+                maxSMR[4] = smr;
         }
     }
 

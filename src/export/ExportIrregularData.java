@@ -7,14 +7,12 @@ package export;
 
 import analizer.SyaryoAnalizer;
 import file.CSVFileReadWrite;
-import index.SyaryoObjectElementsIndex;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import file.SyaryoToCompress;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
 import param.KomatsuDataParameter;
@@ -34,12 +32,12 @@ public class ExportIrregularData {
         Map<String, SyaryoObject> syaryoMap = LOADER.getSyaryoMap();
 
         //Map<String, List> dataIndex = SyaryoObjectElementsIndex.getInstance().getIndex();
-        errOrderDate(syaryoMap);
+        //errOrderDate(syaryoMap);
         //errSMR(syaryoMap, dataIndex.get("SMR"), dataIndex.get("KOMTRAX_SMR"));
-
         //errFUEL(syaryoMap, dataIndex.get("FUEL_CONSUME"));
         //errSBN(syaryoMap, "受注");
         //errSGCD(syaryoMap, "作業");
+        errSMRStartInit(syaryoMap);
     }
 
     private static void errOrderDate(Map<String, SyaryoObject> syaryoMap) {
@@ -54,7 +52,7 @@ public class ExportIrregularData {
                         String date = s.get("新車").keySet().stream().findFirst().get();
                         Map<String, List<String>> odr = s.get("受注");
                         odr.entrySet().stream().filter(o -> Integer.valueOf(o.getValue().get(krday_idx)) < Integer.valueOf(date))
-                                .map(o -> s.name + "," +date+","+o.getKey() + "," + String.join(",", o.getValue()))
+                                .map(o -> s.name + "," + date + "," + o.getKey() + "," + String.join(",", o.getValue()))
                                 .forEach(pw::println);
                     });
         }
@@ -248,6 +246,43 @@ public class ExportIrregularData {
 
                 syaryo.stopHighPerformaceAccess();
             }
+        }
+    }
+
+    private static void errSMRStartInit(Map<String, SyaryoObject> syaryoMap) {
+
+        try (PrintWriter pw = CSVFileReadWrite.writerSJIS("PC200_SMR_ACT_VALUE_GAP.csv")) {
+            pw.println("SID,ACT_DATE,SMR_DATE,SMR_VALUE");
+            
+            syaryoMap.values().stream().forEach(s -> {
+                s.startHighPerformaceAccess();
+                
+                if (s.get("KOMTRAX_ACT_DATA") != null && s.get("KOMTRAX_SMR") != null) {
+                    System.out.println(s.name);
+                    
+                    
+                    //ACT FirstDate
+                    String sd = s.get("KOMTRAX_ACT_DATA").keySet().stream().limit(1).findFirst().get();
+
+                    //KOMTRAX_SMR
+                    String smr, fd;
+                    if (s.get("KOMTRAX_SMR").get(sd) != null) {
+                        fd = sd;
+                        smr = s.get("KOMTRAX_SMR").get(fd).get(LOADER.index("KOMTRAX_SMR", "VALUE"));
+                    } else {
+                        fd = s.get("KOMTRAX_SMR").keySet().stream().filter(d -> Integer.valueOf(d) < Integer.valueOf(sd)).reduce((a, b) -> b).orElse(null);
+                        if (fd == null) {
+                            fd = s.get("KOMTRAX_SMR").keySet().stream().limit(1).findFirst().get();
+                        }
+                        smr = s.get("KOMTRAX_SMR").get(fd).get(LOADER.index("KOMTRAX_SMR", "VALUE"));
+                        //System.out.println("sd:" + sd + " fd:" + fd + ":" + s.get("KOMTRAX_SMR").keySet());
+                    }
+                    
+                    pw.println(s.name+","+sd+","+fd+","+smr);
+                }
+
+                s.stopHighPerformaceAccess();
+            });
         }
     }
 }

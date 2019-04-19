@@ -48,11 +48,7 @@ public class TimeSeriesObject {
             t = komtraxErrorToSeries(s, key, target);
         }
 
-        if (!t.isEmpty()) {
-            return t;
-        } else {
-            return null;
-        }
+        return t;
     }
 
     private List<String> partsToSeries(SyaryoObject s, String target) {

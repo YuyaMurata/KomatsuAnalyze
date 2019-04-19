@@ -6,10 +6,14 @@
 package data.eval;
 
 import analizer.SyaryoAnalizer;
+import data.time.TimeSeriesObject;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import obj.SyaryoLoader;
 import param.KomatsuUserParameter;
@@ -21,37 +25,82 @@ import param.KomatsuUserParameter;
 public class MainteEvaluate {
 
     private static Map<String, String> index = KomatsuUserParameter.PC200_MAINTEPARTS_DEFNAME;
+    private static Map<String, String> INTERVAL = KomatsuUserParameter.PC200_MAINTEPARTS_INTERVAL;
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     private static List<String> _header;
 
     public static List<String> header() {
         return _header;
     }
-    
+
     public static Map<String, Map<String, Double>> nomalize(SyaryoAnalizer s, List<String> keys) {
         Map<String, Map<String, Double>> map = new LinkedHashMap<>();
-        
-        //部品情報の変換
-        
 
+        //部品情報の変換
         return map;
     }
-    
-    private static Map<String, Double> evalMainte(){
+
+    private static Map<String, Double> evalMainte(SyaryoAnalizer s) {
+        //System.out.println(s.name);
+        
+        //時系列情報の取得
+        INTERVAL.entrySet().stream().filter(e -> e.getKey().equals("エンジンオイル"))
+                .forEach(e -> {
+                    String check="";
+                    try {
+                        
+                        TimeSeriesObject t = new TimeSeriesObject(s.get(), "受注", e.getKey());
+                        List<Integer> smr = t.series.stream()
+                                .map(ti -> ti.split("#")[0])
+                                .distinct()
+                                .sorted()
+                                .map(ti -> s.getDateToSMR(ti).getValue())
+                                .collect(Collectors.toList());
+                        
+                        //計算上の最大SMRを取得
+                        Integer max = -1;
+                        if(!smr.isEmpty())
+                            max = smr.stream().mapToInt(v -> v).max().getAsInt();
+                        max = s.maxSMR[4] > max ? s.maxSMR[4] : max;
+
+                        Integer len = max % Integer.valueOf(e.getValue()) == 0 ? max / Integer.valueOf(e.getValue()) - 1 : max / Integer.valueOf(e.getValue());
+                        String[] series = new String[len+1];
+                        Arrays.fill(series, "0");
+
+                        check = t.sid + ":" + s.maxSMR[4] + ":" + t.series + smr;
+                        
+                        smr.stream()
+                                .map(v -> v == 0 ? 1 : v) //0h交換での例外処理
+                                .map(v -> (v % Integer.valueOf(e.getValue()))==0 ? v-1:v) //インターバル時間で割り切れる場合の例外処理
+                                .forEach(v -> {
+                                    int i = v / Integer.valueOf(e.getValue());
+                                    if(series[i].equals("0"))
+                                        series[i] = "1";
+                                    series[i] += "_"+v; 
+                                });
+                        
+                        System.out.println(t.sid+","+(s.age(s.getSMRToDate(max))/365)+","+max+","+t.target+","+Arrays.asList(series).stream().map(v -> v.toString()).collect(Collectors.joining(",")));
+                    } catch (IndexOutOfBoundsException ie) {
+                        //System.err.println(check);
+                    }
+                    
+                });
+
         return null;
     }
-    
+
     //SMRを期間で分割するメソッドは未実装であるため期間は-1で利用する
     public static Map<String, Double> aggregate(SyaryoAnalizer s, String sd, String fd) {
         Map<String, Double> map = new LinkedHashMap<>();
-        
-        if(_header == null)
+
+        if (_header == null) {
             _header = index.values().stream().distinct().collect(Collectors.toList());
-        
+        }
+
         if (s.get().get("受注") == null) {
             return null;
         }
-        
+
         //初期化
         for (String h : header()) {
             map.put(h, 0d);
@@ -66,46 +115,46 @@ public class MainteEvaluate {
         int p_idx = LOADER.index("部品", "HNBN");
         int p_price_idx = LOADER.index("部品", "SKKG");
         s.get().get("受注").entrySet().stream().filter(odr
-            -> (st <= Integer.valueOf(odr.getValue().get(d_idx)) //評価期間でフィルタリング
-            && Integer.valueOf(odr.getValue().get(d_idx)) <= sp))
-            .forEach(odr -> {
+                -> (st <= Integer.valueOf(odr.getValue().get(d_idx)) //評価期間でフィルタリング
+                && Integer.valueOf(odr.getValue().get(d_idx)) <= sp))
+                .forEach(odr -> {
 
-                //定期点検
-                String pd_m = index.get(odr.getValue().get(pd_idx));
-                if (pd_m != null) {
-                    map.put(pd_m, map.get(pd_m) + 1);
-                }
+                    //定期点検
+                    String pd_m = index.get(odr.getValue().get(pd_idx));
+                    if (pd_m != null) {
+                        map.put(pd_m, map.get(pd_m) + 1);
+                    }
 
-                //定期交換品
-                Map<String, List<String>> parts = s.getSBNParts(odr.getKey());
-                if (parts != null) {
-                    //1作番の各メンテナンス合計部品金額
-                    Map<String, Integer> price = new HashMap<>();
+                    //定期交換品
+                    Map<String, List<String>> parts = s.getSBNParts(odr.getKey());
+                    if (parts != null) {
+                        //1作番の各メンテナンス合計部品金額
+                        Map<String, Integer> price = new HashMap<>();
 
-                    //品番用のカウントロジック
-                    parts.values().stream()
-                        .filter(p -> mainteCheck(p.get(p_idx)))
-                        .forEach(p -> {
-                            String m = mainteDefName(p.get(p_idx));
-                            if (price.get(m) == null) {
-                                price.put(m, 0);
-                            }
-                            price.put(m, price.get(m) + (Integer.valueOf(p.get(p_price_idx))));
-                        });
-                    
-                    //金額で判定
-                    price.entrySet().stream().forEach(p -> {
-                        if (p.getKey().equals("パワーラインオイル")) {
-                            if (p.getValue() >= 40000) {
+                        //品番用のカウントロジック
+                        parts.values().stream()
+                                .filter(p -> mainteCheck(p.get(p_idx)))
+                                .forEach(p -> {
+                                    String m = mainteDefName(p.get(p_idx));
+                                    if (price.get(m) == null) {
+                                        price.put(m, 0);
+                                    }
+                                    price.put(m, price.get(m) + (Integer.valueOf(p.get(p_price_idx))));
+                                });
+
+                        //金額で判定
+                        price.entrySet().stream().forEach(p -> {
+                            if (p.getKey().equals("パワーラインオイル")) {
+                                if (p.getValue() >= 40000) {
+                                    map.put(p.getKey(), map.get(p.getKey()) + 1);
+                                }
+                            } else {
                                 map.put(p.getKey(), map.get(p.getKey()) + 1);
                             }
-                        } else {
-                            map.put(p.getKey(), map.get(p.getKey()) + 1);
-                        }
 
-                    });
-                }
-            });
+                        });
+                    }
+                });
 
         return map;
     }
@@ -134,9 +183,10 @@ public class MainteEvaluate {
 
     //正規化
     public static Map<String, Double> nomalize(Map<String, Double> agmap, int termsmr, double termday) {
-        if(agmap == null)
+        if (agmap == null) {
             return null;
-            
+        }
+
         Map<String, Double> map = new LinkedHashMap<>();
         agmap.entrySet().stream().forEach(ag -> {
             map.put(ag.getKey(), eval(ag.getKey(), ag.getValue(), termsmr, termday / 365d));
@@ -256,5 +306,20 @@ public class MainteEvaluate {
         }
 
         return d;
+    }
+
+    //Test
+    public static void main(String[] args) {
+        LOADER.setFile("PC200_form");
+        
+        SyaryoAnalizer.DISP_COUNT = false;
+        
+        LOADER.getSyaryoMap().values().stream().forEach(s -> {
+            try (SyaryoAnalizer a = new SyaryoAnalizer(s, true)) {
+                MainteEvaluate.evalMainte(a);
+            } catch (Exception ex) {
+                //ex.printStackTrace();
+            }
+        });
     }
 }

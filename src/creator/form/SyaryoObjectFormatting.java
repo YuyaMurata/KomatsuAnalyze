@@ -66,7 +66,7 @@ public class SyaryoObjectFormatting {
 
             //日付ズレの補正 閾値以降のデータを削除
             formDate(syaryo, LOADER.indexes("受注"), 20170501);
-
+            
             //生産の整形
             newMap = formProduct(syaryo.get("生産"), productIndex, syaryo.getName());
             syaryo.put("生産", newMap);
@@ -120,7 +120,8 @@ public class SyaryoObjectFormatting {
             //余計な情報を削除
             formExtra(syaryo, new String[]{"最終更新日", "国"});
             removeEmptyObject(syaryo);
-
+            
+            
             syaryo.stopHighPerformaceAccess();
             n++;
 
@@ -811,7 +812,7 @@ public class SyaryoObjectFormatting {
             for (Object removeDate : remove) {
                 map.remove(removeDate.toString());
             }
-
+            
             syaryo.put(key.toString(), map);
         }
     }

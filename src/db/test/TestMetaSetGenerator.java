@@ -8,6 +8,7 @@ package db.test;
 import db.HiveDB;
 import db.HiveDB.TABLE;
 import static db.HiveDB.getConnection;
+import db.field.Komtrax;
 import file.MapToJSON;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -23,8 +24,10 @@ public class TestMetaSetGenerator {
 
     public static void main(String[] args) {
         for(TABLE t : HiveDB.TABLE.values()){
-            if(!t.get().equals("service") && !t.get().equals("syaryo") && !t.get().equals("komtrax") && !t.get().contains("customer"))
-                tableToMetaSet(t.get());
+            if(t.get().equals("komtrax")){
+                for(Komtrax.TABLE kt : Komtrax.TABLE.values())
+                    tableToMetaSet(kt.get());
+            }
         }
     }
 

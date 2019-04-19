@@ -40,7 +40,7 @@ public class TestGenMeta {
     }
     
     private String shortFor(String f, String d){
-        if(f.contains("inp_dayt") || f.contains("last_upd_dayt"))
+        if(f.contains("inp_dayt") || f.contains("last_upd_dayt") || f.contains("time"))
             return d.substring(0, 10);
         
         return d;

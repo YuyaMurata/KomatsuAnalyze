@@ -29,7 +29,7 @@ public interface KomatsuUserParameter {
     //メンテナンス
     public static Map<String, String> PC200_MAINTEPARTS_DEF = new MapToJSON().toMap(AZ_PATH+"user\\PC200_mainteparts_define.json");
     public static Map<String, String> PC200_MAINTEPARTS_DEFNAME = new MapToJSON().toMap(AZ_PATH+"user\\PC200_mainteparts_definename.json");
-    public static Map<String, Integer> PC200_MAINTEPARTS_INTERVAL = new MapToJSON().toMap(AZ_PATH+"user\\PC200_mainteparts_interval.json");
+    public static Map<String, String> PC200_MAINTEPARTS_INTERVAL = new MapToJSON().toMap(AZ_PATH+"user\\PC200_mainteparts_interval.json");
     public static UserPartsObject PC200_USERPARTS_DEF = new UserPartsObject(AZ_PATH+"user\\PC200_parts_userdefine.json");
     
     //事故リスト
