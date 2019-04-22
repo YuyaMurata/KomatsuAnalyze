@@ -26,25 +26,25 @@ import param.KomatsuUserParameter;
 public class MaintenanceTimeSeries {
 
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
-    private static Map<String, Integer> interval = KomatsuUserParameter.PC200_MAINTEPARTS_INTERVAL;
 
     public static void main(String[] args) {
         LOADER.setFile("PC200_form");
-        //SyaryoObject syaryo = LOADER.getSyaryoMap().get("PC200-8N1-315764");
+        SyaryoObject syaryo = LOADER.getSyaryoMap().get("PC200-8N1-311437");
 
         List<String> target = new ArrayList<>();
         //target = new ArrayList<>(interval.keySet());
-        target.add("オルタネータ");
+        target.add("M001");
         
         Map map = new TreeMap();
-        /*try (SyaryoAnalizer analize = new SyaryoAnalizer(syaryo, true)) {
+        try (SyaryoAnalizer analize = new SyaryoAnalizer(syaryo, true)) {
             //toTimeSeries(analize);
             Map m = series(analize, target);
             print(analize.get().name, m);
         } catch (Exception ex) {
             ex.printStackTrace();
-        }*/
-
+        }
+        
+        /*
         for (SyaryoObject syaryo : LOADER.getSyaryoMap().values()) {
             if(!KomatsuUserParameter.PC200_USERPARTS_DEF.check(syaryo.name))
                 continue;
@@ -67,7 +67,7 @@ public class MaintenanceTimeSeries {
                 System.exit(0);
             }
         }
-        allprintToCSV(map);
+        allprintToCSV(map);*/
     }
 
     private static Map<String, Map<String, Map.Entry>> series(SyaryoAnalizer s, List<String> target) {
@@ -105,11 +105,12 @@ public class MaintenanceTimeSeries {
         return agesmr;
     }
     
-    private static void print(String name, Map<String, List<Map.Entry>> map) {
+    private static void print(String name, Map<String, Map<String, Map.Entry>> map) {
         try (PrintWriter pw = CSVFileReadWrite.writerSJIS(name + "_mante_testseries.csv")) {
             pw.println("KEY,SMR系列");
             map.entrySet().stream()
-                    .map(m -> m.getKey() + "," + m.getValue().stream().map(smr -> smr.toString()).collect(Collectors.joining(",")))
+                    .map(m -> m.getKey() + "," + m.getValue().values().stream()
+                            .map(smr -> Integer.valueOf(smr.getValue().toString())).sorted().map(smr -> smr.toString()).collect(Collectors.joining(",")))
                     .forEach(pw::println);
         }
     }
