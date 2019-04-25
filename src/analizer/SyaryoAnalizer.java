@@ -5,7 +5,6 @@
  */
 package analizer;
 
-import data.detect.AccidentDetect;
 import file.CSVFileReadWrite;
 import java.io.PrintWriter;
 import java.text.ParseException;

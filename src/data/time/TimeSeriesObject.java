@@ -42,17 +42,22 @@ public class TimeSeriesObject {
 
     private List<String> toSeries(SyaryoObject s, String key, String target) {
         List<String> t;
+        s.startHighPerformaceAccess();
+        
         if (key.equals("受注")) {
             t = partsToSeries(s, target);
         } else {
             t = komtraxErrorToSeries(s, key, target);
         }
-
+        
+        s.stopHighPerformaceAccess();
+        
         return t;
     }
 
     private List<String> partsToSeries(SyaryoObject s, String target) {
         List<String> t = new ArrayList<>();
+        
         if (PARTS.check(s.name)) {
             t = PARTS.index.get(s.name).entrySet().stream() //ユーザー定義の部品
                     .filter(e -> e.getValue().equals(target)) //ターゲット以外の部品は除去
@@ -66,7 +71,7 @@ public class TimeSeriesObject {
 
     private List<String> komtraxErrorToSeries(SyaryoObject s, String key, String target) {
         List<String> t = new ArrayList<>();
-        s.startHighPerformaceAccess();
+
         if (s.get(key) != null) {
             t = s.get(key).entrySet().stream()
                     .filter(e -> e.getValue().get(LOADER.index(key, "ERROR_CODE")).equals(target))
@@ -74,7 +79,7 @@ public class TimeSeriesObject {
                     .distinct()
                     .collect(Collectors.toList());
         }
-        s.stopHighPerformaceAccess();
+        
 
         return t;
     }

@@ -23,5 +23,8 @@ public class StreamFilterTest {
         
         System.out.println("i > 5");
         d.stream().filter(i -> i > 5).forEach(System.out::println);
+        
+        System.out.println("count i > 10 : "+d.stream().filter(i -> i > 10).count());
+        System.out.println("count i < 10 : "+d.stream().filter(i -> i < 10).count());
     }
 }

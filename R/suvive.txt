@@ -1,0 +1,10 @@
+library(survival)
+setwd('C:/Users/zz17807/Documents/NetBeansProjects/KomatsuAnalyze')
+
+csv <-read.csv("PC200_suvivaldata.csv")
+
+# ~ 1 : ALL
+s0 <- Surv(time=csv$Y, event=csv$FSTAT) ~ 1
+
+#ƒGƒ“ƒWƒ“‚Í‰ó‚ê‚É‚­‚¢‚½‚ß‚±‚Ì’l‚Å‚È‚¯‚ê‚Î•Ï‰»‚ªŒ©‚¦‚È‚¢
+plot(s0, ylim=c(0.95,1.00))
