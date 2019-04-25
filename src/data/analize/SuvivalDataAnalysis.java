@@ -23,7 +23,7 @@ public class SuvivalDataAnalysis {
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     public static void main(String[] args) {
         LOADER.setFile("PC200_form");
-        createSuviveData("受注", "エンジン", LOADER.getSyaryoMap());
+        createSuviveData("受注", "エンジンオイル", LOADER.getSyaryoMap());
     }
 
     private static void createSuviveData(String key, String target, Map<String, SyaryoObject> map) {
@@ -34,7 +34,7 @@ public class SuvivalDataAnalysis {
 
                 try (SyaryoAnalizer a = new SyaryoAnalizer(s, true)) {
                     if (!t.series.isEmpty()) {
-                        System.out.println(t.sid+":"+t.series);
+                        //System.out.println(t.sid+":"+t.series);
                         Map.Entry smr = a.getDateToSMR(t.series.get(0));
                         pw.println(a.name + "," + a.lifestart + "," + t.series.get(0) + "," + smr.getKey() + "," + smr.getValue() + ",1,"+(a.currentAge_day/365));
                     }else{

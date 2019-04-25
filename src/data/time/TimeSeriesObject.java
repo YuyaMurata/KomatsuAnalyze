@@ -9,6 +9,7 @@ import analizer.SyaryoAnalizer;
 import file.CSVFileReadWrite;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +64,7 @@ public class TimeSeriesObject {
                     .filter(e -> e.getValue().equals(target)) //ターゲット以外の部品は除去
                     .map(e -> e.getKey()[1]) //ユーザー定義部品の作番情報
                     .map(sbn -> s.get("受注").get(sbn).get(LOADER.index("受注", "SGYO_KRDAY"))) //作業完了日
+                    .sorted(Comparator.comparing(d -> Integer.valueOf(d.split("#")[0])))
                     .collect(Collectors.toList());
         }
 
@@ -77,6 +79,7 @@ public class TimeSeriesObject {
                     .filter(e -> e.getValue().get(LOADER.index(key, "ERROR_CODE")).equals(target))
                     .map(e -> e.getKey())
                     .distinct()
+                    .sorted(Comparator.comparing(d -> Integer.valueOf(d.split("#")[0])))
                     .collect(Collectors.toList());
         }
         
