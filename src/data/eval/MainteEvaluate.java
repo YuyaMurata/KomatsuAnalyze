@@ -7,6 +7,8 @@ package data.eval;
 
 import analizer.SyaryoAnalizer;
 import data.time.TimeSeriesObject;
+import file.CSVFileReadWrite;
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -14,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import obj.SyaryoLoader;
+import obj.SyaryoObject;
 import param.KomatsuUserParameter;
 
 /**
@@ -38,53 +41,56 @@ public class MainteEvaluate {
         return map;
     }
 
-    private static Map<String, Double> evalMainte(SyaryoAnalizer s) {
+    private static Map<String, Integer[]> evalMainte(SyaryoAnalizer s) {
         //System.out.println(s.name);
-        
+        Map<String, Integer[]> data = new HashMap<>();
+
         //時系列情報の取得
-        INTERVAL.entrySet().stream().filter(e -> e.getKey().equals("エンジンオイル"))
+        INTERVAL.entrySet().stream()
                 .forEach(e -> {
-                    String check="";
+                    String check = "";
                     try {
-                        
+
                         TimeSeriesObject t = new TimeSeriesObject(s.get(), "受注", e.getKey());
                         List<Integer> smr = t.series.stream()
                                 .map(ti -> ti.split("#")[0])
-                                .distinct()
-                                .sorted()
                                 .map(ti -> s.getDateToSMR(ti).getValue())
                                 .collect(Collectors.toList());
                         
                         //計算上の最大SMRを取得
                         Integer max = -1;
-                        if(!smr.isEmpty())
+                        if (!smr.isEmpty()) {
                             max = smr.stream().mapToInt(v -> v).max().getAsInt();
+                        }
                         max = s.maxSMR[4] > max ? s.maxSMR[4] : max;
 
                         Integer len = max % Integer.valueOf(e.getValue()) == 0 ? max / Integer.valueOf(e.getValue()) - 1 : max / Integer.valueOf(e.getValue());
-                        String[] series = new String[len+1];
-                        Arrays.fill(series, "0");
+                        Integer[] series = new Integer[len + 1];
+                        Arrays.fill(series, 0);
 
                         check = t.sid + ":" + s.maxSMR[4] + ":" + t.series + smr;
-                        
+
                         smr.stream()
                                 .map(v -> v == 0 ? 1 : v) //0h交換での例外処理
-                                .map(v -> (v % Integer.valueOf(e.getValue()))==0 ? v-1:v) //インターバル時間で割り切れる場合の例外処理
+                                .map(v -> (v % Integer.valueOf(e.getValue())) == 0 ? v - 1 : v) //インターバル時間で割り切れる場合の例外処理
                                 .forEach(v -> {
                                     int i = v / Integer.valueOf(e.getValue());
-                                    if(series[i].equals("0"))
-                                        series[i] = "1";
-                                    series[i] += "_"+v; 
+                                    /*if(series[i].equals("0"))
+                                        series[i] = "1";*/
+                                    series[i] = v;
                                 });
-                        
-                        System.out.println(t.sid+","+(s.age(s.getSMRToDate(max))/365)+","+max+","+t.target+","+Arrays.asList(series).stream().map(v -> v.toString()).collect(Collectors.joining(",")));
+
+                        //各車両のメンテナンス状況を記録
+                        data.put(e.getKey(), series);
+
+                        //System.out.println(t.sid+","+(s.age(s.getSMRToDate(max))/365)+","+max+","+t.target+","+Arrays.asList(series).stream().map(v -> v.toString()).collect(Collectors.joining(",")));
                     } catch (IndexOutOfBoundsException ie) {
-                        //System.err.println(check);
+                        System.err.println(check);
                     }
-                    
+
                 });
 
-        return null;
+        return data;
     }
 
     //SMRを期間で分割するメソッドは未実装であるため期間は-1で利用する
@@ -309,15 +315,31 @@ public class MainteEvaluate {
     //Test
     public static void main(String[] args) {
         LOADER.setFile("PC200_form");
-        
+
         SyaryoAnalizer.DISP_COUNT = false;
-        
+        SyaryoObject s = LOADER.getSyaryoMap().get("PC200-10-450637");
+        try (SyaryoAnalizer a = new SyaryoAnalizer(s, true)) {
+            Map<String, Integer[]> data = MainteEvaluate.evalMainte(a);
+
+            try (PrintWriter pw = CSVFileReadWrite.writerSJIS("PC200-10-450637_mainte.csv")) {
+                INTERVAL.entrySet().stream().forEach(iv -> {
+                    Integer[] t = data.get(iv.getKey());
+                    Integer in = Integer.valueOf(iv.getValue());
+                    System.out.println(iv.getKey()+":"+Arrays.asList(t));
+                    pw.println(iv.getKey()+","+a.maxSMR[4]+","+Arrays.asList(t).stream().map(i -> i.toString()).collect(Collectors.joining(","))+","+iv.getValue());
+                });
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        /*
         LOADER.getSyaryoMap().values().stream().forEach(s -> {
             try (SyaryoAnalizer a = new SyaryoAnalizer(s, true)) {
                 MainteEvaluate.evalMainte(a);
             } catch (Exception ex) {
                 //ex.printStackTrace();
             }
-        });
+        });*/
     }
 }
