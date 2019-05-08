@@ -43,23 +43,32 @@ public class TimeSeriesObject {
 
     private List<String> toSeries(SyaryoObject s, String key, String target) {
         List<String> t;
-        s.startHighPerformaceAccess();
         
         if (key.equals("受注")) {
-            t = partsToSeries(s, target);
+            if(target.equals(""))
+                t = orderToSeries(s);
+            else
+                t = partsToSeries(s, target);
         } else {
             t = komtraxErrorToSeries(s, key, target);
         }
         
-        s.stopHighPerformaceAccess();
-        
         return t;
     }
 
+    private List<String> orderToSeries(SyaryoObject s){
+        List<String> t = s.get("受注").values().stream()
+                .map(o -> o.get(LOADER.index("受注", "SGYO_KRDAY")))
+                .sorted(Comparator.comparing(d -> Integer.valueOf(d.split("#")[0])))
+                .collect(Collectors.toList());
+        
+        return t;
+    }
+    
     private List<String> partsToSeries(SyaryoObject s, String target) {
         List<String> t = new ArrayList<>();
         
-        if (PARTS.check(s.name)) {
+        if (PARTS.check(s.name, target)) {
             t = PARTS.index.get(s.name).entrySet().stream() //ユーザー定義の部品
                     .filter(e -> e.getValue().equals(target)) //ターゲット以外の部品は除去
                     .map(e -> e.getKey()[1]) //ユーザー定義部品の作番情報

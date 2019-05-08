@@ -129,11 +129,13 @@ public class SyaryoObject implements Serializable {
     public void startHighPerformaceAccess() {
         decompress();
         performanceAccess = true;
+        //System.out.println("Start performance mode");
     }
 
     public void stopHighPerformaceAccess() {
         performanceAccess = false;
         compress(true);
+        //System.out.println("Stop performance mode");
     }
 
     /**

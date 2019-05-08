@@ -60,14 +60,14 @@ public class SyaryoAnalizer implements AutoCloseable {
     public Map<String, Integer> workKind = new HashMap<>();
     public TreeMap<String, Map.Entry<Integer, Integer>> ageSMR = new TreeMap<>();
     public TreeMap<Integer, String> smrDate = new TreeMap<>();
-    public static Boolean DISP_COUNT = true;
     private int D_DATE = 365;
     private int D_SMR = 10;
     private List<String[]> termAllSupport;
+    
+    public static Boolean DISP_COUNT = true;
     private static String DATE_FORMAT = KomatsuUserParameter.DATE_FORMAT;
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     private static Map<String, String> POWERLINE_CHECK = KomatsuUserParameter.POWERLINE;
-
     private static Map<String, String> PC200_KR_MASTER = KomatsuUserParameter.PC_KR_SMASTER;
     private static Map<String, String> PC200_ACCIDENT = KomatsuUserParameter.PC200_ACCIDENT;
 
@@ -84,8 +84,7 @@ public class SyaryoAnalizer implements AutoCloseable {
         if (flg) {
             complexSettings(syaryo);
         }
-        //this.syaryo.stopHighPerformaceAccess();
-
+        
         if (CNT % 1000 == 0 && DISP_COUNT) {
             System.out.println(CNT + " Trans SyaryoAnalizer");
         }
@@ -180,9 +179,9 @@ public class SyaryoAnalizer implements AutoCloseable {
         }
 
         //データ上の日付を計算
-        List<Integer> datesInt = dates.stream().map(d -> Integer.valueOf(d.split("#")[0])).distinct().sorted().collect(Collectors.toList());
-        lifestart = String.valueOf(datesInt.stream().mapToInt(d -> d).min().getAsInt()); //データ上の最初
-        lifestop = String.valueOf(datesInt.stream().mapToInt(d -> d).max().getAsInt()); //データ上の最終
+        List<Integer> datesInt = dates.stream().map(d -> Integer.valueOf(d.split("#")[0])).sorted().collect(Collectors.toList());
+        lifestart = String.valueOf(datesInt.get(0)); //データ上の最初
+        lifestop = String.valueOf(datesInt.get(datesInt.size()-1)); //データ上の最終
     }
 
     private void complexSettings(SyaryoObject syaryo) {
@@ -507,7 +506,7 @@ public class SyaryoAnalizer implements AutoCloseable {
         Map<String, List<String>> map = new LinkedHashMap<>();
         Map<String, List<String>> services = syaryo.get("受注");
         for (String sbn : services.keySet()) {
-            String date = services.get(sbn).get(idx).toString();
+            String date = services.get(sbn).get(idx);
             if (!checkAS(date)) {
                 continue;
             }
@@ -547,7 +546,7 @@ public class SyaryoAnalizer implements AutoCloseable {
 
         int sg_idx = LOADER.index("作業", "SGYOCD");
         List<String> plSbns = syaryo.get("作業").entrySet().parallelStream()
-                .filter(e -> checkPL(e.getValue().get(sg_idx).toString()))
+                .filter(e -> checkPL(e.getValue().get(sg_idx)))
                 .map(e -> e.getKey())
                 .collect(Collectors.toList());
 
@@ -559,7 +558,7 @@ public class SyaryoAnalizer implements AutoCloseable {
                 continue;
             }
             if (ascheck) {
-                String date = services.get(sbn).get(idx).toString();
+                String date = services.get(sbn).get(idx);
                 if (!checkAS(date)) {
                     continue;
                 }
@@ -707,6 +706,6 @@ public class SyaryoAnalizer implements AutoCloseable {
 
     @Override
     public void close() throws Exception {
-        syaryo.stopHighPerformaceAccess();
+        this.syaryo.stopHighPerformaceAccess();
     }
 }

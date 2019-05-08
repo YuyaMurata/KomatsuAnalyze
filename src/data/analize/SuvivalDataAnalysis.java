@@ -10,8 +10,6 @@ import data.time.TimeSeriesObject;
 import file.CSVFileReadWrite;
 import java.io.PrintWriter;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
 
@@ -42,7 +40,6 @@ public class SuvivalDataAnalysis {
                         pw.println(a.name + "," + a.lifestart + "," + a.lifestop + "," + smr.getKey() + "," + smr.getValue() + ",0,"+(a.currentAge_day/365));
                     }
                 } catch (Exception ex) {
-                    ex.printStackTrace();
                     System.exit(0);
                 }
             });

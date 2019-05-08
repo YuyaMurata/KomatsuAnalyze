@@ -56,8 +56,15 @@ public class UserPartsObject {
         return map;
     }
     
-    public Boolean check(String sid){
-        return index.get(sid) != null;
+    public Boolean check(String sid, String target){
+        if(target.equals(""))
+            return true;
+        else
+            if(index.get(sid) == null)
+                return  false;
+            else
+                return index.get(sid).values().contains(target);
+        
     }
     
     public String defineName(String sid, String[] key){

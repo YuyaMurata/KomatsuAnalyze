@@ -6,20 +6,13 @@
 package data.eval;
 
 import analizer.SyaryoAnalizer;
-import file.CSVFileReadWrite;
-import java.io.PrintWriter;
-import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
@@ -31,111 +24,160 @@ import obj.SyaryoObject;
 public class UseEvaluate {
 
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
-    private static Map<String, List<String>> _header = new HashMap<>();
+    private static Map<String, List<String>> _header;
     private static Integer R = 3;
 
-    public static List<String> header(String load) {
-        return _header.get(load);
+    public UseEvaluate() {
+        _header = new HashMap<>();
+    }
+    
+    public Map<String, List<String>> header() {
+        return _header;
     }
 
-    public static void addHeader(String kind, List<String> load) {
-        if (_header.get(kind) == null) {
-            _header.put(kind, load);
-            System.out.println(_header);
-        }
-    }
+    public Map<String, Map<String, List<Double>>> evaluate(Map<String, SyaryoObject> map) {
+        Map<String, Map<String, List<Double>>> eval = new HashMap<>();
 
-    public static Map<String, Map<String, Double>> nomalize(SyaryoAnalizer s, List<String> keys) {
-        Map<String, Map<String, Double>> map = new LinkedHashMap<>();
+        map.values().stream().forEach(s -> {
+            try (SyaryoAnalizer a = new SyaryoAnalizer(s, false)) {
+                //集約
+                Map<String, List<String>> data = aggregate(a);
 
-        for (String key : keys) {
-            if (key.contains("実エンジン回転")) {
-                map.put(key, evalEngine(s.get().get(key), LOADER.index(key, "VALUE")));
+                //正規化
+                Map<String, List<Double>> norm = normalize(a, data);
+
+                eval.put(a.name, norm);
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
-        }
-
-        return map;
-    }
-
-    private static Map<String, Double> evalEngine(Map<String, List<String>> loadmap, int idx) {
-        //トルク10の値を削除
-        Map<String, Double> data = loadmap.entrySet().stream()
-                .collect(Collectors.toMap(e -> e.getKey(), e -> Double.valueOf(e.getValue().get(idx))));
-
-        //PEEK DESC RANK
-        List<String> peekRank = data.entrySet().stream()
-                .filter(e -> !e.getKey().split("_")[1].contains("10"))
-                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).limit(R)
-                .map(e -> e.getKey()).collect(Collectors.toList());
-
-        
-        //PEEK ASC RANK  →　閾値を定めて表示
-        List<String> peekARank = data.entrySet().stream()
-                .filter(e -> !e.getKey().split("_")[1].contains("10"))
-                .filter(e -> e.getValue() != 0d)
-                .sorted(Map.Entry.comparingByValue()).limit(R)
-                .map(e -> e.getKey()).collect(Collectors.toList());
-
-        
-        //正規化
-        Map<String, Double> result1 = data.keySet().stream()
-                        .collect(Collectors.toMap(k -> k, k -> peekRank.contains(k)?1d:0d, (e1, e2) -> e1, TreeMap::new));
-        
-        Map<String, Double> result2 = data.keySet().stream()
-                        .collect(Collectors.toMap(k -> k, k -> peekARank.contains(k)?1d:0d, (e1, e2) -> e1, TreeMap::new));
-        
-        
-        //テスト出力
-        print(data, "test_loadmap_origin.csv");
-        print(result1, "test_loadmap_r1.csv");
-        print(result2, "test_loadmap_r2.csv");
-        
-        
-        return null;
-    }
-    
-    private static void print(Map<String, Double> data, String name){
-        Map.Entry<List<String>, List<String>> head = getHeader(new ArrayList<>(data.keySet()));
-        try(PrintWriter pw = CSVFileReadWrite.writerSJIS(name)){
-            pw.println(","+String.join(",", head.getValue()));
-            Double[][] mat = getValue(data);
-            for(int i=0; i < head.getKey().size(); i++){
-                pw.println(head.getKey().get(i)+","+Arrays.asList(mat[i]).stream().map(d -> d.toString()).collect(Collectors.joining(",")));
-            }
-        }
-    }
-    
-    private static Map.Entry<List<String>, List<String>> getHeader(List<String> d){
-        List<String> row = d.stream().map(k -> Integer.valueOf(k.split("_")[1])).distinct().sorted().map(k -> k.toString()).collect(Collectors.toList());
-        List<String> col = d.stream().map(k -> Integer.valueOf(k.split("_")[0])).distinct().sorted().map(k -> k.toString()).collect(Collectors.toList());
-        
-        return new AbstractMap.SimpleEntry(row, col);
-    }
-    
-    private static Double[][] getValue(Map<String, Double> d){
-        Map.Entry<List<String>, List<String>> head = getHeader(new ArrayList<>(d.keySet()));
-        List<String> row = head.getKey();
-        List<String> col = head.getValue();
-        
-        Double[][] mat = new Double[row.size()][col.size()];
-        d.entrySet().stream().forEach(v ->{
-            int i = row.indexOf(v.getKey().split("_")[1]);
-            int j = col.indexOf(v.getKey().split("_")[0]);
-            
-            mat[i][j] = v.getValue();
         });
-        
-        return mat;
+
+        return eval;
     }
     
-    public static void main(String[] args) {
-        LOADER.setFile("PC200_form");
-        SyaryoObject s = LOADER.getSyaryoMap().get("PC200-10-450635");
-        
-        try(SyaryoAnalizer a = new SyaryoAnalizer(s, Boolean.FALSE)){
-            evalEngine(a.get("LOADMAP_実エンジン回転VSエンジントルク"), 0);
+    public Map<String, List<Double>> evaluate(SyaryoObject s) {
+        Map<String, List<Double>> eval = new HashMap<>();
+
+        try (SyaryoAnalizer a = new SyaryoAnalizer(s, false)) {
+            //集約
+            Map<String, List<String>> data = aggregate(a);
+
+            //正規化
+            eval = normalize(a, data);
+            
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+
+        return eval;
+    }
+
+    
+    //データ取得
+    public Map<String, Map<String, List<String>>> getdata(Map<String, SyaryoObject> map) {
+        Map<String, Map<String, List<String>>> eval = new TreeMap<>();
+
+        map.values().stream().forEach(s -> {
+            try (SyaryoAnalizer a = new SyaryoAnalizer(s, false)) {
+                //集約
+                eval.put(s.name, aggregate(a));
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        return eval;
+    }
+    
+    public Map<String, List<String>> getdata(SyaryoObject s) {
+        Map<String, List<String>> eval = new HashMap<>();
+        
+        try (SyaryoAnalizer a = new SyaryoAnalizer(s, false)) {
+            //集約
+            eval = aggregate(a);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        
+        return eval;
+    }
+
+    private Map<String, List<Double>> normalize(SyaryoAnalizer a, Map<String, List<String>> rank) {
+        Map norm = _header.keySet().stream()
+                .collect(Collectors.toMap(
+                        h -> h, 
+                        h -> a.get(h).keySet().stream()
+                                .map(l -> rank.get(h).contains(l) ? 1d : 0d)
+                                .collect(Collectors.toList()),
+                        (h1, h2) -> h1,
+                        LinkedHashMap::new
+                ));
+
+        return norm;
+    }
+
+    private Map<String, List<String>> aggregate(SyaryoAnalizer a) {
+        Map<String, List<String>> data = new HashMap<>();
+
+        data.put("LOADMAP_実エンジン回転VSエンジントルク", engine(a.get("LOADMAP_実エンジン回転VSエンジントルク")));
+        data.put("LOADMAP_エンジン水温VS作動油温", temperature(a.get("LOADMAP_エンジン水温VS作動油温")));
+        
+        if(_header.isEmpty() && !data.containsValue(null)){
+            _header.put("LOADMAP_実エンジン回転VSエンジントルク", new ArrayList(a.get("LOADMAP_実エンジン回転VSエンジントルク").keySet()));
+            _header.put("LOADMAP_エンジン水温VS作動油温", new ArrayList(a.get("LOADMAP_エンジン水温VS作動油温").keySet()));
+        }
+        
+        return data;
+    }
+
+    private List<String> engine(Map<String, List<String>> map) {
+        if(map == null)
+            return null;
+        
+        //トルク10の値を削除  0=VALUE
+        Map<String, Double> data = map.entrySet().stream()
+                .filter(e -> !e.getKey().split("_")[1].contains("10"))
+                .collect(Collectors.toMap(e -> e.getKey(), e -> Double.valueOf(e.getValue().get(0))));
+
+        //PEEK DESC RANK
+        List<String> peekRank = rank(data, R);
+
+        return peekRank;
+    }
+    
+    private List<String> temperature(Map<String, List<String>> map) {
+        if(map == null)
+            return null;
+        
+        //0=VALUE
+        Map<String, Double> data = map.entrySet().stream()
+                .collect(Collectors.toMap(e -> e.getKey(), e -> Double.valueOf(e.getValue().get(0))));
+
+        //PEEK DESC RANK
+        List<String> peekRank = rank(data, R);
+
+        return peekRank;
+    }
+    
+    private List<String> rank(Map<String, Double> data, int r){
+        return data.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).limit(R)
+                .map(e -> e.getKey()).collect(Collectors.toList());
+    }
+
+    public static void main(String[] args) {
+        LOADER.setFile("PC200_form");
+        SyaryoObject s = LOADER.getSyaryoMap().get("PC200-8N1-311826");
+        
+        UseEvaluate use = new UseEvaluate();
+        
+        Map<String, List<String>> data = use.getdata(s);
+        Map<String, List<Double>> result = use.evaluate(s);
+        
+        data.entrySet().stream().forEach(d ->{
+            System.out.println(d.getKey());
+            System.out.println("  "+d.getValue());
+            System.out.println("  "+result.get(d.getKey()));
+        });
     }
 }

@@ -141,7 +141,7 @@ public class PartsCodeConv {
     
     //ユーザー定義
     public static String userPartsDefineCode(String sid, String comp, String psbn, String pid, String name){
-        if(KomatsuUserParameter.PC200_USERPARTS_DEF.check(sid))
+        if(KomatsuUserParameter.PC200_USERPARTS_DEF.check(sid, name))
             return KomatsuUserParameter.PC200_USERPARTS_DEF.defineName(sid, new String[]{comp,psbn.split("#")[0],pid,name});
         else
             return null;

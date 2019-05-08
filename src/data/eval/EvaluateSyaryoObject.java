@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import obj.SyaryoObject;
-import param.KomatsuDataParameter;
 import param.KomatsuUserParameter;
 
 /**
@@ -53,12 +52,6 @@ public class EvaluateSyaryoObject {
     //評価結果をさらに評価する場合に利用
     public void addEval(String data, String kind, Map<String, Double> addData) {
         eval.get(data).put(kind, addData);
-
-        //ヘッダ登録
-        switch (data) {
-            case "use":
-                UseEvaluate.addHeader(kind, new ArrayList<>(addData.keySet()));
-        }
     }
 
     /**
