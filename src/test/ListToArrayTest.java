@@ -17,6 +17,8 @@ public class ListToArrayTest {
         List list = new ArrayList();
         list.add("A");list.add("B");list.add("C");
         
+        System.out.println(list);
+        
         System.out.println(list.toArray(new Object[list.size()]).length);
         
         System.out.println(list.subList(0, 2).toArray(new Object[1]).length);

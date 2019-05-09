@@ -26,6 +26,7 @@ public class UseEvaluate {
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     private static Map<String, List<String>> _header;
     private static Integer R = 3;
+    private Map<String, Map<String, List<Double>>> _eval;
 
     public UseEvaluate() {
         _header = new HashMap<>();
@@ -35,9 +36,8 @@ public class UseEvaluate {
         return _header;
     }
 
+    //評価値取得
     public Map<String, Map<String, List<Double>>> evaluate(Map<String, SyaryoObject> map) {
-        Map<String, Map<String, List<Double>>> eval = new HashMap<>();
-
         map.values().stream().forEach(s -> {
             try (SyaryoAnalizer a = new SyaryoAnalizer(s, false)) {
                 //集約
@@ -46,13 +46,13 @@ public class UseEvaluate {
                 //正規化
                 Map<String, List<Double>> norm = normalize(a, data);
 
-                eval.put(a.name, norm);
+                _eval.put(a.name, norm);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         });
 
-        return eval;
+        return _eval;
     }
     
     public Map<String, List<Double>> evaluate(SyaryoObject s) {
@@ -100,6 +100,16 @@ public class UseEvaluate {
         }
         
         return eval;
+    }
+    
+    public Map<String, List<Double>> getClusData(){
+        Map<String, List<Double>> data = _eval.entrySet().stream()
+                    .collect(Collectors.toMap(
+                            e -> e.getKey(), 
+                            e -> _header.keySet().stream().flatMap(h -> e.getValue().get(h).stream()).collect(Collectors.toList())
+                    ));
+        
+        return data;
     }
 
     private Map<String, List<Double>> normalize(SyaryoAnalizer a, Map<String, List<String>> rank) {

@@ -57,8 +57,12 @@ public class TimeSeriesObject {
     }
 
     private List<String> orderToSeries(SyaryoObject s){
-        List<String> t = s.get("受注").values().stream()
-                .map(o -> o.get(LOADER.index("受注", "SGYO_KRDAY")))
+        //メンテ部品情報の取得
+        List<String> mainte = PARTS.getMainteSV(sid);
+        
+        List<String> t = s.get("受注").entrySet().stream()
+                .filter(o -> !mainte.contains(o.getKey()))
+                .map(o -> o.getValue().get(LOADER.index("受注", "SGYO_KRDAY")))
                 .sorted(Comparator.comparing(d -> Integer.valueOf(d.split("#")[0])))
                 .collect(Collectors.toList());
         

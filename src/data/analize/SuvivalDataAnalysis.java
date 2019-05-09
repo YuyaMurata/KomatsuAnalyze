@@ -21,7 +21,7 @@ public class SuvivalDataAnalysis {
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     public static void main(String[] args) {
         LOADER.setFile("PC200_form");
-        createSuviveData("受注", "エンジンオイル", LOADER.getSyaryoMap());
+        createSuviveData("受注", "", LOADER.getSyaryoMap());
     }
 
     private static void createSuviveData(String key, String target, Map<String, SyaryoObject> map) {

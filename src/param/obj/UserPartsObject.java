@@ -7,10 +7,12 @@ package param.obj;
 
 import file.ListToCSV;
 import file.MapToJSON;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import param.KomatsuUserParameter;
 
 /**
@@ -19,7 +21,9 @@ import param.KomatsuUserParameter;
  */
 public class UserPartsObject {
     private static String PATH = KomatsuUserParameter.AZ_PATH;
+    private static Map<String, String> MAINTE_PARTS = KomatsuUserParameter.PC200_MAINTEPARTS_INTERVAL;
     public Map<String, Map<String[], String>> index;
+    
 
     public UserPartsObject(String file) {
         index = createObject(file);
@@ -63,8 +67,16 @@ public class UserPartsObject {
             if(index.get(sid) == null)
                 return  false;
             else
-                return index.get(sid).values().contains(target);
+                return index.get(sid).values().contains(target);      
+    }
+    
+    public List<String> getMainteSV(String sid){
+        if(index.get(sid) == null)
+            return new ArrayList<>();
         
+        return index.get(sid).values().stream()
+                .filter(p -> MAINTE_PARTS.get(p) != null)
+                .collect(Collectors.toList());
     }
     
     public String defineName(String sid, String[] key){

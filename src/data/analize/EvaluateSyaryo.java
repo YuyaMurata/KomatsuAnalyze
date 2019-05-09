@@ -7,6 +7,8 @@ package data.analize;
 
 import data.cluster.KMeansPP;
 import data.eval.EvaluateSyaryoObject;
+import data.eval.MainteEvaluate;
+import data.eval.UseEvaluate;
 import file.CSVFileReadWrite;
 import file.MapToJSON;
 import java.io.PrintWriter;
@@ -23,42 +25,20 @@ import obj.SyaryoObject;
  * @author ZZ17390
  */
 public class EvaluateSyaryo {
-    private static Map<String, EvaluateSyaryoObject> EVAL = new HashMap();
-
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     private static String KISY = "PC200";
 
     public static void evalSyaryoMap(Map<String, SyaryoObject> map) {
-        //評価
-        evaluate(map);
-
-        //クラスタリング
-        //mainte();
+        mainte();
         use();
-
-    }
-
-    private static void evaluate(Map<String, SyaryoObject> map) {
-        Long st = System.currentTimeMillis();
-        System.out.println("車両評価プログラム実行");
-        map.values().stream().forEach(syaryo -> {
-            EvaluateSyaryoObject evalobj = new EvaluateSyaryoObject(syaryo);
-            EVAL.put(syaryo.name, evalobj);
-        });
-        
-        //Test Output
-        new MapToJSON().toJSON("eval_map.json", EVAL);
-        
-        Long sp = System.currentTimeMillis();
-        System.out.println("車両評価プログラム完了 - "+ EVAL.size()+ " <" + (sp - st) + "ms>");
     }
     
-    private static Map<String, Integer> clustering(String data, String kind){
+    private static Map<String, Integer> clustering(String str, Map<String, List<Double>> data){
         Long st = System.currentTimeMillis();
-        System.out.println("クラスタリング実行 - " + data+" - "+kind);
+        System.out.println("クラスタリング実行 - " + str);
         
         KMeansPP km = new KMeansPP();
-        km.setEvalSyaryo(3, EVAL.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().getData(data, kind))));
+        km.setEvalSyaryo(3, data);
         Map<String, Integer> result = km.execute();
         
         Long sp = System.currentTimeMillis();
@@ -68,56 +48,48 @@ public class EvaluateSyaryo {
     }
     
     private static void mainte() {
-        Map<String, Integer> result = clustering("mainte", "quality");
-        fprint(KISY + "_mainte_eval.csv", "mainte", "quality", true, result);
+        //メンテナンス評価
+        Long start = System.currentTimeMillis();
+        MainteEvaluate eval = new MainteEvaluate();
+        eval.evaluate(LOADER.getSyaryoMap());
+        Long evalstop = System.currentTimeMillis();
+        System.out.println("メンテナンス評価完了　: "+(evalstop-start)+" [ms]");
+        
+        //クラスタリング
+        Map<String, Integer> result = clustering("メンテナンス", eval.getClusData());
+        Long stop = System.currentTimeMillis();
+        System.out.println("メンテナンスクラスタリング完了　: "+(stop-evalstop)+" [ms]");
+        
+        fprint(KISY + "_mainte_eval.csv", result);
     }
     
     private static void use() {
-        List<Map<String, Integer>> results = new ArrayList<>();
-        for(String load : EvaluateSyaryoObject.getDataList("use")){
-            Map<String, Integer> result = clustering("use", load);
-            results.add(result);
-            
-            fprint(KISY + "_"+load+"_use_eval.csv", "use", load, true, result);
-        }
+        Long start = System.currentTimeMillis();
+        UseEvaluate eval = new UseEvaluate();
+        eval.evaluate(LOADER.getSyaryoMap());
+        Long evalstop = System.currentTimeMillis();
+        System.out.println("使われ方評価完了　: "+(evalstop-start)+" [ms]");
         
-        //クラスタリング結果をEvalObjに戻す処理
-        /*EVAL.entrySet().stream().forEach(e ->{
-            Map<String, Double> map = new HashMap();
-            for(String load : EvaluateSyaryoObject.getDataList("use")){
-                int idx = EvaluateSyaryoObject.getDataList("use").indexOf(load);
-                Double cid = results.get(idx).get(e.getKey()) != null?Double.valueOf(results.get(idx).get(e.getKey())):0d;
-                map.put(load, cid);
-            }
-            e.getValue().addEval("use", "clusters", map);
-        });
+        //クラスタリング
+        Map<String, Integer> result = clustering("使われ方", eval.getClusData());
+        Long stop = System.currentTimeMillis();
+        System.out.println("使われ方クラスタリング完了　: "+(stop-evalstop)+" [ms]");
         
-        Map<String, Integer> result = clustering("use", "clusters");
-        
-        fprint(KISY + "_use_eval.csv", "use", "clusters", true, result);*/
+        fprint(KISY + "_use_eval.csv", result);
     }
 
-    public static void fprint(String filename, String data, String kind, Boolean flg, Map<String, Integer> result) {
-        try (PrintWriter pw = CSVFileReadWrite.writerSJIS(filename)) {
-            if (flg) {
-                pw.println("SID,Y,SMR," + EvaluateSyaryoObject.printh(data, kind) + ",AVG,CID");
-                EVAL.entrySet().stream()
-                    .map(e -> e.getKey() + "," + (e.getValue().day/365d) + "," + e.getValue().smr + "," +  //基本情報
-                        e.getValue().print(data, kind) + "," +                                                      //データ
-                        e.getValue().getData(data, kind).stream().mapToDouble(d -> d).average().getAsDouble() + "," + //平均
-                        (result.get(e.getKey()) != null ? result.get(e.getKey()) : 0))  //クラスタ
-                    .forEach(pw::println);
-            } else {
-                pw.println("SID,CID");
-                result.entrySet().stream()
-                    .map(r -> r.getKey() + "," + (r.getValue() != null ? r.getValue() : 0))
-                    .forEach(pw::println);
-            }
+    public static void fprint(String filename, Map<String, Integer> result) {
+        try(PrintWriter pw = CSVFileReadWrite.writerSJIS(filename)){
+            //header
+            pw.println("SID,CID");
+            
+            //data
+            result.entrySet().stream().map(r -> r.getKey()+","+r.getValue()).forEach(pw::println);
         }
     }
 
     public static void main(String[] args) {
-        LOADER.setFile(KISY + "_form_loadmap");
+        LOADER.setFile(KISY + "_form");
         evalSyaryoMap(LOADER.getSyaryoMap());
     }
 }

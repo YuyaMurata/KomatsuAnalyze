@@ -24,6 +24,7 @@ public class SimpleExporter {
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     private static String KISY = "PC200";
     private static Map<String, SyaryoObject> map;
+    private static String simplefilter = "";
 
     public static void main(String[] args) {
         LOADER.setFile(KISY+"_form");
@@ -31,16 +32,18 @@ public class SimpleExporter {
         
         //ヘッダー設定
         Map<String, Integer> headers = new LinkedHashMap();
-        //headers.put("受注.会社", LOADER.index("受注", "会社CD"));
-        //headers.put("受注.作番", LOADER.index("受注", "KEY"));
-        //headers.put("受注.作業形態", LOADER.index("受注", "SGYO_KTICD"));
-        //headers.put("受注.作業形態名", LOADER.index("受注", "SGKT_NM"));
-        headers.put("部品.会社", LOADER.index("部品", "会社CD"));
-        headers.put("部品.作番", LOADER.index("部品", "KEY"));
-        headers.put("部品.品番", LOADER.index("部品", "HNBN"));
-        headers.put("部品.数量", LOADER.index("部品", "JISI_SU"));
-        headers.put("部品.金額", LOADER.index("部品", "SKKG"));
-        headers.put("部品.品名", LOADER.index("部品", "BHN_NM"));
+        headers.put("受注.会社", LOADER.index("受注", "会社CD"));
+        headers.put("受注.作番", LOADER.index("受注", "KEY"));
+        headers.put("受注.日付", LOADER.index("受注", "ODDAY"));
+        headers.put("受注.作業形態", LOADER.index("受注", "SGYO_KTICD"));
+        headers.put("受注.作業形態名", LOADER.index("受注", "SGKT_NM"));
+        headers.put("受注.概要", LOADER.index("受注", "GAIYO_1"));
+        //headers.put("部品.会社", LOADER.index("部品", "会社CD"));
+        //headers.put("部品.作番", LOADER.index("部品", "KEY"));
+        //headers.put("部品.品番", LOADER.index("部品", "HNBN"));
+        //headers.put("部品.数量", LOADER.index("部品", "JISI_SU"));
+        //headers.put("部品.金額", LOADER.index("部品", "SKKG"));
+        //headers.put("部品.品名", LOADER.index("部品", "BHN_NM"));
         //headers.put("作業.会社", LOADER.index("作業", "会社CD"));
         //headers.put("作業.作番", LOADER.index("作業", "KEY"));
         //headers.put("作業.作業コード", LOADER.index("作業", "SGYOCD"));
@@ -48,6 +51,9 @@ public class SimpleExporter {
         //headers.put("顧客.顧客CD", dataIndex.get("顧客").indexOf("NNSCD"));
         //headers.put("顧客.区分", dataIndex.get("顧客").indexOf("KKYK_KBN"));
         //headers.put("顧客.業種", dataIndex.get("顧客").indexOf("GYSCD"));
+        
+        //フィルタ設定　定期メンテナンス
+        simplefilter = "care";
         
         System.out.println(headers);
 
@@ -60,7 +66,7 @@ public class SimpleExporter {
         //multiExport("ExportData_Multi_"+names.length+".csv", headers, names, filter);
         
         //全部
-        allExport("ExportData_"+KISY+"_ALL.csv", headers);
+        allExport("ExportData_"+KISY+"_ALL_km4.csv", headers);
     }
 
     private static void allExport(String f, Map<String, Integer> headers) {
@@ -101,35 +107,8 @@ public class SimpleExporter {
         List<Integer> index = new ArrayList(headers.values());
         String key = headers.keySet().stream().findFirst().get().split("\\.")[0];
         syaryo.getValue(key, index.toArray(new Integer[index.size()])).values().stream()
+                            .filter(s -> s.toString().contains(simplefilter))
                             .map(s -> syaryo.get().name+","+String.join(",", s))
                             .forEach(pw::println);
-    }
-    
-    private static List<String> dateList(Map<String, Integer> headers, SyaryoAnalizer syaryo) {
-        List<String> date = new ArrayList<>();
-        for (String key : headers.keySet()) {
-            String k = key.split("\\.")[0];
-            if (k.equals("作業") || k.equals("部品")) {
-                continue;
-            }
-
-            if (!key.contains(".")) {
-                continue;
-            } else if (key.contains("SMR") || key.contains("GPS")) {
-                continue;
-            } else if (syaryo.get().get(k) == null) {
-                continue;
-            }
-
-            if (k.contains("受注")) {
-                date.addAll(syaryo.getValue(k, "ODDAY", false));
-            } else {
-                date.addAll(syaryo.get().get(k).keySet());
-            }
-        }
-
-        date = date.stream().distinct().sorted().collect(Collectors.toList());
-
-        return date;
     }
 }

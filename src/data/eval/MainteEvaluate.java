@@ -28,9 +28,11 @@ public class MainteEvaluate {
     private static Map<String, String> INTERVAL = KomatsuUserParameter.PC200_MAINTEPARTS_INTERVAL;
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     private static List<String> _header;
+    private Map<String, Map<String, Double>> _eval;
 
     public MainteEvaluate() {
         _header = new ArrayList<>(INTERVAL.keySet());
+        _eval = new HashMap<>();
     }
 
     //ヘッダ取得
@@ -40,21 +42,19 @@ public class MainteEvaluate {
 
     //評価値取得
     public Map<String, Map<String, Double>> evaluate(Map<String, SyaryoObject> map) {
-        Map<String, Map<String, Double>> eval = new TreeMap<>();
-
         map.values().stream().forEach(s -> {
             try (SyaryoAnalizer a = new SyaryoAnalizer(s, true)) {
                 //集約
                 Map<String, Integer[]> data = aggregate(a);
 
                 //正規化
-                eval.put(s.name, normalize(data));
+                _eval.put(s.name, normalize(data));
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         });
 
-        return eval;
+        return _eval;
     }
 
     public Map<String, Double> evaluate(SyaryoObject s) {
@@ -100,6 +100,16 @@ public class MainteEvaluate {
         }
         
         return eval;
+    }
+    
+    public Map<String, List<Double>> getClusData(){
+        Map<String, List<Double>> data = _eval.entrySet().stream()
+                    .collect(Collectors.toMap(
+                            e -> e.getKey(), 
+                            e -> _header.stream().map(h -> e.getValue().get(h)).collect(Collectors.toList())
+                    ));
+        
+        return data;
     }
 
     //正規化
