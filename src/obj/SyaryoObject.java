@@ -148,6 +148,13 @@ public class SyaryoObject implements Serializable {
         map.remove(key);
         compress(true);
     }
+    
+    public void remove(String key, String idx) {
+        decompress();
+        if(map.get(key) != null)
+            map.get(key).remove(idx);
+        compress(true);
+    }
 
     /**
      * データ圧縮

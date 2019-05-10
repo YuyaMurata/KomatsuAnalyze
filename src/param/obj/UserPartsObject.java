@@ -74,8 +74,10 @@ public class UserPartsObject {
         if(index.get(sid) == null)
             return new ArrayList<>();
         
-        return index.get(sid).values().stream()
-                .filter(p -> MAINTE_PARTS.get(p) != null)
+        return index.get(sid).entrySet().stream()
+                .filter(p -> MAINTE_PARTS.get(p.getValue()) != null)
+                .map(p -> p.getKey()[1])
+                .distinct()
                 .collect(Collectors.toList());
     }
     

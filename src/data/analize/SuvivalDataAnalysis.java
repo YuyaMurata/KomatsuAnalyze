@@ -21,10 +21,10 @@ public class SuvivalDataAnalysis {
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     public static void main(String[] args) {
         LOADER.setFile("PC200_form");
-        createSuviveData("受注", "", LOADER.getSyaryoMap());
+        createSurviveData("受注", "", LOADER.getSyaryoMap());
     }
 
-    private static void createSuviveData(String key, String target, Map<String, SyaryoObject> map) {
+    private static void createSurviveData(String key, String target, Map<String, SyaryoObject> map) {
         try (PrintWriter pw = CSVFileReadWrite.writerSJIS("PC200_suvivaldata.csv")) {
             pw.println("SID,ADMIT_D,FOLD_D,Y,SMR,FSTAT,AGE");
             map.values().stream().forEach(s -> {
