@@ -1,10 +1,37 @@
+
 library(survival)
+
+library(ggplot2)
+library(scales)
+
 setwd('C:/Users/zz17807/Documents/NetBeansProjects/KomatsuAnalyze')
 
 csv <-read.csv("PC200_suvivaldata.csv")
 
-# ~ 1 : ALL
-s0 <- Surv(time=csv$Y, event=csv$FSTAT) ~ 1
+d.survfit <- survival::survfit(survival::Surv(SMR, FSTAT) ~ メンテナンス評価, data = csv)
 
-#エンジンは壊れにくいためこの値でなければ変化が見えない
-plot(s0, ylim=c(0.95,1.00))
+fortify.survfit <- function(survfit.data) {
+  data.frame(time = survfit.data$time,
+             n.risk = survfit.data$n.risk,
+             n.event = survfit.data$n.event,
+             n.censor = survfit.data$n.censor,
+             surv = survfit.data$surv,
+             std.err = survfit.data$std.err,
+             upper = survfit.data$upper,
+             lower = survfit.data$lower,
+             strata = rep(names(survfit.data$strata), survfit.data$strata))
+}
+
+ggplot(data = d.survfit) +
+  geom_line(aes_string(x = 'time', y = 'surv', colour = 'strata')) +
+    geom_ribbon(aes_string(x = 'time', ymin = 'lower', ymax = 'upper', fill = 'strata'), alpha = 0.5) +
+  scale_y_continuous(labels = scales::percent)
+
+
+#打ち切り
+fortified <- ggplot2::fortify(d.survfit)
+ggplot(data = fortified) +
+  geom_line(aes_string(x = 'time', y = 'surv', colour = 'strata')) +
+  geom_point(data = fortified[fortified$n.censor > 0, ],
+             aes_string(x = 'time', y = 'surv'), shape = '+', size = 3) + 
+  scale_y_continuous(labels = scales::percent)

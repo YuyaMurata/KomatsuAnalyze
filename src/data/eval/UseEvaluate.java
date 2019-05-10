@@ -30,10 +30,23 @@ public class UseEvaluate {
 
     public UseEvaluate() {
         _header = new HashMap<>();
+        _eval = new HashMap<>();
     }
     
     public Map<String, List<String>> header() {
         return _header;
+    }
+    
+    public List<String> longheader() {
+        List<String> h = new ArrayList<>();
+        int i = 0;
+        for(String _h : _header.keySet()){
+            h.addAll(_header.get(_h));
+            h.set(i, _h+"|"+_header.get(_h).get(0));
+            i += _header.get(_h).size();
+        }
+        
+        return h;
     }
 
     //評価値取得
@@ -176,8 +189,8 @@ public class UseEvaluate {
     }
 
     public static void main(String[] args) {
-        LOADER.setFile("PC200_form");
-        SyaryoObject s = LOADER.getSyaryoMap().get("PC200-8N1-311826");
+        LOADER.setFile("PC200_loadmap");
+        SyaryoObject s = LOADER.getSyaryoMap().get("PC200-10-450635");
         
         UseEvaluate use = new UseEvaluate();
         

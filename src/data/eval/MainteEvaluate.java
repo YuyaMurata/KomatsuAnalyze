@@ -138,8 +138,7 @@ public class MainteEvaluate {
                 .forEach(e -> {
                     String check = "";
                     try {
-
-                        TimeSeriesObject t = new TimeSeriesObject(s.get(), "受注", e.getKey());
+                        TimeSeriesObject t = new TimeSeriesObject(s, "受注", e.getKey());
                         List<Integer> smr = t.series.stream()
                                 .map(ti -> ti.split("#")[0])
                                 .map(ti -> s.getDateToSMR(ti).getValue())
@@ -152,22 +151,22 @@ public class MainteEvaluate {
                         }
                         max = s.maxSMR[4] > max ? s.maxSMR[4] : max;
 
-                        Integer len = max % Integer.valueOf(e.getValue()) == 0 ? max / Integer.valueOf(e.getValue()) - 1 : max / Integer.valueOf(e.getValue());
+                        Integer len = max / Integer.valueOf(e.getValue());
                         Integer[] series = new Integer[len + 1];
                         Arrays.fill(series, 0);
-
+                        
                         check = t.sid + ":" + s.maxSMR[4] + ":" + t.series + smr;
-
+                        
                         smr.stream()
                                 .map(v -> v == 0 ? 1 : v) //0h交換での例外処理
                                 .map(v -> (v % Integer.valueOf(e.getValue())) == 0 ? v - 1 : v) //インターバル時間で割り切れる場合の例外処理
                                 .forEach(v -> {
                                     int i = v / Integer.valueOf(e.getValue());
-                                    /*if(series[i].equals("0"))
-                                        series[i] = "1";*/
                                     series[i] = v;
                                 });
-
+                        
+                        
+                        
                         //各車両のメンテナンス状況を記録
                         data.put(e.getKey(), series);
 
@@ -183,8 +182,8 @@ public class MainteEvaluate {
 
     //Test
     public static void main(String[] args) {
-        LOADER.setFile("PC200_form");
-        SyaryoObject s = LOADER.getSyaryoMap().get("PC200-10-450643");
+        LOADER.setFile("PC200_loadmap");
+        SyaryoObject s = LOADER.getSyaryoMap().get("PC200-10-454701");
         
         MainteEvaluate mainte = new MainteEvaluate();
         

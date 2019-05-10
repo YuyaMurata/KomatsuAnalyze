@@ -164,8 +164,6 @@ public class SyaryoAnalizer implements AutoCloseable {
                         dates.add(date);
                     });
                     
-                    rejectAttachement();
-                    
                     numOrders = get("受注").size();
                 case "顧客":
                     List custv = getValue("顧客", "顧客CD", false);
@@ -595,7 +593,7 @@ public class SyaryoAnalizer implements AutoCloseable {
         return false;
     }
 
-    private void rejectAttachement() {
+    public void rejectAttachement() {
         //アタッチメント修理の除外
         PC200_ATTACHEMENT.entrySet().stream()
                 .filter(at -> at.getValue().equals(name))
@@ -636,6 +634,25 @@ public class SyaryoAnalizer implements AutoCloseable {
 
         //test
         return rejectData;
+    }
+    
+    public void rejectSellParts(){
+        //単販 排除作番リスト
+        List<String> sbns = get("受注").entrySet().stream()
+                .filter(o -> o.getValue().get(LOADER.index("受注", "SGYO_KTICD")).equals("CA"))
+                .map(o -> o.getKey())
+                .collect(Collectors.toList());
+        
+        if (sbns.isEmpty()) {
+            return ;
+        }
+
+        //条件を揃える
+        sbns.stream().forEach(sbn -> {
+            this.syaryo.remove("受注", sbn);
+            getSBNParts(sbn).keySet().stream().forEach(psbn -> this.syaryo.remove("部品", psbn));
+            getSBNWork(sbn).keySet().stream().forEach(wsbn -> this.syaryo.remove("作業", wsbn));
+        });
     }
 
     public String toString() {

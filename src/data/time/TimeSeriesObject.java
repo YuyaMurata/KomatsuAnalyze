@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
@@ -34,40 +36,41 @@ public class TimeSeriesObject {
     public String target;
     public List<String> series;
 
-    public TimeSeriesObject(SyaryoObject s, String key, String target) {
+    public TimeSeriesObject(SyaryoAnalizer s, String key, String target) {
         this.sid = s.name;
         this.key = key;
         this.target = target;
         this.series = toSeries(s, key, target);
     }
 
-    private List<String> toSeries(SyaryoObject s, String key, String target) {
+    private List<String> toSeries(SyaryoAnalizer s, String key, String target) {
         List<String> t;
-        
+
         if (key.equals("受注")) {
-            if(target.equals(""))
+            if (target.equals("")) {
                 t = orderToSeries(s);
-            else
+            } else {
                 t = partsToSeries(s, target);
+            }
         } else {
             t = komtraxErrorToSeries(s, key, target);
         }
-        
+
         return t;
     }
 
-    private List<String> orderToSeries(SyaryoObject s){
+    private List<String> orderToSeries(SyaryoAnalizer s) {
         List<String> t = s.get("受注").entrySet().stream()
                 .map(o -> o.getValue().get(LOADER.index("受注", "SGYO_KRDAY")))
                 .sorted(Comparator.comparing(d -> Integer.valueOf(d.split("#")[0])))
                 .collect(Collectors.toList());
-        
+
         return t;
     }
-    
-    private List<String> partsToSeries(SyaryoObject s, String target) {
+
+    private List<String> partsToSeries(SyaryoAnalizer s, String target) {
         List<String> t = new ArrayList<>();
-        
+
         if (PARTS.check(s.name, target)) {
             t = PARTS.index.get(s.name).entrySet().stream() //ユーザー定義の部品
                     .filter(e -> e.getValue().equals(target)) //ターゲット以外の部品は除去
@@ -80,7 +83,7 @@ public class TimeSeriesObject {
         return t;
     }
 
-    private List<String> komtraxErrorToSeries(SyaryoObject s, String key, String target) {
+    private List<String> komtraxErrorToSeries(SyaryoAnalizer s, String key, String target) {
         List<String> t = new ArrayList<>();
 
         if (s.get(key) != null) {
@@ -91,7 +94,6 @@ public class TimeSeriesObject {
                     .sorted(Comparator.comparing(d -> Integer.valueOf(d.split("#")[0])))
                     .collect(Collectors.toList());
         }
-        
 
         return t;
     }
@@ -112,9 +114,13 @@ public class TimeSeriesObject {
 
         Map<String, List<String>> test = new HashMap();
         syaryos.values().stream().forEach(s -> {
-            TimeSeriesObject t = new TimeSeriesObject(s, "受注", "オルタネータ");
-            if (t.series != null) {
-                test.put(t.sid, t.series);
+            try (SyaryoAnalizer a = new SyaryoAnalizer(s, false)) {
+                TimeSeriesObject t = new TimeSeriesObject(a, "受注", "オルタネータ");
+                if (t.series != null) {
+                    test.put(t.sid, t.series);
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         });
         System.out.println("オルタネータ　時系列");
@@ -122,9 +128,13 @@ public class TimeSeriesObject {
 
         Map<String, List<String>> test2 = new HashMap();
         syaryos.values().stream().forEach(s -> {
-            TimeSeriesObject t = new TimeSeriesObject(s, "KOMTRAX_ERROR", "AB00KE");
-            if (t.series != null) {
-                test2.put(t.sid, t.series);
+            try (SyaryoAnalizer a = new SyaryoAnalizer(s, false)) {
+                TimeSeriesObject t = new TimeSeriesObject(a, "KOMTRAX_ERROR", "AB00KE");
+                if (t.series != null) {
+                    test2.put(t.sid, t.series);
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         });
         System.out.println("\nKOMTRAX_ERR[AB00KE]　時系列");
