@@ -28,7 +28,7 @@ import param.KomatsuUserParameter;
  */
 public class SyaryoObjectFormatting {
 
-    private static String KISY = "PC200_form";
+    private static String KISY = "PC200";
     private static String HONSY_INDEXPATH = KomatsuDataParameter.HONSYA_INDEX_PATH;
     private static String PRODUCT_INDEXPATH = KomatsuDataParameter.PRODUCT_INDEXPATH;
     private static DecimalFormat df = new DecimalFormat("0000");
@@ -43,13 +43,13 @@ public class SyaryoObjectFormatting {
     private static void form(String kisy) {
         LOADER.setFile(kisy);
         Map<String, SyaryoObject> syaryoMap = LOADER.getSyaryoMap();
-        
+
         //本社コード
         Map<String, String> honsyIndex = new MapToJSON().toMap(HONSY_INDEXPATH);
 
         //生産日情報
         Map<String, String> productIndex = new MapToJSON().toMap(PRODUCT_INDEXPATH);
-        
+
         int n = 0;
         for (String key : syaryoMap.keySet()) {
             //System.out.println(key);
@@ -66,7 +66,7 @@ public class SyaryoObjectFormatting {
 
             //日付ズレの補正 閾値以降のデータを削除
             formDate(syaryo, LOADER.indexes("受注"), 20170501);
-            
+
             //生産の整形
             newMap = formProduct(syaryo.get("生産"), productIndex, syaryo.getName());
             syaryo.put("生産", newMap);
@@ -76,8 +76,9 @@ public class SyaryoObjectFormatting {
             syaryo.put("顧客", newMap);
 
             //新車の整形
-            if(KomatsuDataParameter.PC_KR_SMASTER.get(syaryo.getName().split("-")[0]+"-"+syaryo.getName().split("-")[2]) != null)
+            if (KomatsuDataParameter.PC_KR_SMASTER.get(syaryo.getName().split("-")[0] + "-" + syaryo.getName().split("-")[2]) != null) {
                 syaryo.put("新車", null);
+            }
             newMap = formNew(syaryo.get("新車"), syaryo.get("生産"), syaryo.get("出荷"), LOADER.indexes("新車"));
             syaryo.put("新車", newMap);
             rule.addNew(newMap.keySet().stream().findFirst().get().toString());
@@ -115,13 +116,12 @@ public class SyaryoObjectFormatting {
             syaryo.put("オールサポート", newMap);
 
             //Komtrax
-            //formKomtrax(syaryo, syaryo.get("出荷"));
+            formKomtrax(syaryo, syaryo.get("出荷"));
 
             //余計な情報を削除
             formExtra(syaryo, new String[]{"最終更新日", "国"});
             removeEmptyObject(syaryo);
-            
-            
+
             syaryo.stopHighPerformaceAccess();
             n++;
 
@@ -132,31 +132,31 @@ public class SyaryoObjectFormatting {
 
         //R
         //R.close();
-        
         LOADER.close();
         new SyaryoToCompress().write(LOADER.getFilePath().replace(".bz2", "_form.bz2"), syaryoMap);
     }
-    
-    private static Map reduce(Map<String, List<String>> r, List<Integer> exp){
-        Map map =r.entrySet().stream()
-                        .collect(Collectors.toMap(e -> e.getKey(), 
-                                                    e ->exp.stream().map(i -> e.getValue().get(i)).collect(Collectors.toList())));
-        
+
+    private static Map reduce(Map<String, List<String>> r, List<Integer> exp) {
+        Map map = r.entrySet().stream()
+                .collect(Collectors.toMap(e -> e.getKey(),
+                        e -> exp.stream().map(i -> e.getValue().get(i)).collect(Collectors.toList())));
+
         return map;
     }
-    
-    private static Map combine(Map c1, Map c2){
-        if(c2 == null)
+
+    private static Map combine(Map c1, Map c2) {
+        if (c2 == null) {
             return c1;
-        else if(c1 == null)
+        } else if (c1 == null) {
             return c2;
-        
+        }
+
         Map map = new TreeMap(c1);
-        
-        for(Object key : c2.keySet()){
+
+        for (Object key : c2.keySet()) {
             map.put(dup(key.toString(), c1), c2.get(key));
         }
-        
+
         return map;
     }
 
@@ -191,7 +191,7 @@ public class SyaryoObjectFormatting {
 
         Integer hist_cid = indexHisList.indexOf("顧客CD");
         Integer syareki = indexHisList.indexOf("車歴区分");
-        
+
         //日付データ揃え
         owner = dateFormalize(owner);
 
@@ -225,14 +225,14 @@ public class SyaryoObjectFormatting {
         //ID重複排除 ##排除
         //System.out.println(owner.values().stream().map(l -> l.get(ownerID)).collect(Collectors.toList()));
         List owners = owner.values().stream()
-            .map(l -> l.get(ownerID))
-            .filter(id -> !id.toString().contains("##")) //工場IDが振られていない
-            .filter(id -> !id.toString().equals("None")) //IDが存在する
-            .filter(id -> !KomatsuDataParameter.KUEC_LIST.contains(id)) //KUECでない
-            .collect(Collectors.toList());
+                .map(l -> l.get(ownerID))
+                .filter(id -> !id.toString().contains("##")) //工場IDが振られていない
+                .filter(id -> !id.toString().equals("None")) //IDが存在する
+                .filter(id -> !KomatsuDataParameter.KUEC_LIST.contains(id)) //KUECでない
+                .collect(Collectors.toList());
         //System.out.println(owners);
         owners = exSeqDuplicate(owners);
-        
+
         if (owners.isEmpty()) {
             //System.out.println("使用顧客が存在しない車両(後で削除)");
             return null;
@@ -260,10 +260,14 @@ public class SyaryoObjectFormatting {
         Map<String, List<String>> map = new TreeMap();
         
         Integer deff = 0;
-        if(news != null){
-            deff = Math.abs(SyaryoAnalizer.time(news.keySet().stream().findFirst().get(), deploy.keySet().stream().findFirst().get())) / 30;
+        if (news != null && deploy != null) {
+            //なぜか空が存在した場合
+            if(news.isEmpty())
+                news = null;
+            else
+                deff = Math.abs(SyaryoAnalizer.time(news.keySet().stream().findFirst().get(), deploy.keySet().stream().findFirst().get())) / 30;
         }
-        
+
         if (news == null || deff > 6) {
             //出荷情報を取得する処理
             String date = "";
@@ -451,22 +455,22 @@ public class SyaryoObjectFormatting {
             //System.out.println("Not found Order!");
             return null;
         }
-        
+
         //日付ソート
         int date = indexList.indexOf("ODDAY"); //kom_orderが紐づく場合 ODDAY
         //System.out.println(order);
 
         Map<String, Integer> sortMap = order.entrySet().stream()
-            .filter(e -> !e.getValue().get(date).equals("None"))
-            .filter(e -> Integer.valueOf(reject.getNew()) <= Integer.valueOf(e.getValue().get(date)))
-            .collect(Collectors.toMap(e -> e.getKey(), e -> Integer.valueOf(e.getValue().get(date))));
-        
+                .filter(e -> !e.getValue().get(date).equals("None"))
+                .filter(e -> Integer.valueOf(reject.getNew()) <= Integer.valueOf(e.getValue().get(date)))
+                .collect(Collectors.toMap(e -> e.getKey(), e -> Integer.valueOf(e.getValue().get(date))));
+
         //作番重複除去
         List<String> sbnList = sortMap.entrySet().stream()
-            .sorted(Map.Entry.comparingByValue()).map(s -> s.getKey())
-            .map(k -> k.split("#")[0])
-            .distinct()
-            .collect(Collectors.toList());
+                .sorted(Map.Entry.comparingByValue()).map(s -> s.getKey())
+                .map(k -> k.split("#")[0])
+                .distinct()
+                .collect(Collectors.toList());
 
         //System.out.println("作番:"+sbnList);
         Map<String, List<String>> map = new LinkedHashMap();
@@ -482,14 +486,14 @@ public class SyaryoObjectFormatting {
         for (String sbn : sbnList) {
             //重複作番を取り出す
             List<String> sbnGroup = order.keySet().stream()
-                .filter(s -> s.contains(sbn))
-                .collect(Collectors.toList());
+                    .filter(s -> s.contains(sbn))
+                    .collect(Collectors.toList());
 
             //KOMPAS 受注テーブル情報が存在するときは取り出す
             Optional<List<String>> kom = sbnGroup.stream()
-                .map(s -> order.get(s))
-                .filter(l -> l.get(db).equals("kom_order"))
-                .findFirst();
+                    .map(s -> order.get(s))
+                    .filter(l -> l.get(db).equals("kom_order"))
+                    .findFirst();
 
             if (kom.isPresent()) {
                 map.put(sbn, kom.get());
@@ -542,17 +546,16 @@ public class SyaryoObjectFormatting {
         for (String sbn : map.keySet()) {
             List<String> list = map.get(sbn);
             list.set(price, String.valueOf(Double.valueOf(list.get(price)).intValue()));
-            
-            if(list.get(fin_date).equals("None")){
+
+            if (list.get(fin_date).equals("None")) {
                 list.set(fin_date, list.get(date));
                 //System.out.println(list);
             }
-            
+
             //最新の受注日
             reject.currentDate = list.get(date);
         }
-        
-        
+
         return map;
     }
 
@@ -570,21 +573,21 @@ public class SyaryoObjectFormatting {
         for (Object sbn : odrSBN) {
             //重複作番を取り出す
             List<String> sbnGroup = work.keySet().stream()
-                .filter(s -> s.contains(sbn.toString()))
-                .collect(Collectors.toList());
+                    .filter(s -> s.contains(sbn.toString()))
+                    .collect(Collectors.toList());
 
             //KOMPAS 作業情報が存在するときは取り出す
             Optional<List<String>> kom = sbnGroup.stream()
-                .map(s -> work.get(s))
-                .filter(l -> l.get(db).equals("work_info"))
-                .findFirst();
+                    .map(s -> work.get(s))
+                    .filter(l -> l.get(db).equals("work_info"))
+                    .findFirst();
             if (kom.isPresent()) {
                 sbnGroup.stream()
-                    .filter(s -> !work.get(s).get(db).equals("service"))
-                    .forEach(s -> map.put(s, work.get(s)));
+                        .filter(s -> !work.get(s).get(db).equals("service"))
+                        .forEach(s -> map.put(s, work.get(s)));
             } else {
                 sbnGroup.stream()
-                    .forEach(s -> map.put(s, work.get(s)));
+                        .forEach(s -> map.put(s, work.get(s)));
             }
         }
 
@@ -593,14 +596,14 @@ public class SyaryoObjectFormatting {
         int sgcdIdx = indexList.indexOf("SGYOCD");
         int sgnmIdx = indexList.indexOf("SGYO_NM");
         work.entrySet().stream()
-            .filter(w -> w.getValue().get(daihyoIdx).equals("1"))
-            .forEach(w -> {
-                map.entrySet().stream()
-                    .filter(e -> e.getKey().contains(w.getKey().split("#")[0]))
-                    .filter(e -> e.getValue().get(sgcdIdx).equals(w.getValue().get(sgcdIdx)))
-                    .filter(e -> e.getValue().get(sgnmIdx).equals(w.getValue().get(sgnmIdx)))
-                    .forEach(e -> map.get(e.getKey()).set(daihyoIdx, "1"));
-            });
+                .filter(w -> w.getValue().get(daihyoIdx).equals("1"))
+                .forEach(w -> {
+                    map.entrySet().stream()
+                            .filter(e -> e.getKey().contains(w.getKey().split("#")[0]))
+                            .filter(e -> e.getValue().get(sgcdIdx).equals(w.getValue().get(sgcdIdx)))
+                            .filter(e -> e.getValue().get(sgnmIdx).equals(w.getValue().get(sgnmIdx)))
+                            .forEach(e -> map.get(e.getKey()).set(daihyoIdx, "1"));
+                });
 
         Integer[] kosu = new Integer[]{
             indexList.indexOf("HJUN_KOS"),
@@ -639,21 +642,21 @@ public class SyaryoObjectFormatting {
         for (Object sbn : odrSBN) {
             //重複作番を取り出す
             List<String> sbnGroup = parts.keySet().stream()
-                .filter(s -> s.contains(sbn.toString()))
-                .collect(Collectors.toList());
+                    .filter(s -> s.contains(sbn.toString()))
+                    .collect(Collectors.toList());
 
             //KOMPAS 部品情報が存在するときは取り出す
             Optional<List<String>> kom = sbnGroup.stream()
-                .map(s -> parts.get(s))
-                .filter(l -> l.get(db).equals("parts"))
-                .findFirst();
+                    .map(s -> parts.get(s))
+                    .filter(l -> l.get(db).equals("parts"))
+                    .findFirst();
             if (kom.isPresent()) {
                 sbnGroup.stream()
-                    .filter(s -> !parts.get(s).get(db).equals("service"))
-                    .forEach(s -> map.put(s, parts.get(s)));
+                        .filter(s -> !parts.get(s).get(db).equals("service"))
+                        .forEach(s -> map.put(s, parts.get(s)));
             } else {
                 sbnGroup.stream()
-                    .forEach(s -> map.put(s, parts.get(s)));
+                        .forEach(s -> map.put(s, parts.get(s)));
             }
         }
 
@@ -682,30 +685,30 @@ public class SyaryoObjectFormatting {
             //System.out.println("Not found Work!");
             return null;
         }
-        
+
         int smridx = indexList.indexOf("VALUE");
-        String checkNumber = currentKey.split("-")[2].substring(0, 5);
+        String checkNumber = currentKey.split("-")[2].substring(0, currentKey.split("-")[2].length() - 1);
 
         //日付重複除去
         List<String> dateList = smr.keySet().stream()
-            .filter(s -> !s.contains("None")) //日付が存在しない
-            .map(s -> s.split("#")[0])
-            .distinct()
-            .collect(Collectors.toList());
+                .filter(s -> !s.contains("None")) //日付が存在しない
+                .map(s -> s.split("#")[0])
+                .distinct()
+                .collect(Collectors.toList());
 
         Map<String, List<String>> map = new TreeMap();
         Boolean zeroflg = false;
         for (String date : dateList) {
             String stdate = date;
-            
+
             //重複日付を取り出す
             List<String> dateGroup = smr.keySet().stream()
-                .filter(s -> s.contains(stdate))
-                .filter(s -> !smr.get(s).get(smridx).equals("None")) //SMRが存在しない
-                .filter(s -> !smr.get(s).get(smridx).equals("999"))  //怪しい数値の削除
-                .filter(s -> !smr.get(s).get(smridx).equals("9999")) //怪しい数値の削除
-                .filter(s -> !smr.get(s).get(smridx).equals(checkNumber)) //怪しい数値の削除
-                .collect(Collectors.toList());
+                    .filter(s -> s.contains(stdate))
+                    .filter(s -> !smr.get(s).get(smridx).equals("None")) //SMRが存在しない
+                    .filter(s -> !smr.get(s).get(smridx).equals("999")) //怪しい数値の削除
+                    .filter(s -> !smr.get(s).get(smridx).equals("9999")) //怪しい数値の削除
+                    .filter(s -> !smr.get(s).get(smridx).equals(checkNumber)) //怪しい数値の削除
+                    .collect(Collectors.toList());
 
             //欠損データのみのため
             if (dateGroup.isEmpty()) {
@@ -791,15 +794,15 @@ public class SyaryoObjectFormatting {
                 if (key.toString().equals("受注")) {
                     int date_idx = indexList.indexOf("ODDAY"); //kom_orderが紐づく場合ODDAY
                     remove = map.entrySet().stream()
-                        .filter(v -> !v.getValue().get(date_idx).toString().contains("None"))
-                        .filter(v -> Integer.valueOf(v.getValue().get(date_idx).toString().split("#")[0].replace("/", "")) >= date)
-                        .map(v -> v.getKey())
-                        .collect(Collectors.toList());
+                            .filter(v -> !v.getValue().get(date_idx).toString().contains("None"))
+                            .filter(v -> Integer.valueOf(v.getValue().get(date_idx).toString().split("#")[0].replace("/", "")) >= date)
+                            .map(v -> v.getKey())
+                            .collect(Collectors.toList());
                 } else {
                     remove = map.keySet().stream()
-                        .filter(v -> !v.contains("None"))
-                        .filter(v -> Integer.valueOf(v.split("#")[0].split(" ")[0].replace("/", "").substring(0, 8)) >= date)
-                        .collect(Collectors.toList());
+                            .filter(v -> !v.contains("None"))
+                            .filter(v -> Integer.valueOf(v.split("#")[0].split(" ")[0].replace("/", "").substring(0, 8)) >= date)
+                            .collect(Collectors.toList());
                 }
                 if (remove.isEmpty()) {
                     continue;
@@ -812,7 +815,7 @@ public class SyaryoObjectFormatting {
             for (Object removeDate : remove) {
                 map.remove(removeDate.toString());
             }
-            
+
             syaryo.put(key.toString(), map);
         }
     }
@@ -822,7 +825,7 @@ public class SyaryoObjectFormatting {
         //ALL
         List<String> kmList = KomatsuUserParameter.DATA_ORDER.stream().filter(s -> s.contains("KOMTRAX")).collect(Collectors.toList());
         String stdate = deploy.keySet().stream().findFirst().get();
-        
+
         for (String id : kmList) {
             if (syaryo.get(id) == null) {
                 continue;
@@ -832,27 +835,29 @@ public class SyaryoObjectFormatting {
             Map<String, List<String>> newMap = new TreeMap();
             String tmp = "";
             for (String date : syaryo.get(id).keySet()) {
-                
+
                 String d = date.split("#")[0].split(" ")[0].replace("/", "");
                 String str = syaryo.get(id).get(date).toString();
-                
+
                 //出荷より前のセンサー情報を消す
-                if(Integer.valueOf(d) < Integer.valueOf(stdate))
+                if (Integer.valueOf(d) < Integer.valueOf(stdate)) {
                     continue;
+                }
 
                 if (!tmp.equals(str)) {
                     List value = getTransformValue(id, syaryo.get(id).get(date));
-                    if(id.equals("KOMTRAX_SMR"))
+                    if (id.equals("KOMTRAX_SMR")) {
                         newMap.put(d, value);
-                    else if(id.equals("KOMTRAX_ACT_DATA")){  //ACT_DATAの構造が変わると使えない
-                        if(newMap.get(d) == null)
+                    } else if (id.equals("KOMTRAX_ACT_DATA")) {  //ACT_DATAの構造が変わると使えない
+                        if (newMap.get(d) == null) {
                             newMap.put(d, value);
-                        else{
+                        } else {
                             Integer dup = Integer.valueOf(newMap.get(d).get(0).toString()) + Integer.valueOf(value.get(0).toString());
                             newMap.get(d).set(0, dup.toString());
                         }
-                    }else
+                    } else {
                         newMap.put(dup(d, newMap), value);
+                    }
                     tmp = str;
 
                 }
@@ -866,9 +871,9 @@ public class SyaryoObjectFormatting {
     private static List<String> getTransformValue(String id, List<String> kmvalue) {
         if (id.contains("SMR")) {
             kmvalue.set(0, String.valueOf(Double.valueOf(kmvalue.get(0)).intValue()));
-        }else if(id.contains("FUEL")){
+        } else if (id.contains("FUEL")) {
             kmvalue.set(0, String.valueOf(Double.valueOf(kmvalue.get(0))));
-        }else if(id.contains("GPS")){
+        } else if (id.contains("GPS")) {
             //緯度
             kmvalue.set(0, String.valueOf(Double.valueOf(MapPathData.compValue(kmvalue.get(0)))));
             //経度

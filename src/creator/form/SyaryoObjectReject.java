@@ -6,7 +6,6 @@
 package creator.form;
 
 import file.SyaryoToCompress;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +32,7 @@ public class SyaryoObjectReject {
         //service(syaryoMap, "20170501", true);
         //syaryo(syaryoMap);
         //komtrax(syaryoMap, "KOMTRAX_ACT_DATA");
-        empty(syaryoMap, "受注");
+        //empty(syaryoMap, "受注");
         //smr(syaryoMap, "KOMTRAX_SMR");
         //noop(syaryoMap, "KOMTRAX_SMR", "2017");
 

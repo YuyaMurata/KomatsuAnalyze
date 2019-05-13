@@ -34,7 +34,8 @@ public class AgeSMREvaluate {
         clus.remove(0);
         
         try (PrintWriter pw = CSVFileReadWrite.writerSJIS("PC200_suvivaldata.csv")) {
-            pw.println("SID,メンテナンス評価,使われ方評価,ADMIT_D,FOLD_D,Y,SMR,FSTAT,AGE,ACCIDENT");
+            //pw.println("SID,メンテナンス評価,使われ方評価,ADMIT_D,FOLD_D,Y,SMR,FSTAT,AGE,ACCIDENT");
+            pw.println("SID,メンテナンス評価,使われ方評価,SBN,"+String.join(",", LOADER.indexes("受注"))+",DATE,SMR,SMR2");
             for(String c : clus){
                 String sid = c.split(",")[0];
                 SyaryoObject s = LOADER.getSyaryoMap().get(sid);
@@ -51,10 +52,11 @@ public class AgeSMREvaluate {
                     if (!t.series.isEmpty()) {
                         //System.out.println(t.sid+":"+t.series);
                         Map.Entry smr = a.getDateToSMR(t.series.get(0));
-                        pw.println(c + "," + a.lifestart + "," + t.series.get(0) + "," + smr.getKey() + "," + smr.getValue() + ",1,"+(a.currentAge_day/365)+","+accident);
+                        //pw.println(c + "," + a.lifestart + "," + t.series.get(0) + "," + smr.getKey() + "," + smr.getValue() + ",1,"+(a.currentAge_day/365)+","+accident);
+                        pw.println(c+","+t.getFirstOrder(a) + "," +t.series.get(0)+","+ smr.getKey() + "," + smr.getValue());    
                     }else{
                         Map.Entry smr = a.getDateToSMR(a.lifestop);
-                        pw.println(c + "," + a.lifestart + "," + a.lifestop + "," + smr.getKey() + "," + smr.getValue() + ",0,"+(a.currentAge_day/365)+","+accident);
+                        //pw.println(c + "," + a.lifestart + "," + a.lifestop + "," + smr.getKey() + "," + smr.getValue() + ",0,"+(a.currentAge_day/365)+","+accident);
                     }
                     
                 } catch (Exception ex) {

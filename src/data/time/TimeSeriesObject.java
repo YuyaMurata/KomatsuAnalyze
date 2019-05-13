@@ -14,8 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
@@ -64,7 +62,16 @@ public class TimeSeriesObject {
                 .map(o -> o.getValue().get(LOADER.index("受注", "SGYO_KRDAY")))
                 .sorted(Comparator.comparing(d -> Integer.valueOf(d.split("#")[0])))
                 .collect(Collectors.toList());
-
+        
+        return t;
+    }
+    
+    public String getFirstOrder(SyaryoAnalizer s) {
+        String t = s.get("受注").entrySet().stream()
+                .sorted(Comparator.comparing(o -> Integer.valueOf(o.getValue().get(LOADER.index("受注", "SGYO_KRDAY")).split("#")[0])))
+                .map(o -> o.getKey()+","+String.join(",", o.getValue()))
+                .findFirst().get();
+        
         return t;
     }
 

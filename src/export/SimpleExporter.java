@@ -53,7 +53,7 @@ public class SimpleExporter {
         //headers.put("顧客.業種", dataIndex.get("顧客").indexOf("GYSCD"));
         
         //フィルタ設定　定期メンテナンス
-        simplefilter = "care";
+        simplefilter = " AT,";
         
         System.out.println(headers);
 

@@ -612,7 +612,7 @@ public class SyaryoAnalizer implements AutoCloseable {
 
         //メンテナンス排除作番リスト
         List<String> sbns = get("受注").entrySet().stream()
-                .filter(o -> sv.contains(o.getValue().get(LOADER.index("受注", "SGYO_KTICD"))) || mainte.contains(o.getKey()))
+                .filter(o -> sv.contains(o.getValue().get(LOADER.index("受注", "SGYO_KTICD")))/* || mainte.contains(o.getKey())*/)
                 .map(o -> o.getKey())
                 .collect(Collectors.toList());
 
