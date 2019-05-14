@@ -18,6 +18,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import file.MapToJSON;
 import file.SyaryoToCompress;
+import java.util.Arrays;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
 import param.KomatsuUserParameter;
@@ -70,7 +71,11 @@ public class SyaryoObjectFormatting {
             //生産の整形
             newMap = formProduct(syaryo.get("生産"), productIndex, syaryo.getName());
             syaryo.put("生産", newMap);
-
+            
+            //出荷情報の整形
+            newMap = formDeploy(syaryo.get("出荷"), syaryo.get("生産").keySet().stream().findFirst().get(), syaryo.getName());
+            syaryo.put("出荷", newMap);
+            
             //顧客の整形
             newMap = formOwner(syaryo.get("顧客"), LOADER.indexes("顧客"), honsyIndex, syaryo.get("経歴"), LOADER.indexes("経歴"), rule);
             syaryo.put("顧客", newMap);
@@ -178,6 +183,22 @@ public class SyaryoObjectFormatting {
 
         return map;
     }
+    
+    private static Map formDeploy(Map<String, List<String>> deploy, String pdate, String name) {
+        Map<String, List<String>> map = new TreeMap();
+        String id = name.split("-")[0] + "-" + name.split("-")[2];
+
+        if (deploy != null) {
+            if(deploy.containsKey("None")){
+                map.put(pdate, Arrays.asList(new String[]{pdate}));
+            }else
+                map.putAll(deploy);
+        } else {
+            map.put(pdate, Arrays.asList(new String[]{pdate}));
+        }
+
+        return map;
+    }
 
     private static Map formOwner(Map<String, List<String>> owner, List indexList, Map<String, String> honsyIndex, Map<String, List<String>> history, List indexHisList, DataRejectRule reject) {
         if (owner == null || history == null) {
@@ -258,14 +279,23 @@ public class SyaryoObjectFormatting {
 
     private static Map formNew(Map<String, List<String>> news, Map<String, List<String>> born, Map<String, List<String>> deploy, List indexList) {
         Map<String, List<String>> map = new TreeMap();
-        
+
         Integer deff = 0;
+
         if (news != null && deploy != null) {
+            try{
             //なぜか空が存在した場合
-            if(news.isEmpty())
+            if (news.isEmpty()) {
                 news = null;
-            else
+            } else {
                 deff = Math.abs(SyaryoAnalizer.time(news.keySet().stream().findFirst().get(), deploy.keySet().stream().findFirst().get())) / 30;
+            }
+            }catch(Exception e){
+                System.err.println(news);
+                System.err.println(deploy);
+                System.exit(0);
+            }
+
         }
 
         if (news == null || deff > 6) {
