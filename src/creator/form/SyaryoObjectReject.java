@@ -6,6 +6,7 @@
 package creator.form;
 
 import file.SyaryoToCompress;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,13 +29,11 @@ public class SyaryoObjectReject {
         LOADER.setFile(KISY);
         Map<String, SyaryoObject> syaryoMap = LOADER.getSyaryoMap();
 
-        //type(syaryoMap, Arrays.asList(new String[]{"8", "8N1", "10"}));
-        //service(syaryoMap, "20170501", true);
-        //syaryo(syaryoMap);
-        //komtrax(syaryoMap, "KOMTRAX_ACT_DATA");
-        //empty(syaryoMap, "受注");
-        //smr(syaryoMap, "KOMTRAX_SMR");
-        //noop(syaryoMap, "KOMTRAX_SMR", "2017");
+        type(syaryoMap, Arrays.asList(new String[]{"8", "8N1", "10"}));
+        komtrax(syaryoMap, "KOMTRAX_ACT_DATA");
+        service(syaryoMap, "20170501");
+        empty(syaryoMap, "受注");
+        syaryo(syaryoMap);
 
         LOADER.close();
         new SyaryoToCompress().write(LOADER.getFilePath(), syaryoMap);
@@ -108,7 +107,7 @@ public class SyaryoObjectReject {
         System.out.println("KOMTRAX非対応車両の処理 data=[" + baseKey + "]");
         System.out.println("Before Number of Syaryo : " + map.size());
 
-        Map<String, SyaryoObject> kmmap = map.entrySet().stream()
+        Map<String, SyaryoObject> kmmap = map.entrySet().parallelStream()
                 .filter(e -> e.getValue().get(baseKey) != null)
                 .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
         
@@ -123,8 +122,9 @@ public class SyaryoObjectReject {
         System.out.println(baseKey+"が空の車両を処理 data=[" + baseKey + "]");
         System.out.println("Before Number of Syaryo : " + map.size());
 
-        Map<String, SyaryoObject> emap = map.entrySet().stream()
+        Map<String, SyaryoObject> emap = map.entrySet().parallelStream()
                 .filter(e -> e.getValue().get(baseKey) != null)
+                .filter(e -> !e.getValue().get(baseKey).isEmpty())
                 .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
         
         map.clear();
@@ -133,58 +133,32 @@ public class SyaryoObjectReject {
         System.out.println("Number of Syaryo ("+baseKey+") : " + map.size());
     }
 
-    //SMR異常車両の削除
-    private static void smr(Map<String, SyaryoObject> map, String baseKey) {
-        System.out.println("SMR異常車両の処理");
-        System.out.println("Before Number of Syaryo : " + map.size());
-
-        //SMR異常車両の検出
-        Map<String, List> ab = AbnomalyDetection.smr(map, baseKey);
-
-        //異常車両除去
-        map = map.entrySet().stream()
-                .filter(e -> ab.get(e.getKey()) == null)
-                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
-
-        System.out.println("Number of Syaryo (SMR正常) : " + map.size());
-    }
-
-    //非稼動車両の削除
-    private static void noop(Map<String, SyaryoObject> map, String baseKey, String date) {
-        System.out.println("非稼動車両の処理 data=[" + baseKey + "] 稼動判定:" + date);
-        System.out.println("Before Number of Syaryo : " + map.size());
-
-        Map<String, String> ab = AbnomalyDetection.nonActive(map, baseKey, date);
-
-        //非稼動車両除去
-        map = map.entrySet().stream()
-                .filter(e -> ab.get(e.getKey()) == null)
-                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
-
-        System.out.println("Number of Syaryo (稼働) : " + map.size());
-    }
-
-    //サービス情報から車両を削除
-    private static void service(Map<String, SyaryoObject> map, String date, Boolean exists) {
+    //サービス情報から削除
+    private static void service(Map<String, SyaryoObject> map, String date) {
         System.out.println("サービス情報による車両の処理 data=[カンパニ UR, GC] 新車納入 : " + date + " 以降の車両の削除");
         System.out.println("Before Number of Syaryo : " + map.size());
 
-        //サービスが存在しない車両の除去
-        if (exists) {
-            Map existMap = map.entrySet().stream().filter(e -> e.getValue().get("受注") != null)
-                    .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
-
-            map.clear();
-            map.putAll(existMap);
-            System.out.println("Number of Syaryo (サービス発生車両) : " + map.size());
-        }
-
         //カンパニ車両除去
-        Map companyMap = map.entrySet().parallelStream().filter(e -> !e.getValue().get("最終更新日").values().stream()
-                .filter(c -> c.contains("UR") || c.contains("GC"))
-                .findFirst().isPresent()
-        ).collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
-
+        Map companyMap = map.entrySet().parallelStream()
+                .map(e -> e.getValue())
+                .filter(s -> {
+                    s.startHighPerformaceAccess();
+                    Boolean c1 = true, c2 = true;
+                    if(s.get("受注") != null)
+                        c1 = !s.get("受注").values().stream()
+                                        .filter(c -> c.get(0).equals("UR") || c.get(0).equals("GC"))
+                                        .findFirst()
+                                        .isPresent();
+                    if(s.get("顧客") != null)
+                        c2 = !s.get("顧客").values().stream()
+                                        .filter(c -> c.get(0).equals("UR") || c.get(0).equals("GC"))
+                                        .findFirst()
+                                        .isPresent();
+                    s.stopHighPerformaceAccess();
+                    return c1 && c2;
+                })
+                .collect(Collectors.toMap(s -> s.name, s -> s));
+        
         map.clear();
         map.putAll(companyMap);
         System.out.println("Number of Syaryo (会社) : " + map.size());

@@ -385,11 +385,9 @@ public class EasyViewerFXMLController implements Initializable {
         List<String> searchList;
         Map<String, Integer> result = new HashMap<>();
 
-        if (datafilter.getValue().equals("ALL")) {
-            updateKeyList(SyaryoIDSearch.search(searchBox.getText(), syaryoMap));
-            return;
-        }
+        updateKeyList(SyaryoIDSearch.search(datafilter.getValue(), searchBox.getText(), syaryoMap));
 
+        /*
         targets = Arrays.asList(new String[]{datafilter.getValue()});
         searchList = new ArrayList<>(currentFilterMap.keySet());
 
@@ -434,7 +432,7 @@ public class EasyViewerFXMLController implements Initializable {
             }
         });
 
-        updateKeyList(new ArrayList(new TreeSet(result.keySet())));
+        updateKeyList(new ArrayList(new TreeSet(result.keySet())));*/
     }
 
     @FXML
