@@ -24,10 +24,14 @@ public class TestMetaSetGenerator {
 
     public static void main(String[] args) {
         for(TABLE t : HiveDB.TABLE.values()){
+            //komtrax
             if(t.get().equals("komtrax")){
                 for(Komtrax.TABLE kt : Komtrax.TABLE.values())
                     tableToMetaSet(kt.get());
             }
+            /*else{
+                tableToMetaSet(t.get());
+            }*/
         }
     }
 
