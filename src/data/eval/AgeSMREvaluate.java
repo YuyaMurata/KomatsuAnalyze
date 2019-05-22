@@ -33,6 +33,9 @@ public class AgeSMREvaluate {
         List<String> clus = ListToCSV.toList(KomatsuUserParameter.AZ_PATH+"user\\PC200_クラスタリング結果.csv");
         clus.remove(0);
         
+        //特定のサービスを排除
+        SyaryoAnalizer.rejectSettings(true, true, true);
+        
         try (PrintWriter pw = CSVFileReadWrite.writerSJIS("PC200_suvivaldata.csv")) {
             //pw.println("SID,メンテナンス評価,使われ方評価,ADMIT_D,FOLD_D,Y,SMR,FSTAT,AGE,ACCIDENT");
             pw.println("SID,メンテナンス評価,使われ方評価,SBN,"+String.join(",", LOADER.indexes("受注"))+",DATE,SMR,SMR2");
@@ -40,11 +43,7 @@ public class AgeSMREvaluate {
                 String sid = c.split(",")[0];
                 SyaryoObject s = LOADER.getSyaryoMap().get(sid);
                 
-                try (SyaryoAnalizer a = new SyaryoAnalizer(s, true)) {
-                    a.rejectAttachement();
-                    a.rejectManiteData();
-                    a.rejectSellParts();
-                    
+                try (SyaryoAnalizer a = new SyaryoAnalizer(s, true)) {                    
                     Integer accident = a.numAccident > 0 ? 1 : 0;
                     
                     TimeSeriesObject t = new TimeSeriesObject(a, "受注", "");

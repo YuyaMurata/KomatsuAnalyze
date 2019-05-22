@@ -66,6 +66,9 @@ public class SyaryoAnalizer implements AutoCloseable {
     private List<String[]> termAllSupport;
 
     public static Boolean DISP_COUNT = true;
+    private static Boolean DEL_ATT = true;
+    private static Boolean DEL_MAINTE = true;
+    private static Boolean DEL_SELL = true;
     private static String DATE_FORMAT = KomatsuUserParameter.DATE_FORMAT;
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     private static Map<String, String> POWERLINE_CHECK = KomatsuUserParameter.POWERLINE;
@@ -150,6 +153,11 @@ public class SyaryoAnalizer implements AutoCloseable {
                     break;
                 case "受注":
                     int dayIdx = LOADER.index("受注", "ODDAY");
+                    
+                    //データ排除設定
+                    if(DEL_ATT) rejectAttachement();
+                    if(DEL_MAINTE) rejectManiteData();
+                    if(DEL_SELL) rejectSellParts();
                     
                     //日付と作番の相互変換
                     get("受注").entrySet().stream().forEach(odr -> {
@@ -325,13 +333,6 @@ public class SyaryoAnalizer implements AutoCloseable {
         } else {
             return forecast(date);
         }
-
-        /*
-        try{
-            return ageSMR.floorEntry(date).getValue();
-        }catch(NullPointerException ne){
-            return forecast(date);
-        }*/
     }
 
     //周辺2点から予測 精度低
@@ -592,8 +593,15 @@ public class SyaryoAnalizer implements AutoCloseable {
 
         return false;
     }
+    
+    //データから特定のサービスを排除
+    public static void rejectSettings(Boolean att, Boolean mainte, Boolean sells){
+        DEL_ATT = att;
+        DEL_MAINTE = mainte;
+        DEL_SELL = sells;
+    }
 
-    public void rejectAttachement() {
+    private void rejectAttachement() {
         //アタッチメント修理の除外
         PC200_ATTACHEMENT.entrySet().stream()
                 .filter(at -> at.getValue().equals(name))
@@ -605,7 +613,7 @@ public class SyaryoAnalizer implements AutoCloseable {
                 });
     }
 
-    public List<String> rejectManiteData() {
+    private List<String> rejectManiteData() {
         //メンテナンス定義
         List<String> sv = new ArrayList<>(KomatsuUserParameter.PC200_PERIODSERVICE.keySet());
         List<String> mainte = PARTS.getMainteSV(name);
@@ -636,7 +644,7 @@ public class SyaryoAnalizer implements AutoCloseable {
         return rejectData;
     }
     
-    public void rejectSellParts(){
+    private void rejectSellParts(){
         //単販 排除作番リスト
         List<String> sbns = get("受注").entrySet().stream()
                 .filter(o -> o.getValue().get(LOADER.index("受注", "SGYO_KTICD")).equals("CA"))
