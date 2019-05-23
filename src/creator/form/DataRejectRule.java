@@ -55,7 +55,7 @@ public class DataRejectRule {
         parts.add(id);
     }
     
-    String currentDate = "0";
+    public String currentDate = "0";
     public void currentDATE(String date){
         currentDate = date;
     }

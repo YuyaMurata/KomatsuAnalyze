@@ -79,12 +79,17 @@ public class TimeSeriesObject {
         List<String> t = new ArrayList<>();
 
         if (PARTS.check(s.name, target)) {
+            try{
             t = PARTS.index.get(s.name).entrySet().stream() //ユーザー定義の部品
                     .filter(e -> e.getValue().equals(target)) //ターゲット以外の部品は除去
                     .map(e -> e.getKey()[1]) //ユーザー定義部品の作番情報
                     .map(sbn -> s.get("受注").get(sbn).get(LOADER.index("受注", "SGYO_KRDAY"))) //作業完了日
                     .sorted(Comparator.comparing(d -> Integer.valueOf(d.split("#")[0])))
                     .collect(Collectors.toList());
+            }catch(Exception e){
+                System.err.println(s.name+":"+key);
+                System.exit(0);
+            }
         }
 
         return t;
@@ -100,6 +105,7 @@ public class TimeSeriesObject {
                     .distinct()
                     .sorted(Comparator.comparing(d -> Integer.valueOf(d.split("#")[0])))
                     .collect(Collectors.toList());
+            
         }
 
         return t;

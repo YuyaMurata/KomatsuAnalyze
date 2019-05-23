@@ -68,7 +68,7 @@ public class EvaluateSyaryo {
         Long stop = System.currentTimeMillis();
         System.out.println("メンテナンスクラスタリング完了　: "+(stop-evalstop)+" [ms]");
         
-        enable = new ArrayList<>(result.keySet());
+        //enable = new ArrayList<>(result.keySet());
         
         fprint(KISY + "_mainte_eval.csv", eval.header(), eval.getClusData(), result);
         
@@ -83,7 +83,7 @@ public class EvaluateSyaryo {
         System.out.println("使われ方評価完了　: "+(evalstop-start)+" [ms]");
         
         Map enabledata = eval.getClusData().entrySet().stream()
-                                .filter(e -> enable.contains(e.getKey()))
+                                //.filter(e -> enable.contains(e.getKey()))
                                 .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
         
         //クラスタリング
@@ -122,7 +122,7 @@ public class EvaluateSyaryo {
     }
 
     public static void main(String[] args) {
-        LOADER.setFile(KISY + "_loadmap");
+        LOADER.setFile(KISY + "_form");
         evalSyaryoMap(LOADER.getSyaryoMap());
     }
 }
