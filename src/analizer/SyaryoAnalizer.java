@@ -644,6 +644,15 @@ public class SyaryoAnalizer implements AutoCloseable {
         return rejectData;
     }
     
+    public List<String> getItems(String key, int idx){
+        if(get(key) == null)
+            return new ArrayList<>();
+        
+        return get(key).values().stream()
+                .map(l -> l.get(idx))
+                .distinct().collect(Collectors.toList());
+    }
+    
     private void rejectSellParts(){
         //単販 排除作番リスト
         List<String> sbns = get("受注").entrySet().stream()
