@@ -30,7 +30,7 @@ public class TestTimeSeriesObject {
 
         SyaryoObject s = LOADER.getSyaryoMap().get("PC200-8N1-351304");
 
-        try (SyaryoAnalizer a = new SyaryoAnalizer(s, false)) {
+        try (SyaryoAnalizer a = new SyaryoAnalizer(s, true)) {
             TimeSeriesObject ts = new TimeSeriesObject(a, "受注", "");
 
             //日付のマージ
@@ -48,13 +48,14 @@ public class TestTimeSeriesObject {
             dates = dates.stream().distinct().sorted().collect(Collectors.toList());
 
             //output
-            try (PrintWriter pw = CSVFileReadWrite.writerSJIS("PC200-8N1-351304_test_series.csv")) {
+            try (PrintWriter pw = CSVFileReadWrite.writerSJIS("PC200-8N1-351304_test_series_smr.csv")) {
                 //header
                 pw.println("date,sv,"+String.join(",", km));
                 
                 for (String d : dates) {
                     List<String> out = new ArrayList<>();
-                    out.add(d);
+                    out.add(a.getDateToSMR(d).getValue().toString());
+                    //out.add(d);
                     out.add(ts.series.values().contains(d)?"1":"");
                     out.addAll(km.stream().map(cd -> map.get(cd).contains(d)?"1":"").collect(Collectors.toList()));
                     pw.println(String.join(",", out));

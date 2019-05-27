@@ -7,26 +7,30 @@ package data.eval;
 
 import analizer.SyaryoAnalizer;
 import data.time.TimeSeriesObject;
-import file.CSVFileReadWrite;
-import file.ListToCSV;
-import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import obj.SyaryoLoader;
-import obj.SyaryoObject;
-import param.KomatsuUserParameter;
 
 /**
  *
  * @author ZZ17807
  */
-public class AgeSMREvaluate {
+public class AgeSMREvaluate extends EvaluateTemplate{
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     private static String KISY = "PC200";
+    public static int maxdatalength = 0;
+    private int datalength = 0;
     
-    public static void main(String[] args) {
+    
+    public AgeSMREvaluate() {
+    }
+    
+    /*public static void main(String[] args) {
         LOADER.setFile(KISY+"_loadmap");
         
         //クラスタリング結果の読み込み
@@ -63,5 +67,68 @@ public class AgeSMREvaluate {
                 }
             }
         }
+    }*/
+
+    @Override
+    public Map<String, List<String>> aggregate(SyaryoAnalizer s) {
+        Map<String, List<String>> data = new HashMap<>();
+        TimeSeriesObject t = new TimeSeriesObject(s, "受注", "");
+        
+        //日付リスト
+        data.put("受注", new ArrayList<>(t.series.values()));
+        
+        //ヘッダのための情報取得
+        if(t.series.size() > maxdatalength)
+            maxdatalength = data.get("受注").size();
+        
+        
+        return data;
+    }
+
+    @Override
+    public Map<String, Double> normalize(SyaryoAnalizer s, String key, Map<String, List<String>> aggregatedata) {
+        Map norm = IntStream.range(0, aggregatedata.get(key).size()).boxed()
+                            .collect(Collectors.toMap(
+                                    i -> i.toString(), 
+                                    i -> s.getDateToSMR(aggregatedata.get(key).get(i)).getValue().doubleValue(),
+                                    (h1, h2) -> h2,
+                                    LinkedHashMap::new
+                                )
+                            );
+        
+        return norm;
+    }
+    
+    @Override
+    public Map<String, List<Double>> getClusterData(String key){
+        Map<String, List<Double>> data = _eval.entrySet().stream()
+                .collect(Collectors.toMap(
+                        e -> e.getKey(),
+                        e -> new ArrayList<>(e.getValue().values())
+                ));
+
+        return data;
+    }
+    
+    //Test
+    public static void main(String[] args) {
+        LOADER.setFile("PC200_form");
+        SyaryoAnalizer.rejectSettings(false, false, false);
+        SyaryoAnalizer s =  new SyaryoAnalizer(LOADER.getSyaryoMap().get("PC200-10-450635"), true);
+
+        AgeSMREvaluate agesmr = new AgeSMREvaluate();
+
+        Map<String, List<String>> data = agesmr.getdata(s);
+        Map<String, Double> result = agesmr.evaluate("受注", s);
+
+        data.entrySet().stream().forEach(d -> {
+            System.out.println(d.getKey());
+            System.out.println("  " + d.getValue());
+            System.out.println("  " + result);
+        });
+        
+        //クラスタ用データ
+        System.out.println("\n"+agesmr.header("受注"));
+        System.out.println(agesmr.getClusterData("受注"));
     }
 }

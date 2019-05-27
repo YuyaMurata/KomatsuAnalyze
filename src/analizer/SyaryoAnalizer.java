@@ -86,9 +86,9 @@ public class SyaryoAnalizer implements AutoCloseable {
         this.syaryo.startHighPerformaceAccess();
 
         //設定の詳細さを選択
-        simpleSettings(syaryo);
+        simpleSettings();
         if (flg) {
-            complexSettings(syaryo);
+            complexSettings();
         }
 
         if (CNT % 1000 == 0 && DISP_COUNT) {
@@ -115,7 +115,7 @@ public class SyaryoAnalizer implements AutoCloseable {
         return enable;
     }
 
-    private void simpleSettings(SyaryoObject syaryo) {
+    private void simpleSettings() {
         //Name
         this.kind = syaryo.getName().split("-")[0];
         this.type = syaryo.getName().split("-")[1];
@@ -196,7 +196,7 @@ public class SyaryoAnalizer implements AutoCloseable {
         lifestop = String.valueOf(datesInt.get(datesInt.size() - 1)); //データ上の最終
     }
 
-    private void complexSettings(SyaryoObject syaryo) {
+    private void complexSettings() {
         //データ検証
         List<String> enableSet = check();
         //int cm = KomatsuDataParameter.MAINTE_CLUSTER.get(syaryo.name) != null ? Integer.valueOf(KomatsuDataParameter.MAINTE_CLUSTER.get(syaryo.name)) : -1;
@@ -435,7 +435,9 @@ public class SyaryoAnalizer implements AutoCloseable {
         //例外処理1
         if (get(key) == null) {
             return null;
-        }
+        }else if (get(key).isEmpty())
+            return null;
+            
 
         if (index.equals("-1")) {
             List list = get(key).keySet().stream().map(s -> s.split("#")[0]).collect(Collectors.toList());
