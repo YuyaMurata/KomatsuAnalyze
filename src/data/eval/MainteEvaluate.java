@@ -8,7 +8,6 @@ package data.eval;
 import analizer.SyaryoAnalizer;
 import data.time.TimeSeriesObject;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -89,6 +88,7 @@ public class MainteEvaluate extends EvaluateTemplate {
                         //System.out.println(t.sid+","+(s.age(s.getSMRToDate(max))/365)+","+max+","+t.target+","+Arrays.asList(series).stream().map(v -> v.toString()).collect(Collectors.joining(",")));
                     } catch (IndexOutOfBoundsException ie) {
                         System.err.println(check);
+                        ie.printStackTrace();
                     }
 
                 });

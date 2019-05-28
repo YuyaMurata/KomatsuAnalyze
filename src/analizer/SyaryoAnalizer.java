@@ -66,9 +66,9 @@ public class SyaryoAnalizer implements AutoCloseable {
     private List<String[]> termAllSupport;
 
     public static Boolean DISP_COUNT = true;
-    private static Boolean DEL_ATT = true;
-    private static Boolean DEL_MAINTE = true;
-    private static Boolean DEL_SELL = true;
+    private static Boolean DEL_ATT = false;
+    private static Boolean DEL_MAINTE = false;
+    private static Boolean DEL_SELL = false;
     private static String DATE_FORMAT = KomatsuUserParameter.DATE_FORMAT;
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     private static Map<String, String> POWERLINE_CHECK = KomatsuUserParameter.POWERLINE;
@@ -194,6 +194,7 @@ public class SyaryoAnalizer implements AutoCloseable {
         List<Integer> datesInt = dates.stream().map(d -> Integer.valueOf(d.split("#")[0])).sorted().collect(Collectors.toList());
         lifestart = String.valueOf(datesInt.get(0)); //データ上の最初
         lifestop = String.valueOf(datesInt.get(datesInt.size() - 1)); //データ上の最終
+        currentAge_day = age(lifestop);
     }
 
     private void complexSettings() {

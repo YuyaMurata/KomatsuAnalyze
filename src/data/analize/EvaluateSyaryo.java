@@ -5,6 +5,7 @@
  */
 package data.analize;
 
+import analizer.SyaryoAnalizer;
 import data.cluster.KMeansPP;
 import data.eval.MainteEvaluate;
 import data.eval.UseEvaluate;
@@ -30,7 +31,7 @@ public class EvaluateSyaryo {
     public static void evalSyaryoMap(Map<String, SyaryoObject> map) {
         enable = new ArrayList<>();
         Map<String, Integer> rm = mainte();
-        Map<String, Integer> ru = use();
+        /*Map<String, Integer> ru = use();
         
         Map results = rm.entrySet().stream()
                 .collect(Collectors.toMap(
@@ -38,7 +39,7 @@ public class EvaluateSyaryo {
                         r -> Arrays.asList(new Integer[]{r.getValue(), ru.get(r.getKey())})
                 ));
         
-        fprint(KISY+"_クラスタリング結果.csv", results);
+        fprint(KISY+"_クラスタリング結果.csv", results);*/
     }
     
     private static Map<String, Integer> clustering(String str, Map<String, List<Double>> data){
@@ -46,7 +47,7 @@ public class EvaluateSyaryo {
         System.out.println("クラスタリング実行 - " + str);
         
         KMeansPP km = new KMeansPP();
-        km.setEvalSyaryo(3, data);
+        km.setEvalSyaryo(5, data);
         Map<String, Integer> result = km.execute();
         
         Long sp = System.currentTimeMillis();
@@ -59,31 +60,35 @@ public class EvaluateSyaryo {
         //メンテナンス評価
         Long start = System.currentTimeMillis();
         MainteEvaluate eval = new MainteEvaluate();
-        eval.evaluate(LOADER.getSyaryoMap());
+        eval.evaluate("メンテナンス", LOADER.getSyaryoMap());
         Long evalstop = System.currentTimeMillis();
         System.out.println("メンテナンス評価完了　: "+(evalstop-start)+" [ms]");
         
         //クラスタリング
-        Map<String, Integer> result = clustering("メンテナンス", eval.getClusData());
+        Map<String, Integer> result = clustering("メンテナンス", eval.getClusterData("メンテナンス"));
         Long stop = System.currentTimeMillis();
         System.out.println("メンテナンスクラスタリング完了　: "+(stop-evalstop)+" [ms]");
         
-        //enable = new ArrayList<>(result.keySet());
+        enable = new ArrayList<>(result.keySet());
         
-        fprint(KISY + "_mainte_eval.csv", eval.header(), eval.getClusData(), result);
+        //除外車両
+        //LOADER.getSyaryoMap().keySet().stream().filter(sid -> result.get(sid) == null).forEach(System.out::println);
+        
+        fprint(KISY + "_mainte_eval.csv", eval.header("メンテナンス"), eval.getClusterData("メンテナンス"), result);
         
         return result;
     }
     
     private static Map<String, Integer> use() {
+        String key = "LOADMAP_実エンジン回転VSエンジントルク";
         Long start = System.currentTimeMillis();
         UseEvaluate eval = new UseEvaluate();
-        eval.evaluate(LOADER.getSyaryoMap());
+        eval.evaluate(key, LOADER.getSyaryoMap());
         Long evalstop = System.currentTimeMillis();
         System.out.println("使われ方評価完了　: "+(evalstop-start)+" [ms]");
         
-        Map enabledata = eval.getClusData().entrySet().stream()
-                                //.filter(e -> enable.contains(e.getKey()))
+        Map enabledata = eval.getClusterData(key).entrySet().stream()
+                                .filter(e -> enable.contains(e.getKey()))
                                 .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
         
         //クラスタリング
@@ -91,7 +96,7 @@ public class EvaluateSyaryo {
         Long stop = System.currentTimeMillis();
         System.out.println("使われ方クラスタリング完了　: "+(stop-evalstop)+" [ms]");
         
-        fprint(KISY + "_use_eval.csv",eval.longheader(), eval.getClusData(), result);
+        fprint(KISY + "_use_eval.csv",eval.header(key), eval.getClusterData(key), result);
         
         return result;
     }

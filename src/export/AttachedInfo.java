@@ -29,7 +29,8 @@ public class AttachedInfo {
     public static void main(String[] args) {
         //workname(file);
         LOADER.setFile("PC200_form");
-        serviceinfo("PC200_エンジン.csv", true, true);
+        analizeLCC("PC200_mainte_eval.csv");
+        //serviceinfo("PC200_エンジン.csv", true, true);
         //workinfo(file);
         //analizeLCC("PC200_culster_use.csv");
         //partsinfo("PC200_エンジン.csv");

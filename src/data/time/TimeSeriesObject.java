@@ -89,6 +89,7 @@ public class TimeSeriesObject {
                 t = PARTS.index.get(s.name).entrySet().stream() //ユーザー定義の部品
                         .filter(e -> e.getValue().equals(target)) //ターゲット以外の部品は除去
                         .map(e -> e.getKey()[1]) //ユーザー定義部品の作番情報
+                        .filter(sbn -> s.get(skey).get(sbn) != null) //分析器による除外処理を考慮
                         .sorted(Comparator.comparing(sbn -> Integer.valueOf(s.get(skey).get(sbn).get(idx).split("#")[0])))
                         .collect(Collectors.toMap(
                                 sbn -> sbn,
@@ -96,6 +97,7 @@ public class TimeSeriesObject {
                                 (o1, o2) -> o1, LinkedHashMap::new));
             } catch (Exception e) {
                 System.err.println(s.name + ":" + key);
+                e.printStackTrace();
                 System.exit(0);
             }
         }
