@@ -12,9 +12,9 @@ import data.eval.UseEvaluate;
 import file.CSVFileReadWrite;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
@@ -30,8 +30,8 @@ public class EvaluateSyaryo {
 
     public static void evalSyaryoMap(Map<String, SyaryoObject> map) {
         enable = new ArrayList<>();
-        Map<String, Integer> rm = mainte();
-        /*Map<String, Integer> ru = use();
+        Map<String, Integer> rm = mainte(map);
+        /*Map<String, Integer> ru = use(map);
         
         Map results = rm.entrySet().stream()
                 .collect(Collectors.toMap(
@@ -56,11 +56,11 @@ public class EvaluateSyaryo {
         return result;
     }
     
-    private static Map<String, Integer> mainte() {
+    private static Map<String, Integer> mainte(Map map) {
         //メンテナンス評価
         Long start = System.currentTimeMillis();
         MainteEvaluate eval = new MainteEvaluate();
-        eval.evaluate("メンテナンス", LOADER.getSyaryoMap());
+        eval.evaluate("メンテナンス", map);
         Long evalstop = System.currentTimeMillis();
         System.out.println("メンテナンス評価完了　: "+(evalstop-start)+" [ms]");
         
@@ -79,11 +79,11 @@ public class EvaluateSyaryo {
         return result;
     }
     
-    private static Map<String, Integer> use() {
+    private static Map<String, Integer> use(Map map) {
         String key = "LOADMAP_実エンジン回転VSエンジントルク";
         Long start = System.currentTimeMillis();
         UseEvaluate eval = new UseEvaluate();
-        eval.evaluate(key, LOADER.getSyaryoMap());
+        eval.evaluate(key, map);
         Long evalstop = System.currentTimeMillis();
         System.out.println("使われ方評価完了　: "+(evalstop-start)+" [ms]");
         
@@ -125,9 +125,33 @@ public class EvaluateSyaryo {
                     .forEach(pw::println);
         }
     }
+    
+    //分析用のデータフィルタリング
+    public static Map rejectSyaryo(Map<String, SyaryoObject> map){
+        Map enable = new TreeMap();
+        map.values().stream().forEach(s ->{
+            try(SyaryoAnalizer a = new SyaryoAnalizer(s, true)){
+                //コマツレンタルの除外
+                if(a.rent != 2)
+                    enable.put(s.name, s);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+        
+        System.out.println("除外(KR車両):"+map.keySet().stream().filter(n -> enable.get(n)==null).count());
+        
+        return enable;
+    }
 
     public static void main(String[] args) {
         LOADER.setFile(KISY + "_form");
-        evalSyaryoMap(LOADER.getSyaryoMap());
+        
+        //フィルタリング
+        Map map = rejectSyaryo(LOADER.getSyaryoMap());
+        
+        //評価
+        evalSyaryoMap(map);
+        //evalSyaryoMap(LOADER.getSyaryoMap());
     }
 }

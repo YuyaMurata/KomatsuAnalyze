@@ -153,12 +153,18 @@ public class SyaryoAnalizer implements AutoCloseable {
                     break;
                 case "受注":
                     int dayIdx = LOADER.index("受注", "ODDAY");
-                    
+
                     //データ排除設定
-                    if(DEL_ATT) rejectAttachement();
-                    if(DEL_MAINTE) rejectManiteData();
-                    if(DEL_SELL) rejectSellParts();
-                    
+                    if (DEL_ATT) {
+                        rejectAttachement();
+                    }
+                    if (DEL_MAINTE) {
+                        rejectManiteData();
+                    }
+                    if (DEL_SELL) {
+                        rejectSellParts();
+                    }
+
                     //日付と作番の相互変換
                     get("受注").entrySet().stream().forEach(odr -> {
                         String sbn = odr.getKey();
@@ -171,7 +177,7 @@ public class SyaryoAnalizer implements AutoCloseable {
                         }
                         dates.add(date);
                     });
-                    
+
                     numOrders = get("受注").size();
                 case "顧客":
                     List custv = getValue("顧客", "顧客CD", false);
@@ -283,13 +289,13 @@ public class SyaryoAnalizer implements AutoCloseable {
         for (String date : act_smr.keySet()) {
             Integer t = age(date) / D_DATE;
             Integer smr = (Double.valueOf(act_smr.get(date).get(0)).intValue() / D_SMR) * D_SMR;  //ACT_SMRの構成が変わるとエラー
-            ageSMR.put(date, new AbstractMap.SimpleEntry<>(t, smr));
+            if (maxSMR[4] <= smr) {
+                ageSMR.put(date, new AbstractMap.SimpleEntry<>(t, smr));
 
-            if (smrDate.get(smr) == null) {
-                smrDate.put(smr, date);
-            }
+                if (smrDate.get(smr) == null) {
+                    smrDate.put(smr, date);
+                }
 
-            if (maxSMR[4] < smr) {
                 maxSMR[4] = smr;
             }
         }
@@ -308,13 +314,14 @@ public class SyaryoAnalizer implements AutoCloseable {
         for (String date : svsmr) {
             Integer t = age(date) / D_DATE;
             Integer smr = (Double.valueOf(get("SMR").get(date).get(2)).intValue() / D_SMR) * D_SMR;  //SMRの構成が変わるとエラー
-            ageSMR.put(date, new AbstractMap.SimpleEntry<>(t, smr));
 
-            if (smrDate.get(smr) == null) {
-                smrDate.put(smr, date);
-            }
+            if (maxSMR[4] <= smr) {
+                ageSMR.put(date, new AbstractMap.SimpleEntry<>(t, smr));
 
-            if (maxSMR[4] < smr) {
+                if (smrDate.get(smr) == null) {
+                    smrDate.put(smr, date);
+                }
+
                 maxSMR[4] = smr;
             }
         }
@@ -436,9 +443,9 @@ public class SyaryoAnalizer implements AutoCloseable {
         //例外処理1
         if (get(key) == null) {
             return null;
-        }else if (get(key).isEmpty())
+        } else if (get(key).isEmpty()) {
             return null;
-            
+        }
 
         if (index.equals("-1")) {
             List list = get(key).keySet().stream().map(s -> s.split("#")[0]).collect(Collectors.toList());
@@ -596,9 +603,9 @@ public class SyaryoAnalizer implements AutoCloseable {
 
         return false;
     }
-    
+
     //データから特定のサービスを排除
-    public static void rejectSettings(Boolean att, Boolean mainte, Boolean sells){
+    public static void rejectSettings(Boolean att, Boolean mainte, Boolean sells) {
         DEL_ATT = att;
         DEL_MAINTE = mainte;
         DEL_SELL = sells;
@@ -646,25 +653,26 @@ public class SyaryoAnalizer implements AutoCloseable {
         //test
         return rejectData;
     }
-    
-    public List<String> getItems(String key, int idx){
-        if(get(key) == null)
+
+    public List<String> getItems(String key, int idx) {
+        if (get(key) == null) {
             return new ArrayList<>();
-        
+        }
+
         return get(key).values().stream()
                 .map(l -> l.get(idx))
                 .distinct().collect(Collectors.toList());
     }
-    
-    private void rejectSellParts(){
+
+    private void rejectSellParts() {
         //単販 排除作番リスト
         List<String> sbns = get("受注").entrySet().stream()
                 .filter(o -> o.getValue().get(LOADER.index("受注", "SGYO_KTICD")).equals("CA"))
                 .map(o -> o.getKey())
                 .collect(Collectors.toList());
-        
+
         if (sbns.isEmpty()) {
-            return ;
+            return;
         }
 
         //条件を揃える
