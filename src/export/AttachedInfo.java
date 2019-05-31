@@ -43,7 +43,7 @@ public class AttachedInfo {
         Map<String, SyaryoObject> map = LOADER.getSyaryoMap();
 
         try (PrintWriter csv = CSVFileReadWrite.writer(file + "_attched_lcc.csv")) {
-            try (BufferedReader br = CSVFileReadWrite.reader(file)) {
+            try (BufferedReader br = CSVFileReadWrite.readerSJIS(file)) {
                 String line = br.readLine();
                 csv.println(line + ",y,SMR,LCC,ACC,LCC-ACCIDENT");
                 while ((line = br.readLine()) != null) {

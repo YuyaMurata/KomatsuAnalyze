@@ -8,6 +8,7 @@ package data.eval;
 import analizer.SyaryoAnalizer;
 import data.time.TimeSeriesObject;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -70,16 +71,19 @@ public class MainteEvaluate extends EvaluateTemplate {
                         max = s.maxSMR[4] > max ? s.maxSMR[4] : max;
 
                         Integer len = max / Integer.valueOf(e.getValue());
-                        List<String> series = IntStream.range(0, len + 1).boxed().map(i -> "0").collect(Collectors.toList());
+                        //len == 0 SMRがインターバル時間に届いていない場合、無条件で1と評価
+                        List<String> series = len != 0 ? IntStream.range(0, len).boxed().map(i -> "0").collect(Collectors.toList()) : Arrays.asList(new String[]{"1"});
                         
-                        check = t.sid + ":" + s.maxSMR[4] + ":" + t.series + smr;
-
+                        check = e.getKey()+" - "+t.sid + ":" + s.maxSMR[4] + ":" + t.series + smr;
+                        
                         smr.stream()
                                 .map(v -> v == 0 ? 1 : v) //0h交換での例外処理
                                 .map(v -> (v % Integer.valueOf(e.getValue())) == 0 ? v - 1 : v) //インターバル時間で割り切れる場合の例外処理
                                 .forEach(v -> {
                                     int i = v / Integer.valueOf(e.getValue());
-                                    series.set(i, v.toString());
+                                    if(i < len){
+                                        series.set(i, v.toString());
+                                    }
                                 });
 
                         //各車両のメンテナンス状況を記録
@@ -100,7 +104,7 @@ public class MainteEvaluate extends EvaluateTemplate {
     public static void main(String[] args) {
         LOADER.setFile("PC200_form");
         SyaryoAnalizer.rejectSettings(false, false, false);
-        SyaryoAnalizer s =  new SyaryoAnalizer(LOADER.getSyaryoMap().get("PC200-10-450635"), true);
+        SyaryoAnalizer s =  new SyaryoAnalizer(LOADER.getSyaryoMap().get("PC200-10-450660"), true);
 
         MainteEvaluate mainte = new MainteEvaluate();
 

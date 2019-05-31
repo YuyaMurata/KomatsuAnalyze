@@ -164,11 +164,13 @@ public class KMeansPP {
             List<String> cg = cluster.entrySet().stream()
                 .filter(e -> e.getValue().equals(id)).map(e -> e.getKey())
                 .collect(Collectors.toList());
+            
             //重心点を計算
             List<Double> med = IntStream.range(0, c.get(id).size())
                 .mapToDouble(i -> cg.stream().mapToDouble(key -> s.get(key).get(i)).average().getAsDouble())
                 .boxed()
                 .collect(Collectors.toList());
+            
             //重心点を更新
             medc.put(id, med);
         }
