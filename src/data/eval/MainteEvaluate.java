@@ -73,16 +73,19 @@ public class MainteEvaluate extends EvaluateTemplate {
                         Integer len = max / Integer.valueOf(e.getValue());
                         //len == 0 SMRがインターバル時間に届いていない場合、無条件で1と評価
                         List<String> series = len != 0 ? IntStream.range(0, len).boxed().map(i -> "0").collect(Collectors.toList()) : Arrays.asList(new String[]{"1"});
-                        
-                        check = e.getKey()+" - "+t.sid + ":" + s.maxSMR[4] + ":" + t.series + smr;
-                        
+
+                        check = e.getKey() + " - " + t.sid + ":" + s.maxSMR[4] + ":" + t.series + smr;
+
                         smr.stream()
                                 .map(v -> v == 0 ? 1 : v) //0h交換での例外処理
                                 .map(v -> (v % Integer.valueOf(e.getValue())) == 0 ? v - 1 : v) //インターバル時間で割り切れる場合の例外処理
                                 .forEach(v -> {
                                     int i = v / Integer.valueOf(e.getValue());
-                                    if(i < len){
+                                    if (i < len) {
+                                        //if(series.get(i).equals("0"))
                                         series.set(i, v.toString());
+                                        //else
+                                        //    series.set(i, series.get(i)+"_"+v.toString());
                                     }
                                 });
 
@@ -99,12 +102,40 @@ public class MainteEvaluate extends EvaluateTemplate {
 
         return data;
     }
+    
+    @Override
+    public Map<String, Integer> scoring(Map<String, Integer> cluster, Map<String, List<Double>> data) {
+        int maxCluster = cluster.values().stream().distinct().mapToInt(c -> c).max().getAsInt();
+        
+        //Average
+        Map<Integer, Double> avg = IntStream.range(1, maxCluster+1).boxed()
+                                        .collect(Collectors.toMap(
+                                                i -> i, 
+                                                i -> cluster.entrySet().stream()
+                                                            .filter(c -> c.getValue().equals(i))
+                                                            .flatMap(c -> data.get(c.getKey()).stream())
+                                                            .mapToDouble(d -> d).average().getAsDouble()
+                                        ));
+        
+        //Sort
+        List<Integer> sort = avg.entrySet().stream()
+                                .sorted(Map.Entry.comparingByValue())
+                                .map(a -> a.getKey())
+                                .collect(Collectors.toList());
+        
+        
+        //Scoring
+        Map score = cluster.entrySet().stream()
+                            .collect(Collectors.toMap(c -> c.getKey(), c -> sort.indexOf(c.getValue())+1));
+        
+        return score;
+    }
 
     //Test
     public static void main(String[] args) {
         LOADER.setFile("PC200_form");
         SyaryoAnalizer.rejectSettings(false, false, false);
-        SyaryoAnalizer s =  new SyaryoAnalizer(LOADER.getSyaryoMap().get("PC200-10-450660"), true);
+        SyaryoAnalizer s = new SyaryoAnalizer(LOADER.getSyaryoMap().get("PC200-10-450660"), true);
 
         MainteEvaluate mainte = new MainteEvaluate();
 
@@ -116,9 +147,9 @@ public class MainteEvaluate extends EvaluateTemplate {
             System.out.println("  " + d.getValue());
             System.out.println("  " + result.get(d.getKey()));
         });
-        
+
         //クラスタ用データ
-        System.out.println("\n"+mainte.header("メンテナンス"));
+        System.out.println("\n" + mainte.header("メンテナンス"));
         System.out.println(mainte.getClusterData("メンテナンス"));
     }
 }

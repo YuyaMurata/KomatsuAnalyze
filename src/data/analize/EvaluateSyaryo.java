@@ -12,6 +12,7 @@ import data.eval.UseEvaluate;
 import file.CSVFileReadWrite;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -26,12 +27,13 @@ import obj.SyaryoObject;
 public class EvaluateSyaryo {
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     private static String KISY = "PC200";
+    private static Integer C = 5; 
     private static List<String> enable;
 
     public static void evalSyaryoMap(Map<String, SyaryoObject> map) {
         enable = new ArrayList<>();
         Map<String, Integer> rm = mainte(map);
-        /*Map<String, Integer> ru = use(map);
+        Map<String, Integer> ru = use(map);
         
         Map results = rm.entrySet().stream()
                 .collect(Collectors.toMap(
@@ -39,7 +41,7 @@ public class EvaluateSyaryo {
                         r -> Arrays.asList(new Integer[]{r.getValue(), ru.get(r.getKey())})
                 ));
         
-        fprint(KISY+"_クラスタリング結果.csv", results);*/
+        fprint(KISY+"_クラスタリング結果.csv", results);
     }
     
     private static Map<String, Integer> clustering(String str, Map<String, List<Double>> data){
@@ -47,7 +49,7 @@ public class EvaluateSyaryo {
         System.out.println("クラスタリング実行 - " + str);
         
         KMeansPP km = new KMeansPP();
-        km.setEvalSyaryo(5, data);
+        km.setEvalSyaryo(C, data);
         Map<String, Integer> result = km.execute();
         
         Long sp = System.currentTimeMillis();
@@ -68,6 +70,9 @@ public class EvaluateSyaryo {
         Map<String, Integer> result = clustering("メンテナンス", eval.getClusterData("メンテナンス"));
         Long stop = System.currentTimeMillis();
         System.out.println("メンテナンスクラスタリング完了　: "+(stop-evalstop)+" [ms]");
+        
+        //スコアリング
+        result = eval.scoring(result, eval.getClusterData("メンテナンス"));
         
         enable = new ArrayList<>(result.keySet());
         
@@ -95,6 +100,9 @@ public class EvaluateSyaryo {
         Map<String, Integer> result = clustering("使われ方", enabledata);
         Long stop = System.currentTimeMillis();
         System.out.println("使われ方クラスタリング完了　: "+(stop-evalstop)+" [ms]");
+        
+        //スコアリング
+        result = eval.scoring(result, eval.getClusterData(key));
         
         fprint(KISY + "_use_eval.csv",eval.header(key), eval.getClusterData(key), result);
         
@@ -145,7 +153,7 @@ public class EvaluateSyaryo {
     }
 
     public static void main(String[] args) {
-        LOADER.setFile(KISY + "_form");
+        LOADER.setFile(KISY + "_loadmap");
         
         //フィルタリング
         Map map = rejectSyaryo(LOADER.getSyaryoMap());

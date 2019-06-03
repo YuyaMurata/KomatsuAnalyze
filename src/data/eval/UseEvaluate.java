@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
 
@@ -95,7 +96,37 @@ public class UseEvaluate extends EvaluateTemplate {
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).limit(R)
                 .map(e -> e.getKey()).collect(Collectors.toList());
     }
-
+    
+    @Override
+    public Map<String, Integer> scoring(Map<String, Integer> cluster, Map<String, List<Double>> data) {
+        int maxCluster = cluster.values().stream().distinct().mapToInt(c -> c).max().getAsInt();
+        //Average
+        Map<Integer, Double> avg = IntStream.range(1, maxCluster+1).boxed()
+                                        .collect(Collectors.toMap(
+                                                i -> i, 
+                                                i -> cluster.entrySet().stream()
+                                                            .filter(c -> c.getValue().equals(i))
+                                                            .flatMap(c -> data.get(c.getKey()).stream()
+                                                                                        .filter(d -> d == 1d)
+                                                                                        .map(d -> data.get(c.getKey()).indexOf(d))
+                                                            ).map(d -> header("LOADMAP_実エンジン回転VSエンジントルク").get(d).split("_"))
+                                                            .mapToDouble(h -> -Double.valueOf(h[0]) * Double.valueOf(h[1]))  //ヘッダ情報を利用し右下に行くほど評価値が下がる用に評価
+                                                            .average().getAsDouble()
+                                        ));
+        
+        //Sort
+        List<Integer> sort = avg.entrySet().stream()
+                                .sorted(Map.Entry.comparingByValue())
+                                .map(a -> a.getKey())
+                                .collect(Collectors.toList());
+        
+        //Scoring
+        Map score = cluster.entrySet().stream()
+                            .collect(Collectors.toMap(c -> c.getKey(), c -> sort.indexOf(c.getValue())+1));
+        
+        return score;
+    }
+    
     public static void main(String[] args) {
         LOADER.setFile("PC200_form");
         SyaryoAnalizer.rejectSettings(false, false, false);

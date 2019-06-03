@@ -101,4 +101,6 @@ public abstract class EvaluateTemplate {
 
         return data;
     }
+    
+    public abstract Map<String, Integer> scoring(Map<String, Integer> cluster, Map<String, List<Double>> data);
 }

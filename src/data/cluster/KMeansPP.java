@@ -151,6 +151,7 @@ public class KMeansPP {
             } else {
                 change = true;
             }
+            
             cluster.put(key, minKey);
         }
 
@@ -162,12 +163,25 @@ public class KMeansPP {
         for (Integer id : c.keySet()) {
             //1Clusterを抽出
             List<String> cg = cluster.entrySet().stream()
-                .filter(e -> e.getValue().equals(id)).map(e -> e.getKey())
-                .collect(Collectors.toList());
+                                    .filter(e -> e.getValue().equals(id)).map(e -> e.getKey())
+                                    .collect(Collectors.toList());
             
             //重心点を計算
             List<Double> med = IntStream.range(0, c.get(id).size())
-                .mapToDouble(i -> cg.stream().mapToDouble(key -> s.get(key).get(i)).average().getAsDouble())
+                .mapToDouble(i -> {
+                    Double d = 0d;
+                    try{
+                        d = cg.stream().mapToDouble(key -> s.get(key).get(i)).average().getAsDouble();
+                    }catch(Exception e){
+                        System.err.println("Clustering エラー!");
+                        System.err.println(s);
+                        System.err.println(cg);
+                        cg.stream().map(key -> i+":"+key+":"+(s.get(key)==null?"NULL":"EXISTS")).forEach(System.out::println);
+                        e.printStackTrace();
+                        System.exit(0);
+                    }
+                    return d;
+                })
                 .boxed()
                 .collect(Collectors.toList());
             
@@ -194,7 +208,7 @@ public class KMeansPP {
         //s_zero.stream().forEach(name -> cluster.put(name, 0));
         
         //スコアリング
-        Map<String, Integer> score = new HashMap<>();
+        /*Map<String, Integer> score = new HashMap<>();
         Double[] evalmax = new Double[k];
         Integer[] evalmaxidx = new Integer[k];
         for(int i=0; i < k; i++){
@@ -206,6 +220,7 @@ public class KMeansPP {
             evalmax[i] = max;
             evalmaxidx[i] = i+1;
         }
+        
         //ソ－ト
         for(int i=0; i < k; i++)
             for(int j=i+1; j < k; j++){
@@ -225,8 +240,8 @@ public class KMeansPP {
                 if(evalmaxidx[i].equals(cluster.get(name)))
                     score.put(name, i+1);
             }
-        
-        return score;
+        */
+        return cluster;//score;
     }
 
     private static Map<String, List<Double>> testSample(int n) {
