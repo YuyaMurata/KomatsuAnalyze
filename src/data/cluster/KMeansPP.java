@@ -91,7 +91,7 @@ public class KMeansPP {
             }
             ci = r.floorEntry(rand.nextDouble()).getValue();
         }
-
+        
         return c;
     }
 
@@ -130,7 +130,11 @@ public class KMeansPP {
 
     private Boolean changeCluster(Map<Integer, List<Double>> c) {
         Boolean change = false;
-
+        
+        System.out.println("before-");
+        System.out.println(c);
+        IntStream.range(1, 6).boxed().map(i -> i+":"+cluster.values().stream().filter(v -> v.equals(i)).count()).forEach(System.out::println);
+        
         for (String key : s.keySet()) {
             List<Double> v1 = s.get(key);
 
@@ -154,6 +158,10 @@ public class KMeansPP {
             
             cluster.put(key, minKey);
         }
+        
+        
+        System.out.println("after-");
+        IntStream.range(1, 6).boxed().map(i -> i+":"+cluster.values().stream().filter(v -> v.equals(i)).count()).forEach(System.out::println);
 
         return change;
     }
@@ -207,41 +215,7 @@ public class KMeansPP {
         //0データを戻す
         //s_zero.stream().forEach(name -> cluster.put(name, 0));
         
-        //スコアリング
-        /*Map<String, Integer> score = new HashMap<>();
-        Double[] evalmax = new Double[k];
-        Integer[] evalmaxidx = new Integer[k];
-        for(int i=0; i < k; i++){
-            final int ci = i+1;
-            Double max = cluster.entrySet().stream()
-                                .filter(ce -> ce.getValue().equals(ci))
-                                .mapToDouble(ce -> s.get(ce.getKey()).stream().mapToDouble(d -> d).sum())
-                                .max().getAsDouble();
-            evalmax[i] = max;
-            evalmaxidx[i] = i+1;
-        }
-        
-        //ソ－ト
-        for(int i=0; i < k; i++)
-            for(int j=i+1; j < k; j++){
-                if(evalmax[i] > evalmax[j]){
-                    Object temp = evalmax[j];
-                    evalmax[j] = evalmax[i];
-                    evalmax[i] = (Double) temp;
-                    
-                    temp = evalmaxidx[j];
-                    evalmaxidx[j] = evalmaxidx[i];
-                    evalmaxidx[i] = (Integer) temp;   
-                }    
-            }
-        
-        for(int i=0; i < k; i++)
-            for(String name : cluster.keySet()){
-                if(evalmaxidx[i].equals(cluster.get(name)))
-                    score.put(name, i+1);
-            }
-        */
-        return cluster;//score;
+        return cluster;
     }
 
     private static Map<String, List<Double>> testSample(int n) {
