@@ -6,6 +6,8 @@
 package data.eval;
 
 import analizer.SyaryoAnalizer;
+import file.CSVFileReadWrite;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -42,11 +44,11 @@ public class UseEvaluate extends EvaluateTemplate {
         Map norm = header(key).stream()
                 .collect(Collectors.toMap(
                         h -> h,
-                        h -> aggregatedata.get(key).contains(h)?1d:0d,
+                        h -> aggregatedata.get(key).contains(h) ? 1d : 0d,
                         (h1, h2) -> h1,
                         LinkedHashMap::new
                 ));
-        
+
         return norm;
     }
 
@@ -96,59 +98,75 @@ public class UseEvaluate extends EvaluateTemplate {
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).limit(R)
                 .map(e -> e.getKey()).collect(Collectors.toList());
     }
-    
+
     @Override
     public Map<String, Integer> scoring(Map<String, Integer> cluster, Map<String, List<Double>> data) {
         int maxCluster = cluster.values().stream().distinct().mapToInt(c -> c).max().getAsInt();
         //Average
-        Map<Integer, Double> avg = IntStream.range(1, maxCluster+1).boxed()
-                                        .collect(Collectors.toMap(
-                                                i -> i, 
-                                                i -> cluster.entrySet().stream()
-                                                            .filter(c -> c.getValue().equals(i))
-                                                            .flatMap(c -> data.get(c.getKey()).stream()
-                                                                                        .filter(d -> d == 1d)
-                                                                                        .map(d -> data.get(c.getKey()).indexOf(d))
-                                                            ).map(d -> header("LOADMAP_実エンジン回転VSエンジントルク").get(d).split("_"))
-                                                            .mapToDouble(h -> -Double.valueOf(h[0]) * Double.valueOf(h[1]))  //ヘッダ情報を利用し右下に行くほど評価値が下がる用に評価
-                                                            .average().getAsDouble()
-                                        ));
-        
+        Map<Integer, Double> avg = IntStream.range(0, maxCluster+1).boxed()
+                .collect(Collectors.toMap(
+                        i -> i,
+                        i -> cluster.entrySet().stream()
+                                .filter(c -> c.getValue().equals(i))
+                                .flatMap(c -> data.get(c.getKey()).stream()
+                                .filter(d -> d == 1d)
+                                .map(d -> data.get(c.getKey()).indexOf(d))
+                                ).map(d -> header("LOADMAP_実エンジン回転VSエンジントルク").get(d).split("_"))
+                                .mapToDouble(h -> -Double.valueOf(h[0]) * Double.valueOf(h[1])) //ヘッダ情報を利用し右下に行くほど評価値が下がる用に評価
+                                .average().getAsDouble()
+                ));
+
         //Sort
         List<Integer> sort = avg.entrySet().stream()
-                                .sorted(Map.Entry.comparingByValue())
-                                .map(a -> a.getKey())
-                                .collect(Collectors.toList());
-        
+                .sorted(Map.Entry.comparingByValue())
+                .map(a -> a.getKey())
+                .collect(Collectors.toList());
+
         //Scoring
         Map score = cluster.entrySet().stream()
-                            .collect(Collectors.toMap(c -> c.getKey(), c -> sort.indexOf(c.getValue())+1));
-        
+                .collect(Collectors.toMap(c -> c.getKey(), c -> sort.indexOf(c.getValue()) + 1));
+
         return score;
     }
-    
+
     public static void main(String[] args) {
         LOADER.setFile("PC200_form");
         SyaryoAnalizer.rejectSettings(false, false, false);
-        SyaryoAnalizer s =  new SyaryoAnalizer(LOADER.getSyaryoMap().get("PC200-10-450635"), true);
+        SyaryoAnalizer s = new SyaryoAnalizer(LOADER.getSyaryoMap().get("PC200-10-450635"), true);
 
         UseEvaluate use = new UseEvaluate();
 
         String testkey = "LOADMAP_エンジン水温VS作動油温";
         Map<String, List<String>> data = use.getdata(s);
         Map<String, Double> result = use.evaluate(testkey, s);
-        
+
         data.entrySet().stream().forEach(d -> {
             System.out.println(d.getKey());
             System.out.println("  " + d.getValue());
-            if(testkey.equals(d.getKey()))
+            if (testkey.equals(d.getKey())) {
                 System.out.println("  " + result.values());
-            else
+            } else {
                 System.out.println("  " + result.get("None Evaluate"));
+            }
         });
-        
+
         //クラスタ用データ
-        System.out.println("\n"+use.header(testkey));
+        System.out.println("\n" + use.header(testkey));
         System.out.println(use.getClusterData(testkey));
+    }
+
+    @Override
+    public void createARFF(String file, String key) {
+        Map<String, List<Double>> data = getClusterData(key);
+        List<String> header = header(key);
+
+        try (PrintWriter pw = CSVFileReadWrite.writerSJIS(file)) {
+            pw.println("@RELATION " + key + "\n");
+            header.stream().map(h -> "@ATTRIBUTE " + h + " INTEGER").forEach(pw::println);
+            pw.println("\n@DATA");
+            data.values().stream()
+                    .map(d -> d.stream().map(di -> di.toString()).collect(Collectors.joining(",")))
+                    .forEach(pw::println);
+        }
     }
 }

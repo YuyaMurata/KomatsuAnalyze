@@ -7,6 +7,7 @@ package data.analize;
 
 import analizer.SyaryoAnalizer;
 import data.cluster.KMeansPP;
+import data.cluster.WEKAClustering;
 import data.eval.MainteEvaluate;
 import data.eval.UseEvaluate;
 import file.CSVFileReadWrite;
@@ -19,6 +20,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
+import param.KomatsuUserParameter;
 
 /**
  *
@@ -33,7 +35,7 @@ public class EvaluateSyaryo {
     public static void evalSyaryoMap(Map<String, SyaryoObject> map) {
         enable = new ArrayList<>();
         Map<String, Integer> rm = mainte(map);
-        Map<String, Integer> ru = use(map);
+        /*Map<String, Integer> ru = use(map);
         
         Map results = rm.entrySet().stream()
                 .collect(Collectors.toMap(
@@ -41,16 +43,21 @@ public class EvaluateSyaryo {
                         r -> Arrays.asList(new Integer[]{r.getValue(), ru.get(r.getKey())})
                 ));
         
-        fprint(KISY+"_クラスタリング結果.csv", results);
+        fprint(KISY+"_クラスタリング結果.csv", results);*/
     }
     
-    private static Map<String, Integer> clustering(String str, Map<String, List<Double>> data){
+    private static Map<String, Integer> clustering(String str, String file, List<String> sids){
         Long st = System.currentTimeMillis();
         System.out.println("クラスタリング実行 - " + str);
         
-        KMeansPP km = new KMeansPP();
+        /*KMeansPP km = new KMeansPP();
         km.setEvalSyaryo(C, data);
         Map<String, Integer> result = km.execute();
+        */
+        
+        WEKAClustering weka = new WEKAClustering();
+        weka.set(file, C, sids);
+        Map<String, Integer> result = weka.clustering();
         
         Long sp = System.currentTimeMillis();
         System.out.println("クラスタリング完了 - " + (sp - st) + "ms");
@@ -67,9 +74,9 @@ public class EvaluateSyaryo {
         System.out.println("メンテナンス評価完了　: "+(evalstop-start)+" [ms]");
         
         //クラスタリング
-        Map<String, Integer> result = clustering("メンテナンス", eval.getClusterData("メンテナンス"));
-        Long stop = System.currentTimeMillis();
-        System.out.println("メンテナンスクラスタリング完了　: "+(stop-evalstop)+" [ms]");
+        String clusterfile = KomatsuUserParameter.WEKA_PATH+KISY+"_メンテナンス.arff";
+        eval.createARFF(clusterfile, "メンテナンス");
+        Map<String, Integer> result = clustering("メンテナンス", clusterfile, eval.getSIDList());
         
         //スコアリング
         result = eval.scoring(result, eval.getClusterData("メンテナンス"));
@@ -92,14 +99,14 @@ public class EvaluateSyaryo {
         Long evalstop = System.currentTimeMillis();
         System.out.println("使われ方評価完了　: "+(evalstop-start)+" [ms]");
         
-        Map enabledata = eval.getClusterData(key).entrySet().stream()
+        /*Map enabledata = eval.getClusterData(key).entrySet().stream()
                                 .filter(e -> enable.contains(e.getKey()))
                                 .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
-        
+        */
         //クラスタリング
-        Map<String, Integer> result = clustering("使われ方", enabledata);
-        Long stop = System.currentTimeMillis();
-        System.out.println("使われ方クラスタリング完了　: "+(stop-evalstop)+" [ms]");
+        String clusterfile = KomatsuUserParameter.WEKA_PATH+KISY+"_使われ方.arff";
+        eval.createARFF(clusterfile, key);
+        Map<String, Integer> result = clustering("使われ方", clusterfile, eval.getSIDList());
         
         //スコアリング
         result = eval.scoring(result, eval.getClusterData(key));
@@ -153,7 +160,7 @@ public class EvaluateSyaryo {
     }
 
     public static void main(String[] args) {
-        LOADER.setFile(KISY + "_loadmap");
+        LOADER.setFile(KISY + "_form");
         
         //フィルタリング
         Map map = rejectSyaryo(LOADER.getSyaryoMap());

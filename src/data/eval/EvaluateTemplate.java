@@ -6,6 +6,7 @@
 package data.eval;
 
 import analizer.SyaryoAnalizer;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,4 +104,10 @@ public abstract class EvaluateTemplate {
     }
     
     public abstract Map<String, Integer> scoring(Map<String, Integer> cluster, Map<String, List<Double>> data);
+    
+    public abstract void createARFF(String file, String key);
+    
+    public List<String> getSIDList(){
+        return new ArrayList<>(_eval.keySet());
+    }
 }

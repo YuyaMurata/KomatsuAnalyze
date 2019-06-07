@@ -61,6 +61,10 @@ public interface KomatsuUserParameter {
     //事故抽出
     public static List ACCIDENT_WORDS = ListToCSV.toList(AZ_PATH+"define\\accident_words.csv");
     
+    //クラスタリング用
+    public static String WEKA_PATH = "weka\\";
+    
+    
     //PC200 KR
     public static Map PC_KR_SMASTER = new MapToJSON().toMap(AZ_PATH+"define\\PC200_KR_SyaryoMaster.json");
     

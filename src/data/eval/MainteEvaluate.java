@@ -7,6 +7,8 @@ package data.eval;
 
 import analizer.SyaryoAnalizer;
 import data.time.TimeSeriesObject;
+import file.CSVFileReadWrite;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -108,7 +110,7 @@ public class MainteEvaluate extends EvaluateTemplate {
         int maxCluster = cluster.values().stream().distinct().mapToInt(c -> c).max().getAsInt();
         
         //Average
-        Map<Integer, Double> avg = IntStream.range(1, maxCluster+1).boxed()
+        Map<Integer, Double> avg = IntStream.range(0, maxCluster+1).boxed()
                                         .collect(Collectors.toMap(
                                                 i -> i, 
                                                 i -> cluster.entrySet().stream()
@@ -123,19 +125,33 @@ public class MainteEvaluate extends EvaluateTemplate {
                                 .map(a -> a.getKey())
                                 .collect(Collectors.toList());
         
-        
         //Scoring
         Map score = cluster.entrySet().stream()
                             .collect(Collectors.toMap(c -> c.getKey(), c -> sort.indexOf(c.getValue())+1));
         
         return score;
     }
-
+    
+    @Override
+    public void createARFF(String file, String key) {
+        Map<String, List<Double>> data = getClusterData(key);
+        List<String> header = header(key);
+        
+        try(PrintWriter pw = CSVFileReadWrite.writerSJIS(file)){
+            pw.println("@RELATION "+key+"\n");
+            header.stream().map( h-> "@ATTRIBUTE "+h+" REAL").forEach(pw::println);
+            pw.println("\n@DATA");
+            data.values().stream()
+                    .map(d -> d.stream().map(di -> di.toString()).collect(Collectors.joining(",")))
+                    .forEach(pw::println);
+        }
+    }
+    
     //Test
     public static void main(String[] args) {
-        LOADER.setFile("PC200_form");
+        LOADER.setFile("PC200_loadmap");
         SyaryoAnalizer.rejectSettings(false, false, false);
-        SyaryoAnalizer s = new SyaryoAnalizer(LOADER.getSyaryoMap().get("PC200-10-450660"), true);
+        SyaryoAnalizer s = new SyaryoAnalizer(LOADER.getSyaryoMap().get("PC200-10-452525"), true);
 
         MainteEvaluate mainte = new MainteEvaluate();
 
