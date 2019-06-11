@@ -20,7 +20,7 @@ public class TestJSONMAnage {
         String host = "localhost";
         int port = 27017;
         JsonDB db = new JsonDB(host, port);
-        db.setCollectionName("komatsuDB");
+        db.setCollectionName("komatsuDB_PC200");
         
         // IDが“aaa-bbb-ccc-ddd”のJsonデータを取得
         String id = "PC200-10- -450635";
