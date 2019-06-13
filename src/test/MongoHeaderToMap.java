@@ -5,7 +5,7 @@
  */
 package test;
 
-import axg.mongodb.MongoDBSearchData;
+import axg.mongodb.MongoDBData;
 import file.MapToJSON;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,12 +19,12 @@ import org.bson.Document;
  */
 public class MongoHeaderToMap {
     public static void main(String[] args) {
-        MongoDBSearchData mongo = MongoDBSearchData.getInstance();
+        MongoDBData mongo = MongoDBData.create();
         mongo.set("json", "komatsuDB_PC200");
         
         Document h = mongo.getHeader();
         List<String> hin = (List)h.get("header");
-        Map<String, List<String>> head = new HashMap<>();
+        Map<String, Map<String, List<String>>> head = new HashMap<>();
         
         for(String s : hin){
             if(s.equals("id "))
@@ -33,11 +33,12 @@ public class MongoHeaderToMap {
             System.out.println(s);
             
             String k = s.split("\\.")[0];
-            String sk = s.split("\\.")[1];
             
-            if(head.get(k) == null)
-                head.put(k, new ArrayList<>());
-            head.get(k).add(sk);
+            if(head.get(k) == null){
+                head.put(k, new HashMap<>());
+                head.get(k).put(k+".subKey", new ArrayList<>());
+            }
+            head.get(k).get(k+".subKey").add(s);
         }
         
         new MapToJSON().toJSON("mongoobj_syaryo.json", head);
