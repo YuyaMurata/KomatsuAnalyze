@@ -25,7 +25,7 @@ public class MongoHeaderToMap {
         Document h = mongo.getHeader();
         List<String> hin = (List)h.get("header");
         Map<String, Map<String, List<String>>> head = new HashMap<>();
-        
+        Boolean flg = true;
         for(String s : hin){
             if(s.equals("id "))
                 continue;
@@ -37,8 +37,14 @@ public class MongoHeaderToMap {
             if(head.get(k) == null){
                 head.put(k, new HashMap<>());
                 head.get(k).put(k+".subKey", new ArrayList<>());
+                flg = false;
             }
-            head.get(k).get(k+".subKey").add(s);
+            
+            if(flg){
+                head.get(k).get(k+".subKey").add(s);
+            }else{
+                flg = true;
+            }
         }
         
         new MapToJSON().toJSON("mongoobj_syaryo.json", head);

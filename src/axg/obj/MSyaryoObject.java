@@ -8,6 +8,7 @@ package axg.obj;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -18,13 +19,30 @@ public class MSyaryoObject {
     Map<String, Map<String, List<String>>> map;
     Map<String, Integer> count;
 
-    public MSyaryoObject(String name) {
-        this.name = name;
-        this.map = new LinkedHashMap<>();
-        this.count = new LinkedHashMap<>();
+    public MSyaryoObject(Map map) {
+        this.name = (String) map.get("name");
+        this.map = (Map<String, Map<String, List<String>>>) map.get("map");
+        this.count = (Map<String, Integer>) map.get("count");
     }
     
-    private void initialize(){
-        
+    public Map<String, List<String>> get(String key){
+        return this.map.get(key);
+    }
+    
+    public void removeAll(String key, List<String> subKeys){
+        subKeys.stream().forEach(sk -> this.map.get(key).remove(sk));
+        if(this.map.get(key).isEmpty())
+            this.map.remove(key);
+    }
+    
+    public void recalc(){
+        this.count = this.map.entrySet().stream()
+                            .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().size()));
+    }
+    
+    public void print(){
+        System.out.println(name);
+        System.out.println("map-"+map);
+        System.out.println("cnt-"+count);
     }
 }

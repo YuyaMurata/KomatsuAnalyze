@@ -5,6 +5,7 @@
  */
 package axg.mongodb;
 
+import axg.obj.MSyaryoObject;
 import com.mongodb.BasicDBObject;
 import com.mongodb.Block;
 import com.mongodb.MongoException;
@@ -14,7 +15,9 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Filters.*;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import org.bson.Document;
 
@@ -53,6 +56,21 @@ public class MongoDBData {
 
     public Document get(String field, String key) {
         return this.coll.find(eq(field, key)).first();
+    }
+    
+    public List<String> getKeyList(){
+        List keys = new ArrayList<>();
+        Document match = new Document("$match", new Document("name", new Document("$ne", null)));
+        Document group = new Document("$group", new Document("_id", "$name"));
+        this.coll.aggregate(Arrays.asList(match, group))
+                    .forEach((Block<Document>) t -> keys.addAll(t.values()));
+        System.out.println("get key size="+keys.size());
+        return keys;
+    }
+    
+    public MSyaryoObject get(String key) {
+        Map map = this.coll.find(eq("name", key)).first();
+        return new MSyaryoObject(map);
     }
     
     public Document get(String field, String key, String element) {
