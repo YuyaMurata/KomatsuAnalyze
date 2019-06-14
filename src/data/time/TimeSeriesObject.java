@@ -104,6 +104,10 @@ public class TimeSeriesObject {
 
         return t;
     }
+    
+    public String firstService(){
+        return series.values().stream().limit(1).findFirst().get();
+    }
 
     public Map<String, String> komtraxErrorToSeries(SyaryoAnalizer s, String target) {
         Map<String, String> t = new HashMap<>();

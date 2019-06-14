@@ -6,8 +6,8 @@
 package data.analize;
 
 import analizer.SyaryoAnalizer;
-import data.cluster.KMeansPP;
 import data.cluster.WEKAClustering;
+import data.eval.AgeSMREvaluate;
 import data.eval.MainteEvaluate;
 import data.eval.UseEvaluate;
 import file.CSVFileReadWrite;
@@ -35,15 +35,16 @@ public class EvaluateSyaryo {
     public static void evalSyaryoMap(Map<String, SyaryoObject> map) {
         enable = new ArrayList<>();
         Map<String, Integer> rm = mainte(map);
-        /*Map<String, Integer> ru = use(map);
+        Map<String, Integer> ru = use(map);
         
-        Map results = rm.entrySet().stream()
+        Map cids = rm.entrySet().stream()
                 .collect(Collectors.toMap(
                         r -> r.getKey(), 
                         r -> Arrays.asList(new Integer[]{r.getValue(), ru.get(r.getKey())})
                 ));
         
-        fprint(KISY+"_クラスタリング結果.csv", results);*/
+        Map<String, List<String>> results = agesmr(cids);
+        fprint(KISY+"_評価結果.csv", AgeSMREvaluate._header.get("Age/SMR"), results);
     }
     
     private static Map<String, Integer> clustering(String str, String file, List<String> sids){
@@ -71,7 +72,7 @@ public class EvaluateSyaryo {
         MainteEvaluate eval = new MainteEvaluate();
         eval.evaluate("メンテナンス", map);
         Long evalstop = System.currentTimeMillis();
-        System.out.println("メンテナンス評価完了　: "+(evalstop-start)+" [ms]");
+        System.out.println("メンテナンス 評価完了　: "+(evalstop-start)+" [ms]");
         
         //クラスタリング
         String clusterfile = KomatsuUserParameter.WEKA_PATH+KISY+"_メンテナンス.arff";
@@ -91,18 +92,30 @@ public class EvaluateSyaryo {
         return result;
     }
     
+    private static Map<String, List<String>> agesmr(Map map) {
+        //Age/SMR 評価
+        Long start = System.currentTimeMillis();
+        AgeSMREvaluate eval = new AgeSMREvaluate();
+        eval.evaluate(map, "受注", "");
+        Long evalstop = System.currentTimeMillis();
+        System.out.println("Age/SMR 評価完了　: "+(evalstop-start)+" [ms]");
+        
+        return eval._eval;
+    }
+    
     private static Map<String, Integer> use(Map map) {
         String key = "LOADMAP_実エンジン回転VSエンジントルク";
         Long start = System.currentTimeMillis();
         UseEvaluate eval = new UseEvaluate();
         eval.evaluate(key, map);
         Long evalstop = System.currentTimeMillis();
-        System.out.println("使われ方評価完了　: "+(evalstop-start)+" [ms]");
+        System.out.println("使われ方 評価完了　: "+(evalstop-start)+" [ms]");
         
         /*Map enabledata = eval.getClusterData(key).entrySet().stream()
                                 .filter(e -> enable.contains(e.getKey()))
                                 .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
         */
+        
         //クラスタリング
         String clusterfile = KomatsuUserParameter.WEKA_PATH+KISY+"_使われ方.arff";
         eval.createARFF(clusterfile, key);
@@ -124,6 +137,18 @@ public class EvaluateSyaryo {
             //data
             results.entrySet().stream().map(r -> r.getKey()+","+
                             r.getValue().stream().map(c -> c.toString()).collect(Collectors.joining(",")))
+                    .forEach(pw::println);
+        }
+    }
+    
+    public static void fprint(String filename, List<String> header, Map<String, List<String>> results) {
+        try(PrintWriter pw = CSVFileReadWrite.writerSJIS(filename)){
+            //header
+            pw.println("SID,"+String.join(",", header));
+            
+            //data
+            results.entrySet().stream()
+                    .map(r -> r.getKey()+","+String.join(",", r.getValue()))
                     .forEach(pw::println);
         }
     }
@@ -160,7 +185,7 @@ public class EvaluateSyaryo {
     }
 
     public static void main(String[] args) {
-        LOADER.setFile(KISY + "_form");
+        LOADER.setFile(KISY + "_loadmap");
         
         //フィルタリング
         Map map = rejectSyaryo(LOADER.getSyaryoMap());
