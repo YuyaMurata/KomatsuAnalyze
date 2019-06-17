@@ -6,14 +6,12 @@
 package axg.mongodb;
 
 import axg.obj.MSyaryoObject;
-import com.mongodb.BasicDBObject;
 import com.mongodb.Block;
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Filters.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,11 +24,9 @@ import org.bson.Document;
  * @author ZZ17807
  */
 public class MongoDBData {
-
     private MongoClient client;
     private MongoDatabase db;
     public MongoCollection<Document> coll;
-    public MongoCollection<BasicDBObject> upcoll;
 
     private MongoDBData() {
         initialize();
@@ -47,11 +43,11 @@ public class MongoDBData {
     public void set(String dbn, String col) {
         this.db = client.getDatabase(dbn);
         this.coll = db.getCollection(col);
-        this.upcoll = db.getCollection(col, BasicDBObject.class);
     }
 
-    public Document getHeader() {
-        return this.coll.find(exists("header")).first();
+    public List<String> getHeader() {
+        Document h = (Document)this.coll.find(exists("header")).first();
+        return (List<String>) h.get("header");
     }
 
     public Document get(String field, String key) {

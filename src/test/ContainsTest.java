@@ -13,8 +13,8 @@ import java.util.Arrays;
  */
 public class ContainsTest {
     public static void main(String[] args) {
-        String t = "8N1";
-        String[] str = new String[]{"8", "8N1"};
+        String t = " ";
+        String[] str = new String[]{"8", "8N1", ""};
         String[] str2 = new String[]{" "};
         
         System.out.println(Arrays.asList(str).contains(t));

@@ -5,7 +5,8 @@
  */
 package axg.cleansing;
 
-import axg.mongodb.MongoDBData;
+import axg.mongodb.MongoDBCleansingData;
+import axg.obj.MHeaderObject;
 import axg.obj.MSyaryoObject;
 import file.MapToJSON;
 import java.util.ArrayList;
@@ -23,7 +24,6 @@ public class MongoDBCleansing {
 
     //Index
     static Map<String, Map<String, List<String>>> index = new MapToJSON().toMap("axg\\mongoobj_syaryo_src.json");
-    static List<String> target = Arrays.asList("売上", "");
 
     public static void main(String[] args) {
         /*MongoDBData mongo = MongoDBData.create();
@@ -32,34 +32,82 @@ public class MongoDBCleansing {
         mongo.close();
          */
 
-        MongoDBData mongo2 = MongoDBData.create();
+        /*MongoDBData mongo2 = MongoDBData.create();
         mongo2.set("json", "komatsuDB_PC200_Temp");
 
         List<String> sids = mongo2.getKeyList();
-
-        sids.stream().forEach(s -> {
+        
+        List<MSyaryoObject> mlist = new ArrayList<>();
+        
+        sids.stream().limit(1).forEach(s -> {
             MSyaryoObject m = mongo2.get(s);
-            System.out.print(s);
             cleanOne(m);
+            mlist.add(m);
         });
-        //System.out.println(mongo2.get("name", "PC200-8-N1-351483", "顧客_S").toJson());
+        MHeaderObject hobj = new MHeaderObject(mongo2.getHeader());
         mongo2.close();
+        
+        //New Mongo Collection
+        MongoDBCleansingData mongo3 = MongoDBCleansingData.create();
+        mongo3.set("json", "komatsuDB_PC200_C1", MSyaryoObject.class);
+        mongo3.clear();
+        
+        mlist.stream().forEach(mongo3.coll::insertOne);
+        
+        mongo3.set("json", "komatsuDB_PC200_C1", MHeaderObject.class);
+        mongo3.coll.insertOne(hobj);
+        
+        mongo3.close();*/
+        
+        
+    }
+    
+    public void test(){
+        MongoDBCleansingData mongo3 = MongoDBCleansingData.create();
+        mongo3.set("json", "komatsuDB_PC200_C1", MSyaryoObject.class);
+        MHeaderObject h = mongo3.getHeader();
+        System.out.println(h.getHeader());
+        System.out.println(h.getIsCompleted());
+        
+        mongo3.getKeyList().stream().map(sid -> mongo3.getObj(sid)).forEach(s ->{
+            System.out.println(s.getName());
+            System.out.println(s.getMap());
+            System.out.println(s.getCount());
+        });
     }
 
     public static MSyaryoObject cleanOne(MSyaryoObject obj) {
-        //売上 table
-        Map rule = sellRule();
+        aggregateMap().entrySet().stream().forEach(c -> {
+            String key = c.getKey();
+            Map rule = c.getValue();
+            
+            List<String> removeKey = removeData(key, obj.getData(key), rule);
+            
+            //SID,Records_N,Remeve_N,remove_key List
+            int n = obj.getData(key) == null ? 0 : obj.getData(key).size();
+            System.out.println(obj.getName()+","+key+","+n+","+removeKey.size()+","+String.join(",", removeKey));
 
-        String key = "売上";
-        List<String> removeKey = removeData(key, obj.get(key), rule);
-        System.out.println(String.join(",", removeKey));
-
-        /*obj.removeAll(key, removeKey);
+            obj.removeAll(key, removeKey);
+            //System.out.println(obj.get(key));
+        });
+        
         obj.recalc();
-        obj.print();
-        System.out.println(obj.get(key));
-        */
-        return null;
+        //obj.print();
+        
+        return obj;
+    }
+
+    private static Map<String, Map> aggregateMap() {
+        return new HashMap() {
+            {
+                put("売上", sellRule());
+                put("サービス経歴", serviceRule());
+                put("受注", orderRule());
+                put("KOMPAS車両", syaryoRule());
+                put("部品", partsRule());
+                put("作業", workRule());
+            }
+        };
     }
 
     private static Map sellRule() {
@@ -79,8 +127,8 @@ public class MongoDBCleansing {
     private static Map serviceRule() {
         return new HashMap() {
             {
-                put("サービス経歴.発生区分", "1");
-                put("サービス経歴.赤黒区分", "0");
+                put("サービス経歴.発生区分", Arrays.asList("1"));
+                put("サービス経歴.赤黒区分", Arrays.asList("0"));
             }
         };
     }
@@ -88,7 +136,7 @@ public class MongoDBCleansing {
     private static Map orderRule() {
         return new HashMap() {
             {
-                put("受注.作番クローズ理由コード", "1");
+                put("受注.売上計上フラグ", Arrays.asList("1"));
             }
         };
     }
@@ -96,7 +144,7 @@ public class MongoDBCleansing {
     private static Map syaryoRule() {
         return new HashMap() {
             {
-                put("KOMPAS車両.論理削除フラグ", "0");
+                put("KOMPAS車両.論理削除フラグ", Arrays.asList("0"));
             }
         };
     }
@@ -104,7 +152,7 @@ public class MongoDBCleansing {
     private static Map workRule() {
         return new HashMap() {
             {
-                put("作業.論理削除フラグ", "0");
+                put("作業.論理削除フラグ", Arrays.asList("0"));
             }
         };
     }
@@ -112,26 +160,25 @@ public class MongoDBCleansing {
     private static Map partsRule() {
         return new HashMap() {
             {
-                put("部品.論理削除フラグ", "0");
+                put("部品.論理削除フラグ", Arrays.asList("0"));
             }
         };
     }
 
+    
     private static List<String> removeData(String key, Map<String, List<String>> data, Map<String, List<String>> rule) {
-        if(data == null){
-            System.out.print(",,,,");
+        if (data == null) {
+            //System.out.print(",,,,");
             return new ArrayList<>();
         }
         List<String> removeSubKey = data.entrySet().stream()
-                .filter(d -> !rule.entrySet().stream()
-                .filter(r -> !r.getValue().contains(d.getValue().get(index.get(key).get(key + ".subKey").indexOf(r.getKey()))))
-                .findFirst().isPresent()
-                )
+                .filter(d -> rule.entrySet().stream()
+                .filter(r -> !r.getValue().contains(d.getValue().get(index.get(key).get(key + ".subKey").indexOf(r.getKey())))) //containsを完全一致にする
+                .findFirst().isPresent())
                 .map(s -> s.getKey())
                 .collect(Collectors.toList());
 
-        System.out.print(","+(data.size()-removeSubKey.size())+","+data.size()+"," + removeSubKey.size()+",");
-
+        //System.out.print(","+(data.size()-removeSubKey.size())+","+data.size()+"," + removeSubKey.size()+",");
         return removeSubKey;
     }
 }

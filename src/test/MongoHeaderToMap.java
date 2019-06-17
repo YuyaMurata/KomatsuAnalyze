@@ -6,7 +6,9 @@
 package test;
 
 import axg.mongodb.MongoDBData;
+import file.CSVFileReadWrite;
 import file.MapToJSON;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,9 +23,8 @@ public class MongoHeaderToMap {
     public static void main(String[] args) {
         MongoDBData mongo = MongoDBData.create();
         mongo.set("json", "komatsuDB_PC200");
-        
-        Document h = mongo.getHeader();
-        List<String> hin = (List)h.get("header");
+
+        List<String> hin = mongo.getHeader();
         Map<String, Map<String, List<String>>> head = new HashMap<>();
         Boolean flg = true;
         for(String s : hin){
