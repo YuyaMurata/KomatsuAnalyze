@@ -11,7 +11,6 @@ import data.eval.MainteEvaluate;
 import data.eval.UseEvaluate;
 import file.CSVFileReadWrite;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -27,11 +26,9 @@ import param.KomatsuUserParameter;
 public class EvaluateSyaryo {
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     private static String KISY = "PC200";
-    private static Integer C = 5; 
-    private static List<String> enable;
+    private static Integer C = 3;
 
     public static void evalSyaryoMap(Map<String, SyaryoObject> map) {
-        enable = new ArrayList<>();
         Map<String, Integer> rm = mainte(map);
         Map<String, Integer> ru = use(map);
         
@@ -79,11 +76,6 @@ public class EvaluateSyaryo {
         
         //スコアリング
         result = eval.scoring(result, eval.getClusterData("メンテナンス"));
-        
-        enable = new ArrayList<>(result.keySet());
-        
-        //除外車両
-        //LOADER.getSyaryoMap().keySet().stream().filter(sid -> result.get(sid) == null).forEach(System.out::println);
         
         fprint(KISY + "_mainte_eval.csv", eval.header("メンテナンス"), eval.getClusterData("メンテナンス"), result);
         
