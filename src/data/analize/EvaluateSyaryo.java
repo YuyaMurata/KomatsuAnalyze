@@ -5,7 +5,6 @@
  */
 package data.analize;
 
-import analizer.SyaryoAnalizer;
 import data.cluster.WEKAClustering;
 import data.eval.AgeSMREvaluate;
 import data.eval.MainteEvaluate;
@@ -16,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
@@ -165,33 +163,15 @@ public class EvaluateSyaryo {
                     .forEach(pw::println);
         }
     }
-    
-    //分析用のデータフィルタリング
-    public static Map rejectSyaryo(Map<String, SyaryoObject> map){
-        Map enable = new TreeMap();
-        map.values().stream().forEach(s ->{
-            try(SyaryoAnalizer a = new SyaryoAnalizer(s, true)){
-                //コマツレンタルの除外
-                if(a.rent != 2)
-                    enable.put(s.name, s);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        });
-        
-        System.out.println("除外(KR車両):"+map.keySet().stream().filter(n -> enable.get(n)==null).count());
-        
-        return enable;
-    }
 
     public static void main(String[] args) {
         LOADER.setFile(KISY + "_loadmap");
         
         //フィルタリング
-        Map map = rejectSyaryo(LOADER.getSyaryoMap());
+        KomatsuUserParameter.PC200_REJECT.reject(LOADER.getSyaryoMap());
         
         //評価
-        evalSyaryoMap(map);
-        //evalSyaryoMap(LOADER.getSyaryoMap());
+        //evalSyaryoMap(map);
+        evalSyaryoMap(LOADER.getSyaryoMap());
     }
 }

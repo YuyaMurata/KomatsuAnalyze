@@ -8,9 +8,13 @@ package param;
 import file.ListToCSV;
 import java.util.Map;
 import file.MapToJSON;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import param.obj.UserPartsObject;
+import param.obj.UserRejectList;
 
 /**
  *
@@ -35,6 +39,9 @@ public interface KomatsuUserParameter {
     
     //事故リスト
     public static Map<String, String> PC200_ACCIDENT = ListToCSV.toMap(AZ_PATH+"user\\PC200_事故車両推定リスト.csv", 1, 0);
+    
+    //除外リスト
+    public static UserRejectList PC200_REJECT = new UserRejectList(AZ_PATH+"reject");
     
     //アタッチメント購入リスト
     public static Map<String, String> PC200_ATTACHEMENT = ListToCSV.toMap(AZ_PATH+"user\\PC200_アタッチメント除外リスト.csv", 1, 0);
