@@ -8,6 +8,7 @@ package creator.form.item;
 import static creator.form.SyaryoObjectFormatting.dup;
 import google.map.MapPathData;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -19,14 +20,14 @@ import param.KomatsuUserParameter;
  *
  * @author ZZ17807
  */
-public class FormKomtraxt {
+public class FormKomtrax {
 
     //KOMTRAXデータの整形 (値の重複除去、日付の整形、小数->整数)
     public static void form(SyaryoObject syaryo, Map<String, List<String>> deploy) {
         //ALL
         List<String> kmList = KomatsuUserParameter.DATA_ORDER.stream().filter(s -> s.contains("KOMTRAX")).collect(Collectors.toList());
         String stdate = deploy.keySet().stream().findFirst().get();
-
+        
         for (String id : kmList) {
             if (syaryo.get(id) == null) {
                 continue;
@@ -64,12 +65,15 @@ public class FormKomtraxt {
                 }
             }
             
-            //ACT_DATA
-            if(id.equals("KOMTRAX_ACT_DATA"))
-                newMap = transACTSMRData(newMap, 0, 1);
-            
-            syaryo.put(id, newMap);
+            if(!newMap.isEmpty())
+                syaryo.put(id, newMap);
+            else
+                syaryo.remove(id);
         }
+        
+        Map<String, List<String>> newMap = transACTSMRData(syaryo.get("KOMTRAX_ACT_DATA"), syaryo.get("KOMTRAX_SMR"));
+        if(!newMap.isEmpty())
+            syaryo.put("KOMTRAX_ACT_DATA", newMap);
     }
 
     //KOMTRAXデータを整数値に変換(SMR, FUEL_CONSUME)
@@ -89,16 +93,38 @@ public class FormKomtraxt {
     }
 
     //ACT_DATAの累積変換
-    private static Map transACTSMRData(Map<String, List<String>> smr, int idx, int unit) {
+    private static Map transACTSMRData(Map<String, List<String>> act, Map<String, List<String>> smr) {
         Map<String, Double> map = new TreeMap();
 
-        if (smr == null) {
+        if (act == null) {
             return map;
         }
 
-        smr.entrySet().forEach(s -> {
+        act.entrySet().forEach(s -> {
             map.put(s.getKey(), calcActSMR(s.getValue()));
         });
+
+        //初期SMRをACTに追加
+        if (smr != null) {
+            try{
+            Integer date = Integer.valueOf(map.keySet().stream().findFirst().get());
+            List<String> smrList = smr.keySet().stream().filter(k -> Integer.valueOf(k) <= date).collect(Collectors.toList());
+            if (!smrList.isEmpty()) {
+                String initSMR = smrList.get(smrList.size() - 1);
+                Double vinitSMR = Double.valueOf(smr.get(initSMR).get(0));
+                if (map.get(initSMR) == null) {
+                    map.put(initSMR, vinitSMR);
+                } else {
+                    Double v = map.get(initSMR) + vinitSMR;
+                    map.put(initSMR, v);
+                }
+            }
+            }catch(Exception e){
+                System.err.println(act);
+                e.printStackTrace();
+                System.exit(0);
+            }
+        }
 
         //累積値に変換
         Double acm = 0d;

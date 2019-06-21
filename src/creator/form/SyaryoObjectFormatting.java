@@ -8,7 +8,7 @@ package creator.form;
 import creator.form.item.FormAllSurpport;
 import creator.form.item.FormDead;
 import creator.form.item.FormDeploy;
-import creator.form.item.FormKomtraxt;
+import creator.form.item.FormKomtrax;
 import creator.form.item.FormNew;
 import creator.form.item.FormOrder;
 import creator.form.item.FormOwner;
@@ -127,7 +127,7 @@ public class SyaryoObjectFormatting {
             syaryo.put("オールサポート", newMap);
 
             //Komtrax
-            FormKomtraxt.form(syaryo, syaryo.get("出荷"));
+            FormKomtrax.form(syaryo, syaryo.get("出荷"));
 
             //余計な情報を削除
             formExtra(syaryo, new String[]{"最終更新日", "国"});
