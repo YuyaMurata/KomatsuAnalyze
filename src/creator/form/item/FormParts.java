@@ -5,6 +5,7 @@
  */
 package creator.form.item;
 
+import creator.form.SyaryoObjectFormatting;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -28,6 +29,12 @@ public class FormParts {
         Map<String, List<String>> map = new LinkedHashMap();
 
         int db = indexList.indexOf("DB");
+        
+        //削除される情報を抽出
+        //parts.keySet().stream().filter(k -> !odrSBN.contains(k.split("#")[0])).forEach(k ->{
+        //    String s = SyaryoObjectFormatting.currentKey+","+k+","+String.join(",", parts.get(k));
+        //    SyaryoObjectFormatting.p.add(s);
+        //});
 
         for (Object sbn : odrSBN) {
             //重複作番を取り出す

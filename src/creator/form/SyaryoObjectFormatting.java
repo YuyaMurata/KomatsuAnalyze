@@ -26,6 +26,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import file.MapToJSON;
 import file.SyaryoToCompress;
+import java.io.PrintWriter;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
 
@@ -40,6 +41,9 @@ public class SyaryoObjectFormatting {
     private static String PRODUCT_INDEXPATH = KomatsuDataParameter.PRODUCT_INDEXPATH;
     private static DecimalFormat df = new DecimalFormat("0000");
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
+    
+    public static List<String> w = new ArrayList<>();
+    public static List<String> p = new ArrayList<>();
     
     public static String currentKey = "";
 
@@ -145,6 +149,13 @@ public class SyaryoObjectFormatting {
         //R.close();
         LOADER.close();
         new SyaryoToCompress().write(LOADER.getFilePath().replace(".bz2", "_form.bz2"), syaryoMap);
+        
+        /*try(PrintWriter pw = CSVFileReadWrite.writerSJIS("PC200_作番と紐づかない部品.csv")){
+            p.stream().forEach(pw::println);
+        }
+        try(PrintWriter pw = CSVFileReadWrite.writerSJIS("PC200_作番と紐づかない作業.csv")){
+            w.stream().forEach(pw::println);
+        }*/
     }
 
     public static Map reduce(Map<String, List<String>> r, List<Integer> exp) {

@@ -5,6 +5,7 @@
  */
 package creator.form.item;
 
+import creator.form.SyaryoObjectFormatting;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,13 @@ public class FormWork {
         Map<String, List<String>> map = new LinkedHashMap();
 
         int db = indexList.indexOf("DB");
-
+        
+        //削除される情報を抽出
+        //work.keySet().stream().filter(k -> !odrSBN.contains(k.split("#")[0])).forEach(k ->{
+        //    String s = SyaryoObjectFormatting.currentKey+","+k+","+String.join(",", work.get(k));
+        //    SyaryoObjectFormatting.w.add(s);
+        //});
+        
         for (Object sbn : odrSBN) {
             //重複作番を取り出す
             List<String> sbnGroup = work.keySet().stream()
