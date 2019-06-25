@@ -6,6 +6,7 @@
 package axg.cleansing;
 
 import axg.mongodb.MongoDBCleansingData;
+import axg.mongodb.MongoDBData;
 import axg.obj.MHeaderObject;
 import axg.obj.MSyaryoObject;
 import file.MapToJSON;
@@ -26,45 +27,34 @@ public class MongoDBCleansing {
     static Map<String, Map<String, List<String>>> index = new MapToJSON().toMap("axg\\mongoobj_syaryo_src.json");
 
     public static void main(String[] args) {
-        /*MongoDBData mongo = MongoDBData.create();
+        MongoDBData mongo = MongoDBData.create();
         mongo.set("json", "komatsuDB_PC200");
-        mongo.copyTo("komatsuDB_PC200_Temp");
-        mongo.close();
-         */
-
-        /*MongoDBData mongo2 = MongoDBData.create();
-        mongo2.set("json", "komatsuDB_PC200_Temp");
-
-        List<String> sids = mongo2.getKeyList();
-        
-        List<MSyaryoObject> mlist = new ArrayList<>();
-        
-        sids.stream().limit(1).forEach(s -> {
-            MSyaryoObject m = mongo2.get(s);
-            cleanOne(m);
-            mlist.add(m);
-        });
-        MHeaderObject hobj = new MHeaderObject(mongo2.getHeader());
-        mongo2.close();
         
         //New Mongo Collection
-        MongoDBCleansingData mongo3 = MongoDBCleansingData.create();
-        mongo3.set("json", "komatsuDB_PC200_C1", MSyaryoObject.class);
-        mongo3.clear();
+        MongoDBCleansingData mongo2 = MongoDBCleansingData.create();
+        mongo2.set("json", "komatsuDB_PC200_Clean", MSyaryoObject.class);
+        mongo2.clear();
         
-        mlist.stream().forEach(mongo3.coll::insertOne);
+        long start = System.currentTimeMillis();
         
-        mongo3.set("json", "komatsuDB_PC200_C1", MHeaderObject.class);
-        mongo3.coll.insertOne(hobj);
+        mongo.getKeyList().parallelStream()
+                .map(sid -> cleanOne(mongo.get(sid)))
+                .forEach(mongo2.coll::insertOne);
         
-        mongo3.close();*/
+        MHeaderObject hobj = new MHeaderObject(mongo.getHeader());
+        mongo2.coll.insertOne(hobj);
         
+        long stop = System.currentTimeMillis();
         
+        System.out.println("ClensingTime="+(stop-start)+"ms");
+        
+        mongo.close();
+        mongo2.close();
     }
     
     public void test(){
         MongoDBCleansingData mongo3 = MongoDBCleansingData.create();
-        mongo3.set("json", "komatsuDB_PC200_C1", MSyaryoObject.class);
+        mongo3.set("json", "komatsuDB_PC200_Temp", MSyaryoObject.class);
         MHeaderObject h = mongo3.getHeader();
         System.out.println(h.getHeader());
         System.out.println(h.getIsCompleted());
@@ -77,6 +67,7 @@ public class MongoDBCleansing {
     }
 
     public static MSyaryoObject cleanOne(MSyaryoObject obj) {
+        Map<String, Integer> check = new HashMap<>();
         aggregateMap().entrySet().stream().forEach(c -> {
             String key = c.getKey();
             Map rule = c.getValue();
@@ -85,11 +76,13 @@ public class MongoDBCleansing {
             
             //SID,Records_N,Remeve_N,remove_key List
             int n = obj.getData(key) == null ? 0 : obj.getData(key).size();
-            System.out.println(obj.getName()+","+key+","+n+","+removeKey.size()+","+String.join(",", removeKey));
+            check.put(key, removeKey.size());
 
             obj.removeAll(key, removeKey);
             //System.out.println(obj.get(key));
         });
+        
+        //System.out.println(obj.getName()+" - "+check);
         
         obj.recalc();
         //obj.print();
@@ -103,6 +96,8 @@ public class MongoDBCleansing {
                 put("売上", sellRule());
                 put("サービス経歴", serviceRule());
                 put("受注", orderRule());
+                put("顧客", customerRule());
+                put("顧客_S", customer_sRule());
                 put("KOMPAS車両", syaryoRule());
                 put("部品", partsRule());
                 put("作業", workRule());
@@ -153,6 +148,21 @@ public class MongoDBCleansing {
         return new HashMap() {
             {
                 put("作業.論理削除フラグ", Arrays.asList("0"));
+            }
+        };
+    }
+    
+    private static Map customerRule() {
+        return new HashMap() {
+            {
+                put("顧客.論理削除フラグ", Arrays.asList("0"));
+            }
+        };
+    }
+    private static Map customer_sRule() {
+        return new HashMap() {
+            {
+                put("顧客_S.論理削除フラグ", Arrays.asList("0"));
             }
         };
     }
