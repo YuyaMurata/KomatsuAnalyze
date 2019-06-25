@@ -44,6 +44,7 @@ public class UserPartsObject {
             csv.stream().map(l -> l.split(",")).forEach(s ->{
                 String sid = s[h.indexOf("SID")];
                 
+                try{
                 String[] key = new String[]{
                             s[h.indexOf("部品.会社")],
                             s[h.indexOf("部品.作番")].split("#")[0],
@@ -54,6 +55,11 @@ public class UserPartsObject {
                     map.put(sid, new HashMap<>());
                 
                 map.get(sid).put(key, defname);
+                }catch(Exception e){
+                    System.err.println(String.join(",", s));
+                    e.printStackTrace();
+                    throw e;
+                }
             });
         });
         

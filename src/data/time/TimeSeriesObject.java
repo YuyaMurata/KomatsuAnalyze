@@ -6,9 +6,11 @@
 package data.time;
 
 import analizer.SyaryoAnalizer;
+import java.text.DecimalFormat;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import obj.SyaryoLoader;
@@ -23,6 +25,7 @@ public class TimeSeriesObject {
 
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     private static UserPartsObject PARTS = KomatsuUserParameter.PC200_USERPARTS_DEF;
+    private static DecimalFormat df = new DecimalFormat("0000");
 
     public String sid;
     public String key;
@@ -54,17 +57,16 @@ public class TimeSeriesObject {
 
     //サービス実績の時系列を取得
     public Map<String, String> orderToSeries(SyaryoAnalizer s) {
-        Map<String, String> t = new HashMap<>();
+        Map<String, String> t = new LinkedHashMap<>();
         String skey = "受注";
         int idx = LOADER.index(skey, "SGYO_KRDAY");
 
         if (s.get(skey) != null) {
-            t = s.get(skey).entrySet().stream()
+            s.get(skey).entrySet().stream()
                     .sorted(Comparator.comparing(o -> Integer.valueOf(o.getValue().get(idx))))
-                    .collect(Collectors.toMap(
-                            o -> o.getKey(),
-                            o -> o.getValue().get(idx),
-                            (o1, o2) -> o1, LinkedHashMap::new));
+                    .forEach(o ->{
+                        t.put(dup(o.getValue().get(idx), t), o.getKey());
+                    });
         }
         return t;
     }
@@ -80,21 +82,19 @@ public class TimeSeriesObject {
 
     //特定部品の交換実績時系列を取得
     public Map<String, String> partsToSeries(SyaryoAnalizer s, String target) {
-        Map<String, String> t = new HashMap<>();
+        Map<String, String> t = new LinkedHashMap<>();
         String skey = "受注";
         int idx = LOADER.index(skey, "SGYO_KRDAY");
 
         if (PARTS.check(s.name, target)) {
             try {
-                t = PARTS.index.get(s.name).entrySet().stream() //ユーザー定義の部品
+                PARTS.index.get(s.name).entrySet().stream() //ユーザー定義の部品
                         .filter(e -> e.getValue().equals(target)) //ターゲット以外の部品は除去
                         .map(e -> e.getKey()[1]) //ユーザー定義部品の作番情報
                         .filter(sbn -> s.get(skey).get(sbn) != null) //分析器による除外処理を考慮
                         .sorted(Comparator.comparing(sbn -> Integer.valueOf(s.get(skey).get(sbn).get(idx).split("#")[0])))
-                        .collect(Collectors.toMap(
-                                sbn -> sbn,
-                                sbn -> s.get(skey).get(sbn).get(idx),
-                                (o1, o2) -> o1, LinkedHashMap::new));
+                        .distinct()
+                        .forEach(sbn -> t.put(dup(s.get(skey).get(sbn).get(idx), t), sbn));
             } catch (Exception e) {
                 System.err.println(s.name + ":" + key);
                 e.printStackTrace();
@@ -106,7 +106,7 @@ public class TimeSeriesObject {
     }
     
     public String firstService(){
-        return series.values().stream().limit(1).findFirst().get();
+        return series.keySet().stream().limit(1).findFirst().get();
     }
 
     public Map<String, String> komtraxErrorToSeries(SyaryoAnalizer s, String target) {
@@ -126,5 +126,21 @@ public class TimeSeriesObject {
         }
 
         return t;
+    }
+    
+    //日付が重複する場合に連番を付与　20180809が2つ登場したとき-> 20180809#0001
+    public static String dup(String key, Map map) {
+        int cnt = 0;
+        String k = key;
+        while (map.get(k) != null) {
+            k = key + "#" + df.format(++cnt);
+        }
+        return k;
+    }
+    
+    public List<String> floorExt(String date){
+        return series.keySet().stream()
+                        .filter(d -> Integer.valueOf(d.split("#")[0]) <= Integer.valueOf(date.split("#")[0]))
+                        .collect(Collectors.toList());
     }
 }

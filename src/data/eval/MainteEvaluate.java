@@ -60,7 +60,7 @@ public class MainteEvaluate extends EvaluateTemplate {
                     String check = "";
                     try {
                         TimeSeriesObject t = new TimeSeriesObject(s, "受注", e.getKey());
-                        List<Integer> smr = t.series.values().stream()
+                        List<Integer> smr = t.series.keySet().stream()
                                 .map(ti -> ti.split("#")[0])
                                 .map(ti -> s.getDateToSMR(ti).getValue())
                                 .collect(Collectors.toList());
