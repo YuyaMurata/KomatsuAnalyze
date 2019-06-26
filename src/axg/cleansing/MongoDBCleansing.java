@@ -159,6 +159,7 @@ public class MongoDBCleansing {
             }
         };
     }
+    
     private static Map customer_sRule() {
         return new HashMap() {
             {
@@ -174,7 +175,6 @@ public class MongoDBCleansing {
             }
         };
     }
-
     
     private static List<String> removeData(String key, Map<String, List<String>> data, Map<String, List<String>> rule) {
         if (data == null) {
