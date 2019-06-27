@@ -63,21 +63,22 @@ public class EvaluateSyaryo {
     
     private static Map<String, Integer> mainte(Map map) {
         //メンテナンス評価
+        String key = "メンテナンス";
         Long start = System.currentTimeMillis();
         MainteEvaluate eval = new MainteEvaluate();
-        eval.evaluate("メンテナンス", map);
+        eval.evaluate(key, map);
         Long evalstop = System.currentTimeMillis();
         System.out.println("メンテナンス 評価完了　: "+(evalstop-start)+" [ms]");
         
         //クラスタリング
         String clusterfile = KomatsuUserParameter.WEKA_PATH+KISY+"_メンテナンス.arff";
-        eval.createARFF(clusterfile, "メンテナンス");
-        Map<String, Integer> result = clustering("メンテナンス", clusterfile, eval.getSIDList());
+        eval.createARFF(clusterfile, key);
+        Map<String, Integer> result = clustering(key, clusterfile, eval.getSIDList());
         
         //スコアリング
-        result = eval.scoring(result, eval.getClusterData("メンテナンス"));
+        result = eval.scoring(result, key, eval.getClusterData(key));
         
-        fprint(KISY + "_mainte_eval.csv", eval.header("メンテナンス"), eval.getClusterData("メンテナンス"), result);
+        fprint(KISY + "_mainte_eval.csv", eval.header(key), eval.getClusterData(key), result);
         
         return result;
     }
@@ -94,7 +95,8 @@ public class EvaluateSyaryo {
     }
     
     private static Map<String, Integer> use(Map map) {
-        String key = "LOADMAP_実エンジン回転VSエンジントルク";
+        //String key = "LOADMAP_実エンジン回転VSエンジントルク";
+        String key = "LOADMAP_エンジン水温VS作動油温";
         Long start = System.currentTimeMillis();
         UseEvaluate eval = new UseEvaluate();
         eval.evaluate(key, map);
@@ -112,7 +114,7 @@ public class EvaluateSyaryo {
         Map<String, Integer> result = clustering("使われ方", clusterfile, eval.getSIDList());
         
         //スコアリング
-        result = eval.scoring(result, eval.getClusterData(key));
+        result = eval.scoring(result, key, eval.getClusterData(key));
         
         fprint(KISY + "_use_eval.csv",eval.header(key), eval.getClusterData(key), result);
         

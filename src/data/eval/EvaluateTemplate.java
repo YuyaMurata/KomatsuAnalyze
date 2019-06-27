@@ -103,7 +103,7 @@ public abstract class EvaluateTemplate {
         return data;
     }
     
-    public abstract Map<String, Integer> scoring(Map<String, Integer> cluster, Map<String, List<Double>> data);
+    public abstract Map<String, Integer> scoring(Map<String, Integer> cluster, String key, Map<String, List<Double>> data);
     
     public abstract void createARFF(String file, String key);
     

@@ -106,7 +106,7 @@ public class MainteEvaluate extends EvaluateTemplate {
     }
     
     @Override
-    public Map<String, Integer> scoring(Map<String, Integer> cluster, Map<String, List<Double>> data) {
+    public Map<String, Integer> scoring(Map<String, Integer> cluster, String key, Map<String, List<Double>> data) {
         int maxCluster = cluster.values().stream().distinct().mapToInt(c -> c).max().getAsInt();
         
         //Average

@@ -100,10 +100,10 @@ public class UseEvaluate extends EvaluateTemplate {
     }
 
     @Override
-    public Map<String, Integer> scoring(Map<String, Integer> cluster, Map<String, List<Double>> data) {
+    public Map<String, Integer> scoring(Map<String, Integer> cluster, String key, Map<String, List<Double>> data) {
         int maxCluster = cluster.values().stream().distinct().mapToInt(c -> c).max().getAsInt();
         //Average
-        Map<Integer, Double> avg = IntStream.range(0, maxCluster+1).boxed()
+        Map<Integer, Double> avg = IntStream.range(0, maxCluster + 1).boxed()
                 .collect(Collectors.toMap(
                         i -> i,
                         i -> cluster.entrySet().stream()
@@ -111,7 +111,7 @@ public class UseEvaluate extends EvaluateTemplate {
                                 .flatMap(c -> data.get(c.getKey()).stream()
                                 .filter(d -> d == 1d)
                                 .map(d -> data.get(c.getKey()).indexOf(d))
-                                ).map(d -> header("LOADMAP_実エンジン回転VSエンジントルク").get(d).split("_"))
+                                ).map(d -> header(key).get(d).split("_"))
                                 .mapToDouble(h -> -Double.valueOf(h[0]) * Double.valueOf(h[1])) //ヘッダ情報を利用し右下に行くほど評価値が下がる用に評価
                                 .average().getAsDouble()
                 ));
