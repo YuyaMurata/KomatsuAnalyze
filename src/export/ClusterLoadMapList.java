@@ -8,7 +8,6 @@ package export;
 import file.CSVFileReadWrite;
 import file.ListToCSV;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
