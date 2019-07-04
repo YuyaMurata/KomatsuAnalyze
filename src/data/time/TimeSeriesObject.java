@@ -106,7 +106,17 @@ public class TimeSeriesObject {
     }
     
     public String firstService(){
-        return series.keySet().stream().limit(1).findFirst().get();
+        if(!series.isEmpty())
+            return series.keySet().stream().limit(1).findFirst().get();
+        else
+            return null;
+    }
+    
+    public Boolean isEmpty(){
+        if(series.isEmpty())
+            return true;
+        else
+            return false;
     }
 
     public Map<String, String> komtraxErrorToSeries(SyaryoAnalizer s, String target) {
@@ -141,6 +151,8 @@ public class TimeSeriesObject {
     public List<String> floorExt(String date){
         return series.keySet().stream()
                         .filter(d -> Integer.valueOf(d.split("#")[0]) <= Integer.valueOf(date.split("#")[0]))
+                        .map(d -> d.split("#")[0])
+                        .distinct()
                         .collect(Collectors.toList());
     }
 }
