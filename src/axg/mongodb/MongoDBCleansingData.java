@@ -55,6 +55,7 @@ public class MongoDBCleansingData {
     public MHeaderObject getHeader(){
         MongoCollection hcoll = this.db.getCollection(this.coll.getNamespace().getCollectionName(), MHeaderObject.class);
         MHeaderObject h = (MHeaderObject) hcoll.find(exists("header")).first();
+        h.setHeaderMap();
         return h;
     }
     
@@ -71,6 +72,7 @@ public class MongoDBCleansingData {
     }
     
     public void clear(){
+        System.err.println("Drop Collection!");
         this.coll.drop();
     }
     

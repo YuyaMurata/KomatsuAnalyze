@@ -5,7 +5,10 @@
  */
 package axg.obj;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.bson.types.ObjectId;
 
 /**
@@ -16,6 +19,7 @@ public class MHeaderObject {
     private ObjectId id;
     private List<String> header;
     private Boolean isCompleted;
+    public transient Map<String, List<String>> map = new HashMap<>();
     
     public MHeaderObject(){
     }
@@ -23,6 +27,28 @@ public class MHeaderObject {
     public MHeaderObject(List<String> header) {
         this.header = header;
         this.isCompleted = true;
+    }
+    
+    public void setHeaderMap(){
+        //header Map
+        Boolean flg = true;
+        for(String s : header){
+            if(s.equals("id "))
+                continue;
+
+            String k = s.split("\\.")[0];
+            
+            if(map.get(k) == null){
+                map.put(k, new ArrayList<>());
+                flg = false;
+            }
+            
+            if(flg){
+                map.get(k).add(s);
+            }else{
+                flg = true;
+            }
+        }
     }
     
     public ObjectId getId() {

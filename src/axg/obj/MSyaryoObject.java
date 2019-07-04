@@ -65,6 +65,14 @@ public class MSyaryoObject {
         return this.map.get(key);
     }
     
+    public List<String> getDataOne(String key){
+        if(this.map.get(key) != null)
+            return this.map.get(key).values().stream().findFirst().get();
+        else{
+            return null;
+        }
+    }
+    
     public void removeAll(String key, List<String> subKeys){
         if(this.map.get(key) == null)
             return ;

@@ -37,12 +37,12 @@ public class MongoDBCleansing {
         
         long start = System.currentTimeMillis();
         
+        MHeaderObject hobj = new MHeaderObject(mongo.getHeader());
+        mongo2.coll.insertOne(hobj);
+        
         mongo.getKeyList().parallelStream()
                 .map(sid -> cleanOne(mongo.get(sid)))
                 .forEach(mongo2.coll::insertOne);
-        
-        MHeaderObject hobj = new MHeaderObject(mongo.getHeader());
-        mongo2.coll.insertOne(hobj);
         
         long stop = System.currentTimeMillis();
         
