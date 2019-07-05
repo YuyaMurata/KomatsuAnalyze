@@ -23,16 +23,18 @@ import java.sql.Statement;
 public class TestMetaSetGenerator {
 
     public static void main(String[] args) {
+        tableToMetaSet("as_keiyaku");
+        /*
         for(TABLE t : HiveDB.TABLE.values()){
             //komtrax
             if(t.get().equals("komtrax")){
                 for(Komtrax.TABLE kt : Komtrax.TABLE.values())
                     tableToMetaSet(kt.get());
             }
-            /*else{
+            else{
                 tableToMetaSet(t.get());
-            }*/
-        }
+            }
+        }*/
     }
 
     public static void tableToMetaSet(String table) {
