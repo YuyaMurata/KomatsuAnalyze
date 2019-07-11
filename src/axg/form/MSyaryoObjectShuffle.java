@@ -10,6 +10,7 @@ import axg.mongodb.MongoDBData;
 import axg.obj.MHeaderObject;
 import axg.obj.MSyaryoObject;
 import file.MapToJSON;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -26,10 +27,16 @@ public class MSyaryoObjectShuffle {
 
     //Index
     static Map<String, Map<String, List<String>>> index = new MapToJSON().toMap("axg\\shuffle_mongo_syaryo.json");
+    private static DecimalFormat df = new DecimalFormat("00");
 
     public static void main(String[] args) {
+        //元データのレイアウト
         //createHeaderMapFile();
+        
+        //テンプレート生成
         //createLayoutHeader(index);
+        
+        //シャッフル
         shuffle();
     }
 
@@ -96,9 +103,16 @@ public class MSyaryoObjectShuffle {
             //subkey
             Map<String, List<String>> subIdx = idx.getValue();
             subIdx.entrySet().stream().forEach(idx2 -> {
-                Map<String, List<String>> subMap = idxMapping(idx2.getKey(), idx2.getValue(), headerobj, obj);
+                //initialize
+                if(map.get(idx.getKey()) == null)
+                    map.put(idx.getKey(), new TreeMap<>());
+                
+                //update map
+                Map<String, List<String>> subMap = idxMapping(map.get(idx.getKey()), idx2.getKey(), idx2.getValue(), headerobj, obj);
                 map.put(idx.getKey(), subMap);
-                //testPrint(idx2.getKey() + ":" + idx2.getValue(), subMap);
+                
+                //
+                testPrint(idx2.getKey() + ":" + idx2.getValue(), subMap);
             });
         });
         
@@ -126,9 +140,7 @@ public class MSyaryoObjectShuffle {
         System.out.println("");
     }
 
-    private static Map<String, List<String>> idxMapping(String subKey, List<String> idxList, MHeaderObject header, MSyaryoObject ref) {
-        Map<String, List<String>> dataMap = new TreeMap<>();
-
+    private static Map<String, List<String>> idxMapping(Map<String, List<String>> dataMap, String subKey, List<String> idxList, MHeaderObject header, MSyaryoObject ref) {
         if (subKey.contains(".")) {
             //複数レコードでデータを作成
             String dataKey = subKey.split("\\.")[0];
@@ -139,7 +151,7 @@ public class MSyaryoObjectShuffle {
                     List data = idxList.stream()
                             .map(idx -> idxToData(idx, header, r))
                             .collect(Collectors.toList());
-                    dataMap.put(key, data);
+                    dataMap.put(duplicateKey(key, dataMap), data);
                 });
             }
         } else {
@@ -147,7 +159,7 @@ public class MSyaryoObjectShuffle {
             List data = idxList.stream()
                     .map(idx -> idxToData(idx, header, ref.getDataOne(idx.split("\\.")[0])))
                     .collect(Collectors.toList());
-            dataMap.put(subKey, data);
+            dataMap.put(duplicateKey(subKey, dataMap), data);
         }
 
         return dataMap;
@@ -212,5 +224,14 @@ public class MSyaryoObjectShuffle {
         } else {
             return key + "." + idx;
         }
+    }
+   
+    private static String duplicateKey(String key, Map map){
+        int cnt = 0;
+        String k = key;
+        while (map.get(k) != null) {
+            k = key + "#" + df.format(++cnt);
+        }
+        return k;
     }
 }

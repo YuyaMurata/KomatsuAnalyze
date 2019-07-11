@@ -63,6 +63,10 @@ public class MHeaderObject {
         return header;
     }
     
+    public List<String> getIndex(String key){
+        return this.map.get(key);
+    }
+    
     public void setHeader(final List header){
         this.header = header;
     }

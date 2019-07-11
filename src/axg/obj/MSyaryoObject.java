@@ -45,7 +45,7 @@ public class MSyaryoObject {
         this.name = name;
     }
     
-    public Map getMap(){
+    public Map<String, Map<String, List<String>>> getMap(){
         return map;
     }
     
@@ -65,9 +65,21 @@ public class MSyaryoObject {
         return this.map.get(key);
     }
     
+    public void setData(String key, Map<String, List<String>> data){
+        this.map.put(key, data);
+    }
+    
     public List<String> getDataOne(String key){
         if(this.map.get(key) != null)
             return this.map.get(key).values().stream().findFirst().get();
+        else{
+            return null;
+        }
+    }
+    
+    public String getDataKeyOne(String key){
+        if(this.map.get(key) != null)
+            return this.map.get(key).keySet().stream().findFirst().get();
         else{
             return null;
         }
