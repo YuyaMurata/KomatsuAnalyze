@@ -66,7 +66,10 @@ public class MSyaryoObject {
     }
     
     public void setData(String key, Map<String, List<String>> data){
-        this.map.put(key, data);
+        if(data != null)
+            this.map.put(key, data);
+        else
+            this.map.remove(key);
     }
     
     public List<String> getDataOne(String key){
@@ -101,7 +104,6 @@ public class MSyaryoObject {
     
     public void print(){
         System.out.println(name);
-        System.out.println("map-"+map);
-        System.out.println("cnt-"+count);
+        map.entrySet().stream().map(e -> " "+e.getKey()+":"+count.get(e.getKey())+":"+e.getValue()).forEach(System.out::println);
     }
 }

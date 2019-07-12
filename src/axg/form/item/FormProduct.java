@@ -21,6 +21,7 @@ public class FormProduct {
         String id = name.split("-")[0] + "-" + name.split("-")[2];
         String date = product.keySet().stream().findFirst().get();
         String pdate = index.get(id);
+        
         if (pdate != null) {
             if (Integer.valueOf(date) < Integer.valueOf(pdate)) {
                 map.put(pdate, product.get(date));

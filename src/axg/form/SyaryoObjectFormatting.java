@@ -34,13 +34,11 @@ import java.util.stream.Collectors;
  * @author zz17390
  */
 public class SyaryoObjectFormatting {
-
-    private static String HONSY_INDEXPATH = KomatsuDataParameter.HONSYA_INDEX_PATH;
-    private static String PRODUCT_INDEXPATH = KomatsuDataParameter.PRODUCT_INDEXPATH;
     //本社コード
-    private static Map<String, String> honsyIndex = new MapToJSON().toMap(HONSY_INDEXPATH);
+    private static Map<String, String> honsyIndex = new MapToJSON().toMap("settings\\generator\\index\\honsya_index.json");
     //生産日情報
-    private static Map<String, String> productIndex = new MapToJSON().toMap(PRODUCT_INDEXPATH);
+    private static Map<String, String> productIndex = new MapToJSON().toMap("settings\\generator\\index\\product_index.json");
+    
     private static DecimalFormat df = new DecimalFormat("00");
 
     public static List<String> w = new ArrayList<>();
@@ -48,63 +46,55 @@ public class SyaryoObjectFormatting {
 
     public static String currentKey = "";
 
-    public static void form(MHeaderObject header, MSyaryoObject syaryo) {
-
+    public void form(MHeaderObject header, MSyaryoObject syaryo) {
         //整形時のデータ削除ルールを設定
         DataRejectRule rule = new DataRejectRule();
-
-        //整形後出力するMap
-        Map newMap = new LinkedHashMap();
 
         //キーの整形
         formKey(syaryo);
 
         //生産の整形
-        newMap.putAll(FormProduct.form(syaryo.getData("生産"), productIndex, syaryo.getName()));
+        syaryo.setData("生産", FormProduct.form(syaryo.getData("生産"), productIndex, syaryo.getName()));
 
         //出荷情報の整形
-        newMap.putAll(FormDeploy.form(syaryo.getData("出荷"), syaryo.getDataKeyOne("生産"), syaryo.getName()));
+        syaryo.setData("出荷", FormDeploy.form(syaryo.getData("出荷"), syaryo.getDataKeyOne("生産"), syaryo.getName()));
 
         //顧客の整形  経歴の利用方法の確認
-        newMap.putAll(FormOwner.form(syaryo.getData("顧客"), header.getIndex("顧客"), honsyIndex, rule));
-        syaryo.setData("顧客", newMap);
+        syaryo.setData("顧客", FormOwner.form(syaryo.getData("顧客"), header.getIndex("顧客"), honsyIndex, rule));
 
         //新車の整形
-        newMap.putAll(FormNew.form(syaryo.getData("新車"), syaryo.getData("生産"), syaryo.getData("出荷"), header.getIndex("新車")));
-
-        rule.addNew(newMap.keySet().stream().findFirst().get().toString());
-
+        syaryo.setData("新車", FormNew.form(syaryo.getData("新車"), syaryo.getData("生産"), syaryo.getData("出荷"), header.getIndex("新車")));
+        rule.addNew(syaryo.getDataKeyOne("新車"));
+        
         //中古車の整形  // U Nが残っているためそれを利用した処理に変更
-        newMap.putAll(FormUsed.form(syaryo.getData("中古車"), header.getIndex("中古車"), rule.getNew(), rule.getKUEC()));
-
+        syaryo.setData("中古車", FormUsed.form(syaryo.getData("中古車"), header.getIndex("中古車"), rule.getNew(), rule.getKUEC()));
+        
         //受注
-        newMap.putAll(FormOrder.form(syaryo.getData("受注"), header.getIndex("受注"), rule));
+        syaryo.setData("受注", FormOrder.form(syaryo.getData("受注"), header.getIndex("受注"), rule));
 
         List sbnList = null;
-        if (newMap.get("受注") != null) {
+        if (syaryo.getData("受注") != null) {
             sbnList = new ArrayList(syaryo.getData("受注").keySet());
         }
-
+        
         //廃車
-        newMap.putAll(FormDead.form(syaryo.getData("廃車"), rule.currentDate, header.getIndex("廃車")));
-
+        syaryo.setData("廃車", FormDead.form(syaryo.getData("廃車"), rule.currentDate, header.getIndex("廃車")));
+        
         //作業
-        newMap.putAll(FormWork.form(syaryo.getData("作業"), sbnList, header.getIndex("作業"), rule.getWORKID()));
-
+        syaryo.setData("作業", FormWork.form(syaryo.getData("作業"), sbnList, header.getIndex("作業"), rule.getWORKID()));
+/*
         //部品
-        newMap.putAll(FormParts.form(syaryo.getData("部品"), sbnList, header.getIndex("部品"), rule.getPARTSID()));
+        syaryo.setData("部品", FormParts.form(syaryo.getData("部品"), sbnList, header.getIndex("部品"), rule.getPARTSID()));
 
         //SMR
-        newMap.putAll(FormSMR.form(syaryo.getData("SMR"), header.getIndex("SMR")));
+        syaryo.setData("SMR", FormSMR.form(syaryo.getData("SMR"), header.getIndex("SMR")));
 
         //AS 解約、満了情報が残っているため修正
-        newMap.putAll(FormAllSurpport.form(syaryo.getData("オールサポート"), header.getIndex("オールサポート")));
+        syaryo.setData("オールサポート", FormAllSurpport.form(syaryo.getData("オールサポート"), header.getIndex("オールサポート")));
 
         //Komtrax 紐づいていないことを考慮する
-        newMap.putAll(FormKomtrax.form(syaryo, newMap.get("出荷")));
-
-        //車両を更新
-        syaryo.getMap().putAll(newMap);
+        //newMap.putAll(FormKomtrax.form(syaryo, newMap.get("出荷")));
+        */
     }
 
     //キーをまとめて整形

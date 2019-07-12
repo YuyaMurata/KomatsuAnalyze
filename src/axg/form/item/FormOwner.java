@@ -23,9 +23,9 @@ public class FormOwner {
             //System.out.println("Not found owner!");
             return null;
         }
-
-        Integer company = indexList.indexOf("会社CD");
-        Integer ownerID = indexList.indexOf("顧客CD");
+        
+        Integer company = indexList.indexOf("顧客.会社コード");
+        Integer ownerID = indexList.indexOf("顧客.納入先コード");
 
         //本社コード揃え
         for (String d : owner.keySet()) {

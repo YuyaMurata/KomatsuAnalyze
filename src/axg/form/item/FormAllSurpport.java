@@ -24,7 +24,7 @@ public class FormAllSurpport {
 
         Map newMap = new TreeMap();
         for (String date : as.keySet()) {
-            String kiyk = as.get(date).get(kaiyaku).toString();
+            String kiyk = as.get(date).get(kaiyaku);
             if (Integer.valueOf(date.split("#")[0]) <= Integer.valueOf(kiyk)) {
                 newMap.put(date.split("#")[0], as.get(date));
             }

@@ -78,4 +78,8 @@ public class MHeaderObject {
     public void setIsCompleted(final Boolean isCompleted){
         this.isCompleted = isCompleted;
     }
+    
+    public void print(){
+        map.entrySet().stream().map(e -> e.getKey()+":"+e.getValue()).forEach(System.out::println);
+    }
 }

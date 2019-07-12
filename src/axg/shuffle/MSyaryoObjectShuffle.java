@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package axg.form;
+package axg.shuffle;
 
+import axg.form.SyaryoObjectFormatting;
 import axg.mongodb.MongoDBCleansingData;
 import axg.mongodb.MongoDBData;
 import axg.obj.MHeaderObject;
@@ -16,7 +17,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
@@ -32,10 +32,9 @@ public class MSyaryoObjectShuffle {
     public static void main(String[] args) {
         //元データのレイアウト
         //createHeaderMapFile();
-        
+
         //テンプレート生成
         //createLayoutHeader(index);
-        
         //シャッフル
         shuffle();
     }
@@ -86,44 +85,53 @@ public class MSyaryoObjectShuffle {
 
         //
         System.out.println(index);
-        
+        SyaryoObjectFormatting sobjf = new SyaryoObjectFormatting();
+
         MongoDBCleansingData mongo2 = MongoDBCleansingData.create();
         mongo2.set("json", "komatsuDB_PC200_Shuffle", MSyaryoObject.class);
         mongo2.clear();
         mongo2.coll.insertOne(recreateHeaderObj());
+        MHeaderObject newheaderobj = mongo2.getHeader();
         
-        MSyaryoObject obj = mongo.getObj("PC200-10- -452437");
-        System.out.println(obj.getMap());
+        //List<String> sids = mongo.getKeyList();
 
-        Map<String, Map<String, List<String>>> map = new LinkedHashMap();
-        
-        System.out.println(obj.getName());
-        index.entrySet().stream().forEach(idx -> {
-            System.out.println("Main:"+idx.getKey());
-            //subkey
-            Map<String, List<String>> subIdx = idx.getValue();
-            subIdx.entrySet().stream().forEach(idx2 -> {
-                //initialize
-                if(map.get(idx.getKey()) == null)
-                    map.put(idx.getKey(), new TreeMap<>());
-                
-                //update map
-                Map<String, List<String>> subMap = idxMapping(map.get(idx.getKey()), idx2.getKey(), idx2.getValue(), headerobj, obj);
-                map.put(idx.getKey(), subMap);
-                
-                //
-                testPrint(idx2.getKey() + ":" + idx2.getValue(), subMap);
+        //sids.stream().limit(10).forEach(sid -> {
+            MSyaryoObject obj = mongo.getObj("PC200-10- -452437"); //"PC200-10- -452437"
+            Map<String, Map<String, List<String>>> map = new LinkedHashMap();
+
+            System.out.println(obj.getName());
+            index.entrySet().stream().forEach(idx -> {
+                //System.out.println("Main:"+idx.getKey());
+                //subkey
+                Map<String, List<String>> subIdx = idx.getValue();
+                subIdx.entrySet().stream().forEach(idx2 -> {
+                    //initialize
+                    if (map.get(idx.getKey()) == null) {
+                        map.put(idx.getKey(), new LinkedHashMap<>());
+                    }
+
+                    //update map
+                    Map<String, List<String>> subMap = idxMapping(map.get(idx.getKey()), idx2.getKey(), idx2.getValue(), headerobj, obj);
+                    map.put(idx.getKey(), subMap);
+
+                    //
+                    //testPrint(idx2.getKey() + ":" + idx2.getValue(), subMap);
+                });
             });
-        });
-        
-        MSyaryoObject newobj = new MSyaryoObject();
-        newobj.setName(obj.getName());
-        newobj.setMap(map);
-        newobj.recalc();
-        
-        
-        mongo2.coll.insertOne(newobj);
-        
+
+            MSyaryoObject newobj = new MSyaryoObject();
+            newobj.setName(obj.getName());
+            newobj.setMap(map);
+            
+            //check
+            //mongo2.getHeader().print();
+            sobjf.form(newheaderobj, newobj);
+            newobj.recalc();
+            newobj.print();
+
+            mongo2.coll.insertOne(newobj);
+        //});
+
         mongo2.close();
         mongo.close();
     }
@@ -159,7 +167,10 @@ public class MSyaryoObjectShuffle {
             List data = idxList.stream()
                     .map(idx -> idxToData(idx, header, ref.getDataOne(idx.split("\\.")[0])))
                     .collect(Collectors.toList());
-            dataMap.put(duplicateKey(subKey, dataMap), data);
+            
+            //全て空のデータは無視
+            if(data.stream().filter(d -> !d.equals("")).findFirst().isPresent())
+                dataMap.put(duplicateKey(subKey, dataMap), data);
         }
 
         return dataMap;
@@ -174,29 +185,35 @@ public class MSyaryoObjectShuffle {
         //参照先データが存在する
         if (idx.contains(".")) {
             String key = idx.split("\\.")[0];
-
-            return refdata.get(header.map.get(key).indexOf(idx));
+            String data = refdata.get(header.map.get(key).indexOf(idx));
+            
+            //空白列の除去
+            if(data.replace(" ", "").equals(""))
+                return "";
+            else
+                return data;
+            
             //参照先データが存在しない
         } else {
             return idx;
         }
     }
-    
-    public static MHeaderObject recreateHeaderObj(){
+
+    public static MHeaderObject recreateHeaderObj() {
         Map<String, Map<String, List<String>>> layout = new MapToJSON().toMap("axg\\layout_mongo_syaryo.json");
-        
+
         List header = new ArrayList();
         header.add("id ");
-        layout.values().stream().forEach(l ->{
-            l.entrySet().stream().forEach(le ->{
+        layout.values().stream().forEach(l -> {
+            l.entrySet().stream().forEach(le -> {
                 header.add(le.getKey());
                 header.addAll(le.getValue());
             });
         });
-        
+
         return new MHeaderObject(header);
     }
-    
+
     public static void createLayoutHeader(Map<String, Map<String, List<String>>> shuffleIndex) {
         Map<String, Map<String, List<String>>> map = new LinkedHashMap();
 
@@ -225,8 +242,8 @@ public class MSyaryoObjectShuffle {
             return key + "." + idx;
         }
     }
-   
-    private static String duplicateKey(String key, Map map){
+
+    private static String duplicateKey(String key, Map map) {
         int cnt = 0;
         String k = key;
         while (map.get(k) != null) {

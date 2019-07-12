@@ -27,11 +27,10 @@ public class FormOrder {
         }
 
         //日付ソート
-        int date = indexList.indexOf("ODDAY"); //kom_orderが紐づく場合 ODDAY
+        int date = indexList.indexOf("受注.受注日");
         //System.out.println(order);
 
         Map<String, Integer> sortMap = order.entrySet().stream()
-                .filter(e -> !e.getValue().get(date).equals("None"))
                 .filter(e -> Integer.valueOf(reject.getNew()) <= Integer.valueOf(e.getValue().get(date)))
                 .collect(Collectors.toMap(e -> e.getKey(), e -> Integer.valueOf(e.getValue().get(date))));
 
@@ -45,10 +44,10 @@ public class FormOrder {
         //System.out.println("作番:"+sbnList);
         Map<String, List<String>> map = new LinkedHashMap();
 
-        int db = indexList.indexOf("DB");
-        int price = indexList.indexOf("SKKG");
-        int kind = indexList.indexOf("ODR_KBN");
-        int fin_date = indexList.indexOf("SGYO_KRDAY");
+        int db = indexList.indexOf("受注.受注(KOMPAS)");
+        int price = indexList.indexOf("受注.請求金額");
+        int kind = indexList.indexOf("受注.受注区分");
+        int fin_date = indexList.indexOf("受注.作業完了日");
         
         //6桁以下の規格外の作番を取得するリスト
         List<String> sixSBN = new ArrayList();
@@ -62,7 +61,7 @@ public class FormOrder {
             //KOMPAS 受注テーブル情報が存在するときは取り出す
             Optional<List<String>> kom = sbnGroup.stream()
                     .map(s -> order.get(s))
-                    .filter(l -> l.get(db).equals("kom_order"))
+                    .filter(l -> l.get(db).equals("受注(KOMPAS)"))
                     .findFirst();
 
             if (kom.isPresent()) {
@@ -74,7 +73,7 @@ public class FormOrder {
                         map.put(sbn, list);
                     } else {
                         //System.out.println("サービス経歴に金額の入ったデータが2つ以上存在");
-                        if (!(map.get(sbn).get(price).equals("None") || list.get(price).equals("None"))) {
+                        if (!(map.get(sbn).get(price).equals("") || list.get(price).equals(""))) {
                             if (Double.valueOf(map.get(sbn).get(price)) < Double.valueOf(list.get(price))) {
                                 map.put(sbn, list);
                             }
@@ -117,7 +116,7 @@ public class FormOrder {
             List<String> list = map.get(sbn);
             list.set(price, String.valueOf(Double.valueOf(list.get(price)).intValue()));
 
-            if (list.get(fin_date).contains("None")) {
+            if (list.get(fin_date).contains("")) {
                 list.set(fin_date, list.get(date));
                 //System.out.println(list);
             }

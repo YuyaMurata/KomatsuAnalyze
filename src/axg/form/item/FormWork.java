@@ -26,7 +26,7 @@ public class FormWork {
 
         Map<String, List<String>> map = new LinkedHashMap();
 
-        int db = indexList.indexOf("DB");
+        int db = indexList.indexOf("作業.作業(KOMPAS)");
         
         //削除される情報を抽出
         //work.keySet().stream().filter(k -> !odrSBN.contains(k.split("#")[0])).forEach(k ->{
@@ -43,11 +43,12 @@ public class FormWork {
             //KOMPAS 作業情報が存在するときは取り出す
             Optional<List<String>> kom = sbnGroup.stream()
                     .map(s -> work.get(s))
-                    .filter(l -> l.get(db).equals("work_info"))
+                    .filter(l -> l.get(db).equals("作業(KOMPAS)"))
                     .findFirst();
+            
             if (kom.isPresent()) {
                 sbnGroup.stream()
-                        .filter(s -> !work.get(s).get(db).equals("service"))
+                        .filter(s -> !work.get(s).get(db).equals("サービス経歴(KOMPAS)"))
                         .forEach(s -> map.put(s, work.get(s)));
             } else {
                 sbnGroup.stream()
