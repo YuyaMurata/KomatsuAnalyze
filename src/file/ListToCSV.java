@@ -51,6 +51,21 @@ public class ListToCSV {
         return map;
     }
     
+    public static Map<String, String> toKeyMap(String csv, int k, int v){
+        List<String> l = toList(csv);
+        
+        Map<String, String> map = l.stream()
+                                    .map(s -> s.split(","))
+                                    .map(s -> s[k]+s[v])
+                                    .filter(s -> !s.equals(""))
+                                    .collect(Collectors.toMap(
+                                            s -> s, 
+                                            s -> "1"
+                                    ));
+        
+        return map;
+    }
+    
     public static void toCSV(String csv, List list){
         try(PrintWriter pw = CSVFileReadWrite.writer(csv)){
             list.stream().forEach(pw::println);   

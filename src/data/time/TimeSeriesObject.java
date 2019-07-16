@@ -155,4 +155,12 @@ public class TimeSeriesObject {
                         .distinct()
                         .collect(Collectors.toList());
     }
+    
+    public List<String> upperExt(String date){
+        return series.keySet().stream()
+                        .filter(d -> Integer.valueOf(d.split("#")[0]) > Integer.valueOf(date.split("#")[0]))
+                        .map(d -> d.split("#")[0])
+                        .distinct()
+                        .collect(Collectors.toList());
+    }
 }

@@ -54,7 +54,7 @@ public class SimpleExporter {
         //headers.put("KOMTRAX_ERROR.CODE", LOADER.index("KOMTRAX_ERROR", "ERROR_CODE"));
         
         //フィルタ設定　定期メンテナンス
-        simplefilter = "トランジスタ";
+        simplefilter = "6754-41-1120";
         
         System.out.println(headers);
 
@@ -67,7 +67,7 @@ public class SimpleExporter {
         //multiExport("ExportData_Multi_"+names.length+".csv", headers, names, filter);
         
         //全部
-        allExport("ExportData_"+KISY+"_ALL_ev.csv", headers);
+        allExport("ExportData_"+KISY+"_ALL_6754-41-1120.csv", headers);
     }
 
     private static void allExport(String f, Map<String, Integer> headers) {
