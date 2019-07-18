@@ -5,7 +5,7 @@
  */
 package axg.form.item;
 
-import analizer.SyaryoAnalizer;
+import axg.form.util.FormalizeUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +34,7 @@ public class FormNew {
             if (news.isEmpty()) {
                 news = null;
             } else {
-                deff = Math.abs(SyaryoAnalizer.time(news.keySet().stream().findFirst().get(), deploy.keySet().stream().findFirst().get())) / 30;
+                deff = Math.abs(FormalizeUtils.dsub(news.keySet().stream().findFirst().get(), deploy.keySet().stream().findFirst().get())) / 30;
             }
             }catch(Exception e){
                 System.err.println(news);

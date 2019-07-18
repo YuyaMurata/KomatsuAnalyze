@@ -56,7 +56,7 @@ public class FormWork {
         }
 
         //代表作業抽出と設定
-        int daihyoIdx = indexList.indexOf("DIHY_SGYO_FLG");
+        /*int daihyoIdx = indexList.indexOf("DIHY_SGYO_FLG");
         int sgcdIdx = indexList.indexOf("SGYOCD");
         int sgnmIdx = indexList.indexOf("SGYO_NM");
         work.entrySet().stream()
@@ -68,23 +68,24 @@ public class FormWork {
                             .filter(e -> e.getValue().get(sgnmIdx).equals(w.getValue().get(sgnmIdx)))
                             .forEach(e -> map.get(e.getKey()).set(daihyoIdx, "1"));
                 });
-
+        */
+        
         Integer[] kosu = new Integer[]{
-            indexList.indexOf("HJUN_KOS"),
-            indexList.indexOf("INV_KOS"),
-            indexList.indexOf("SIJI_KOS")
+            indexList.indexOf("作業.標準工数"),
+            indexList.indexOf("作業.請求工数"),
+            indexList.indexOf("作業.指示工数")
         };
-        int price = indexList.indexOf("SKKG");
+        int price = indexList.indexOf("作業.請求金額");
 
         //工数・金額の整形処理
         for (String sbn : map.keySet()) {
             List<String> list = map.get(sbn);
             for (int i : kosu) {
-                if (!list.get(i).equals("None")) {
+                if (!list.get(i).equals("")) {
                     list.set(i, String.valueOf(Double.valueOf(list.get(i)).floatValue()));
                 }
             }
-            if (!list.get(price).equals("None")) {
+            if (!list.get(price).equals("")) {
                 list.set(price, String.valueOf(Double.valueOf(list.get(price)).intValue()));
             }
         }
