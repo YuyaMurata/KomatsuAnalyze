@@ -85,10 +85,11 @@ public class SyaryoObjectFormatting {
 
         //部品
         syaryo.setData("部品", FormParts.form(syaryo.getData("部品"), sbnList, header.getIndex("部品"), rule.getPARTSID()));
-/*
-        //SMR
-        syaryo.setData("SMR", FormSMR.form(syaryo.getData("SMR"), header.getIndex("SMR")));
 
+        //SMR
+        syaryo.setData("SMR", FormSMR.form(syaryo.getData("SMR"), header.getIndex("SMR"), syaryo.getName().split("-")[3]));
+        
+        /*
         //AS 解約、満了情報が残っているため修正
         syaryo.setData("オールサポート", FormAllSurpport.form(syaryo.getData("オールサポート"), header.getIndex("オールサポート")));
 

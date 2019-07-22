@@ -5,7 +5,6 @@
  */
 package axg.form.item;
 
-import static creator.form.SyaryoObjectFormatting.currentKey;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -17,31 +16,31 @@ import java.util.stream.Collectors;
  */
 public class FormSMR {
     //サービスのSMRを整形
-    public static Map form(Map<String, List<String>> smr, List indexList) {
+    public static Map form(Map<String, List<String>> smr, List indexList, String checkNumber) {
         if (smr == null) {
             //System.out.println("Not found Work!");
             return null;
         }
-
-        int smridx = indexList.indexOf("VALUE");
-        String checkNumber = currentKey.split("-")[2].substring(0, currentKey.split("-")[2].length() - 1);
+        
+        int db = indexList.indexOf("SMR.DB");
+        int smridx = indexList.indexOf("SMR.サービスメータ");
 
         //日付重複除去
         List<String> dateList = smr.keySet().stream()
-                .filter(s -> !s.contains("None")) //日付が存在しない
+                .filter(s -> !s.equals("")) //日付が存在しない
                 .map(s -> s.split("#")[0])
                 .distinct()
                 .collect(Collectors.toList());
-
+        
         Map<String, List<String>> map = new TreeMap();
-        Boolean zeroflg = false;
+        //Boolean zeroflg = false;
         for (String date : dateList) {
             String stdate = date;
 
             //重複日付を取り出す
             List<String> dateGroup = smr.keySet().stream()
                     .filter(s -> s.contains(stdate))
-                    .filter(s -> !smr.get(s).get(smridx).equals("None")) //SMRが存在しない
+                    .filter(s -> !smr.get(s).get(smridx).equals("")) //SMRが存在しない
                     .filter(s -> !smr.get(s).get(smridx).equals("999")) //怪しい数値の削除
                     .filter(s -> !smr.get(s).get(smridx).equals("9999")) //怪しい数値の削除
                     .filter(s -> !smr.get(s).get(smridx).equals(checkNumber)) //怪しい数値の削除
@@ -57,33 +56,28 @@ public class FormSMR {
             }
 
             for (String dg : dateGroup) {
-                List list = smr.get(dg);
-
+                List<String> list = smr.get(dg);
+                if(list.get(db).contains("KOMTRAX")){
+                    list.set(smridx, String.valueOf(Double.valueOf(list.get(smridx))/60));
+                }
+                    
                 if (map.get(date) == null) {
                     map.put(date, list);
                 } else {
-                    if (Float.valueOf(map.get(date).get(smridx)) < Float.valueOf(list.get(smridx).toString())) {
+                    if (Double.valueOf(map.get(date).get(smridx)) < Double.valueOf(list.get(smridx))) {
                         map.put(date, list);
                     }
                 }
-            }
-
-            //整形処理
-            map.get(date).set(smridx, map.get(date).get(smridx).split("\\.")[0]);
-            if (map.get(date).get(smridx).equals("0")) {
-                if (zeroflg) {
-                    map.remove(date);
-                } else {
-                    zeroflg = true;
-                }
+                
+                //整数値に変換
+                list.set(smridx, String.valueOf(Double.valueOf(list.get(smridx)).intValue()));
             }
         }
-
+        
         if (map.isEmpty()) {
             return null;
         }
 
-        //異常データの排除
         return map;
     }
 }

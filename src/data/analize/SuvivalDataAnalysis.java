@@ -28,7 +28,7 @@ public class SuvivalDataAnalysis {
         try (PrintWriter pw = CSVFileReadWrite.writerSJIS("PC200_suvivaldata.csv")) {
             pw.println("SID,ADMIT_D,FOLD_D,Y,SMR,FSTAT,AGE");
             map.values().stream().forEach(s -> {
-                TimeSeriesObject t = new TimeSeriesObject(s, key, target);
+                TimeSeriesObject t = new TimeSeriesObject(new SyaryoAnalizer(s, false), key, target);
 
                 try (SyaryoAnalizer a = new SyaryoAnalizer(s, true)) {
                     if (!t.series.isEmpty()) {

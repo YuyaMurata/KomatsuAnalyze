@@ -29,8 +29,8 @@ public class RejectCheck {
             LOADER.getSyaryoMap().values().forEach(s -> {
                 try (SyaryoAnalizer a = new SyaryoAnalizer(s, true)) {
                     if (a.numAccident == 0) {
-                        List<String> r = a.rejectManiteData();
-                        r.stream().forEach(pw::println);
+                        //List<String> r = a.rejectManiteData();
+                        //r.stream().forEach(pw::println);
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
