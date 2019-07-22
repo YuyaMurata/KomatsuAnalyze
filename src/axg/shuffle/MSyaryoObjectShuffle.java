@@ -35,6 +35,7 @@ public class MSyaryoObjectShuffle {
 
         //テンプレート生成
         //createLayoutHeader(index);
+        
         //シャッフル
         shuffle();
     }
@@ -94,7 +95,6 @@ public class MSyaryoObjectShuffle {
         MHeaderObject newheaderobj = mongo2.getHeader();
         
         //List<String> sids = mongo.getKeyList();
-
         //sids.stream().limit(10).forEach(sid -> {
             MSyaryoObject obj = mongo.getObj("PC200-10- -452437"); //"PC200-10- -452437"
             Map<String, Map<String, List<String>>> map = new LinkedHashMap();

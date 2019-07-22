@@ -82,10 +82,10 @@ public class SyaryoObjectFormatting {
         
         //作業
         syaryo.setData("作業", FormWork.form(syaryo.getData("作業"), sbnList, header.getIndex("作業"), rule.getWORKID()));
-/*
+
         //部品
         syaryo.setData("部品", FormParts.form(syaryo.getData("部品"), sbnList, header.getIndex("部品"), rule.getPARTSID()));
-
+/*
         //SMR
         syaryo.setData("SMR", FormSMR.form(syaryo.getData("SMR"), header.getIndex("SMR")));
 

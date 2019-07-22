@@ -26,12 +26,7 @@ public class FormWork {
         Map<String, List<String>> map = new LinkedHashMap();
 
         int db = indexList.indexOf("作業.作業(KOMPAS)");
-        
-        //削除される情報を抽出
-        //work.keySet().stream().filter(k -> !odrSBN.contains(k.split("#")[0])).forEach(k ->{
-        //    String s = SyaryoObjectFormatting.currentKey+","+k+","+String.join(",", work.get(k));
-        //    SyaryoObjectFormatting.w.add(s);
-        //});
+        int cd = indexList.indexOf("作業.作業コード");
         
         for (Object sbn : odrSBN) {
             //重複作番を取り出す
@@ -51,25 +46,11 @@ public class FormWork {
                         .forEach(s -> map.put(s, work.get(s)));
             } else {
                 sbnGroup.stream()
+                        .filter(s -> !work.get(s).get(cd).equals("")) //作業コードが存在しないときは削除
                         .forEach(s -> map.put(s, work.get(s)));
             }
         }
 
-        //代表作業抽出と設定
-        /*int daihyoIdx = indexList.indexOf("DIHY_SGYO_FLG");
-        int sgcdIdx = indexList.indexOf("SGYOCD");
-        int sgnmIdx = indexList.indexOf("SGYO_NM");
-        work.entrySet().stream()
-                .filter(w -> w.getValue().get(daihyoIdx).equals("1"))
-                .forEach(w -> {
-                    map.entrySet().stream()
-                            .filter(e -> e.getKey().contains(w.getKey().split("#")[0]))
-                            .filter(e -> e.getValue().get(sgcdIdx).equals(w.getValue().get(sgcdIdx)))
-                            .filter(e -> e.getValue().get(sgnmIdx).equals(w.getValue().get(sgnmIdx)))
-                            .forEach(e -> map.get(e.getKey()).set(daihyoIdx, "1"));
-                });
-        */
-        
         Integer[] kosu = new Integer[]{
             indexList.indexOf("作業.標準工数"),
             indexList.indexOf("作業.請求工数"),

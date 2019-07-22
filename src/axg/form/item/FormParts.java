@@ -28,13 +28,8 @@ public class FormParts {
 
         Map<String, List<String>> map = new LinkedHashMap();
 
-        int db = indexList.indexOf("DB");
-        
-        //削除される情報を抽出
-        //parts.keySet().stream().filter(k -> !odrSBN.contains(k.split("#")[0])).forEach(k ->{
-        //    String s = SyaryoObjectFormatting.currentKey+","+k+","+String.join(",", parts.get(k));
-        //    SyaryoObjectFormatting.p.add(s);
-        //});
+        int db = indexList.indexOf("部品.部品(KOMPAS)");
+        int cd = indexList.indexOf("部品.品番");
 
         for (Object sbn : odrSBN) {
             //重複作番を取り出す
@@ -45,33 +40,49 @@ public class FormParts {
             //KOMPAS 部品情報が存在するときは取り出す
             Optional<List<String>> kom = sbnGroup.stream()
                     .map(s -> parts.get(s))
-                    .filter(l -> l.get(db).equals("parts"))
+                    .filter(l -> l.get(db).equals("部品(KOMPAS)"))
                     .findFirst();
             if (kom.isPresent()) {
                 sbnGroup.stream()
-                        .filter(s -> !parts.get(s).get(db).equals("service"))
+                        .filter(s -> !parts.get(s).get(db).equals("サービス経歴(KOMPAS)"))
                         .forEach(s -> map.put(s, parts.get(s)));
             } else {
                 sbnGroup.stream()
+                        .filter(s -> !parts.get(s).get(cd).equals(""))
                         .forEach(s -> map.put(s, parts.get(s)));
             }
         }
 
-        int quant = indexList.indexOf("JISI_SU");
-        int price = indexList.indexOf("SKKG");
-        List cancel = new ArrayList();
+        int quant = indexList.indexOf("部品.受注数量");
+        int cancel = indexList.indexOf("部品.キャンセル数量");
+        int price = indexList.indexOf("部品.請求金額");
+        List<String> cancels = new ArrayList();
         //金額の整形処理・キャンセル作番の削除
         for (String sbn : map.keySet()) {
             List<String> list = map.get(sbn);
-            if (list.get(quant).equals("0")) {
-                cancel.add(sbn);
+
+            //サービス経歴から持ってきた情報は処理しない
+            if (!list.get(quant).equals("")) {
+                Integer q = Integer.valueOf(list.get(quant));
+                Integer c = Integer.valueOf(list.get(cancel).equals("") ? "0" : list.get(cancel));
+                if (q.equals(c)) {
+                    cancels.add(sbn);
+                } else {
+                    if (c > q) {
+                        System.err.println(sbn + ":" + q + ", cancel=" + c);
+                        System.exit(0);
+                    }
+
+                    list.set(quant, String.valueOf(q - c));
+                    list.set(cancel, "0");
+                }
             }
 
-            if (!list.get(price).equals("None")) {
+            if (!list.get(price).equals("")) {
                 list.set(price, String.valueOf(Double.valueOf(list.get(price)).intValue()));
             }
         }
-        cancel.stream().forEach(s -> map.remove(s));
+        cancels.stream().forEach(s -> map.remove(s));
 
         return map;
     }
