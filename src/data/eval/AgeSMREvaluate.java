@@ -6,6 +6,7 @@
 package data.eval;
 
 import analizer.SyaryoAnalizer;
+import data.survival.KaplanMeier;
 import data.time.TimeSeriesObject;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,6 +61,9 @@ public class AgeSMREvaluate {
         });
         
         _eval = map;
+        
+        //Test
+        new KaplanMeier().analize(_eval);
         
         return map;
     }

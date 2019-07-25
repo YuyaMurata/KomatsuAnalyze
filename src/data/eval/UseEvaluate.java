@@ -27,7 +27,7 @@ import obj.SyaryoObject;
 public class UseEvaluate extends EvaluateTemplate {
 
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
-    private static Integer R = 3;
+    private static Integer R = 5;
     private static Boolean flg = true;
 
     public UseEvaluate() {
@@ -67,9 +67,8 @@ public class UseEvaluate extends EvaluateTemplate {
             return null;
         }
 
-        //トルク10の値を削除  0=VALUE
+        //  0=VALUE
         Map<String, Double> data = map.entrySet().stream()
-                .filter(e -> !e.getKey().split("_")[1].contains("10"))
                 .collect(Collectors.toMap(e -> e.getKey(), e -> Double.valueOf(e.getValue().get(0))));
 
         //PEEK DESC RANK
@@ -109,8 +108,8 @@ public class UseEvaluate extends EvaluateTemplate {
                         i -> cluster.entrySet().stream()
                                 .filter(c -> c.getValue().equals(i))
                                 .flatMap(c -> data.get(c.getKey()).stream()
-                                .filter(d -> d == 1d)
-                                .map(d -> data.get(c.getKey()).indexOf(d))
+                                    .filter(d -> d == 1d)
+                                    .map(d -> data.get(c.getKey()).indexOf(d))
                                 ).map(d -> header(key).get(d).split("_"))
                                 .mapToDouble(h -> -Double.valueOf(h[0]) * Double.valueOf(h[1])) //ヘッダ情報を利用し右下に行くほど評価値が下がる用に評価
                                 .average().getAsDouble()
