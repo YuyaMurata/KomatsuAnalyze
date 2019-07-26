@@ -25,8 +25,8 @@ public class FormDead {
         for (String d : dead.keySet()) {
             if (!d.equals("")) {
                 //System.out.println(d);
-                if (Integer.valueOf(date) < Integer.valueOf(d)) {
-                    date = d;
+                if (Integer.valueOf(date) < Integer.valueOf(d.split("#")[0])) {
+                    date = d.split("#")[0];
                 }
             }
         }

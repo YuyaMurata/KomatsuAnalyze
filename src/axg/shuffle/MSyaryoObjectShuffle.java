@@ -94,9 +94,9 @@ public class MSyaryoObjectShuffle {
         mongo2.coll.insertOne(recreateHeaderObj());
         MHeaderObject newheaderobj = mongo2.getHeader();
         
-        //List<String> sids = mongo.getKeyList();
-        //sids.stream().limit(10).forEach(sid -> {
-            MSyaryoObject obj = mongo.getObj("PC200-10- -452437"); //"PC200-10- -452437"
+        List<String> sids = mongo.getKeyList();
+        sids.stream().forEach(sid -> {
+            MSyaryoObject obj = mongo.getObj(sid); //"PC200-10- -452437"
             Map<String, Map<String, List<String>>> map = new LinkedHashMap();
 
             System.out.println(obj.getName());
@@ -127,10 +127,10 @@ public class MSyaryoObjectShuffle {
             //mongo2.getHeader().print();
             sobjf.form(newheaderobj, newobj);
             newobj.recalc();
-            newobj.print();
+            //newobj.print();
 
             mongo2.coll.insertOne(newobj);
-        //});
+        });
 
         mongo2.close();
         mongo.close();

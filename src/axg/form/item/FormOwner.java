@@ -47,7 +47,7 @@ public class FormOwner {
         List owners = owner.values().stream()
                 .map(l -> l.get(ownerID))
                 .filter(id -> !id.contains("##")) //工場IDが振られていない
-                .filter(id -> !id.equals("None")) //IDが存在する
+                .filter(id -> !id.equals("")) //IDが存在する
                 .collect(Collectors.toList());
         //System.out.println(owners);
         owners = SyaryoObjectFormatting.exSeqDuplicate(owners);

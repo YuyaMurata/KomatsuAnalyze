@@ -29,9 +29,10 @@ public class FormOrder {
         //日付ソート
         int date = indexList.indexOf("受注.受注日");
         //System.out.println(order);
-
+        
         Map<String, Integer> sortMap = order.entrySet().stream()
-                .filter(e -> Integer.valueOf(reject.getNew()) <= Integer.valueOf(e.getValue().get(date)))
+                .filter(e -> !e.getValue().get(date).equals(""))  //受注日が空の場合無視
+                .filter(e -> Integer.valueOf(reject.getNew()) <= Integer.valueOf(e.getValue().get(date)))  //納入前受注情報の削除
                 .collect(Collectors.toMap(e -> e.getKey(), e -> Integer.valueOf(e.getValue().get(date))));
 
         //作番重複除去

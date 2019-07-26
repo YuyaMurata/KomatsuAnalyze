@@ -89,13 +89,12 @@ public class SyaryoObjectFormatting {
         //SMR
         syaryo.setData("SMR", FormSMR.form(syaryo.getData("SMR"), header.getIndex("SMR"), syaryo.getName().split("-")[3]));
         
-        /*
         //AS 解約、満了情報が残っているため修正
         syaryo.setData("オールサポート", FormAllSurpport.form(syaryo.getData("オールサポート"), header.getIndex("オールサポート")));
-
+        
         //Komtrax 紐づいていないことを考慮する
-        //newMap.putAll(FormKomtrax.form(syaryo, newMap.get("出荷")));
-        */
+        FormKomtrax.form(syaryo);
+       
     }
 
     //キーをまとめて整形

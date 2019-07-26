@@ -22,6 +22,8 @@ public class FormUsed {
             return null;
         }
         
+        newd = newd.split("#")[0];
+        
         //NU区分でUだけ残す
         int nu = indexList.indexOf("中古車.ＮＵ区分");
         used = used.entrySet().stream()
@@ -38,7 +40,7 @@ public class FormUsed {
         //修正しない
         if (used.size() == 1) {
             //KUEC売却後、使用ユーザー存在しない
-            if (kuec.size() > 0 || (Integer.valueOf(used.keySet().stream().findFirst().get()) <= Integer.valueOf(newd))) {
+            if (kuec.size() > 0 || (Integer.valueOf(used.keySet().stream().findFirst().get().split("#")[0]) <= Integer.valueOf(newd))) {
                 return null;
             }
 
@@ -94,7 +96,7 @@ public class FormUsed {
         for (String d : map.keySet()) {
             List list = map.get(d);
             for (int i = hyomen; i < hyomen + 3; i++) {
-                if (!list.get(i).toString().equals("None")) {
+                if (!list.get(i).toString().equals("")) {
                     list.set(i, String.valueOf(Double.valueOf(list.get(i).toString().replace("_", "")).intValue()));
                 }
             }

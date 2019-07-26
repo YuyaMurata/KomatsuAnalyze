@@ -22,12 +22,12 @@ import java.util.stream.Collectors;
 public class FormKomtrax {
 
     //KOMTRAXデータの整形 (値の重複除去、日付の整形、小数->整数)
-    public static void form(MSyaryoObject syaryo, Map<String, List<String>> deploy) {
+    public static void form(MSyaryoObject syaryo) {
         List<String> kmList = syaryo.getMap().keySet().stream().filter(k -> k.contains("KOMTRAX_")).collect(Collectors.toList());
         if(kmList.isEmpty())
             return ;
         
-        String stdate = deploy.keySet().stream().findFirst().get();
+        String stdate = syaryo.getData("出荷").keySet().stream().findFirst().get();
         
         for (String id : kmList) {
             if (syaryo.getData(id) == null) {
@@ -56,7 +56,7 @@ public class FormKomtrax {
                         if (newMap.get(d) == null) {
                             newMap.put(d, value);
                         } else {
-                            Integer dup = Integer.valueOf(newMap.get(d).get(0).toString()) + Integer.valueOf(value.get(0).toString());
+                            Integer dup = Integer.valueOf(newMap.get(d).get(0)) + Integer.valueOf(value.get(0).toString());
                             newMap.get(d).set(0, dup.toString());
                         }
                     } else {

@@ -22,7 +22,7 @@ public class FormDeploy {
         String id = name.split("-")[0] + "-" + name.split("-")[2];
 
         if (deploy != null) {
-            if (deploy.containsKey("None")) {
+            if (deploy.containsKey("")) {
                 map.put(pdate, Arrays.asList(new String[]{pdate}));
             } else {
                 map.putAll(deploy);

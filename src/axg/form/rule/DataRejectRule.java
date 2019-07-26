@@ -20,7 +20,7 @@ public class DataRejectRule {
     }
     
     public void addNew(String nd){
-        this.newd = nd;
+        this.newd = nd.split("#")[0];
     }
     
     List kuec = new ArrayList();
@@ -31,7 +31,7 @@ public class DataRejectRule {
     List kuec_ids = KomatsuDataParameter.KUEC_LIST;
     public Boolean addKUEC(String id, String date){
         if(kuec_ids.contains(id)){
-            kuec.add(date);
+            kuec.add(date.split("#")[0]);
             return true;
         }
         return false;
