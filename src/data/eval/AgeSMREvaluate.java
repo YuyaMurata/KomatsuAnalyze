@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 import obj.SyaryoLoader;
 
 /**
@@ -32,8 +33,8 @@ public class AgeSMREvaluate {
 
     private void setHeader() {
         _header = new HashMap<>();
-        _header.put("Age/SMR",
-                Arrays.asList(new String[]{"メンテナンスCID", "使われ方CID", "ADMIT_D", "FOLD_D", "Y", "SMR", "FSTAT", "AGE"})
+        _header.put("経年/SMR",
+                Arrays.asList(new String[]{"メンテナンスCID", "使われ方CID", "ADMIT_D", "FOLD_D", "Y", "SMR", "FSTAT", "AGE", "経年_SMRCID"})
         );
     }
 
@@ -60,11 +61,21 @@ public class AgeSMREvaluate {
             }
         });
         
-        _eval = map;
+        //故障率評価
+        KaplanMeier kmm = new KaplanMeier();
+        kmm.analize(map);
+        _eval = kmm.results;
         
-        //Test
-        new KaplanMeier().analize(_eval);
-        
+        return _eval;
+    }
+    
+    public Map<String, Integer> scoring(){
+        //評価結果からスコアを取りだす
+        Map map = _eval.entrySet().stream()
+                            .collect(Collectors.toMap(
+                                    e -> e.getKey(), 
+                                    e -> Integer.valueOf(e.getValue().get(e.getValue().size()-1)))
+                            );
         return map;
     }
 }

@@ -19,7 +19,8 @@ import java.util.TreeMap;
  * @author ZZ17807
  */
 public class KaplanMeier {
-
+    public Map<String, List<String>> results = new HashMap<>();
+    
     public void analize(Map<String, List<String>> data) {
         int idx_m = 0;
         int idx_u = 1;
@@ -37,14 +38,23 @@ public class KaplanMeier {
             if (group.get(key) == null) {
                 group.put(key, new HashMap<>());
             }
+            
             group.get(key).put(sid, Arrays.asList(new String[]{smr, fstat}));
         });
 
         //グループごとの故障率
-        group.entrySet().stream().forEach(g -> km(g.getKey(), g.getValue()));
+        Map<String, List<String>> map = new TreeMap<>();
+        group.entrySet().stream().forEach(g -> map.putAll(km(g.getKey(), g.getValue())));
+        map.entrySet().stream().forEach(e ->{
+            String s = e.getValue().get(e.getValue().size()-1);
+            List<String> d = new ArrayList(data.get(e.getKey()));
+            d.add(s);
+            
+            results.put(e.getKey(), d);
+        });
     }
     
-    public Map<String, List<String>> km(String gkey, Map<String, List<String>> g) {
+    private Map<String, List<String>> km(String gkey, Map<String, List<String>> g) {
         Map<Integer, List<String>> m = new TreeMap<>();
         g.entrySet().stream()
                 .forEach(e -> {
@@ -75,14 +85,47 @@ public class KaplanMeier {
             
             acm += cnt;
             
-            fail.put(smr, acm.doubleValue() / rem.doubleValue());
+            Double rate = acm.doubleValue() / rem.doubleValue();
+            fail.put(smr, rate);
         }
         
-        //Test
+        //故障率データ出力
         try(PrintWriter pw = CSVFileReadWrite.writerSJIS(gkey+"_test.csv")){
             fail.entrySet().stream().map(df -> df.getKey()+","+df.getValue()).forEach(pw::println);
         }
         
-        return null;
+        //スコアリング
+        Map result = scoring(g, fail);
+        
+        return result;
+    }
+    
+    private Map scoring(Map<String, List<String>> g, Map<Integer, Double> fail){
+        Map<String, List<String>> result = new HashMap<>();
+        
+        int gidx_smr = 0;
+        int gidx_fstat = 1;
+        
+        g.entrySet().stream().forEach(e ->{
+            String sid = e.getKey();
+            String fstat = e.getValue().get(gidx_fstat);
+            Integer smr = Integer.valueOf(e.getValue().get(gidx_smr));
+            List<String> list = new ArrayList<>(e.getValue());
+            
+            //スコアリング
+            if(fstat.equals("0")){
+                list.add("3");
+            }else{
+                Double rate = fail.get(smr);
+                if(rate < 0.5d)
+                    list.add("1");
+                else
+                    list.add("2");
+            }
+            
+            result.put(sid, list);
+        });
+        
+        return result;
     }
 }

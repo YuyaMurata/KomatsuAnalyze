@@ -28,6 +28,10 @@ public class EvaluateSyaryo {
     private static String KISY = "PC200";
     private static Integer C = 3;
 
+    public static List<String> header(){
+        return Arrays.asList(new String[]{"メンテナンスCID", "使われ方CID", "経年_SMRCID"});
+    }
+    
     public static void evalSyaryoMap(Map<String, SyaryoObject> map) {
         Map<String, Integer> rm = mainte(map);
         Map<String, Integer> ru = use(map);
@@ -38,8 +42,15 @@ public class EvaluateSyaryo {
                         r -> Arrays.asList(new Integer[]{r.getValue(), ru.get(r.getKey())})
                 ));
         
-        Map<String, List<String>> results = agesmr(cids);
-        fprint(KISY+"_評価結果.csv", AgeSMREvaluate._header.get("Age/SMR"), results);
+        Map<String, Integer> ras = agesmr(cids);
+        
+        Map<String, List<String>> cidResult = ras.entrySet().stream()
+                .collect(Collectors.toMap(
+                        r -> r.getKey(), 
+                        r -> Arrays.asList(new String[]{rm.get(r.getKey()).toString(), ru.get(r.getKey()).toString(), r.getValue().toString()})
+                ));
+        
+        fprint(KISY+"_評価結果.csv", header(), cidResult);
     }
     
     private static Map<String, Integer> clustering(String str, String file, List<String> sids){
@@ -83,20 +94,24 @@ public class EvaluateSyaryo {
         return result;
     }
     
-    private static Map<String, List<String>> agesmr(Map map) {
-        //Age/SMR 評価
+    private static Map<String, Integer> agesmr(Map map) {
+        //経年/SMR 評価
         Long start = System.currentTimeMillis();
         AgeSMREvaluate eval = new AgeSMREvaluate();
         eval.evaluate(map, "受注", "");
         Long evalstop = System.currentTimeMillis();
-        System.out.println("Age/SMR 評価完了　: "+(evalstop-start)+" [ms]");
+        System.out.println("経年/SMR 評価完了　: "+(evalstop-start)+" [ms]");
         
-        return eval._eval;
+        fprint(KISY + "_agesmr_eval.csv", AgeSMREvaluate._header.get("経年/SMR"), eval._eval);
+        
+        Map<String, Integer> result = eval.scoring();
+        
+        return result;
     }
     
     private static Map<String, Integer> use(Map map) {
-        //String key = "LOADMAP_実エンジン回転VSエンジントルク";
-        String key = "LOADMAP_エンジン水温VS作動油温";
+        String key = "LOADMAP_実エンジン回転VSエンジントルク";
+        //String key = "LOADMAP_エンジン水温VS作動油温";
         Long start = System.currentTimeMillis();
         UseEvaluate eval = new UseEvaluate();
         eval.evaluate(key, map);
