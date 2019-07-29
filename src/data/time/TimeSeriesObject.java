@@ -113,10 +113,7 @@ public class TimeSeriesObject {
     }
     
     public Boolean isEmpty(){
-        if(series.isEmpty())
-            return true;
-        else
-            return false;
+        return series.isEmpty();
     }
 
     public Map<String, String> komtraxErrorToSeries(SyaryoAnalizer s, String target) {

@@ -65,33 +65,34 @@ public class KaplanMeier {
                     m.get(smr).add(e.getKey());
                 });
 
-        //故障率
+        //カプラン・マイヤー法
         Map<Integer, Double> fail = new TreeMap<>();
-        Long acm = 0L;
+        Map<Integer, Integer> count = new TreeMap<>();
+        Double before = 1d;
         for (Integer smr : m.keySet()) {
             if (fail.get(smr) == null) {
                 fail.put(smr, 0d);
             }
             
-            Long cnt = m.get(smr).stream()
-                    .filter(sid -> g.get(sid).get(1).equals("1"))
-                    .count();
+            Double dead = Double.valueOf(m.get(smr).stream()
+                            .filter(sid -> g.get(sid).get(1).equals("1"))
+                            .count());
             
-            Long rem = m.entrySet().stream()
-                            .mapToLong(e -> e.getValue().stream()
-                                            .filter(sid -> e.getKey() >= smr || g.get(sid).get(1).equals("1"))
-                                            .count())
-                            .sum();
+            Double total = Double.valueOf(m.entrySet().stream()
+                                .filter(e -> e.getKey() >= smr)
+                                .mapToInt(e -> e.getValue().size())
+                                .sum());
             
-            acm += cnt;
+            Double surv = before * (total - dead) / total;
+            before = surv;
             
-            Double rate = acm.doubleValue() / rem.doubleValue();
-            fail.put(smr, rate);
+            fail.put(smr, 1d - surv);
+            count.put(smr, total.intValue());
         }
         
         //故障率データ出力
         try(PrintWriter pw = CSVFileReadWrite.writerSJIS(gkey+"_test.csv")){
-            fail.entrySet().stream().map(df -> df.getKey()+","+df.getValue()).forEach(pw::println);
+            fail.entrySet().stream().map(df -> df.getKey()+","+count.get(df.getKey())+","+df.getValue()).forEach(pw::println);
         }
         
         //スコアリング
@@ -116,8 +117,8 @@ public class KaplanMeier {
             if(fstat.equals("0")){
                 list.add("3");
             }else{
-                Double rate = fail.get(smr);
-                if(rate < 0.5d)
+                Double surv = fail.get(smr);
+                if(surv < 0.5d)
                     list.add("1");
                 else
                     list.add("2");
