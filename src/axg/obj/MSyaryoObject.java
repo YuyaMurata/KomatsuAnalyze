@@ -97,6 +97,14 @@ public class MSyaryoObject {
             this.map.remove(key);
     }
     
+    public void remove(String key){
+        if(this.map.get(key) == null)
+            return ;
+            
+        if(this.map.get(key).isEmpty())
+            this.map.remove(key);
+    }
+    
     public void recalc(){
         this.count = this.map.entrySet().stream()
                             .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().size()));

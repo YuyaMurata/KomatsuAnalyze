@@ -95,6 +95,7 @@ public class SyaryoObjectFormatting {
         //Komtrax 紐づいていないことを考慮する
         FormKomtrax.form(syaryo);
        
+        removeEmptyObject(syaryo);
     }
 
     //キーをまとめて整形
