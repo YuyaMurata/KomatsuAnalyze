@@ -14,7 +14,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import obj.SyaryoLoader;
@@ -35,7 +36,7 @@ public class UseEvaluate extends EvaluateTemplate {
             SyaryoObject s = LOADER.getSyaryoMap().get("PC200-10-454720"); //ヘッダー取得用車両
             setHeader("LOADMAP_実エンジン回転VSエンジントルク", new ArrayList<>(s.get("LOADMAP_実エンジン回転VSエンジントルク").keySet()));
             setHeader("LOADMAP_エンジン水温VS作動油温", new ArrayList<>(s.get("LOADMAP_エンジン水温VS作動油温").keySet()));
-            flg = false;
+            //flg = false;
         }
     }
 
@@ -44,7 +45,7 @@ public class UseEvaluate extends EvaluateTemplate {
         Map norm = header(key).stream()
                 .collect(Collectors.toMap(
                         h -> h,
-                        h -> aggregatedata.get(key).contains(h) ? 1d : 0d,
+                        h -> aggregatedata.get(key).contains(h) ? 5-aggregatedata.get(key).indexOf(h) : 0d,
                         (h1, h2) -> h1,
                         LinkedHashMap::new
                 ));
@@ -73,6 +74,9 @@ public class UseEvaluate extends EvaluateTemplate {
 
         //PEEK DESC RANK
         List<String> peekRank = rank(data, R);
+        
+        //TORQUE
+        //List<String> torque = header("LOADMAP_実エンジン回転VSエンジントルク").stream().map(h -> data.get(h).toString()).collect(Collectors.toList());
 
         return peekRank;
     }
@@ -96,6 +100,14 @@ public class UseEvaluate extends EvaluateTemplate {
         return data.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).limit(R)
                 .map(e -> e.getKey()).collect(Collectors.toList());
+    }
+    
+    public List<Double> getdata(String key, SyaryoAnalizer s){
+        Map<String, Double> data = s.get(key).entrySet().stream()
+                .collect(Collectors.toMap(e -> e.getKey(), e -> Double.valueOf(e.getValue().get(0))));
+        List<Double> d = header(key).stream().map(h -> data.get(h)).collect(Collectors.toList());
+        
+        return d;
     }
 
     @Override
@@ -129,17 +141,25 @@ public class UseEvaluate extends EvaluateTemplate {
     }
 
     public static void main(String[] args) {
-        LOADER.setFile("PC200_form");
+        LOADER.setFile("PC200_loadmap");
         SyaryoAnalizer.rejectSettings(false, false, false);
-        SyaryoAnalizer s = new SyaryoAnalizer(LOADER.getSyaryoMap().get("PC200-10-450635"), true);
+        //SyaryoAnalizer s = new SyaryoAnalizer(LOADER.getSyaryoMap().get("PC200-10-450635"), true);
 
-        UseEvaluate use = new UseEvaluate();
+        //UseEvaluate use = new UseEvaluate();
 
-        String testkey = "LOADMAP_エンジン水温VS作動油温";
-        Map<String, List<String>> data = use.getdata(s);
-        Map<String, Double> result = use.evaluate(testkey, s);
-
-        data.entrySet().stream().forEach(d -> {
+        String testkey = "LOADMAP_実エンジン回転VSエンジントルク";
+        //Map<String, List<String>> data = use.getdata(s);
+        //Map<String, Double> result = use.evaluate(testkey, s);
+        
+        LOADER.getSyaryoMap().values().stream().forEach(s ->{
+            try(SyaryoAnalizer a = new SyaryoAnalizer(s, true)){
+                evalCSV_P1(a, "LOADMAP_実エンジン回転VSエンジントルク", null);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+        
+        /*data.entrySet().stream().forEach(d -> {
             System.out.println(d.getKey());
             System.out.println("  " + d.getValue());
             if (testkey.equals(d.getKey())) {
@@ -151,7 +171,55 @@ public class UseEvaluate extends EvaluateTemplate {
 
         //クラスタ用データ
         System.out.println("\n" + use.header(testkey));
-        System.out.println(use.getClusterData(testkey));
+        System.out.println(use.getClusterData(testkey));*/
+    }
+    
+    private static void evalCSV_P1(SyaryoAnalizer s, String key, PrintWriter pw){
+        UseEvaluate use = new UseEvaluate();
+        use.evaluate(key, s);
+        
+        try(PrintWriter csv = CSVFileReadWrite.writerSJIS("data\\"+s.name+"_"+key+".csv")){
+            csv.println(s.name);
+            
+            csv.println("元データ");
+            String[][] mat1 = matrix(use.header(key), use.getdata(key, s));
+            IntStream.range(0, mat1.length).boxed().map(i -> String.join(",", mat1[i])).forEach(csv::println);
+            csv.println();
+            
+            csv.println("正規化(ランク)");
+            String[][] mat2 = matrix(use.header(key), use.getClusterData(key).get(s.name));
+            IntStream.range(0, mat2.length).boxed().map(i -> String.join(",", mat2[i])).forEach(csv::println);
+            csv.println();
+            
+            csv.println("正規化(エンジン回転数集約)");
+            List<String> mat3 = IntStream.range(1, mat1[0].length).boxed()
+                                .map(i -> IntStream.range(1, mat1.length).boxed().mapToInt(j -> Integer.valueOf(mat1[j][i])).sum())
+                                .map(d -> d.toString())
+                                .collect(Collectors.toList());
+            csv.println(String.join(",", mat1[0]));
+            csv.println(","+String.join(",", mat3));
+        }
+    }
+    
+    private static String[][] matrix(List<String> h, List<Double> d){
+        List<String> x = h.stream().map(i -> Integer.valueOf(i.split("_")[0])).distinct().sorted().map(i -> i.toString()).collect(Collectors.toList());
+        List<String> y = h.stream().map(i -> Integer.valueOf(i.split("_")[1])).distinct().sorted().map(i -> i.toString()).collect(Collectors.toList());
+        String[][] mat = new String[x.size()+1][y.size()+1];
+        mat[0][0] = "";
+        
+        IntStream.range(0, h.size()).forEach(i ->{
+            String hi = h.get(i);
+            String di = String.valueOf(d.get(i).intValue());
+            
+            int xi = x.indexOf(hi.split("_")[0])+1;
+            int yi = y.indexOf(hi.split("_")[1])+1;
+            
+            mat[xi][0] = hi.split("_")[0];
+            mat[0][yi] = hi.split("_")[1];
+            mat[xi][yi] = di;
+        });
+        
+        return mat;
     }
 
     @Override

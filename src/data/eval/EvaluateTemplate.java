@@ -58,12 +58,7 @@ public abstract class EvaluateTemplate {
         return eval;
     }
     
-    public Map<String, List<String>> getdata(SyaryoAnalizer s){
-        //集約
-        Map<String, List<String>> data = aggregate(s);
-        
-        return data;
-    }
+    public abstract List<Double> getdata(String key, SyaryoAnalizer s);
     
     public Map<String, Map<String, Double>> evaluate(String key, Map<String, SyaryoObject> map){
         map.values().stream().forEach(s -> {
@@ -77,7 +72,7 @@ public abstract class EvaluateTemplate {
         return _eval;
     }
     
-    //データ取得
+    /*//データ取得
     public Map<String, Map<String, List<String>>> getdata(Map<String, SyaryoObject> map){
         Map<String, Map<String, List<String>>> eval = new TreeMap<>();
 
@@ -91,7 +86,7 @@ public abstract class EvaluateTemplate {
         });
 
         return eval;
-    }
+    }*/
     
     public Map<String, List<Double>> getClusterData(String key){
         Map<String, List<Double>> data = _eval.entrySet().stream()

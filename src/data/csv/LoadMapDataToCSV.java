@@ -38,17 +38,17 @@ public class LoadMapDataToCSV {
         System.out.println(dh);
 
         //CSV
-        /*f.stream().forEach(s -> {
+        f.stream().forEach(s -> {
             s.startHighPerformaceAccess();
             System.out.println(s.name);
             dh.stream().forEach(h -> {
                 csv(h, s);
             });
             s.stopHighPerformaceAccess();
-        });*/
-        dh.stream().forEach(h -> {
-            joincsv(h, f);
         });
+        /*dh.stream().forEach(h -> {
+            joincsv(h, f);
+        });*/
     }
 
     private static void joincsv(String key, List<SyaryoObject> slist) {
@@ -143,6 +143,5 @@ public class LoadMapDataToCSV {
                 pw.println((td ? String.join(",", id.split("_")) : id) + "," + load.get(id).get(LOADER.index(key, "VALUE")));
             }
         }
-
     }
 }

@@ -155,7 +155,7 @@ public class MainteEvaluate extends EvaluateTemplate {
 
         MainteEvaluate mainte = new MainteEvaluate();
 
-        Map<String, List<String>> data = mainte.getdata(s);
+        /*Map<String, List<String>> data = mainte.getdata(s);
         Map<String, Double> result = mainte.evaluate("メンテナンス", s);
 
         data.entrySet().stream().forEach(d -> {
@@ -163,9 +163,14 @@ public class MainteEvaluate extends EvaluateTemplate {
             System.out.println("  " + d.getValue());
             System.out.println("  " + result.get(d.getKey()));
         });
-
+        */
         //クラスタ用データ
         System.out.println("\n" + mainte.header("メンテナンス"));
         System.out.println(mainte.getClusterData("メンテナンス"));
+    }
+
+    @Override
+    public List<Double> getdata(String key, SyaryoAnalizer s) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
