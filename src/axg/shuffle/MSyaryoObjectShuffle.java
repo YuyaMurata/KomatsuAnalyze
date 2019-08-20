@@ -37,7 +37,7 @@ public class MSyaryoObjectShuffle {
         //createLayoutHeader(index);
         
         //シャッフル
-        shuffle();
+        //shuffle();
     }
 
     //シャッフル用ファイルを作成するための元ファイル作成
