@@ -44,6 +44,8 @@ public class AgeSMREvaluate {
             try (SyaryoAnalizer a = new SyaryoAnalizer(LOADER.getSyaryoMap().get(s.getKey()), true)) {
                 map.put(a.name, new ArrayList<>());
                 List<Integer> cids = s.getValue();
+                if(cids.contains(null))
+                    cids.set(1, 0);
                 
                 TimeSeriesObject t = new TimeSeriesObject(a, key, target);
                 

@@ -32,7 +32,7 @@ public class TimeVector {
         count.put("cause", 0);
         count.put("target", 0);
         
-        pw.println("target=カテゴリ1-1,cause=B@BCNS,dsmr100");
+        pw.println("target=カテゴリ1-1,cause=AA10NX,dsmr100");
         pw.println("SID,-100,"+IntStream.range(1, 22).boxed().map(i -> (i-1) * dsmr).map(v -> v.toString()).collect(Collectors.joining(",")));
         
         LOADER.setFile("PC200_form");
@@ -45,7 +45,7 @@ public class TimeVector {
                 //TimeSeriesObject t879EMC = new TimeSeriesObject(a, "KOMTRAX_ERROR", "879EMC");
                 
                 //エラーCA778
-                TimeSeriesObject cause1 = new TimeSeriesObject(a, "KOMTRAX_ERROR", "B@BCNS");
+                TimeSeriesObject cause1 = new TimeSeriesObject(a, "KOMTRAX_ERROR", "AA10NX");
                 if(!cause1.isEmpty())
                     count.put("cause", count.get("cause")+1);
                 

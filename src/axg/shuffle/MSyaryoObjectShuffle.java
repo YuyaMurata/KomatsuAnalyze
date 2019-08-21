@@ -37,7 +37,7 @@ public class MSyaryoObjectShuffle {
         //createLayoutHeader(index);
         
         //シャッフル
-        //shuffle();
+        shuffle();
     }
 
     //シャッフル用ファイルを作成するための元ファイル作成
@@ -95,7 +95,7 @@ public class MSyaryoObjectShuffle {
         MHeaderObject newheaderobj = mongo2.getHeader();
         
         List<String> sids = mongo.getKeyList();
-        sids.stream().forEach(sid -> {
+        sids.stream().filter(sid -> !sid.contains("E0")).forEach(sid -> {
             MSyaryoObject obj = mongo.getObj(sid); //"PC200-10- -452437"
             Map<String, Map<String, List<String>>> map = new LinkedHashMap();
 

@@ -51,8 +51,9 @@ public class FormKomtrax {
                 if (!tmp.equals(str)) {
                     List value = getTransformValue(id, syaryo.getData(id).get(date));
                     if (id.equals("KOMTRAX_SMR")) {
+                        value.set(0, String.valueOf(Integer.valueOf(value.get(0).toString())/60));
                         newMap.put(d, value);
-                    } else if (id.equals("KOMTRAX_ACT_DATA")) {  //ACT_DATAの構造が変わると使えない
+                    } else if (id.equals("KOMTRAX_ACT")) {  //ACT_DATAの構造が変わると使えない
                         if (newMap.get(d) == null) {
                             newMap.put(d, value);
                         } else {
@@ -73,9 +74,9 @@ public class FormKomtrax {
                 syaryo.getMap().remove(id);
         }
         
-        Map<String, List<String>> newMap = transACTSMRData(syaryo.getData("KOMTRAX_ACT_DATA"), syaryo.getData("KOMTRAX_SMR"));
+        Map<String, List<String>> newMap = transACTSMRData(syaryo.getData("KOMTRAX_ACT"), syaryo.getData("KOMTRAX_SMR"));
         if(!newMap.isEmpty())
-            syaryo.setData("KOMTRAX_ACT_DATA", newMap);
+            syaryo.setData("KOMTRAX_ACT", newMap);
     }
 
     //KOMTRAXデータを整数値に変換(SMR, FUEL_CONSUME)

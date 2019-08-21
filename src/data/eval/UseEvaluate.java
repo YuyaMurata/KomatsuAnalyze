@@ -135,29 +135,29 @@ public class UseEvaluate extends EvaluateTemplate {
 
         //Scoring
         Map score = cluster.entrySet().stream()
-                .collect(Collectors.toMap(c -> c.getKey(), c -> sort.indexOf(c.getValue()) + 1));
+                .collect(Collectors.toMap(c -> c.getKey(), c -> 3 - sort.indexOf(c.getValue())));
 
         return score;
     }
 
     public static void main(String[] args) {
-        LOADER.setFile("PC200_loadmap");
+        LOADER.setFile("PC200_form");
         SyaryoAnalizer.rejectSettings(false, false, false);
-        //SyaryoAnalizer s = new SyaryoAnalizer(LOADER.getSyaryoMap().get("PC200-10-450635"), true);
+        SyaryoAnalizer s = new SyaryoAnalizer(LOADER.getSyaryoMap().get("PC200-8N1-352999"), true);
 
-        //UseEvaluate use = new UseEvaluate();
+        UseEvaluate use = new UseEvaluate();
 
         String testkey = "LOADMAP_実エンジン回転VSエンジントルク";
         //Map<String, List<String>> data = use.getdata(s);
-        //Map<String, Double> result = use.evaluate(testkey, s);
+        Map<String, Double> result = use.evaluate(testkey, s);
         
-        LOADER.getSyaryoMap().values().stream().forEach(s ->{
+        /*LOADER.getSyaryoMap().values().stream().forEach(s ->{
             try(SyaryoAnalizer a = new SyaryoAnalizer(s, true)){
                 evalCSV_P1(a, "LOADMAP_実エンジン回転VSエンジントルク", null);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-        });
+        });*/
         
         /*data.entrySet().stream().forEach(d -> {
             System.out.println(d.getKey());
@@ -167,11 +167,11 @@ public class UseEvaluate extends EvaluateTemplate {
             } else {
                 System.out.println("  " + result.get("None Evaluate"));
             }
-        });
+        });*/
 
         //クラスタ用データ
         System.out.println("\n" + use.header(testkey));
-        System.out.println(use.getClusterData(testkey));*/
+        System.out.println(use.getClusterData(testkey));
     }
     
     private static void evalCSV_P1(SyaryoAnalizer s, String key, PrintWriter pw){
