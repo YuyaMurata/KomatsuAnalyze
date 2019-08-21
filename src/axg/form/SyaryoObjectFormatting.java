@@ -113,6 +113,7 @@ public class SyaryoObjectFormatting {
         Map<String, Map<String, List<String>>> dmap = syaryo.getMap();
         dmap.keySet().stream().forEach(k -> {
             Map m = new TreeMap();
+            
             dmap.get(k).entrySet().stream().forEach(d ->{
                 m.put(dup(dateFormalize(d.getKey()), m), d.getValue());
             });

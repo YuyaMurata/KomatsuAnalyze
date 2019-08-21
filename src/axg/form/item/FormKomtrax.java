@@ -33,7 +33,7 @@ public class FormKomtrax {
             if (syaryo.getData(id) == null) {
                 continue;
             }
-
+            
             //Formalize Date
             Map<String, List<String>> newMap = new TreeMap();
             String tmp = "";
@@ -64,7 +64,6 @@ public class FormKomtrax {
                         newMap.put(SyaryoObjectFormatting.dup(d, newMap), value);
                     }
                     tmp = str;
-
                 }
             }
             
@@ -135,8 +134,8 @@ public class FormKomtrax {
         for (String d : map.keySet()) {
             acm += map.get(d);
             List v = new ArrayList();
-            v.add(acm.toString());
-            v.add(map.get(d));
+            v.add(String.valueOf(acm.intValue()));
+            v.add(String.valueOf(map.get(d).intValue()));
             actmap.put(d, v);
         }
 
