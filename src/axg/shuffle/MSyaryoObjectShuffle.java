@@ -125,8 +125,7 @@ public class MSyaryoObjectShuffle {
             
             //check
             //mongo2.getHeader().print();
-            SyaryoObjectFormatting sobjf = new SyaryoObjectFormatting();
-            sobjf.form(newheaderobj, newobj);
+            //SyaryoObjectFormatting.form(newheaderobj, newobj);
             newobj.recalc();
             //newobj.print();
 

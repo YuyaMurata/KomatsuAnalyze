@@ -40,12 +40,12 @@ public class SyaryoObjectFormatting {
     
     private static DecimalFormat df = new DecimalFormat("00");
 
-    public static List<String> w = new ArrayList<>();
-    public static List<String> p = new ArrayList<>();
+    //public static List<String> w = new ArrayList<>();
+    //public static List<String> p = new ArrayList<>();
 
-    public static String currentKey = "";
+    //public static String currentKey = "";
 
-    public void form(MHeaderObject header, MSyaryoObject syaryo) {
+    public static void form(MHeaderObject header, MSyaryoObject syaryo) {
         //整形時のデータ削除ルールを設定
         DataRejectRule rule = new DataRejectRule();
 
