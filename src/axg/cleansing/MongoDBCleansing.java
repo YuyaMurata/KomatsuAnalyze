@@ -40,7 +40,13 @@ public class MongoDBCleansing {
         MHeaderObject hobj = new MHeaderObject(mongo.getHeader());
         mongo2.coll.insertOne(hobj);
         
-        mongo.getKeyList().parallelStream().filter(sid -> sid.contains("-10-")).limit(100)
+        //10 100台
+        mongo.getKeyList().parallelStream().filter(sid -> sid.contains("-10-")).limit(500)
+                .map(sid -> cleanOne(mongo.get(sid)))
+                .forEach(mongo2.coll::insertOne);
+        
+        //8N1 100台
+        mongo.getKeyList().parallelStream().filter(sid -> sid.contains("-8-N1")).limit(500)
                 .map(sid -> cleanOne(mongo.get(sid)))
                 .forEach(mongo2.coll::insertOne);
         
