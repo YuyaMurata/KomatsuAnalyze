@@ -41,18 +41,13 @@ public class MongoDBCleansing {
         mongo2.coll.insertOne(hobj);
         
         //10 100台
-        mongo.getKeyList().parallelStream().filter(sid -> sid.contains("-10-")).limit(100)
-                .map(sid -> cleanOne(mongo.get(sid)))
-                .forEach(mongo2.coll::insertOne);
-        
-        //8N1 100台
-        mongo.getKeyList().parallelStream().filter(sid -> sid.contains("-8-N1")).limit(200)
+        mongo.getKeyList().parallelStream().filter(sid -> !sid.contains("E0"))//.filter(sid -> sid.contains("-10-")).limit(100)
                 .map(sid -> cleanOne(mongo.get(sid)))
                 .forEach(mongo2.coll::insertOne);
         
         long stop = System.currentTimeMillis();
         
-        System.out.println("ClensingTime="+(stop-start)+"ms");
+        System.out.println("CleansingTime="+(stop-start)+"ms");
         
         mongo.close();
         mongo2.close();

@@ -17,26 +17,28 @@ import java.util.stream.Collectors;
  * @author ZZ17807
  */
 public class FormNew {
+
     public static Map form(Map<String, List<String>> news, Map<String, List<String>> born, Map<String, List<String>> deploy, List indexList) {
         Map<String, List<String>> map = new TreeMap();
 
         Integer deff = 0;
-        
+
         //NU区分でNだけ残す
         int nu = indexList.indexOf("新車.ＮＵ区分");
         news = news.entrySet().stream()
                 .filter(e -> e.getValue().get(nu).equals("N"))
                 .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
-        
+
         if (news != null && deploy != null) {
-            try{
-            //なぜか空が存在した場合
-            if (news.isEmpty()) {
-                news = null;
-            } else {
-                deff = Math.abs(FormalizeUtils.dsub(news.keySet().stream().findFirst().get(), deploy.keySet().stream().findFirst().get())) / 30;
-            }
-            }catch(Exception e){
+            try {
+                //なぜか空が存在した場合
+                if (news.isEmpty()) {
+                    news = null;
+                } else {
+                    deff = Math.abs(FormalizeUtils.dsub(news.keySet().stream().findFirst().get(), deploy.keySet().stream().findFirst().get())) / 30;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
                 System.err.println(news);
                 System.err.println(deploy);
                 System.exit(0);

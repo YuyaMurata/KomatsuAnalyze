@@ -86,7 +86,7 @@ public class MSyaryoObjectShuffle {
 
         //
         System.out.println(index);
-        SyaryoObjectFormatting sobjf = new SyaryoObjectFormatting();
+        //SyaryoObjectFormatting sobjf = new SyaryoObjectFormatting();
 
         MongoDBCleansingData mongo2 = MongoDBCleansingData.create();
         mongo2.set("json", "komatsuDB_PC200_Shuffle", MSyaryoObject.class);
@@ -95,7 +95,7 @@ public class MSyaryoObjectShuffle {
         MHeaderObject newheaderobj = mongo2.getHeader();
         
         List<String> sids = mongo.getKeyList();
-        sids.stream().filter(sid -> !sid.contains("E0")).forEach(sid -> {
+        sids.parallelStream().forEach(sid -> {
             MSyaryoObject obj = mongo.getObj(sid); //"PC200-10- -452437"
             Map<String, Map<String, List<String>>> map = new LinkedHashMap();
 
@@ -125,6 +125,7 @@ public class MSyaryoObjectShuffle {
             
             //check
             //mongo2.getHeader().print();
+            SyaryoObjectFormatting sobjf = new SyaryoObjectFormatting();
             sobjf.form(newheaderobj, newobj);
             newobj.recalc();
             //newobj.print();
