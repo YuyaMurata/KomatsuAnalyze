@@ -24,15 +24,17 @@ import java.util.stream.Collectors;
 public class MongoDBCleansing {
 
     //Index
-    static Map<String, Map<String, List<String>>> index = new MapToJSON().toMap("axg\\mongoobj_syaryo_src.json");
+    static Map<String, Map<String, List<String>>> index;
 
-    public static void main(String[] args) {
+    public static void clean(String db, String collection, List<String> typ, Map<String, Map<String, List<String>>> header) {
+        index = header;
+        
         MongoDBData mongo = MongoDBData.create();
-        mongo.set("json", "komatsuDB_PC200");
+        mongo.set(db, collection);
         
         //New Mongo Collection
         MongoDBCleansingData mongo2 = MongoDBCleansingData.create();
-        mongo2.set("json", "komatsuDB_PC200_Clean", MSyaryoObject.class);
+        mongo2.set(db, collection+"_Clean", MSyaryoObject.class);
         mongo2.clear();
         
         long start = System.currentTimeMillis();
@@ -40,8 +42,8 @@ public class MongoDBCleansing {
         MHeaderObject hobj = new MHeaderObject(mongo.getHeader());
         mongo2.coll.insertOne(hobj);
         
-        //10 100台
-        mongo.getKeyList().parallelStream().filter(sid -> !sid.contains("E0"))//.filter(sid -> sid.contains("-10-")).limit(100)
+        //車両のクレンジング実行
+        mongo.getKeyList().parallelStream().filter(sid -> typ.contains(sid.split("-")[1]+sid.split("-")[2].replace(" ", "")))//.filter(sid -> sid.contains("-10-")).limit(100)
                 .map(sid -> cleanOne(mongo.get(sid)))
                 .forEach(mongo2.coll::insertOne);
         
@@ -91,6 +93,8 @@ public class MongoDBCleansing {
         return obj;
     }
 
+    
+    //クレンジングルール
     private static Map<String, Map> aggregateMap() {
         return new HashMap() {
             {
@@ -184,8 +188,8 @@ public class MongoDBCleansing {
         }
         List<String> removeSubKey = data.entrySet().stream()
                 .filter(d -> rule.entrySet().stream()
-                .filter(r -> !r.getValue().contains(d.getValue().get(index.get(key).get(key + ".subKey").indexOf(r.getKey())))) //containsを完全一致にする
-                .findFirst().isPresent())
+                    .filter(r -> !r.getValue().contains(d.getValue().get(index.get(key).get(key + ".subKey").indexOf(r.getKey()))))
+                    .findFirst().isPresent())
                 .map(s -> s.getKey())
                 .collect(Collectors.toList());
 

@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class MSyaryoObjectShuffle {
 
     //Index
-    static Map<String, Map<String, List<String>>> index = new MapToJSON().toMap("axg\\shuffle_mongo_syaryo.json");
+    //static Map<String, Map<String, List<String>>> index = new MapToJSON().toMap("axg\\shuffle_mongo_syaryo.json");
     private static DecimalFormat df = new DecimalFormat("00");
 
     public static void main(String[] args) {
@@ -76,23 +76,22 @@ public class MSyaryoObjectShuffle {
         mongo.close();
     }
 
-    public static void shuffle() {
+    public static void shuffle(String db, String collection, Map<String, Map<String, List<String>>> index, Map<String, Map<String, List<String>>> layout) {
         MongoDBCleansingData mongo = MongoDBCleansingData.create();
-        mongo.set("json", "komatsuDB_PC200_Clean", MSyaryoObject.class);
+        mongo.set(db, collection+"_Clean", MSyaryoObject.class);
 
         //Header
         MHeaderObject headerobj = mongo.getHeader();
         System.out.println(headerobj.map);
 
         //
-        System.out.println(index);
+        //System.out.println(index);
         //SyaryoObjectFormatting sobjf = new SyaryoObjectFormatting();
 
         MongoDBCleansingData mongo2 = MongoDBCleansingData.create();
-        mongo2.set("json", "komatsuDB_PC200_Shuffle", MSyaryoObject.class);
+        mongo2.set("db", collection+"_Shuffle", MSyaryoObject.class);
         mongo2.clear();
-        mongo2.coll.insertOne(recreateHeaderObj());
-        MHeaderObject newheaderobj = mongo2.getHeader();
+        mongo2.coll.insertOne(recreateHeaderObj(layout));
         
         List<String> sids = mongo.getKeyList();
         sids.parallelStream().forEach(sid -> {
@@ -199,8 +198,8 @@ public class MSyaryoObjectShuffle {
         }
     }
 
-    public static MHeaderObject recreateHeaderObj() {
-        Map<String, Map<String, List<String>>> layout = new MapToJSON().toMap("axg\\layout_mongo_syaryo.json");
+    public static MHeaderObject recreateHeaderObj(Map<String, Map<String, List<String>>> layout) {
+        //Map<String, Map<String, List<String>>> layout = new MapToJSON().toMap("axg\\layout_mongo_syaryo.json");
 
         List header = new ArrayList();
         header.add("id ");
