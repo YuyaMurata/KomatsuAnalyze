@@ -37,7 +37,7 @@ public class MSyaryoObjectShuffle {
         //createLayoutHeader(index);
         
         //シャッフル
-        shuffle();
+        shuffle("json", "komatsuDB_PC200", new MapToJSON().toMap("axg\\shuffle_mongo_syaryo.json"), new MapToJSON().toMap("axg\\layout_mongo_syaryo.json"));
     }
 
     //シャッフル用ファイルを作成するための元ファイル作成
