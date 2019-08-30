@@ -7,6 +7,7 @@ package export;
 
 import analizer.SyaryoAnalizer;
 import file.CSVFileReadWrite;
+import file.ListToCSV;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -21,15 +22,16 @@ import obj.SyaryoObject;
  * @author ZZ17390
  */
 public class SimpleExporter {
+
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     private static String KISY = "PC200";
     private static Map<String, SyaryoObject> map;
     private static String simplefilter = "";
 
     public static void main(String[] args) {
-        LOADER.setFile(KISY+"_form");
+        LOADER.setFile(KISY + "_form");
         map = LOADER.getSyaryoMap();
-        
+
         //ヘッダー設定
         Map<String, Integer> headers = new LinkedHashMap();
         //headers.put("受注.会社", LOADER.index("受注", "会社CD"));
@@ -52,33 +54,32 @@ public class SimpleExporter {
         //headers.put("顧客.区分", dataIndex.get("顧客").indexOf("KKYK_KBN"));
         //headers.put("顧客.業種", dataIndex.get("顧客").indexOf("GYSCD"));
         //headers.put("KOMTRAX_ERROR.CODE", LOADER.index("KOMTRAX_ERROR", "ERROR_CODE"));
-        
-        //フィルタ設定　定期メンテナンス
-        simplefilter = "6754-41-1120";
-        
+
+        //フィルタ設定
+        //simplefilter = "6754-41-1120";
         System.out.println(headers);
 
         //単体
         //String name = "PC200-8N1-313582";
         //uniExport("ExportData_" + name + ".csv", headers, name, filter);
-
         //複数
         //String[] names = new String[]{"PC200-8N1-310531", "PC200-8N1-315586", "PC200-8N1-313998", "PC200-8N1-312914", "PC200-8N1-316882"};
         //multiExport("ExportData_Multi_"+names.length+".csv", headers, names, filter);
-        
         //全部
-        allExport("ExportData_"+KISY+"_ALL_6754-41-1120.csv", headers);
+        //allExport("ExportData_" + KISY + "_ALL_6754-41-1120.csv", headers);
+        //フィルターファイルを利用した抽出
+        filterfileExport("ExportData_" + KISY + "_ALL_抽出リスト_品名品番.csv", headers, "list\\抽出リスト_品名品番.csv");
     }
 
     private static void allExport(String f, Map<String, Integer> headers) {
         try (PrintWriter pw = CSVFileReadWrite.writerSJIS(f)) {
-            pw.println("SID,"+headers.keySet().stream().collect(Collectors.joining(",")));
+            pw.println("SID," + headers.keySet().stream().collect(Collectors.joining(",")));
             for (String name : map.keySet()) {
                 System.out.println(name);
                 try (SyaryoAnalizer syaryo = new SyaryoAnalizer(map.get(name), false)) {
                     export(pw, headers, syaryo);
                 } catch (Exception ex) {
-                    System.err.println(name+" data is NULL");
+                    System.err.println(name + " data is NULL");
                 }
             }
         }
@@ -108,8 +109,30 @@ public class SimpleExporter {
         List<Integer> index = new ArrayList(headers.values());
         String key = headers.keySet().stream().findFirst().get().split("\\.")[0];
         syaryo.getValue(key, index.toArray(new Integer[index.size()])).values().stream()
-                            .filter(s -> s.toString().contains(simplefilter))
-                            .map(s -> syaryo.get().name+","+String.join(",", s))
-                            .forEach(pw::println);
+                .filter(s -> s.toString().replace(", ", ",").contains(simplefilter))
+                .map(s -> syaryo.get().name + "," + String.join(",", s))
+                .forEach(pw::println);
+    }
+
+    private static void filterfileExport(String f, Map<String, Integer> headers, String fFile) {
+        List<String> filter = ListToCSV.toList(fFile);
+        String fhead = filter.get(0);
+        filter.remove(0);
+
+        try (PrintWriter pw = CSVFileReadWrite.writerSJIS(f)) {
+            pw.println("SID," + headers.keySet().stream().collect(Collectors.joining(",")));
+            for (String name : map.keySet()) {
+                System.out.println(name);
+
+                try (SyaryoAnalizer syaryo = new SyaryoAnalizer(map.get(name), false)) {
+                    filter.stream().forEach(fil -> {
+                        simplefilter = fil;
+                        export(pw, headers, syaryo);
+                    });
+                } catch (Exception ex) {
+                    System.err.println(name + " data is NULL");
+                }
+            }
+        }
     }
 }
