@@ -14,8 +14,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import obj.SyaryoLoader;
@@ -26,7 +24,6 @@ import obj.SyaryoObject;
  * @author ZZ17390
  */
 public class UseEvaluate extends EvaluateTemplate {
-
     private static SyaryoLoader LOADER = SyaryoLoader.getInstance();
     private static Integer R = 5;
     private static Boolean flg = true;
@@ -150,24 +147,6 @@ public class UseEvaluate extends EvaluateTemplate {
         String testkey = "LOADMAP_実エンジン回転VSエンジントルク";
         //Map<String, List<String>> data = use.getdata(s);
         Map<String, Double> result = use.evaluate(testkey, s);
-        
-        /*LOADER.getSyaryoMap().values().stream().forEach(s ->{
-            try(SyaryoAnalizer a = new SyaryoAnalizer(s, true)){
-                evalCSV_P1(a, "LOADMAP_実エンジン回転VSエンジントルク", null);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        });*/
-        
-        /*data.entrySet().stream().forEach(d -> {
-            System.out.println(d.getKey());
-            System.out.println("  " + d.getValue());
-            if (testkey.equals(d.getKey())) {
-                System.out.println("  " + result.values());
-            } else {
-                System.out.println("  " + result.get("None Evaluate"));
-            }
-        });*/
 
         //クラスタ用データ
         System.out.println("\n" + use.header(testkey));
