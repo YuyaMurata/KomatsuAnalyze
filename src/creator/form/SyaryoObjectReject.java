@@ -30,10 +30,10 @@ public class SyaryoObjectReject {
         Map<String, SyaryoObject> syaryoMap = LOADER.getSyaryoMap();
 
         type(syaryoMap, Arrays.asList(new String[]{"8", "8N1", "10"}));
-        komtrax(syaryoMap, "KOMTRAX_ACT_DATA");
+        //komtrax(syaryoMap, "KOMTRAX_ACT_DATA");
         service(syaryoMap, "20170501");
         empty(syaryoMap, "受注");
-        syaryo(syaryoMap);
+        //syaryo(syaryoMap);
 
         LOADER.close();
         new SyaryoToCompress().write(LOADER.getFilePath(), syaryoMap);

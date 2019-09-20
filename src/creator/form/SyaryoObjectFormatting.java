@@ -26,7 +26,6 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import file.MapToJSON;
 import file.SyaryoToCompress;
-import java.io.PrintWriter;
 import obj.SyaryoLoader;
 import obj.SyaryoObject;
 

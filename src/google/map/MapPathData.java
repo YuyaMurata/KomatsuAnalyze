@@ -62,7 +62,7 @@ public class MapPathData {
         
         //変換
         str = str.replace("N", "").replace("S", "-").replace("E", "").replace("W", "-");
-
+        
         String[] s = str.split("\\.");
 
         BigDecimal b1 = new BigDecimal(s[0]);

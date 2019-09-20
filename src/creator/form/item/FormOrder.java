@@ -32,7 +32,7 @@ public class FormOrder {
 
         Map<String, Integer> sortMap = order.entrySet().stream()
                 .filter(e -> !e.getValue().get(date).equals("None"))
-                .filter(e -> Integer.valueOf(reject.getNew()) <= Integer.valueOf(e.getValue().get(date)))
+                //.filter(e -> Integer.valueOf(reject.getNew()) <= Integer.valueOf(e.getValue().get(date)))
                 .collect(Collectors.toMap(e -> e.getKey(), e -> Integer.valueOf(e.getValue().get(date))));
 
         //作番重複除去
@@ -49,14 +49,11 @@ public class FormOrder {
         int price = indexList.indexOf("SKKG");
         int kind = indexList.indexOf("ODR_KBN");
         int fin_date = indexList.indexOf("SGYO_KRDAY");
-        
-        //6桁以下の規格外の作番を取得するリスト
-        List<String> sixSBN = new ArrayList();
 
         for (String sbn : sbnList) {
             //重複作番を取り出す
             List<String> sbnGroup = order.keySet().stream()
-                    .filter(s -> s.contains(sbn))
+                    .filter(s -> s.split("#")[0].equals(sbn))
                     .collect(Collectors.toList());
 
             //KOMPAS 受注テーブル情報が存在するときは取り出す
@@ -85,32 +82,12 @@ public class FormOrder {
                 }
             }
 
-            //規格外の作番取得
-            if (sbn.length() < 7) {
-                sixSBN.add(sbn);
-            }
-
             //System.out.println(map.get(sbn));
             reject.addPARTSID(sbn);
             if (map.get(sbn).get(kind).equals("2")) {
                 reject.addWORKID(sbn);
             }
         }
-
-        //規格外作番で修正されている場合は削除
-        List<String> removeSixSBN = new ArrayList<>();
-        for (String sbn : map.keySet()) {
-            if (sixSBN.contains(sbn)) {
-                continue;
-            }
-
-            Optional<String> sbnCheck = sixSBN.stream().filter(s -> sbn.contains(s)).findFirst();
-            if (sbnCheck.isPresent()) {
-                //System.out.println(sbn+":"+sixSBN);
-                removeSixSBN.add(sbnCheck.get());
-            }
-        }
-        removeSixSBN.stream().forEach(s -> map.remove(s));
 
         //金額と作業完了日の整形処理
         for (String sbn : map.keySet()) {
